@@ -1,11 +1,11 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>セカソコ v0.5</title>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>セカソコ v0.6</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#090d16;color:#eef2ff;font-family:-apple-system,sans-serif}.w{max-width:520px;margin:auto;padding:12px}.head{display:flex;justify-content:space-between}.ver{opacity:.5;font-size:11px}
 .box{background:#111827;border:1px solid #293244;border-radius:13px;padding:9px;margin-top:9px}.tl{display:flex;gap:5px;overflow:hidden}.chip{min-width:54px;background:#202a3b;border-radius:8px;padding:6px 3px;text-align:center;font-size:9px}.chip.e{background:#3a1d28}
 .field{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.army{background:#0e1522;border:1px solid #253047;border-radius:12px;padding:6px}.army h3{text-align:center;font-size:10px;opacity:.6;margin:2px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.u{position:relative;text-align:center;background:#172030;border-radius:9px;padding:5px;min-height:92px;border:1px solid #303c53}.u.on{outline:2px solid white}.u.dead{opacity:.15}.ico{font-size:30px;height:42px;display:flex;align-items:center;justify-content:center}.nm{font-size:9px}.st{font-size:8px;opacity:.6}.hp0{height:4px;background:#421c26;margin-top:4px}.hp{height:100%;background:#eef2ff}
+.u{position:relative;text-align:center;background:#172030;border-radius:9px;padding:5px;min-height:92px;border:1px solid #303c53}.u.on{outline:2px solid white}.u.dead{opacity:.15}.ico{font-size:30px;height:42px;display:flex;align-items:center;justify-content:center}.nm{font-size:9px}.st{font-size:8px;opacity:.6}.buffs{min-height:18px;margin-top:3px;font-size:12px;font-weight:800}.blood{display:inline-block;background:#451522;border:1px solid #743044;border-radius:8px;padding:1px 5px}.hp0{height:4px;background:#421c26;margin-top:4px}.hp{height:100%;background:#eef2ff}
 .turn{text-align:center;font-weight:800}.hint,.log{text-align:center;font-size:10px;opacity:.65;margin:5px}.skills{display:grid;gap:7px}.skill,.start{border:0;border-radius:10px;padding:12px;font-weight:800}.skill{text-align:left;background:#202b40;color:white}.skill small{float:right;opacity:.65}.start{width:100%;margin-top:7px}
-</style></head><body><div class="w"><div class="head"><b>セカソコ｜SPD × CT</b><span class="ver">v0.5.1</span></div>
+</style></head><body><div class="w"><div class="head"><b>セカソコ｜SPD × CT</b><span class="ver">v0.6</span></div>
 <div class="box"><div style="font-size:10px;opacity:.6;margin-bottom:6px">NEXT ACTION｜敵味方混合</div><div id="tl" class="tl"></div></div>
 <div class="field"><div class="army"><h3>ALLY</h3><div id="A" class="grid"></div></div><div class="army"><h3>ENEMY</h3><div id="E" class="grid"></div></div></div>
 <div class="box"><div id="turn" class="turn">STARTで戦闘開始</div><div id="hint" class="hint">SPDで基礎待機時間短縮｜1CT = 次回待機 +10</div><div id="skills" class="skills"></div><button id="start" class="start" onclick="startBattle()">START</button><div id="log" class="log"></div></div>
@@ -20,15 +20,42 @@ const EB=[['深層スライム',70,17,65,'🟢'],['骸の少女',95,22,105,'💀
 let A,E,now,cur,running;
 function bw(s){return Math.max(20,Math.round(1000/Math.sqrt(s)))}
 function reset(){now=0;cur=null;running=false;let id=0;A=AB.map(x=>mk(x,'A',id++));E=EB.map(x=>{let u=mk([...x,[['敵攻撃',3,1,'one']]],'E',id++);return u});render()}
-function mk(x,side,id){return {name:x[0],hp:x[1],max:x[1],atk:x[2],spd:x[3],ico:x[4],skills:x[5],side,id,next:bw(x[3])}}
+function mk(x,side,id){return {name:x[0],hp:x[1],max:x[1],atk:x[2],spd:x[3],ico:x[4],skills:x[5],side,id,next:bw(x[3]),blood:0}}
 function live(x){return x.filter(u=>u.hp>0)}
 function q(){return [...live(A),...live(E)].sort((a,b)=>a.next-b.next||b.spd-a.spd||a.id-b.id)}
-function card(u){return `<div class="u ${u===cur?'on':''} ${u.hp<=0?'dead':''}"><div class="ico">${u.ico}</div><div class="nm">${u.name}</div><div class="st">SPD ${u.spd}｜WAIT ${Math.max(0,u.next-now)}</div><div class="hp0"><div class="hp" style="width:${100*u.hp/u.max}%"></div></div></div>`}
+function card(u){return `<div class="u ${u===cur?'on':''} ${u.hp<=0?'dead':''}"><div class="ico">${u.ico}</div><div class="nm">${u.name}</div><div class="buffs">${u.name==='ヴァンパイア姫'?`<span class="blood">🩸${u.blood}</span>`:''}</div><div class="st">SPD ${u.spd}｜WAIT ${Math.max(0,u.next-now)}</div><div class="hp0"><div class="hp" style="width:${100*u.hp/u.max}%"></div></div></div>`}
 function render(){Ael.innerHTML=A.map(card).join('');Eel.innerHTML=E.map(card).join('');tl.innerHTML=q().slice(0,7).map(u=>`<div class="chip ${u.side==='E'?'e':''}">${u.name}<br>+${Math.max(0,u.next-now)}</div>`).join('')}
 function startBattle(){if(running)return;running=true;document.getElementById('start').style.display='none';advance()}
 function advance(){if(!running)return;if(!live(A).length||!live(E).length)return finish();cur=q()[0];now=cur.next;render();turn.textContent=`${cur.name} のターン｜TIME ${now}`;if(cur.side==='A'){skills.innerHTML=cur.skills.map((s,i)=>`<button class="skill" onclick="pick(${i})">${s[0]}<small>CT${s[1]} → 次WAIT ${bw(cur.spd)+s[1]*10}</small></button>`).join('');hint.textContent='技を1つ選択。重い技ほど次の行動が後ろへ。'}else{skills.innerHTML='';hint.textContent='敵の行動…';setTimeout(()=>act(cur,cur.skills[0]),350)}}
 function pick(i){if(!cur||cur.side!=='A')return;let u=cur;skills.innerHTML='';act(u,u.skills[i])}
-function act(u,s){let [name,ct,m,type]=s,targets=u.side==='A'?E:A,txt='';if(type==='all'){let total=0;live(targets).forEach(t=>{let d=Math.max(1,Math.round(u.atk*m));t.hp=Math.max(0,t.hp-d);total+=d});txt=`${u.name}「${name}」全体 ${total} DAMAGE`}else{let t=live(targets)[0],d=Math.max(1,Math.round(u.atk*m));t.hp=Math.max(0,t.hp-d);txt=`${u.name}「${name}」→ ${t.name} ${d} DAMAGE`;if(type==='drain'){let h=Math.max(1,Math.round(d/2));u.hp=Math.min(u.max,u.hp+h);txt+=` / HP+${h}`}}u.next=now+bw(u.spd)+ct*10;log.textContent=txt;cur=null;render();setTimeout(advance,250)}
+function act(u,s){
+ let [name,ct,m,type]=s,targets=u.side==='A'?E:A,txt='',bloodBefore=u.blood||0,totalDamage=0;
+ // ヴァンパイア：行動するたび血の支配+1
+ if(u.name==='ヴァンパイア姫')u.blood++;
+ if(type==='all'){
+   let spend=(u.name==='ヴァンパイア姫'?bloodBefore:0);
+   live(targets).forEach(t=>{
+     let d=Math.max(1,Math.round(u.atk*m)+(name==='デスサークル'?spend:0));
+     let before=t.hp;t.hp=Math.max(0,t.hp-d);totalDamage+=d;
+   });
+   txt=`${u.name}「${name}」全体 ${totalDamage} DAMAGE`;
+   if(name==='デスサークル'&&u.name==='ヴァンパイア姫'){u.blood=1;txt+=` / 🩸${spend}消費`;}
+ }else{
+   let t=live(targets)[0];
+   let bonus=(name==='ジェノサイドカッター'&&u.name==='ヴァンパイア姫')?bloodBefore:0;
+   let d=Math.max(1,Math.round(u.atk*m)+bonus),before=t.hp;
+   t.hp=Math.max(0,t.hp-d);totalDamage=d;
+   txt=`${u.name}「${name}」→ ${t.name} ${d} DAMAGE`;
+   if(u.name==='ヴァンパイア姫'){
+     let heal=Math.max(0,bloodBefore);
+     if(type==='drain')heal+=1;
+     if(heal){u.hp=Math.min(u.max,u.hp+heal);txt+=` / 🩸吸収 HP+${heal}`;}
+   }
+   if(d>before&&before>0)txt+=` / OVERKILL ×${(d/before).toFixed(1)}`;
+ }
+ if(u.name==='ヴァンパイア姫'&&name!=='デスサークル')txt+=` / 血の支配🩸${u.blood}`;
+ u.next=now+bw(u.spd)+ct*10;log.textContent=txt;cur=null;render();setTimeout(advance,250)
+}
 function finish(){running=false;skills.innerHTML='';turn.textContent=live(E).length?'LOSE':'WIN';hint.textContent='ページ更新で再戦';render()}
 const Ael=document.getElementById('A'),Eel=document.getElementById('E');reset();
 </script></body></html>
