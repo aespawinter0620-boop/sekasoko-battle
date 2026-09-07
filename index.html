@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>セカソコ 戦闘試作</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:#090b12;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;overflow:hidden}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;background:radial-gradient(circle at 50% 42%,#252030 0,#11131d 45%,#080a10 100%);display:flex;flex-direction:column;position:relative}.top{height:58px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;background:#0b0d15dd;border-bottom:1px solid #ffffff18}.floor{font-weight:800;letter-spacing:.08em}.turn{font-size:12px;color:#aaa}.battle{flex:1;display:grid;grid-template-columns:1fr 42px 1fr;align-items:center;padding:8px;min-height:0}.army{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.col{display:grid;grid-template-rows:repeat(5,1fr);gap:7px}.laneLabel{font-size:10px;text-align:center;color:#8d8d99;margin-bottom:4px}.slot{height:min(13.2vh,82px);min-height:58px;border:1px solid #ffffff24;border-radius:12px;background:#ffffff08;position:relative;display:flex;align-items:center;justify-content:center;transition:.18s}.slot.front{background:#ffffff0e}.slot.target{box-shadow:0 0 0 2px #fff8 inset}.unit{width:86%;height:86%;border-radius:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;background:linear-gradient(145deg,#403047,#211e2b);border:1px solid #ffffff20;transition:.18s}.enemy .unit{background:linear-gradient(145deg,#49302f,#271c22)}.unit.hit{transform:translateX(6px);filter:brightness(1.8)}.ally .unit.hit{transform:translateX(-6px)}.sprite{font-size:25px;line-height:1;width:54px;height:44px;display:flex;align-items:center;justify-content:center}
+.sprite img{max-width:100%;max-height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 3px 2px #0008)}
+.unit.attacking{z-index:8;animation:allyLunge .42s ease-in-out}
+.enemy .unit.attacking{animation:enemyLunge .42s ease-in-out}
+@keyframes allyLunge{0%{transform:translateX(0)}45%{transform:translateX(52px) scale(1.08)}100%{transform:translateX(0)}}
+@keyframes enemyLunge{0%{transform:translateX(0)}45%{transform:translateX(-52px) scale(1.08)}100%{transform:translateX(0)}}
+.damagePop{position:absolute;z-index:20;font-size:24px;font-weight:1000;color:#fff;text-shadow:0 2px 0 #000,0 0 8px #fff;pointer-events:none;animation:damageFly .65s ease-out forwards}
+@keyframes damageFly{0%{transform:translate(-50%,0) scale(.7);opacity:0}20%{opacity:1}100%{transform:translate(-50%,-38px) scale(1.2);opacity:0}}
+.unit.dying{animation:dieOut .5s ease forwards}
+@keyframes dieOut{0%{opacity:1;transform:scale(1)}55%{filter:brightness(2);transform:scale(1.08)}100%{opacity:0;transform:scale(.45) translateY(16px)}}.name{font-size:10px;font-weight:700;margin-top:2px;white-space:nowrap}.hpbar{position:absolute;bottom:4px;width:82%;height:4px;background:#0008;border-radius:3px;overflow:hidden}.hp{height:100%;background:#e8e8e8;transition:.25s}.dead{opacity:.15;filter:grayscale(1)}.middle{text-align:center;color:#777;font-size:11px}.vs{font-size:18px;font-weight:900;color:#ddd}.panel{padding:9px 12px max(12px,env(safe-area-inset-bottom));background:#0a0c13ee;border-top:1px solid #ffffff18}.status{height:24px;text-align:center;font-size:12px;color:#c8c4cb}.controls{display:flex;gap:8px}.btn{border:1px solid #ffffff28;background:#1a1d29;border-radius:12px;padding:12px 10px;flex:1;font-weight:800}.start{background:#eee;color:#111;border-color:#fff}.btn:disabled{opacity:.35}.order{display:flex;gap:4px;overflow:hidden;margin-bottom:7px}.chip{font-size:9px;padding:4px 6px;border-radius:10px;background:#ffffff0d;color:#aaa;white-space:nowrap}.chip.active{background:#eee;color:#111}.overlay{position:absolute;inset:0;background:#05060bcc;display:none;align-items:center;justify-content:center;z-index:5}.overlay.show{display:flex}.result{text-align:center}.result h1{font-size:42px;margin:0 0 12px;letter-spacing:.08em}.result button{padding:12px 26px;border:0;border-radius:12px;font-weight:800}.attackFlash{position:absolute;inset:58px 0 100px;pointer-events:none;opacity:0;background:radial-gradient(circle,#ffffff33,transparent 55%);transition:.12s}.attackFlash.on{opacity:1}
+.debugBtn{position:absolute;right:10px;top:66px;z-index:4;border:1px solid #ffffff28;background:#111522dd;border-radius:10px;padding:7px 9px;font-size:11px;font-weight:800}
+.debugPanel{position:absolute;inset:0;background:#05060beF;z-index:9;display:none;padding:72px 16px 18px;overflow:auto}
+.debugPanel.show{display:block}.debugCard{max-width:430px;margin:auto;background:#111521;border:1px solid #ffffff25;border-radius:16px;padding:14px}
+.debugHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.debugHead b{font-size:18px}
+.debugGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.debugAction{border:1px solid #ffffff25;background:#202536;border-radius:10px;padding:11px 7px;font-weight:700;font-size:12px}
+.debugAction.on{background:#eee;color:#111}.debugClose{border:0;background:#33394c;border-radius:9px;padding:8px 12px}.debugInfo{font-size:11px;color:#aaa;margin:10px 0 0;line-height:1.5}
+</style></head>
+<body><main class="app">
+<div class="top"><div class="floor">世界深度 1 ／ 1F</div><div class="turn" id="turn">戦闘準備</div></div>
+<section class="battle">
+<div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div>
+<div class="middle"><div class="vs">VS</div><div>→</div></div>
+<div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div>
+</section>
+<div class="attackFlash" id="flash"></div>
+<button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
+<div class="debugPanel" id="debugPanel">
+  <div class="debugCard">
+    <div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div>
+    <div class="debugGrid">
+      <button class="debugAction" id="dbgEnemy1">敵HPを1</button>
+      <button class="debugAction" id="dbgHealA">味方全回復</button>
+      <button class="debugAction" id="dbgHealE">敵全回復</button>
+      <button class="debugAction" id="dbgAtkA">味方ATK +100</button>
+      <button class="debugAction" id="dbgAtkE">敵ATK +100</button>
+      <button class="debugAction" id="dbgWin">即勝利</button>
+      <button class="debugAction" id="dbgInv">味方無敵 OFF</button>
+      <button class="debugAction" id="dbgSpeed">速度 ×1</button>
+    </div>
+    <div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。バグ再現・高階層テスト用に今後ここを育てます。</div>
+  </div>
+</div>
+<section class="panel"><div class="order" id="order"></div><div class="status" id="status">STARTで作戦を実行</div><div class="controls"><button class="btn" id="reset">RESET</button><button class="btn start" id="start">START</button></div></section>
+<div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><button id="again">もう一度</button></div></div>
+</main>
+<script>
+const allies=[
+{name:'ヴァンパイア姫',icon:'♛',sprite:'assets/vampire.png',hp:92,atk:31,row:'front'},
+{name:'白盾姫',icon:'♜',hp:145,atk:16,row:'front'},
+{name:'人形王女',icon:'✦',hp:78,atk:20,row:'back'},
+{name:'傘の姫',icon:'☂',hp:82,atk:24,row:'back'},
+{name:'凛',icon:'◆',hp:88,atk:29,row:'front'}];
+const enemies=[
+{name:'深層スライム',icon:'●',sprite:'assets/slime.png',hp:70,atk:17,row:'front'},
+{name:'骸の少女',icon:'☠',hp:95,atk:22,row:'front'},
+{name:'影喰い',icon:'◉',hp:76,atk:26,row:'back'},
+{name:'黒兎',icon:'♠',hp:66,atk:24,row:'back'}];
+let A,E,running=false,turnNo=0,order=[];
+let debugSpeed=1,debugInvincible=false;
+const sleep=m=>new Promise(r=>setTimeout(r,m/debugSpeed));
+function init(){A=allies.map((x,i)=>({...x,max:x.hp,id:'a'+i,side:'A'}));E=enemies.map((x,i)=>({...x,max:x.hp,id:'e'+i,side:'E'}));running=false;turnNo=0;order=[];document.querySelector('#overlay').classList.remove('show');document.querySelector('#start').disabled=false;render();}
+function slots(units,side){let html='';let rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<5;i++){let u=units.filter(x=>x.row===row)[i];html+=`<div class="slot ${row}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
+function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="">`:u.icon}</div><div class="name">${u.name}</div><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div></div>`}
+function render(){document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');document.querySelector('#turn').textContent=running?`TURN ${turnNo}`:'戦闘準備';document.querySelector('#order').innerHTML=order.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.name}</span>`).join('')}
+function damagePop(el,n){
+  if(!el)return;
+  const r=el.getBoundingClientRect(), app=document.querySelector('.app').getBoundingClientRect();
+  const d=document.createElement('div'); d.className='damagePop'; d.textContent='-'+n;
+  d.style.left=(r.left-app.left+r.width/2)+'px'; d.style.top=(r.top-app.top+20)+'px';
+  document.querySelector('.app').appendChild(d); setTimeout(()=>d.remove(),700);
+}
+function living(arr){return arr.filter(x=>x.hp>0)}
+function target(arr){let alive=living(arr),front=alive.filter(x=>x.row==='front');return (front.length?front:alive)[0]}
+async function attack(att,defenders){
+  if(att.hp<=0)return;
+  let t=target(defenders); if(!t)return;
+  document.querySelector('#status').textContent=`${att.name} が ${t.name} を攻撃！`;
+  let attacker=document.getElementById(att.id);
+  if(attacker)attacker.classList.add('attacking');
+  await sleep(180);
+  let targetEl=document.getElementById(t.id);
+  document.querySelector('#flash').classList.add('on');
+  if(targetEl)targetEl.classList.add('hit');
+  const dmg=(t.side==='A' && debugInvincible)?0:att.atk;
+  if(dmg>0)t.hp-=dmg;
+  damagePop(targetEl,dmg);
+  await sleep(170);
+  document.querySelector('#flash').classList.remove('on');
+  if(t.hp<=0 && targetEl){
+    targetEl.classList.remove('hit');
+    targetEl.classList.add('dying');
+    document.querySelector('#status').textContent=`${t.name} を倒した！`;
+    await sleep(420);
+  }
+  render();
+  await sleep(140);
+}
+async function battle(){if(running)return;running=true;document.querySelector('#start').disabled=true;while(living(A).length&&living(E).length&&turnNo<30){turnNo++;order=[...living(A),...living(E)].sort((a,b)=>a.side==='A'?-1:1);render();for(const u of [...order]){if(!living(A).length||!living(E).length)break;await attack(u,u.side==='A'?E:A)}}running=false;let win=living(E).length===0;document.querySelector('#resultText').textContent=win?'WIN':'LOSE';document.querySelector('#status').textContent=win?'深層への道が開いた':'作戦を組み直そう';document.querySelector('#overlay').classList.add('show')}
+document.querySelector('#start').onclick=battle;
+document.querySelector('#reset').onclick=init;
+document.querySelector('#again').onclick=init;
+
+const dp=document.querySelector('#debugPanel');
+document.querySelector('#debugOpen').onclick=()=>dp.classList.add('show');
+document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
+
+function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;render();}
+document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更');};
+document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復');};
+document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復');};
+document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100');};
+document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100');};
+document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);render();dp.classList.remove('show');document.querySelector('#resultText').textContent='WIN';document.querySelector('#status').textContent='DEBUG: 即勝利';document.querySelector('#overlay').classList.add('show');};
+document.querySelector('#dbgInv').onclick=(e)=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'));};
+document.querySelector('#dbgSpeed').onclick=(e)=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed);};
+
+init();
+</script></body></html>
