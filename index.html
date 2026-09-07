@@ -77,9 +77,9 @@ const enemies=[
 let A,E,running=false,turnNo=0,order=[],selectedOrderIndex=null;
 let debugSpeed=1,debugInvincible=false;
 const sleep=m=>new Promise(r=>setTimeout(r,m/debugSpeed));
-function init(){A=allies.map((x,i)=>({...x,max:x.hp,id:'a'+i,side:'A'}));E=enemies.map((x,i)=>({...x,max:x.hp,id:'e'+i,side:'E'}));running=false;turnNo=0;order=[];document.querySelector('#overlay').classList.remove('show');document.querySelector('#start').disabled=false;render();}
+function init(){A=allies.map((x,i)=>({...x,max:x.hp,id:'a'+i,side:'A'}));E=enemies.map((x,i)=>({...x,max:x.hp,id:'e'+i,side:'E'}));running=false;turnNo=0;order=A.map(x=>x.id);selectedOrderIndex=null;document.querySelector('#overlay').classList.remove('show');document.querySelector('#start').disabled=false;render();}
 function slots(units,side){let html='';let rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<5;i++){let u=units.filter(x=>x.row===row)[i];html+=`<div class="slot ${row}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
-function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="">`:u.icon}</div><div class="name">${u.name}</div><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div></div>`}
+function unitHTML(u){const oi=u.side==='A'?order.indexOf(u.id):-1;return `<div class="unit ${u.hp<=0?'dead':''} ${u.side==='A'&&!running?'planSelectable':''}" id="${u.id}" ${u.side==='A'?`onclick="selectUnitOrder('${u.id}')"`:''}>${u.side==='A'?`<div class="orderBadge">${oi+1}</div>`:''}<div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="">`:u.icon}</div><div class="name">${u.name}</div><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div></div>`}
 function renderOrder(){
   const bar=document.querySelector('#orderBar'); if(!bar)return;
   bar.innerHTML=order.map((id,i)=>{
@@ -100,7 +100,7 @@ function selectUnitOrder(id){
   const i=order.indexOf(id); if(i<0)return;
   selectOrderIndex(i);
 }
-function render(){document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');document.querySelector('#turn').textContent=running?`TURN ${turnNo}`:'戦闘準備';document.querySelector('#order').innerHTML=order.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.name}</span>`).join('')}
+function render(){document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');document.querySelector('#turn').textContent=running?`TURN ${turnNo}`:'戦闘準備';renderOrder();}
 function damagePop(el,n){
   if(!el)return;
   const r=el.getBoundingClientRect(), app=document.querySelector('.app').getBoundingClientRect();
@@ -134,7 +134,7 @@ async function attack(att,defenders){
   render();
   await sleep(140);
 }
-async function battle(){if(running)return;running=true;selectedOrderIndex=null;document.querySelector('#start').disabled=true;document.querySelector('#status').textContent='予約した作戦を実行中…';render();while(living(A).length&&living(E).length&&turnNo<30){turnNo++;order=[...living(A),...living(E)].sort((a,b)=>a.side==='A'?-1:1);render();for(const u of [...order]){if(!living(A).length||!living(E).length)break;await attack(u,u.side==='A'?E:A)}}running=false;let win=living(E).length===0;document.querySelector('#resultText').textContent=win?'WIN':'LOSE';document.querySelector('#status').textContent=win?'深層への道が開いた':'作戦を組み直そう';document.querySelector('#overlay').classList.add('show')}
+async function battle(){if(running)return;running=true;selectedOrderIndex=null;document.querySelector('#start').disabled=true;document.querySelector('#status').textContent='予約した作戦を実行中…';render();while(living(A).length&&living(E).length&&turnNo<30){turnNo++;render();for(const id of order){if(!living(A).length||!living(E).length)break;const u=A.find(x=>x.id===id);if(u&&u.hp>0)await attack(u,E)}for(const u of E){if(!living(A).length||!living(E).length)break;if(u.hp>0)await attack(u,A)}}running=false;let win=living(E).length===0;document.querySelector('#resultText').textContent=win?'WIN':'LOSE';document.querySelector('#status').textContent=win?'深層への道が開いた':'作戦を組み直そう';document.querySelector('#overlay').classList.add('show')}
 document.querySelector('#start').onclick=battle;
 document.querySelector('#reset').onclick=init;
 document.querySelector('#again').onclick=init;
