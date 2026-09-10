@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ v0.8 12部隊編成</title>
+<title>セカソコ v0.8.1 12部隊編成 修正版</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -47,7 +47,8 @@ function openCharacter(c){document.querySelector('#modalCard').innerHTML=`<div c
 function openInfo(title,text,icon){document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${title}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="coming"><span class="big">${icon}</span>${text}</div>`;document.querySelector('#modal').classList.add('show')}
 function closeModal(){document.querySelector('#modal').classList.remove('show')}
 document.querySelector('#book').onclick=()=>openInfo('図鑑','分厚い本を開いた。図鑑画面は次段階で実装。','📖');document.querySelector('#shop').onclick=()=>openInfo('欠片ショップ','記憶の欠片でアイテムを購入する場所。ショップ本体は次段階で実装。','🎁');document.querySelector('#descend').onclick=()=>{prepareSortie();showScreen('battleScreen');setTimeout(()=>battle(),80)};document.querySelector('#formation').onclick=()=>{renderFormation();showScreen('formationScreen')};document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
-\nconst formationRosterData=[
+
+const formationRosterData=[
 {id:'mizuki',name:'水月 鏡日',icon:'🌙',attr:'透波',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《明鏡止水》',ct:2},cost:1},
 {id:'cow',name:'牛娘',icon:'🐮',attr:'乳牛',hp:145,atk:18,row:'front',cid:201,spd:55,skill:{name:'大地の一撃（仮）',ct:5},cost:1},
 {id:'shield',name:'白盾姫',icon:'♜',attr:'盾姫',hp:132,atk:16,row:'front',cid:301,spd:90,skill:{name:'盾撃（仮）',ct:3},cost:1},
@@ -64,7 +65,8 @@ let selectedParty=0;let parties=(()=>{try{let x=JSON.parse(localStorage.getItem(
 const partyCost=p=>p.reduce((n,id)=>n+(formationRosterData.find(c=>c.id===id)?.cost||1),0);const usedPartyOf=id=>parties.findIndex(p=>p.includes(id));const saveParties=()=>localStorage.setItem('sekasokoParties',JSON.stringify(parties));
 function renderFormation(){document.querySelector('#partyTabs').innerHTML=parties.map((p,i)=>`<button class="partyTab ${i===selectedParty?'active':''}" data-p="${i}">部隊${i+1}<small>${p.length?partyCost(p)+'マス':'空'}</small></button>`).join('');document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{selectedParty=+b.dataset.p;renderFormation()});let p=parties[selectedParty];document.querySelector('#partyName').textContent='部隊'+(selectedParty+1);document.querySelector('#partyCount').textContent=partyCost(p)+' / 10マス';let h='';for(let i=0;i<10;i++){let c=formationRosterData.find(x=>x.id===p[i]);h+=c?`<button class="partySlot filled" data-rem="${c.id}"><span><span class="ico">${c.icon}</span><span class="nm">${c.name}</span></span></button>`:`<div class="partySlot">${i+1}</div>`}document.querySelector('#partyGrid').innerHTML=h;document.querySelectorAll('[data-rem]').forEach(b=>b.onclick=()=>{parties[selectedParty]=parties[selectedParty].filter(x=>x!==b.dataset.rem);renderFormation()});document.querySelector('#formationRoster').innerHTML=formationRosterData.map(c=>{let u=usedPartyOf(c.id);return `<button class="rosterCard ${u>=0?'used':''}" data-add="${c.id}"><span class="rIco">${c.icon}</span><b>${c.name}</b><small>${c.attr}${u>=0?'｜部隊'+(u+1):'｜未編成'}</small></button>`}).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>toggleChar(b.dataset.add))}
 function toggleChar(id){let old=usedPartyOf(id);if(old===selectedParty){parties[selectedParty]=parties[selectedParty].filter(x=>x!==id);renderFormation();return}if(old>=0){openInfo('編成済み','このキャラは部隊'+(old+1)+'にいます。先に外してください。','⚠️');return}let c=formationRosterData.find(x=>x.id===id);if(partyCost(parties[selectedParty])+c.cost>10){openInfo('編成できません','1部隊は最大10マスです。','⚠️');return}parties[selectedParty].push(id);renderFormation()}
-document.querySelector('#formationBack').onclick=()=>showScreen('home');document.querySelector('#formationHome').onclick=()=>showScreen('home');document.querySelector('#saveFormation').onclick=()=>{saveParties();showScreen('home')};document.querySelector('#clearParty').onclick=()=>{parties[selectedParty]=[];renderFormation()};\nconst allies=[
+document.querySelector('#formationBack').onclick=()=>showScreen('home');document.querySelector('#formationHome').onclick=()=>showScreen('home');document.querySelector('#saveFormation').onclick=()=>{saveParties();showScreen('home')};document.querySelector('#clearParty').onclick=()=>{parties[selectedParty]=[];renderFormation()};
+const allies=[
 {name:'水月 鏡日',icon:'🌙',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《明鏡止水》',ct:2}},
 {name:'牛娘',icon:'🐮',hp:145,atk:18,row:'front',cid:201,spd:55,skill:{name:'大地の一撃（仮）',ct:5}},
 {name:'白盾姫',icon:'♜',hp:132,atk:16,row:'front',cid:301,spd:90,skill:{name:'盾撃（仮）',ct:3}},
