@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ v0.14.0 戦闘UI圧縮</title>
+<title>セカソコ v0.14.1 戦闘情報整理</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -54,6 +54,18 @@
 .statusChip b{font-size:9px!important}
 .statusSep{opacity:.45}
 .statusSpacer{height:13px}
+
+/* v0.14.1 adopted battle summary + status visibility */
+.battleSummary{height:42px!important;padding:0 12px!important;display:flex!important;align-items:center!important}
+.battleSummaryLine{width:100%;display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:10px;font-weight:800;white-space:nowrap}
+#worldFloor{font-size:12px;font-weight:900}
+#topDamage,#topReward{font-size:9px}
+.damageMeterHidden{display:none!important}
+#battleScreen .panel{padding-top:4px!important}
+#battleScreen .status{height:19px!important;line-height:19px!important}
+.statusRow{overflow:visible!important}
+.statusChip{font-size:8px!important;letter-spacing:-.25px!important;padding:0 2px!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}
+.unitBottom{left:5px!important;right:5px!important}
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -68,11 +80,11 @@
 
 <section class="screen" id="formationScreen"><div class="formationTop"><button class="miniBtn" id="formationBack">← 拠点</button><h2>部隊編成<small>最大12部隊 ／ 1部隊最大6マス</small></h2><button class="miniBtn" id="clearParty">この部隊を空に</button><button class="miniBtn" id="clearAllParties">全12部隊を空に</button></div><div class="formationBody"><div class="partyTabs" id="partyTabs"></div><div class="partyArea"><div class="partyMeta"><b id="partyName">部隊1</b><span id="partyCount">0 / 6マス</span></div><div class="partyGrid" id="partyGrid"></div></div><div class="partyNote">1〜3＝前衛 ／ 4〜6＝後衛。編成したマス位置をそのまま戦闘画面へ反映。タップで追加／解除。</div><div class="roster" id="formationRoster"></div></div><div class="formationBottom"><button id="formationHome">キャンセル</button><button class="saveFormation" id="saveFormation">編成を保存</button></div></section>
 <section class="screen" id="battleScreen">
-<div class="top"><div class="floor">世界深度 1 ／ 1F</div><div class="turn" id="turn">戦闘準備</div></div>
+<div class="top battleSummary"><div class="battleSummaryLine"><span id="worldFloor">世界深度 1 / 1F</span><span id="turn">部隊1</span><span id="topDamage">損壊 0.0%</span><span id="topReward">報酬×3.00</span></div></div>
 <section class="battle"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle"><div class="vs">VS</div><div>→</div></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section>
 <div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。</div></div></div>
-<div class="skillPanel" id="skillPanel"><div class="skillTitle">水月 鏡日｜技を選択</div><button class="skillBtn" id="mizukiSkill">固有技《明鏡止水》<small>前列ランダム1体／ATK依存2Hit／必中／🪞+1　CT2（検証値）</small></button></div><section class="panel"><div class="order" id="order"></div><div class="status" id="status">SPDから初期行動順を自動計算</div><div class="damageMeter"><div><strong id="damageRate">損壊 0.0%</strong><small>12部隊・累計HP損耗</small></div><div class="damageReward" id="damageReward">報酬 ×3.00（仮）</div></div><div class="planBox"><div class="planTitle">ACTION｜行動予測</div><div class="orderBar" id="orderBar"></div><div class="orderHelp">SPD＋使用スキルCTで自動更新。同着時は固定IDで決定します。</div></div><div class="controls"><button class="btn autoBtn" id="autoToggle">AUTO OFF</button><span class="floorBadge" id="floorBadge">1F / 10F</span><button class="btn" id="homeBack">撤退して拠点へ</button></div></section>
+<div class="skillPanel" id="skillPanel"><div class="skillTitle">水月 鏡日｜技を選択</div><button class="skillBtn" id="mizukiSkill">固有技《明鏡止水》<small>前列ランダム1体／ATK依存2Hit／必中／🪞+1　CT2（検証値）</small></button></div><section class="panel"><div class="order" id="order" hidden></div><div class="status" id="status">SPDから初期行動順を自動計算</div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div><div class="planBox"><div class="planTitle">ACTION｜行動予測</div><div class="orderBar" id="orderBar"></div><div class="orderHelp">SPD＋使用スキルCTで自動更新。同着時は固定IDで決定します。</div></div><div class="controls"><button class="btn autoBtn" id="autoToggle">AUTO OFF</button><span class="floorBadge" id="floorBadge">1F / 10F</span><button class="btn" id="homeBack">撤退して拠点へ</button></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">素材を持って拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
@@ -147,7 +159,11 @@ function damageRate(){if(!runStartMaxHP)return 0;return Math.max(0,Math.min(100,
 // 検証用の仮倍率。正式な倍率テーブルは報酬経済設計後に調整する。
 function damageRewardMultiplier(rate=damageRate()){if(rate<5)return 3.00;if(rate<10)return 2.50;if(rate<20)return 2.00;if(rate<35)return 1.50;if(rate<50)return 1.00;if(rate<75)return .75;return .50}
 function updateDamageUI(){let r=damageRate(),m=damageRewardMultiplier(r),el=document.querySelector('#damageRate'),rw=document.querySelector('#damageReward');if(el)el.textContent='損壊 '+r.toFixed(1)+'%';if(rw)rw.textContent='報酬 ×'+m.toFixed(2)+'（仮）'}
-function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent='AUTO '+(autoMode?'ON':'OFF');a.classList.toggle('on',autoMode)}updateDamageUI()}
+function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent='AUTO '+(autoMode?'ON':'OFF');a.classList.toggle('on',autoMode)}updateDamageUI()
+ const wf=document.querySelector('#worldFloor');if(wf)wf.textContent=`世界深度 ${worldDepth} / ${floor}F`;
+ const td=document.querySelector('#topDamage');if(td)td.textContent=`損壊 ${damageRate().toFixed(1)}%`;
+ const tr=document.querySelector('#topReward');if(tr)tr.textContent=`報酬×${rewardMultiplier(damageRate()).toFixed(2)}`;
+}
 function takeFloorSnapshot(){syncActiveParty();floorSnapshot={floor,activePartyIndex,runPartyStates:clone(runPartyStates),enemies:clone(E),turnNo,runLoot,runStartMaxHP}}
 function restoreFloorSnapshot(){if(!floorSnapshot)return;floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;runStartMaxHP=floorSnapshot.runStartMaxHP;currentActor=null;resolvePlayerAction=null;document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
 function prepareSortie(){saveParties();sortieQueue=parties.map((p,i)=>({slot:i,ids:[...p]})).filter(x=>x.ids.some(Boolean));if(!sortieQueue.length)sortieQueue=[{slot:0,ids:['mizuki']}];runPartyStates=sortieQueue.map((x,i)=>makePartyUnits(x.ids,i));runStartMaxHP=runPartyStates.flat().reduce((sum,u)=>sum+u.max,0);floor=1;runLoot=0;turnNo=0;setActiveParty(0);E=makeEnemies(floor);running=false;document.querySelector('#overlay').classList.remove('show');document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#status').textContent='1F｜部隊'+(sortieQueue[0].slot+1)+' 出撃準備';takeFloorSnapshot();updateFloorUI();renderBattle()}
@@ -168,7 +184,7 @@ function renderOrder(){
 }
 function renderBattle(){
  document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');
- document.querySelector('#turn').textContent=running?`${floor}F｜部隊${(sortieQueue[activePartyIndex]?.slot??activePartyIndex)+1}｜ACTION ${turnNo}`:'戦闘準備';updateFloorUI();
+ document.querySelector('#turn').textContent=running?`部隊${(sortieQueue[activePartyIndex]?.slot??activePartyIndex)+1}`:'部隊-';updateFloorUI();
  const now=allUnits().filter(x=>x.hp>0).sort(compareTurn).slice(0,5);
  document.querySelector('#order').innerHTML=now.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.side==='A'?'味':'敵'} ${u.name}</span>`).join('');renderOrder();const mz=A?.find(x=>x.cid===101);const mzEl=mz&&document.getElementById(mz.id);if(mzEl)mzEl.onclick=openMizukiSkill;
 }
