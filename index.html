@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ v0.14.1 戦闘情報整理</title>
+<title>セカソコ v0.14.2 戦闘開始フリーズ修正</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -162,7 +162,7 @@ function updateDamageUI(){let r=damageRate(),m=damageRewardMultiplier(r),el=docu
 function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent='AUTO '+(autoMode?'ON':'OFF');a.classList.toggle('on',autoMode)}updateDamageUI()
  const wf=document.querySelector('#worldFloor');if(wf)wf.textContent=`世界深度 ${worldDepth} / ${floor}F`;
  const td=document.querySelector('#topDamage');if(td)td.textContent=`損壊 ${damageRate().toFixed(1)}%`;
- const tr=document.querySelector('#topReward');if(tr)tr.textContent=`報酬×${rewardMultiplier(damageRate()).toFixed(2)}`;
+ const tr=document.querySelector('#topReward');if(tr)tr.textContent=`報酬×${damageRewardMultiplier(damageRate()).toFixed(2)}`;
 }
 function takeFloorSnapshot(){syncActiveParty();floorSnapshot={floor,activePartyIndex,runPartyStates:clone(runPartyStates),enemies:clone(E),turnNo,runLoot,runStartMaxHP}}
 function restoreFloorSnapshot(){if(!floorSnapshot)return;floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;runStartMaxHP=floorSnapshot.runStartMaxHP;currentActor=null;resolvePlayerAction=null;document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
