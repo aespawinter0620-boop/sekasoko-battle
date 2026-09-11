@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ v0.14.2 戦闘開始フリーズ修正</title>
+<title>セカソコ v0.14.3 次の階層へ表示修正</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -66,6 +66,26 @@
 .statusRow{overflow:visible!important}
 .statusChip{font-size:8px!important;letter-spacing:-.25px!important;padding:0 2px!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}
 .unitBottom{left:5px!important;right:5px!important}
+
+/* v0.14.3 home sortie CTA visibility fix */
+#home #descend{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  visibility:visible!important;
+  opacity:1!important;
+  color:#f4f1f7!important;
+  -webkit-text-fill-color:#f4f1f7!important;
+  font-size:15px!important;
+  font-weight:900!important;
+  letter-spacing:.02em!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.65)!important;
+}
+#home #descend:disabled{
+  opacity:.45!important;
+  color:#d8d4dc!important;
+  -webkit-text-fill-color:#d8d4dc!important;
+}
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
