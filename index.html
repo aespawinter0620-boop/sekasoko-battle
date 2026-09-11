@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ v0.12.3 敵味方共通前衛ルール</title>
+<title>セカソコ v0.12.4 戦闘開始フリーズ修正</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -152,6 +152,7 @@ function handleFrontlineDeath(u){
  if(slot>=0&&slot<5)return pullForwardForSlot(u.side,slot);
  return null;
 }
+function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
 function tryEvade(t){if(t.cid!==101||!t.mirror)return false;const rate=Math.min(80,t.mirror*5);if(Math.random()*100<rate){t.mirror--;document.querySelector('#status').textContent=`${t.name} が回避！ MISS　🪞${t.mirror}`;return true}return false}
 async function mizukiAttack(att,defenders){
  if(att.hp<=0)return;let t=target(defenders,true);if(!t)return;
