@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ v0.8.1 12部隊編成 修正版</title>
+<title>セカソコ v0.9 12部隊編成 修正版</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -14,6 +14,8 @@
 .skillPanel{position:absolute;left:10px;right:10px;bottom:12px;z-index:12;background:#0d1019f2;border:1px solid #ffffff30;border-radius:14px;padding:10px;display:none;box-shadow:0 14px 40px #000}.skillPanel.show{display:block}.skillTitle{font-size:11px;color:#aeb5c8;margin-bottom:7px}.skillBtn{width:100%;text-align:left;border:1px solid #ffffff30;background:#1b2130;border-radius:10px;padding:10px 12px;font-weight:900}.skillBtn small{display:block;color:#aeb5c8;font-size:9px;margin-top:3px}.mirrorBadge{font-size:9px;color:#d8e7ff;margin-top:3px}
 /* FORMATION */
 #formationScreen{background:#080a10}.formationTop{height:58px;padding:9px 10px;display:flex;gap:8px;align-items:center;background:#0b0e16;border-bottom:1px solid #ffffff1c}.formationTop h2{margin:0;flex:1;font-size:16px}.formationTop small{display:block;color:#9fa4b5;font-size:9px}.miniBtn{border:1px solid #ffffff2b;background:#171b28;border-radius:9px;padding:8px;font-size:10px}.formationBody{flex:1;min-height:0;display:flex;flex-direction:column}.partyTabs{display:flex;gap:6px;overflow-x:auto;padding:8px}.partyTab{min-width:62px;border:1px solid #ffffff20;background:#131722;border-radius:9px;padding:7px 4px;font-size:9px;font-weight:900}.partyTab.active{background:#eee;color:#111}.partyArea{padding:7px 10px;border-block:1px solid #ffffff16}.partyMeta{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px}.partyGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.partySlot{height:55px;border:1px dashed #ffffff25;background:#0d1018;border-radius:8px;color:#697083;font-size:8px;display:flex;align-items:center;justify-content:center;text-align:center}.partySlot.filled{border-style:solid;background:#171c29;color:#fff}.partySlot .ico{font-size:20px;display:block}.partySlot .nm{display:block;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.partyNote{padding:7px 10px;font-size:9px;color:#8f97aa}.roster{flex:1;min-height:0;overflow:auto;padding:4px 10px 80px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;align-content:start}.rosterCard{border:1px solid #ffffff22;background:#121621;border-radius:9px;padding:7px 4px;text-align:center;font-size:9px}.rosterCard.used{opacity:.4}.rosterCard .rIco{font-size:25px}.rosterCard b,.rosterCard small{display:block}.rosterCard small{color:#8f97aa}.formationBottom{position:absolute;bottom:0;left:0;right:0;padding:9px 10px max(9px,env(safe-area-inset-bottom));display:flex;gap:8px;background:#090b13ee}.formationBottom button{flex:1;border:1px solid #ffffff2b;border-radius:10px;padding:11px;background:#171b28;font-weight:900}.formationBottom .saveFormation{background:#eee;color:#111}
+
+.autoBtn.on{background:#eee;color:#111}.floorBadge{font-weight:1000;color:#f1e8c7}.resultActions{display:flex;flex-direction:column;gap:8px;margin-top:12px}.resultActions button{width:100%;border:1px solid #ffffff30;background:#171b28;border-radius:10px;padding:11px;font-weight:900}.resultActions .primary{background:#eee;color:#111}
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -26,14 +28,14 @@
   </div><div class="attrNav" id="attrNav"></div>
 </section>
 
-<section class="screen" id="formationScreen"><div class="formationTop"><button class="miniBtn" id="formationBack">← 拠点</button><h2>部隊編成<small>最大12部隊 ／ 1部隊最大10マス</small></h2><button class="miniBtn" id="clearParty">空にする</button></div><div class="formationBody"><div class="partyTabs" id="partyTabs"></div><div class="partyArea"><div class="partyMeta"><b id="partyName">部隊1</b><span id="partyCount">0 / 10マス</span></div><div class="partyGrid" id="partyGrid"></div></div><div class="partyNote">タップで追加／解除。未編成キャラがいても出撃可能。部隊1→2→…の順で投入。</div><div class="roster" id="formationRoster"></div></div><div class="formationBottom"><button id="formationHome">キャンセル</button><button class="saveFormation" id="saveFormation">編成を保存</button></div></section>
+<section class="screen" id="formationScreen"><div class="formationTop"><button class="miniBtn" id="formationBack">← 拠点</button><h2>部隊編成<small>最大12部隊 ／ 1部隊最大10マス</small></h2><button class="miniBtn" id="clearParty">この部隊を空に</button><button class="miniBtn" id="clearAllParties">全12部隊を空に</button></div><div class="formationBody"><div class="partyTabs" id="partyTabs"></div><div class="partyArea"><div class="partyMeta"><b id="partyName">部隊1</b><span id="partyCount">0 / 10マス</span></div><div class="partyGrid" id="partyGrid"></div></div><div class="partyNote">タップで追加／解除。未編成キャラがいても出撃可能。部隊1→2→…の順で投入。</div><div class="roster" id="formationRoster"></div></div><div class="formationBottom"><button id="formationHome">キャンセル</button><button class="saveFormation" id="saveFormation">編成を保存</button></div></section>
 <section class="screen" id="battleScreen">
 <div class="top"><div class="floor">世界深度 1 ／ 1F</div><div class="turn" id="turn">戦闘準備</div></div>
 <section class="battle"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle"><div class="vs">VS</div><div>→</div></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section>
 <div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。</div></div></div>
-<div class="skillPanel" id="skillPanel"><div class="skillTitle">水月 鏡日｜技を選択</div><button class="skillBtn" id="mizukiSkill">固有技《明鏡止水》<small>前列ランダム1体／ATK依存2Hit／必中／🪞+1　CT2（検証値）</small></button></div><section class="panel"><div class="order" id="order"></div><div class="status" id="status">SPDから初期行動順を自動計算</div><div class="planBox"><div class="planTitle">ACTION ORDER｜行動予測</div><div class="orderBar" id="orderBar"></div><div class="orderHelp">SPD＋使用スキルCTで自動更新。同着時は固定IDで決定します。</div></div><div class="controls"><button class="btn" id="homeBack">拠点へ戻る</button></div></section>
-<div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><button id="again">拠点へ戻る</button></div></div>
+<div class="skillPanel" id="skillPanel"><div class="skillTitle">水月 鏡日｜技を選択</div><button class="skillBtn" id="mizukiSkill">固有技《明鏡止水》<small>前列ランダム1体／ATK依存2Hit／必中／🪞+1　CT2（検証値）</small></button></div><section class="panel"><div class="order" id="order"></div><div class="status" id="status">SPDから初期行動順を自動計算</div><div class="planBox"><div class="planTitle">ACTION ORDER｜行動予測</div><div class="orderBar" id="orderBar"></div><div class="orderHelp">SPD＋使用スキルCTで自動更新。同着時は固定IDで決定します。</div></div><div class="controls"><button class="btn autoBtn" id="autoToggle">AUTO OFF</button><span class="floorBadge" id="floorBadge">1F / 10F</span><button class="btn" id="homeBack">撤退して拠点へ</button></div></section>
+<div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">素材を持って拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
 </main>
@@ -65,7 +67,7 @@ let selectedParty=0;let parties=(()=>{try{let x=JSON.parse(localStorage.getItem(
 const partyCost=p=>p.reduce((n,id)=>n+(formationRosterData.find(c=>c.id===id)?.cost||1),0);const usedPartyOf=id=>parties.findIndex(p=>p.includes(id));const saveParties=()=>localStorage.setItem('sekasokoParties',JSON.stringify(parties));
 function renderFormation(){document.querySelector('#partyTabs').innerHTML=parties.map((p,i)=>`<button class="partyTab ${i===selectedParty?'active':''}" data-p="${i}">部隊${i+1}<small>${p.length?partyCost(p)+'マス':'空'}</small></button>`).join('');document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{selectedParty=+b.dataset.p;renderFormation()});let p=parties[selectedParty];document.querySelector('#partyName').textContent='部隊'+(selectedParty+1);document.querySelector('#partyCount').textContent=partyCost(p)+' / 10マス';let h='';for(let i=0;i<10;i++){let c=formationRosterData.find(x=>x.id===p[i]);h+=c?`<button class="partySlot filled" data-rem="${c.id}"><span><span class="ico">${c.icon}</span><span class="nm">${c.name}</span></span></button>`:`<div class="partySlot">${i+1}</div>`}document.querySelector('#partyGrid').innerHTML=h;document.querySelectorAll('[data-rem]').forEach(b=>b.onclick=()=>{parties[selectedParty]=parties[selectedParty].filter(x=>x!==b.dataset.rem);renderFormation()});document.querySelector('#formationRoster').innerHTML=formationRosterData.map(c=>{let u=usedPartyOf(c.id);return `<button class="rosterCard ${u>=0?'used':''}" data-add="${c.id}"><span class="rIco">${c.icon}</span><b>${c.name}</b><small>${c.attr}${u>=0?'｜部隊'+(u+1):'｜未編成'}</small></button>`}).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>toggleChar(b.dataset.add))}
 function toggleChar(id){let old=usedPartyOf(id);if(old===selectedParty){parties[selectedParty]=parties[selectedParty].filter(x=>x!==id);renderFormation();return}if(old>=0){openInfo('編成済み','このキャラは部隊'+(old+1)+'にいます。先に外してください。','⚠️');return}let c=formationRosterData.find(x=>x.id===id);if(partyCost(parties[selectedParty])+c.cost>10){openInfo('編成できません','1部隊は最大10マスです。','⚠️');return}parties[selectedParty].push(id);renderFormation()}
-document.querySelector('#formationBack').onclick=()=>showScreen('home');document.querySelector('#formationHome').onclick=()=>showScreen('home');document.querySelector('#saveFormation').onclick=()=>{saveParties();showScreen('home')};document.querySelector('#clearParty').onclick=()=>{parties[selectedParty]=[];renderFormation()};
+document.querySelector('#formationBack').onclick=()=>showScreen('home');document.querySelector('#formationHome').onclick=()=>showScreen('home');document.querySelector('#saveFormation').onclick=()=>{saveParties();showScreen('home')};document.querySelector('#clearParty').onclick=()=>{parties[selectedParty]=[];renderFormation()};document.querySelector('#clearAllParties').onclick=()=>{if(confirm('すべての編成を解除しますか？')){parties=Array.from({length:12},()=>[]);saveParties();renderFormation()}};
 const allies=[
 {name:'水月 鏡日',icon:'🌙',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《明鏡止水》',ct:2}},
 {name:'牛娘',icon:'🐮',hp:145,atk:18,row:'front',cid:201,spd:55,skill:{name:'大地の一撃（仮）',ct:5}},
@@ -73,22 +75,33 @@ const allies=[
 {name:'人形王女',icon:'✦',hp:78,atk:20,row:'back',cid:302,spd:70,skill:{name:'操糸（仮）',ct:2}},
 {name:'凛',icon:'◆',hp:88,atk:24,row:'back',cid:303,spd:70,skill:{name:'一閃（仮）',ct:4}}
 ];
-const enemies=[
+const enemyBase=[
 {name:'深層スライム',icon:'●',sprite:'assets/slime.png',hp:70,atk:17,row:'front',cid:1001,spd:100,skill:{name:'体当たり',ct:2}},
 {name:'骸の少女',icon:'☠',hp:95,atk:22,row:'front',cid:1002,spd:70,skill:{name:'骨砕き',ct:3}},
 {name:'影喰い',icon:'◉',hp:76,atk:26,row:'back',cid:1003,spd:90,skill:{name:'影撃ち',ct:5}},
 {name:'黒兎',icon:'♠',hp:66,atk:24,row:'back',cid:1004,spd:55,skill:{name:'黒爪',ct:2}}
 ];
-let A,E,running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,sortieQueue=[],activePartyIndex=0;
+let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,sortieQueue=[],activePartyIndex=0;
+let floor=1,maxFloor=10,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0;
 const sleep=m=>new Promise(r=>setTimeout(r,m/debugSpeed));
 const baseWait=u=>Math.max(20,Math.round(1000/Math.sqrt(u.spd)));
 const actionCost=u=>baseWait(u)+(u.skill?.ct||0)*10;
 function allUnits(){return [...A,...E]}
 function compareTurn(a,b){return (a.next-b.next)||(b.spd-a.spd)||(a.cid-b.cid)}
-function makePartyUnits(ids){return ids.map((id,i)=>{let x=formationRosterData.find(c=>c.id===id);return x?({...x,max:x.hp,id:'a'+i,side:'A',next:baseWait(x)}):null}).filter(Boolean)}
-function prepareSortie(){saveParties();sortieQueue=parties.filter(p=>p.length).map(p=>[...p]);if(!sortieQueue.length)sortieQueue=[['mizuki']];activePartyIndex=0;A=makePartyUnits(sortieQueue[0]);E=enemies.map((x,i)=>({...x,max:x.hp,id:'e'+i,side:'E',next:baseWait(x)}));running=false;turnNo=0;document.querySelector('#overlay').classList.remove('show');document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#status').textContent='部隊1 出撃準備';renderBattle()}
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function makePartyUnits(ids){return ids.map((id,i)=>{let x=formationRosterData.find(c=>c.id===id);return x?({...clone(x),max:x.hp,id:'a'+i,side:'A',next:baseWait(x)}):null}).filter(Boolean)}
+function makeEnemies(f){let mult=1+(f-1)*0.10;return enemyBase.map((x,i)=>({...clone(x),hp:Math.round(x.hp*mult),max:Math.round(x.hp*mult),atk:Math.round(x.atk*(1+(f-1)*0.055)),id:'e'+i,side:'E',next:baseWait(x)}))}
+function syncActiveParty(){if(runPartyStates[activePartyIndex])runPartyStates[activePartyIndex]=clone(A)}
+function resetTimelineForFloor(){let units=[...runPartyStates.flat().filter(u=>u.hp>0)];units.forEach(u=>u.next=baseWait(u));}
+function firstLivingParty(){return runPartyStates.findIndex(p=>p.some(u=>u.hp>0))}
+function setActiveParty(i){activePartyIndex=i;A=runPartyStates[i]||[]}
+function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent='AUTO '+(autoMode?'ON':'OFF');a.classList.toggle('on',autoMode)}}
+function takeFloorSnapshot(){syncActiveParty();floorSnapshot={floor,activePartyIndex,runPartyStates:clone(runPartyStates),enemies:clone(E),turnNo,runLoot}}
+function restoreFloorSnapshot(){if(!floorSnapshot)return;floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;currentActor=null;resolvePlayerAction=null;document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
+function prepareSortie(){saveParties();sortieQueue=parties.map((p,i)=>({slot:i,ids:[...p]})).filter(x=>x.ids.length);if(!sortieQueue.length)sortieQueue=[{slot:0,ids:['mizuki']}];runPartyStates=sortieQueue.map(x=>makePartyUnits(x.ids));floor=1;runLoot=0;turnNo=0;setActiveParty(0);E=makeEnemies(floor);running=false;document.querySelector('#overlay').classList.remove('show');document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#status').textContent='1F｜部隊'+(sortieQueue[0].slot+1)+' 出撃準備';takeFloorSnapshot();updateFloorUI();renderBattle()}
 function initBattle(){prepareSortie()}
-function deployNextParty(){activePartyIndex++;if(activePartyIndex>=sortieQueue.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;A=makePartyUnits(sortieQueue[activePartyIndex]);A.forEach(u=>u.next=now+baseWait(u));document.querySelector('#status').textContent='部隊'+(activePartyIndex+1)+' 投入！';renderBattle();return true}
+function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
+function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=makeEnemies(floor);runLoot+=10*floor;takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
 function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<5;i++){let u=units.filter(x=>x.row===row)[i];html+=`<div class="slot ${row}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
 function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="">`:u.icon}</div><div class="name">${u.name}</div><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div>${u.cid===101?`<div class="mirrorBadge">🪞${u.mirror||0} / 回避${Math.min(80,(u.mirror||0)*5)}%</div>`:''}</div>`}
 function forecast(n=10){
@@ -103,7 +116,7 @@ function renderOrder(){
 }
 function renderBattle(){
  document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');
- document.querySelector('#turn').textContent=running?`部隊${activePartyIndex+1}｜ACTION ${turnNo}`:'戦闘準備';
+ document.querySelector('#turn').textContent=running?`${floor}F｜部隊${(sortieQueue[activePartyIndex]?.slot??activePartyIndex)+1}｜ACTION ${turnNo}`:'戦闘準備';updateFloorUI();
  const now=allUnits().filter(x=>x.hp>0).sort(compareTurn).slice(0,5);
  document.querySelector('#order').innerHTML=now.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.side==='A'?'味':'敵'} ${u.name}</span>`).join('');renderOrder();const mz=A?.find(x=>x.cid===101);const mzEl=mz&&document.getElementById(mz.id);if(mzEl)mzEl.onclick=openMizukiSkill;
 }
@@ -119,7 +132,7 @@ async function mizukiAttack(att,defenders){
  att.mirror=Math.min(16,(att.mirror||0)+1);document.querySelector('#status').textContent=`《明鏡止水》2Hit必中！ 🪞${att.mirror}`;
  if(t.hp<=0){let targetEl=document.getElementById(t.id);if(targetEl){targetEl.classList.add('dying');await sleep(300)}}await sleep(100)
 }
-function waitForMizukiSkill(u){currentActor=u;document.querySelector('#skillPanel').classList.add('show');document.querySelector('#status').textContent='水月 鏡日のターン：水月をタップして技を選択';renderBattle();return new Promise(r=>resolvePlayerAction=r)}
+function waitForMizukiSkill(u){if(autoMode)return Promise.resolve();currentActor=u;document.querySelector('#skillPanel').classList.add('show');document.querySelector('#status').textContent='水月 鏡日のターン：技を選択';renderBattle();return new Promise(r=>resolvePlayerAction=r)}
 function openMizukiSkill(){if(!running||!currentActor||currentActor.cid!==101)return;document.querySelector('#skillPanel').classList.add('show')}
 
 async function attack(att,defenders){
@@ -128,15 +141,22 @@ async function attack(att,defenders){
  let attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');await sleep(180);let targetEl=document.getElementById(t.id);document.querySelector('#flash').classList.add('on');if(targetEl)targetEl.classList.add('hit');if(t.side==='A'&&!debugInvincible&&tryEvade(t)){damagePop(targetEl,'MISS');await sleep(220);return}const dmg=(t.side==='A'&&debugInvincible)?0:att.atk;if(dmg>0)t.hp-=dmg;damagePop(targetEl,dmg);await sleep(170);document.querySelector('#flash').classList.remove('on');if(t.hp<=0&&targetEl){targetEl.classList.remove('hit');targetEl.classList.add('dying');document.querySelector('#status').textContent=`${t.name} を倒した！`;await sleep(420)}await sleep(120)
 }
 async function battle(){
- if(running)return;running=true;document.querySelector('#status').textContent='SPD＋CTタイムラインで出撃';renderBattle();
- while(living(E).length&&turnNo<240){
-   if(!living(A).length){document.querySelector('#status').textContent=`部隊${activePartyIndex+1} 壊滅`;await sleep(500);if(!deployNextParty())break;await sleep(500)}
-   const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn);const u=candidates[0];if(!u)break;
-   turnNo++;if(u.side==='A'&&u.cid===101){await waitForMizukiSkill(u);await mizukiAttack(u,E);currentActor=null;resolvePlayerAction=null}else{await attack(u,u.side==='A'?E:A)}u.next+=actionCost(u);renderBattle();
+ if(running)return;running=true;document.querySelector('#status').textContent=floor+'F｜SPD＋CTタイムライン';updateFloorUI();renderBattle();
+ while(running){
+   while(living(E).length&&turnNo<600){
+     if(!living(A).length){syncActiveParty();document.querySelector('#status').textContent='部隊'+(sortieQueue[activePartyIndex].slot+1)+' 壊滅';await sleep(450);if(!deployNextParty())break;await sleep(350)}
+     const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
+     turnNo++;
+     if(u.side==='A'&&u.cid===101){await waitForMizukiSkill(u);if(!running)return;await mizukiAttack(u,E);currentActor=null;resolvePlayerAction=null}else{await attack(u,u.side==='A'?E:A)}
+     u.next+=actionCost(u);syncActiveParty();renderBattle();
+   }
+   if(!living(E).length){runLoot+=10*floor;if(floor>=maxFloor){running=false;showRunResult(true);return}document.querySelector('#status').textContent=floor+'F CLEAR！';await sleep(650);if(!nextFloor()){running=false;showRunResult(false);return}continue}
+   running=false;showRunResult(false);return
  }
- running=false;let win=living(E).length===0;document.querySelector('#resultText').textContent=win?'WIN':'LOSE';document.querySelector('#status').textContent=win?'深層への道が開いた':'全出撃部隊が壊滅';document.querySelector('#overlay').classList.add('show')
 }
-document.querySelector('#mizukiSkill').onclick=()=>{if(resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};document.querySelector('#homeBack').onclick=()=>{if(!running)showScreen('home')};document.querySelector('#again').onclick=()=>{document.querySelector('#overlay').classList.remove('show');showScreen('home')};
+function showRunResult(win){document.querySelector('#resultText').textContent=win?'10F 踏破！':'GAME OVER';document.querySelector('#resultDetail').textContent=win?'検証ダンジョン踏破｜獲得素材 '+runLoot:floor+'Fで全出撃部隊が壊滅｜獲得素材 '+runLoot;document.querySelector('#continueFloor').style.display=win?'none':'block';document.querySelector('#again').textContent=win?'素材を持って拠点へ戻る':'素材を持って拠点へ戻る';document.querySelector('#overlay').classList.add('show')}
+function retreatHome(){running=false;if(resolvePlayerAction){let r=resolvePlayerAction;resolvePlayerAction=null;r()}document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');openInfo('攻略終了','獲得素材 '+runLoot+' を持ち帰りました。次回の世界深度攻略は1Fから開始します。','🎒');showScreen('home')}
+document.querySelector('#mizukiSkill').onclick=()=>{if(resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};document.querySelector('#autoToggle').onclick=()=>{autoMode=!autoMode;if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、素材を持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
 const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpen').onclick=()=>dp.classList.add('show');document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
 function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;renderBattle()}
 document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');document.querySelector('#resultText').textContent='WIN';document.querySelector('#overlay').classList.add('show')};document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
