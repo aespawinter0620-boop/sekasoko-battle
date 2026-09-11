@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ v0.14.3 次の階層へ表示修正</title>
+<title>セカソコ v0.14.4 出撃導線ランタイム修正</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -161,7 +161,7 @@ const enemyBase=[
 {name:'黒兎',icon:'♠',hp:66,atk:24,row:'back',cid:1004,spd:55,skill:{name:'黒爪',ct:2}}
 ];
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,sortieQueue=[],activePartyIndex=0;
-let floor=1,maxFloor=10,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runStartMaxHP=0;
+let floor=1,worldDepth=1,maxFloor=10,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runStartMaxHP=0;
 const sleep=m=>new Promise(r=>setTimeout(r,m/debugSpeed));
 const baseWait=u=>Math.max(20,Math.round(1000/Math.sqrt(u.spd)));
 const actionCost=u=>baseWait(u)+(u.skill?.ct||0)*10;
