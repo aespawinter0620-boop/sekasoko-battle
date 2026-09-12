@@ -718,6 +718,18 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .skillHoldTip.show{display:block}
 #battleScreen .skillBtn[aria-disabled="true"]{opacity:.38}
 
+
+/* v0.17.5 top command consolidation */
+#battleScreen .battleSummary{height:46px!important;min-height:46px!important;padding:0 7px!important}
+#battleScreen .battleSummaryLine{display:grid!important;grid-template-columns:minmax(116px,1.35fr) minmax(40px,.55fr) minmax(55px,.72fr) minmax(62px,.78fr) 52px 42px!important;gap:4px!important;align-items:center!important;width:100%!important}
+#battleScreen #worldFloor{font-size:10px!important;letter-spacing:-.35px!important;overflow:hidden;text-overflow:ellipsis}
+#battleScreen #turn,#battleScreen #topDamage,#battleScreen #topReward{font-size:8px!important;text-align:center!important;white-space:nowrap!important}
+#battleScreen .topBattleBtn{min-width:0!important;height:27px!important;padding:0 4px!important;border:1px solid rgba(255,255,255,.20)!important;border-radius:8px!important;background:#171b28!important;font-size:8px!important;line-height:25px!important;font-weight:900!important;white-space:nowrap!important}
+#battleScreen .topBattleBtn.autoBtn.on{background:#eee!important;color:#111!important}
+#battleScreen .topBattleBtn.retreatBtn{background:#141722!important}
+#battleScreen .controls:empty{display:none!important}
+#battleScreen .panel{padding-bottom:max(6px,env(safe-area-inset-bottom))!important}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -732,13 +744,13 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 <section class="screen" id="formationScreen"><div class="formationTop"><button class="miniBtn" id="formationBack">← 拠点</button><h2>部隊編成<small>最大12部隊 ／ 1部隊最大6マス</small></h2><button class="miniBtn" id="clearParty">この部隊を空に</button><button class="miniBtn" id="clearAllParties">全12部隊を空に</button></div><div class="formationBody"><div class="partyTabs" id="partyTabs"></div><div class="partyArea"><div class="partyMeta"><b id="partyName">部隊1</b><span id="partyCount">0 / 6マス</span></div><div class="partyGrid" id="partyGrid"></div></div><div class="partyNote">1〜3＝前衛 ／ 4〜6＝後衛。編成したマス位置をそのまま戦闘画面へ反映。タップで追加／解除。</div><div class="roster" id="formationRoster"></div></div><div class="formationBottom"><button id="formationHome">キャンセル</button><button class="saveFormation" id="saveFormation">編成を保存</button></div></section>
 <section class="screen" id="battleScreen">
-<div class="top battleSummary"><div class="battleSummaryLine"><span id="worldFloor">世界深度 1 / 1F</span><span id="turn">部隊1</span><span id="topDamage">損壊 0.0%</span><span id="topReward">報酬×3.00</span></div></div>
+<div class="top battleSummary"><div class="battleSummaryLine"><span id="worldFloor">世界深度 1 / 1F/10F</span><span id="turn">部隊1</span><span id="topDamage">損壊 0.0%</span><span id="topReward">報酬×3.00</span><button class="topBattleBtn autoBtn" id="autoToggle">AUTO OFF</button><button class="topBattleBtn retreatBtn" id="homeBack">撤退</button></div></div>
 <div class="planBox battlePlan"><div class="planTitle">ACTION｜行動予測</div><div class="orderBar" id="orderBar"></div></div>
 <div class="status battleLog" id="status">SPDから初期行動順を自動計算</div><div class="battleHpOverview" id="battleHpOverview"><div class="hpTeam allyHp" id="allyHpOverview"></div><div class="hpTeam enemyHp" id="enemyHpOverview"></div></div>
 <div class="battleViewport" id="battleViewport"><section class="battle" id="battleZoomLayer"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section></div>
 <div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。</div></div></div>
-<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">水月 鏡日｜技を選択</span><span class="actorStates" id="actorStates"></span></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">明鏡止水</span><small id="uniqueSkillDesc">2Hit必中／🪞+1　CT2</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ①</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ③</b><span>未設定</span><small>装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div><div class="controls"><button class="btn autoBtn" id="autoToggle">AUTO OFF</button><span class="floorBadge" id="floorBadge">1F / 10F</span><button class="btn" id="homeBack">撤退して拠点へ</button></div></section>
+<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">水月 鏡日｜技を選択</span><span class="actorStates" id="actorStates"></span></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">明鏡止水</span><small id="uniqueSkillDesc">2Hit必中／🪞+1　CT2</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ①</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ③</b><span>未設定</span><small>装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">素材を持って拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
@@ -818,7 +830,7 @@ function damageRate(){if(!runStartMaxHP)return 0;return Math.max(0,Math.min(100,
 function damageRewardMultiplier(rate=damageRate()){if(rate<5)return 3.00;if(rate<10)return 2.50;if(rate<20)return 2.00;if(rate<35)return 1.50;if(rate<50)return 1.00;if(rate<75)return .75;return .50}
 function updateDamageUI(){let r=damageRate(),m=damageRewardMultiplier(r),el=document.querySelector('#damageRate'),rw=document.querySelector('#damageReward');if(el)el.textContent='損壊 '+r.toFixed(1)+'%';if(rw)rw.textContent='報酬 ×'+m.toFixed(2)+'（仮）'}
 function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent='AUTO '+(autoMode?'ON':'OFF');a.classList.toggle('on',autoMode)}updateDamageUI()
- const wf=document.querySelector('#worldFloor');if(wf)wf.textContent=`世界深度 ${worldDepth} / ${floor}F`;
+ const wf=document.querySelector('#worldFloor');if(wf)wf.textContent=`世界深度 ${worldDepth} / ${floor}F/${maxFloor}F`;
  const td=document.querySelector('#topDamage');if(td)td.textContent=`損壊 ${damageRate().toFixed(1)}%`;
  const tr=document.querySelector('#topReward');if(tr)tr.textContent=`報酬×${damageRewardMultiplier(damageRate()).toFixed(2)}`;
 }
