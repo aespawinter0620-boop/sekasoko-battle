@@ -181,6 +181,10 @@
 .battleStateTag{padding:5px 8px;border-radius:999px;background:#ffffff0c;border:1px solid #ffffff1f;font-size:11px}
 .battleBackBtn{width:100%;border:1px solid #ffffff30;background:#eee;color:#111;border-radius:10px;padding:11px;font-weight:900}
 
+
+/* v0.15.4 Mizuki formal-art fit test */
+#battleScreen .unit[data-cid="101"] .sprite{height:calc(100% - 12px);overflow:visible}
+#battleScreen .unit[data-cid="101"] .sprite img{width:118%;height:118%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 6px 5px #000b)}
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -218,7 +222,7 @@ function closeModal(){document.querySelector('#modal').classList.remove('show')}
 document.querySelector('#book').onclick=()=>openInfo('図鑑','分厚い本を開いた。図鑑画面は次段階で実装。','📖');document.querySelector('#shop').onclick=()=>openInfo('欠片ショップ','記憶の欠片でアイテムを購入する場所。ショップ本体は次段階で実装。','🎁');document.querySelector('#descend').onclick=()=>{prepareSortie();showScreen('battleScreen');setTimeout(()=>battle(),80)};document.querySelector('#formation').onclick=()=>{renderFormation();showScreen('formationScreen')};document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
 
 const formationRosterData=[
-{id:'mizuki',name:'水月 鏡日',icon:'🌙',attr:'透波',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《明鏡止水》',ct:2},cost:1},
+{id:'mizuki',name:'水月 鏡日',icon:'🌙',sprite:'assets/mizuki_battle.png',actionSprite:'assets/mizuki_face.png',attr:'透波',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《明鏡止水》',ct:2},cost:1},
 {id:'cow',name:'牛娘',icon:'🐮',attr:'乳牛',hp:145,atk:18,row:'front',cid:201,spd:55,skill:{name:'大地の一撃（仮）',ct:5},cost:1},
 {id:'shield',name:'白盾姫',icon:'♜',attr:'盾姫',hp:132,atk:16,row:'front',cid:301,spd:90,skill:{name:'盾撃（仮）',ct:3},cost:1},
 {id:'doll',name:'人形王女',icon:'✦',attr:'屍霊',hp:78,atk:20,row:'back',cid:302,spd:70,skill:{name:'操糸（仮）',ct:2},cost:1},
@@ -245,7 +249,7 @@ function renderFormation(){document.querySelector('#partyTabs').innerHTML=partie
 function toggleChar(id){let old=usedPartyOf(id);if(old===selectedParty){let slot=parties[selectedParty].indexOf(id);if(slot>=0)parties[selectedParty][slot]=null;renderFormation();return}if(old>=0){openInfo('編成済み','このキャラは部隊'+(old+1)+'にいます。先に外してください。','⚠️');return}let c=formationRosterData.find(x=>x.id===id);if(partyCost(parties[selectedParty])+c.cost>6){openInfo('編成できません','1部隊は最大6マスです。','⚠️');return}let slot=parties[selectedParty].findIndex(x=>!x);if(slot<0){openInfo('編成できません','空きマスがありません。','⚠️');return}parties[selectedParty][slot]=id;renderFormation()}
 document.querySelector('#formationBack').onclick=()=>showScreen('home');document.querySelector('#formationHome').onclick=()=>showScreen('home');document.querySelector('#saveFormation').onclick=()=>{saveParties();showScreen('home')};document.querySelector('#clearParty').onclick=()=>{parties[selectedParty]=emptyParty();renderFormation()};document.querySelector('#clearAllParties').onclick=()=>{if(confirm('すべての編成を解除しますか？')){parties=Array.from({length:12},emptyParty);saveParties();renderFormation()}};
 const allies=[
-{name:'水月 鏡日',icon:'🌙',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《明鏡止水》',ct:2}},
+{name:'水月 鏡日',icon:'🌙',sprite:'assets/mizuki_battle.png',actionSprite:'assets/mizuki_face.png',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《明鏡止水》',ct:2}},
 {name:'牛娘',icon:'🐮',hp:145,atk:18,row:'front',cid:201,spd:55,skill:{name:'大地の一撃（仮）',ct:5}},
 {name:'白盾姫',icon:'♜',hp:132,atk:16,row:'front',cid:301,spd:90,skill:{name:'盾撃（仮）',ct:3}},
 {name:'人形王女',icon:'✦',hp:78,atk:20,row:'back',cid:302,spd:70,skill:{name:'操糸（仮）',ct:2}},
@@ -288,7 +292,7 @@ function initBattle(){prepareSortie()}
 function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
 function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=makeEnemies(floor);takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
 function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)||units.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)}html+=`<div class="slot ${row}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
-function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div></div></div>`}
+function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div></div></div>`}
 function forecast(n=10){
  const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,cid:u.cid,ct:u.skill?.ct||0,cost:actionCost(u)}));
  const out=[];
@@ -297,7 +301,7 @@ function forecast(n=10){
 }
 function renderOrder(){
  const list=forecast(10),bar=document.querySelector('#orderBar');
- bar.innerHTML=list.map(u=>{const src=allUnits().find(x=>x.id===u.id);const visual=src?.sprite?`<img src="${src.sprite}" alt="">`:`<span>${src?.icon||'?'}</span>`;return `<div class="orderChip actionFace ${u.side==='E'?'enemyOrder':''}" title="${u.name}" aria-label="${u.side==='A'?'味方':'敵'} ${u.name}">${visual}</div>`}).join('');
+ bar.innerHTML=list.map(u=>{const src=allUnits().find(x=>x.id===u.id);const visual=(src?.actionSprite||src?.sprite)?`<img src="${src.actionSprite||src.sprite}" alt="">`:`<span>${src?.icon||'?'}</span>`;return `<div class="orderChip actionFace ${u.side==='E'?'enemyOrder':''}" title="${u.name}" aria-label="${u.side==='A'?'味方':'敵'} ${u.name}">${visual}</div>`}).join('');
 }
 function unitStateTags(u){
  const tags=[];
