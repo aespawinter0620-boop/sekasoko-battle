@@ -518,6 +518,34 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleViewport.zoomed{cursor:grab}
 #battleViewport.zoomed:active{cursor:grabbing}
 
+
+/* v0.17.2 斜め2列フォーメーション試作
+   3段を階段状にずらし、立ち絵の表示面積を拡大。戦闘ロジック上の前衛/後衛は変更しない。 */
+#battleScreen .army{gap:0 !important;overflow:visible !important}
+#battleScreen .col{gap:0 !important;overflow:visible !important}
+#battleScreen .slot{overflow:visible !important;z-index:1}
+/* 味方：奥(上)→手前(下)へ敵側に寄る斜線 */
+#battleScreen .ally .col .slot:nth-child(1){transform:translate(-12px,-16px)}
+#battleScreen .ally .col .slot:nth-child(2){transform:translate(0,0)}
+#battleScreen .ally .col .slot:nth-child(3){transform:translate(12px,16px)}
+/* 敵側は鏡写し */
+#battleScreen .enemy .col .slot:nth-child(1){transform:translate(12px,-16px)}
+#battleScreen .enemy .col .slot:nth-child(2){transform:translate(0,0)}
+#battleScreen .enemy .col .slot:nth-child(3){transform:translate(-12px,16px)}
+/* 前衛列をさらに中央へ寄せ、2本の斜めラインを明確化 */
+#battleScreen .ally .col:nth-child(2){transform:translateX(8px)}
+#battleScreen .enemy .col:nth-child(1){transform:translateX(-8px)}
+/* 立ち絵を一段大きく。HPプレートは各スロットの水平基準を維持。 */
+#battleScreen .sprite{width:116% !important;height:calc(112% - 18px) !important;transform-origin:center bottom !important}
+#battleScreen .unitBottom{transform:translateY(0) !important}
+/* 実キャラは見た目スケールを少しだけ追加 */
+#battleScreen .unit[data-cid="101"] .sprite{transform:translateY(8px) scale(1.22) !important}
+#battleScreen .unit[data-cid="102"] .sprite{transform:translateY(27px) scale(1.48) !important}
+/* 重なった時は下段ほど手前に描画 */
+#battleScreen .slot:nth-child(1){z-index:1}
+#battleScreen .slot:nth-child(2){z-index:2}
+#battleScreen .slot:nth-child(3){z-index:3}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
