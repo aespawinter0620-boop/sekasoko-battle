@@ -671,6 +671,53 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* Preserve room for the battlefield when commands are open. */
 #battleScreen .skillPanel.show + .panel{margin-top:0!important}
 
+
+/* v0.17.4 large-art battlefield: true diagonal coordinates + top HP HUD */
+#battleScreen .battleHpOverview{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px 8px;background:#090d16e8;border-bottom:1px solid #ffffff18;position:relative;z-index:15}
+#battleScreen .hpTeam{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;min-width:0}
+#battleScreen .hpMini{height:25px;display:flex;align-items:center;gap:3px;padding:2px 3px;border:1px solid #ffffff18;border-radius:6px;background:#111722;min-width:0;overflow:hidden}
+#battleScreen .hpMini>img{width:19px;height:19px;object-fit:cover;object-position:center 20%;border-radius:4px;flex:0 0 19px}
+#battleScreen .hpMini>span{width:19px;text-align:center;font-size:15px;flex:0 0 19px}
+#battleScreen .hpMiniBody{min-width:0;flex:1}
+#battleScreen .hpMiniBar{height:4px;background:#030508;border-radius:3px;overflow:hidden}
+#battleScreen .hpMiniBar i{display:block;height:100%;background:#20dc79}
+#battleScreen .hpMini b{display:block;font-size:7px;line-height:10px;text-align:center;white-space:nowrap}
+#battleScreen .deadHp{opacity:.3;filter:grayscale(1)}
+
+/* Remove battlefield HP plates completely; HP lives in the HUD above. */
+#battleScreen .unitBottom{display:none!important}
+
+/* Real diagonal formation: six slots are coordinate points, not a visible 2x3 grid. */
+#battleScreen .battle{grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr)!important;padding:2px 4px 0!important}
+#battleScreen .battle>div:not(.middle){position:relative;min-width:0;height:100%}
+#battleScreen .army{display:block!important;position:relative!important;height:100%!important;min-height:430px;overflow:visible!important}
+#battleScreen .col{display:contents!important}
+#battleScreen .slot{position:absolute!important;width:48%!important;height:31%!important;min-height:112px!important;transform:none!important}
+/* ally: two parallel stair-step diagonals, back line left/up -> front line right/down */
+#battleScreen .ally .col:first-child .slot-0{left:-7%;top:2%;z-index:2}
+#battleScreen .ally .col:first-child .slot-1{left:-1%;top:34%;z-index:4}
+#battleScreen .ally .col:first-child .slot-2{left:5%;top:66%;z-index:6}
+#battleScreen .ally .col:last-child .slot-0{left:43%;top:14%;z-index:3}
+#battleScreen .ally .col:last-child .slot-1{left:49%;top:46%;z-index:5}
+#battleScreen .ally .col:last-child .slot-2{left:55%;top:78%;z-index:7}
+/* enemy mirrors toward center */
+#battleScreen .enemy .col:first-child .slot-0{left:9%;top:14%;z-index:3}
+#battleScreen .enemy .col:first-child .slot-1{left:3%;top:46%;z-index:5}
+#battleScreen .enemy .col:first-child .slot-2{left:-3%;top:78%;z-index:7}
+#battleScreen .enemy .col:last-child .slot-0{left:59%;top:2%;z-index:2}
+#battleScreen .enemy .col:last-child .slot-1{left:53%;top:34%;z-index:4}
+#battleScreen .enemy .col:last-child .slot-2{left:47%;top:66%;z-index:6}
+#battleScreen .unit{width:100%!important;height:100%!important;padding:0!important;background:transparent!important;border:0!important}
+#battleScreen .name{display:none!important}
+/* Keep large art; anchor visually to each coordinate point. */
+#battleScreen .unit[data-cid="101"] .sprite{transform:translateY(16px) scale(1.24)!important;transform-origin:center bottom!important}
+#battleScreen .unit[data-cid="102"] .sprite{transform:translateY(28px) scale(1.50)!important;transform-origin:center bottom!important}
+
+/* Skill long-press description */
+#battleScreen .skillHoldTip{display:none;position:fixed;left:14px;right:14px;bottom:116px;z-index:80;padding:10px 12px;border-radius:11px;background:rgba(8,11,18,.97);border:1px solid rgba(255,255,255,.28);box-shadow:0 8px 30px #000a;font-size:11px;line-height:1.55;color:#f4f5f8;pointer-events:none}
+#battleScreen .skillHoldTip.show{display:block}
+#battleScreen .skillBtn[aria-disabled="true"]{opacity:.38}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -687,11 +734,11 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <section class="screen" id="battleScreen">
 <div class="top battleSummary"><div class="battleSummaryLine"><span id="worldFloor">世界深度 1 / 1F</span><span id="turn">部隊1</span><span id="topDamage">損壊 0.0%</span><span id="topReward">報酬×3.00</span></div></div>
 <div class="planBox battlePlan"><div class="planTitle">ACTION｜行動予測</div><div class="orderBar" id="orderBar"></div></div>
-<div class="status battleLog" id="status">SPDから初期行動順を自動計算</div>
+<div class="status battleLog" id="status">SPDから初期行動順を自動計算</div><div class="battleHpOverview" id="battleHpOverview"><div class="hpTeam allyHp" id="allyHpOverview"></div><div class="hpTeam enemyHp" id="enemyHpOverview"></div></div>
 <div class="battleViewport" id="battleViewport"><section class="battle" id="battleZoomLayer"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section></div>
 <div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。</div></div></div>
-<div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">水月 鏡日｜技を選択</span><span class="actorStates" id="actorStates"></span></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">明鏡止水</span><small id="uniqueSkillDesc">2Hit必中／🪞+1　CT2</small></button><button class="skillBtn placeholderSkill" disabled><b>スキ①</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" disabled><b>スキ②</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" disabled><b>スキ③</b><span>未設定</span><small>装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div><div class="controls"><button class="btn autoBtn" id="autoToggle">AUTO OFF</button><span class="floorBadge" id="floorBadge">1F / 10F</span><button class="btn" id="homeBack">撤退して拠点へ</button></div></section>
+<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">水月 鏡日｜技を選択</span><span class="actorStates" id="actorStates"></span></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">明鏡止水</span><small id="uniqueSkillDesc">2Hit必中／🪞+1　CT2</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ①</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ③</b><span>未設定</span><small>装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div><div class="controls"><button class="btn autoBtn" id="autoToggle">AUTO OFF</button><span class="floorBadge" id="floorBadge">1F / 10F</span><button class="btn" id="homeBack">撤退して拠点へ</button></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">素材を持って拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
@@ -821,8 +868,17 @@ function openBattleUnitDetail(u){
 function bindBattleUnitDetails(){
  document.querySelectorAll('#battleScreen [data-unit]').forEach(el=>{const open=()=>openBattleUnitDetail(allUnits().find(u=>u.id===el.dataset.unit));el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}});
 }
+function renderHpOverview(){
+  const make=(arr,side)=>arr.filter(u=>u.formationSlot>=0).sort((a,b)=>(a.homeSlot??a.formationSlot)-(b.homeSlot??b.formationSlot)).map(u=>{
+    const pct=Math.max(0,Math.min(100,u.hp/u.max*100));
+    const visual=(u.actionSprite||u.sprite)?`<img src="${u.actionSprite||u.sprite}" alt="">`:`<span>${u.icon||'?'}</span>`;
+    return `<div class="hpMini ${u.hp<=0?'deadHp':''}" title="${u.name}">${visual}<div class="hpMiniBody"><div class="hpMiniBar"><i style="width:${pct}%"></i></div><b>${Math.max(0,u.hp)}/${u.max}</b></div></div>`;
+  }).join('');
+  const ah=document.querySelector('#allyHpOverview'),eh=document.querySelector('#enemyHpOverview');
+  if(ah)ah.innerHTML=make(A,'A'); if(eh)eh.innerHTML=make(E,'E');
+}
 function renderBattle(){
- document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');
+ document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');renderHpOverview();
  document.querySelector('#turn').textContent=running?`部隊${(sortieQueue[activePartyIndex]?.slot??activePartyIndex)+1}`:'部隊-';updateFloorUI();
  const now=allUnits().filter(x=>x.hp>0).sort(compareTurn).slice(0,5);
  document.querySelector('#order').innerHTML=now.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.side==='A'?'味':'敵'} ${u.name}</span>`).join('');renderOrder();renderActorStates();bindBattleUnitDetails();
@@ -906,7 +962,7 @@ async function mizukiAttack(att,defenders){
  att.mirror=Math.min(16,(att.mirror||0)+1);document.querySelector('#status').textContent=`《明鏡止水》2Hit必中！ 🪞${att.mirror}`;
  if(t.hp<=0){let targetEl=document.getElementById(t.id);if(targetEl){targetEl.classList.add('dying');await sleep(300)}const pulled=handleFrontlineDeath(t);if(pulled){renderBattle();await sleep(500)}}await sleep(100)
 }
-function configureUniqueSkill(u){const n=document.querySelector('#uniqueSkillName'),d=document.querySelector('#uniqueSkillDesc'),k=document.querySelector('#uniqueSkillKind');if(!n||!d||!k)return;k.textContent='固有①';if(u&&u.cid===102){n.textContent='一世掃射';d.textContent='敵全体ATK依存／味方全体 🪞+1 🗡️+1 🛡️+1　CT5';d.dataset.ct='5'}else{n.textContent='明鏡止水';d.textContent='2Hit必中／🪞+1　CT2';d.dataset.ct='2'}} function waitForPlayerSkill(u){if(autoMode)return Promise.resolve();currentActor=u;configureUniqueSkill(u);document.querySelector('#skillPanel').classList.add('show');document.querySelector('#status').textContent=u.name+'のターン：技を選択';renderBattle();configureUniqueSkill(u);return new Promise(r=>resolvePlayerAction=r)}
+function configureUniqueSkill(u){const n=document.querySelector('#uniqueSkillName'),d=document.querySelector('#uniqueSkillDesc'),k=document.querySelector('#uniqueSkillKind');if(!n||!d||!k)return;k.textContent='固有①';if(u&&u.cid===102){n.textContent='一世掃射';d.textContent='敵全体ATK依存／味方全体 🪞+1 🗡️+1 🛡️+1　CT5';d.dataset.ct='5';document.querySelector('#uniqueSkill').dataset.skillDetail='《一世掃射》｜CT5｜敵全体へATK依存攻撃。攻撃後、味方全体に 明鏡止水×1・剣×1・鏡の盾×1。'}else{n.textContent='明鏡止水';d.textContent='2Hit必中／🪞+1　CT2';d.dataset.ct='2';document.querySelector('#uniqueSkill').dataset.skillDetail='《明鏡止水》｜CT2｜敵1体へATK依存の必中2Hit。攻撃後、自身に明鏡止水×1。'}} function waitForPlayerSkill(u){if(autoMode)return Promise.resolve();currentActor=u;configureUniqueSkill(u);document.querySelector('#skillPanel').classList.add('show');document.querySelector('#status').textContent=u.name+'のターン：技を選択';renderBattle();configureUniqueSkill(u);return new Promise(r=>resolvePlayerAction=r)}
 
 async function attack(att,defenders){
  if(att.hp<=0)return;
@@ -1036,6 +1092,19 @@ renderHome();initBattle();
   // Desktop/debug convenience without affecting iPhone gestures.
   vp.addEventListener('dblclick',e=>{e.preventDefault();reset()});
   window.resetBattleZoom=reset;
+})();
+
+
+/* v0.17.4 skill long-press help */
+(function(){
+ const panel=document.getElementById('skillPanel'),tip=document.getElementById('skillHoldTip'); if(!panel||!tip)return;
+ let timer=null,active=null;
+ const show=btn=>{tip.textContent=btn.dataset.skillDetail||'説明未設定';tip.classList.add('show');tip.setAttribute('aria-hidden','false');active=btn};
+ const hide=()=>{clearTimeout(timer);timer=null;tip.classList.remove('show');tip.setAttribute('aria-hidden','true');active=null};
+ panel.addEventListener('touchstart',e=>{const b=e.target.closest('.skillBtn');if(!b)return;clearTimeout(timer);timer=setTimeout(()=>show(b),430)},{passive:true});
+ panel.addEventListener('touchmove',()=>{if(!active)clearTimeout(timer)},{passive:true});
+ panel.addEventListener('touchend',hide,{passive:true}); panel.addEventListener('touchcancel',hide,{passive:true});
+ panel.addEventListener('contextmenu',e=>{const b=e.target.closest('.skillBtn');if(!b)return;e.preventDefault();show(b);setTimeout(hide,1800)});
 })();
 
 </script></body></html>
