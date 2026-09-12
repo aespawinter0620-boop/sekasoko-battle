@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ v0.17.7 柚加入修正</title>
+<title>セカソコ v0.14.5 UI整理</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -752,6 +752,85 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   margin:0!important;
 }
 
+
+
+/* v0.17.7 ADOPTED: expanded battlefield / full-height combat composition
+   - The former lower dead space becomes battlefield viewport.
+   - Background artwork is NOT vertically stretched; it stays width-locked.
+   - Six formation points are redistributed across the taller usable field.
+   - The 4-skill command bar remains fixed immediately above iPhone safe-area. */
+#battleScreen.active{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  overflow:hidden!important;
+}
+#battleScreen #battleViewport{
+  flex:1 1 0!important;
+  min-height:0!important;
+  height:auto!important;
+  position:relative!important;
+  overflow:hidden!important;
+  background:#070b12!important;
+}
+#battleScreen #battleZoomLayer{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  align-items:stretch!important;
+}
+#battleScreen .battle{
+  flex:none!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:2px 4px 0!important;
+  background-size:100% 100%,100% auto!important;
+  background-position:center top,center top!important;
+}
+#battleScreen .battle>div:not(.middle){height:100%!important;min-height:0!important}
+#battleScreen .army{
+  height:100%!important;
+  min-height:0!important;
+}
+#battleScreen .slot{
+  width:47%!important;
+  height:25%!important;
+  min-height:0!important;
+}
+/* Re-spaced diagonal coordinates for the expanded field. */
+#battleScreen .ally .col:first-child .slot-0{left:-5%!important;top:3%!important}
+#battleScreen .ally .col:first-child .slot-1{left:1%!important;top:36%!important}
+#battleScreen .ally .col:first-child .slot-2{left:7%!important;top:69%!important}
+#battleScreen .ally .col:last-child .slot-0{left:43%!important;top:14%!important}
+#battleScreen .ally .col:last-child .slot-1{left:49%!important;top:47%!important}
+#battleScreen .ally .col:last-child .slot-2{left:53%!important;top:72%!important}
+#battleScreen .enemy .col:first-child .slot-0{left:10%!important;top:14%!important}
+#battleScreen .enemy .col:first-child .slot-1{left:4%!important;top:47%!important}
+#battleScreen .enemy .col:first-child .slot-2{left:0%!important;top:72%!important}
+#battleScreen .enemy .col:last-child .slot-0{left:58%!important;top:3%!important}
+#battleScreen .enemy .col:last-child .slot-1{left:52%!important;top:36%!important}
+#battleScreen .enemy .col:last-child .slot-2{left:46%!important;top:69%!important}
+/* The old empty bottom panel must not reserve vertical space. */
+#battleScreen>.panel{
+  position:absolute!important;
+  left:0!important;right:0!important;bottom:0!important;
+  height:0!important;min-height:0!important;
+  padding:0!important;margin:0!important;border:0!important;
+  overflow:hidden!important;pointer-events:none!important;
+}
+/* Final command position: bottom edge + safe area only. */
+#battleScreen .skillPanel{
+  position:fixed!important;
+  left:max(8px,env(safe-area-inset-left))!important;
+  right:max(8px,env(safe-area-inset-right))!important;
+  bottom:max(4px,env(safe-area-inset-bottom))!important;
+  margin:0!important;
+  z-index:45!important;
+}
+/* Keep long-press help immediately above the command bar. */
+#battleScreen .skillHoldTip{
+  bottom:calc(max(4px,env(safe-area-inset-bottom)) + 78px)!important;
+}
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -816,16 +895,6 @@ const normalizeParty=p=>{
  return out
 };
 let selectedParty=0;let parties=(()=>{try{let x=JSON.parse(localStorage.getItem('sekasokoParties'));if(Array.isArray(x)&&x.length===12)return x.map(normalizeParty)}catch(e){}let d=Array.from({length:12},emptyParty);d[0][0]='mizuki';d[1][0]='cow';d[1][1]='shield';d[2][0]='doll';d[2][1]='rin';return d})();
-/* v0.17.7 柚加入マイグレーション：旧版のlocalStorage編成を保持したまま、未登録なら部隊1の空き枠へ一度だけ追加する。 */
-(()=>{
- const yuzuId='yuzu';
- if(parties.some(p=>p.includes(yuzuId)))return;
- const p=parties[0];
- const slot=p.findIndex(x=>!x);
- if(slot<0)return;
- p[slot]=yuzuId;
- localStorage.setItem('sekasokoParties',JSON.stringify(parties));
-})();
 const partyCost=p=>p.reduce((n,id)=>n+(id?(formationRosterData.find(c=>c.id===id)?.cost||1):0),0);const partyCount=p=>p.filter(Boolean).length;const usedPartyOf=id=>parties.findIndex(p=>p.includes(id));const saveParties=()=>localStorage.setItem('sekasokoParties',JSON.stringify(parties));
 function renderFormation(){document.querySelector('#partyTabs').innerHTML=parties.map((p,i)=>`<button class="partyTab ${i===selectedParty?'active':''}" data-p="${i}">部隊${i+1}<small>${partyCount(p)?partyCost(p)+'マス':'空'}</small></button>`).join('');document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{selectedParty=+b.dataset.p;renderFormation()});let p=parties[selectedParty];document.querySelector('#partyName').textContent='部隊'+(selectedParty+1);document.querySelector('#partyCount').textContent=partyCost(p)+' / 6マス';let h='';for(let i=0;i<6;i++){let c=formationRosterData.find(x=>x.id===p[i]);let lane=i<3?'前衛':'後衛';h+=c?`<button class="partySlot filled" data-rem-slot="${i}"><span><span class="ico">${c.icon}</span><span class="nm">${c.name}</span></span></button>`:`<div class="partySlot">${i+1}<br>${lane}</div>`}document.querySelector('#partyGrid').innerHTML=h;document.querySelectorAll('[data-rem-slot]').forEach(b=>b.onclick=()=>{parties[selectedParty][+b.dataset.remSlot]=null;renderFormation()});document.querySelector('#formationRoster').innerHTML=formationRosterData.map(c=>{let u=usedPartyOf(c.id);return `<button class="rosterCard ${u>=0?'used':''}" data-add="${c.id}"><span class="rIco">${c.icon}</span><b>${c.name}</b><small>${c.attr}${u>=0?'｜部隊'+(u+1):'｜未編成'}</small></button>`}).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>toggleChar(b.dataset.add))}
 function toggleChar(id){let old=usedPartyOf(id);if(old===selectedParty){let slot=parties[selectedParty].indexOf(id);if(slot>=0)parties[selectedParty][slot]=null;renderFormation();return}if(old>=0){openInfo('編成済み','このキャラは部隊'+(old+1)+'にいます。先に外してください。','⚠️');return}let c=formationRosterData.find(x=>x.id===id);if(partyCost(parties[selectedParty])+c.cost>6){openInfo('編成できません','1部隊は最大6マスです。','⚠️');return}let slot=parties[selectedParty].findIndex(x=>!x);if(slot<0){openInfo('編成できません','空きマスがありません。','⚠️');return}parties[selectedParty][slot]=id;renderFormation()}
