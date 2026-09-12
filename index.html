@@ -438,6 +438,20 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* v0.16.5 月城 凪 / 一世掃射 prototype */
 #battleScreen .unit[data-cid="102"] .sprite{font-size:52px!important}
 
+
+/* v0.16.7 Battle background lock
+   Skill panel changes layout height, but the cave must not zoom/re-crop. */
+#battleScreen .battle{
+  background-image:
+    linear-gradient(180deg,rgba(3,7,13,.18),rgba(3,6,11,.30)),
+    url("assets/backgrounds/cave.webp") !important;
+  background-repeat:no-repeat,no-repeat !important;
+  background-position:center top,center top !important;
+  /* Lock the artwork to the battle-screen width instead of the changing .battle height. */
+  background-size:100% 100%,100% auto !important;
+  background-color:#070b12 !important;
+}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
