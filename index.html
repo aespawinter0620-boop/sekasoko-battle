@@ -1007,6 +1007,64 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* Slight battlefield-side clipping guard: art may overlap internally, but should not disappear off the left edge as aggressively. */
 #battleScreen .battle>div:first-child{overflow:visible!important}
 
+
+/* =========================================================
+   v0.18.2 ADOPTED: COMPACT SIX-MEMBER FORMATION
+   - All three depth rows use the same visual scale.
+   - The six-member ally formation is compressed both horizontally and vertically.
+   - Ally formation stays inside the ally half so the enemy side can mirror it later.
+   - Front/back separation is reduced; depth comes from overlap and z-order, not size.
+   - Enemy coordinates are mirrored now as the future 6v6 baseline.
+   ========================================================= */
+
+/* Compact ally formation: back/front pair repeated over three closely packed rows. */
+#battleScreen .ally .slot{
+  width:50%!important;
+  height:30%!important;
+  min-height:112px!important;
+  overflow:visible!important;
+}
+
+/* top row */
+#battleScreen .ally .col:first-child .slot-0{left:2%!important;top:14%!important;z-index:11!important}
+#battleScreen .ally .col:last-child  .slot-0{left:30%!important;top:17%!important;z-index:12!important}
+/* middle row */
+#battleScreen .ally .col:first-child .slot-1{left:-2%!important;top:34%!important;z-index:21!important}
+#battleScreen .ally .col:last-child  .slot-1{left:26%!important;top:37%!important;z-index:22!important}
+/* bottom row */
+#battleScreen .ally .col:first-child .slot-2{left:-6%!important;top:54%!important;z-index:31!important}
+#battleScreen .ally .col:last-child  .slot-2{left:22%!important;top:57%!important;z-index:32!important}
+
+/* No perspective scaling: every row gets the same formation scale. */
+#battleScreen .ally .slot-0 .sprite,
+#battleScreen .ally .slot-1 .sprite,
+#battleScreen .ally .slot-2 .sprite{
+  scale:1!important;
+  transform-origin:center bottom!important;
+}
+
+/* Future enemy six-member formation: exact horizontal mirror concept, kept on enemy half. */
+#battleScreen .enemy .slot{
+  width:50%!important;
+  height:30%!important;
+  min-height:112px!important;
+  overflow:visible!important;
+}
+/* enemy front is the center-side column, enemy back is the far-right column */
+#battleScreen .enemy .col:first-child .slot-0{left:20%!important;top:17%!important;z-index:12!important}
+#battleScreen .enemy .col:last-child  .slot-0{left:48%!important;top:14%!important;z-index:11!important}
+#battleScreen .enemy .col:first-child .slot-1{left:24%!important;top:37%!important;z-index:22!important}
+#battleScreen .enemy .col:last-child  .slot-1{left:52%!important;top:34%!important;z-index:21!important}
+#battleScreen .enemy .col:first-child .slot-2{left:28%!important;top:57%!important;z-index:32!important}
+#battleScreen .enemy .col:last-child  .slot-2{left:56%!important;top:54%!important;z-index:31!important}
+
+#battleScreen .enemy .slot-0 .sprite,
+#battleScreen .enemy .slot-1 .sprite,
+#battleScreen .enemy .slot-2 .sprite{
+  scale:1!important;
+  transform-origin:center bottom!important;
+}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
