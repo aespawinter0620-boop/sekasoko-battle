@@ -953,6 +953,60 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .ally .slot:has(.unit[data-cid="102"]){z-index:10!important} /* 凪: 手前 */
 #battleScreen .unit[data-cid="201"] .sprite,#battleScreen .unit[data-cid="202"] .sprite,#battleScreen .unit[data-cid="203"] .sprite{transform:translateY(12px) scale(1.38)!important;transform-origin:center bottom!important;overflow:visible!important}
 #battleScreen .unit[data-cid="201"] .sprite img,#battleScreen .unit[data-cid="202"] .sprite img,#battleScreen .unit[data-cid="203"] .sprite img{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:contain!important;object-position:center bottom!important;filter:drop-shadow(0 7px 6px #000c)}
+
+
+/* =========================================================
+   v0.18.1 ADOPTED: TRUE SIX-MEMBER DIAGONAL DEPTH FORMATION
+   - Layout is designed for a full six-member party from the start.
+   - Three visual rows, each row = back (ally-side) + front (enemy-side).
+   - Lower rows step left and toward the viewer; upper rows sit farther right/deeper.
+   - Character art stays large. Hair/weapons/legs may overlap; faces and torsos get more horizontal room.
+   - Depth order is generic by formation row, not hard-coded to current character IDs.
+   ========================================================= */
+#battleScreen .ally .slot{
+  width:58%!important;
+  height:29%!important;
+  min-height:112px!important;
+  overflow:visible!important;
+}
+/* top / far row */
+#battleScreen .ally .col:first-child .slot-0{left:20%!important;top:3%!important;z-index:11!important}
+#battleScreen .ally .col:last-child  .slot-0{left:76%!important;top:9%!important;z-index:12!important}
+/* middle row */
+#battleScreen .ally .col:first-child .slot-1{left:-2%!important;top:34%!important;z-index:21!important}
+#battleScreen .ally .col:last-child  .slot-1{left:54%!important;top:40%!important;z-index:22!important}
+/* bottom / near row */
+#battleScreen .ally .col:first-child .slot-2{left:-24%!important;top:65%!important;z-index:31!important}
+#battleScreen .ally .col:last-child  .slot-2{left:32%!important;top:71%!important;z-index:32!important}
+
+/* Remove v180's character-ID position overrides: every character follows its formation slot. */
+#battleScreen .ally .slot:has(.unit[data-cid="101"]),
+#battleScreen .ally .slot:has(.unit[data-cid="102"]),
+#battleScreen .ally .slot:has(.unit[data-cid="103"]),
+#battleScreen .ally .slot:has(.unit[data-cid="201"]),
+#battleScreen .ally .slot:has(.unit[data-cid="202"]),
+#battleScreen .ally .slot:has(.unit[data-cid="203"]){z-index:auto!important}
+/* Re-assert row depth after the reset above. */
+#battleScreen .ally .col:first-child .slot-0{z-index:11!important}
+#battleScreen .ally .col:last-child  .slot-0{z-index:12!important}
+#battleScreen .ally .col:first-child .slot-1{z-index:21!important}
+#battleScreen .ally .col:last-child  .slot-1{z-index:22!important}
+#battleScreen .ally .col:first-child .slot-2{z-index:31!important}
+#battleScreen .ally .col:last-child  .slot-2{z-index:32!important}
+
+/* Perspective: far row slightly smaller, near row slightly larger. This composes with each character's own art scale. */
+#battleScreen .ally .slot-0 .sprite{scale:.86!important;transform-origin:center bottom!important}
+#battleScreen .ally .slot-1 .sprite{scale:.98!important;transform-origin:center bottom!important}
+#battleScreen .ally .slot-2 .sprite{scale:1.10!important;transform-origin:center bottom!important}
+
+/* Keep the current six test characters readable without shrinking the overall art direction. */
+#battleScreen .unit[data-cid="201"] .sprite,
+#battleScreen .unit[data-cid="202"] .sprite,
+#battleScreen .unit[data-cid="203"] .sprite{transform:translateY(10px) scale(1.28)!important}
+
+/* Slight battlefield-side clipping guard: art may overlap internally, but should not disappear off the left edge as aggressively. */
+#battleScreen .battle>div:first-child{overflow:visible!important}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
