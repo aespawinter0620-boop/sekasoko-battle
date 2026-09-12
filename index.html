@@ -500,6 +500,24 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   object-position:center bottom !important;
 }
 
+
+/* v0.17.1 battle pinch zoom */
+#battleViewport{
+  position:relative;
+  overflow:hidden;
+  touch-action:none;
+  background:#070b12;
+  user-select:none;
+  -webkit-user-select:none;
+}
+#battleZoomLayer{
+  transform-origin:0 0;
+  will-change:transform;
+  margin:0 !important;
+}
+#battleViewport.zoomed{cursor:grab}
+#battleViewport.zoomed:active{cursor:grabbing}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -517,7 +535,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <div class="top battleSummary"><div class="battleSummaryLine"><span id="worldFloor">世界深度 1 / 1F</span><span id="turn">部隊1</span><span id="topDamage">損壊 0.0%</span><span id="topReward">報酬×3.00</span></div></div>
 <div class="planBox battlePlan"><div class="planTitle">ACTION｜行動予測</div><div class="orderBar" id="orderBar"></div></div>
 <div class="status battleLog" id="status">SPDから初期行動順を自動計算</div>
-<section class="battle"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section>
+<div class="battleViewport" id="battleViewport"><section class="battle" id="battleZoomLayer"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section></div>
 <div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。</div></div></div>
 <div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">水月 鏡日｜技を選択</span><span class="actorStates" id="actorStates"></span></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">明鏡止水</span><small id="uniqueSkillDesc">2Hit必中／🪞+1　CT2</small></button><button class="skillBtn placeholderSkill" disabled><b>スキ①</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" disabled><b>スキ②</b><span>未設定</span><small>装備スキル枠</small></button><button class="skillBtn placeholderSkill" disabled><b>スキ③</b><span>未設定</span><small>装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div><div class="controls"><button class="btn autoBtn" id="autoToggle">AUTO OFF</button><span class="floorBadge" id="floorBadge">1F / 10F</span><button class="btn" id="homeBack">撤退して拠点へ</button></div></section>
@@ -796,4 +814,75 @@ const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpe
 function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;renderBattle()}
 document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');document.querySelector('#resultText').textContent='WIN';document.querySelector('#overlay').classList.add('show')};document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
 renderHome();initBattle();
+
+/* v0.17.1 戦闘中ピンチズーム：背景・味方・敵を同一レイヤーで変形 */
+(function(){
+  const vp=document.getElementById('battleViewport');
+  const layer=document.getElementById('battleZoomLayer');
+  if(!vp||!layer)return;
+  let scale=1, x=0, y=0, startScale=1, startDist=0, pinchWorldX=0, pinchWorldY=0;
+  let panStartX=0, panStartY=0, panBaseX=0, panBaseY=0, lastTap=0;
+  const MIN=1, MAX=2.5;
+
+  function clamp(){
+    const vw=vp.clientWidth, vh=vp.clientHeight;
+    const sw=vw*scale, sh=layer.offsetHeight*scale;
+    const minX=Math.min(0,vw-sw), minY=Math.min(0,vh-sh);
+    x=Math.max(minX,Math.min(0,x));
+    y=Math.max(minY,Math.min(0,y));
+  }
+  function apply(){
+    clamp();
+    layer.style.transform=`translate3d(${x}px,${y}px,0) scale(${scale})`;
+    vp.classList.toggle('zoomed',scale>1.001);
+  }
+  function reset(){scale=1;x=0;y=0;apply()}
+  function dist(a,b){return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}
+  function midpoint(a,b){
+    const r=vp.getBoundingClientRect();
+    return {x:(a.clientX+b.clientX)/2-r.left,y:(a.clientY+b.clientY)/2-r.top};
+  }
+
+  vp.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){
+      e.preventDefault();
+      startScale=scale;
+      startDist=dist(e.touches[0],e.touches[1]);
+      const m=midpoint(e.touches[0],e.touches[1]);
+      pinchWorldX=(m.x-x)/scale; pinchWorldY=(m.y-y)/scale;
+    }else if(e.touches.length===1 && scale>1.001){
+      e.preventDefault();
+      panStartX=e.touches[0].clientX; panStartY=e.touches[0].clientY;
+      panBaseX=x; panBaseY=y;
+    }
+  },{passive:false});
+
+  vp.addEventListener('touchmove',e=>{
+    if(e.touches.length===2){
+      e.preventDefault();
+      const m=midpoint(e.touches[0],e.touches[1]);
+      scale=Math.max(MIN,Math.min(MAX,startScale*(dist(e.touches[0],e.touches[1])/Math.max(1,startDist))));
+      x=m.x-pinchWorldX*scale; y=m.y-pinchWorldY*scale; apply();
+    }else if(e.touches.length===1 && scale>1.001){
+      e.preventDefault();
+      x=panBaseX+(e.touches[0].clientX-panStartX);
+      y=panBaseY+(e.touches[0].clientY-panStartY);
+      apply();
+    }
+  },{passive:false});
+
+  vp.addEventListener('touchend',e=>{
+    if(e.touches.length===0){
+      if(scale<1.03)reset();
+      const now=Date.now();
+      if(now-lastTap<300){e.preventDefault();reset();lastTap=0}
+      else lastTap=now;
+    }
+  },{passive:false});
+
+  // Desktop/debug convenience without affecting iPhone gestures.
+  vp.addEventListener('dblclick',e=>{e.preventDefault();reset()});
+  window.resetBattleZoom=reset;
+})();
+
 </script></body></html>
