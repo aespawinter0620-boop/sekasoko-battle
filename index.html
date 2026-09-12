@@ -546,6 +546,131 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .slot:nth-child(2){z-index:2}
 #battleScreen .slot:nth-child(3){z-index:3}
 
+
+/* v0.17.3 TRUE diagonal formation + large-art-first combat UI */
+
+/* 1) The whole slot/unit moves: sprite and its HP base stay together. */
+#battleScreen .army{overflow:visible!important}
+#battleScreen .col{overflow:visible!important}
+#battleScreen .slot{overflow:visible!important}
+#battleScreen .unit{overflow:visible!important}
+
+/* Ally: back line sits farther left/up, front line farther right/down.
+   Enemy is mirrored so both armies visually converge toward the center. */
+#battleScreen .ally .col:first-child .slot-0{transform:translate(-16px,-14px)}
+#battleScreen .ally .col:first-child .slot-1{transform:translate(-8px,-5px)}
+#battleScreen .ally .col:first-child .slot-2{transform:translate(0,4px)}
+#battleScreen .ally .col:last-child .slot-0{transform:translate(3px,-4px)}
+#battleScreen .ally .col:last-child .slot-1{transform:translate(11px,5px)}
+#battleScreen .ally .col:last-child .slot-2{transform:translate(19px,14px)}
+
+#battleScreen .enemy .col:first-child .slot-0{transform:translate(-19px,-4px)}
+#battleScreen .enemy .col:first-child .slot-1{transform:translate(-11px,5px)}
+#battleScreen .enemy .col:first-child .slot-2{transform:translate(-3px,14px)}
+#battleScreen .enemy .col:last-child .slot-0{transform:translate(16px,-14px)}
+#battleScreen .enemy .col:last-child .slot-1{transform:translate(8px,-5px)}
+#battleScreen .enemy .col:last-child .slot-2{transform:translate(0,4px)}
+
+/* Perspective stacking: lower rows render in front. */
+#battleScreen .slot-0{z-index:2}
+#battleScreen .slot-1{z-index:4}
+#battleScreen .slot-2{z-index:6}
+
+/* Keep HP as the character's own horizontal base, above overlapping art. */
+#battleScreen .unitBottom{
+  z-index:20!important;
+  background:rgba(7,10,16,.92)!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:8px!important;
+  padding:3px 6px 4px!important;
+  left:2px!important;right:2px!important;bottom:-4px!important;
+  height:auto!important;
+}
+#battleScreen .unitBottom .hpbar{height:5px!important}
+#battleScreen .hpText{line-height:14px!important}
+
+/* Large character art remains the visual priority. */
+#battleScreen .unit[data-cid="101"] .sprite{
+  transform:translateY(3px) scale(1.24)!important;
+  transform-origin:center bottom!important;
+}
+#battleScreen .unit[data-cid="102"] .sprite{
+  transform:translateY(18px) scale(1.50)!important;
+  transform-origin:center bottom!important;
+}
+
+/* 2) Compact command bar: four horizontal skills, not a tall 2x2 card wall. */
+#battleScreen .skillPanel{
+  margin:3px 8px 2px!important;
+  padding:5px 7px 6px!important;
+  border-radius:11px!important;
+}
+#battleScreen .skillTitle{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  margin:0 0 4px!important;
+  min-height:22px!important;
+}
+#battleScreen .skillActor{
+  flex:0 0 auto!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+#battleScreen .actorStates{
+  flex:1 1 auto!important;
+  display:flex!important;
+  gap:4px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  white-space:nowrap!important;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+#battleScreen .actorStates::-webkit-scrollbar{display:none}
+#battleScreen .actorStateChip{
+  flex:0 0 auto!important;
+  font-size:8px!important;
+  padding:2px 5px!important;
+}
+#battleScreen .skillGrid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:4px!important;
+}
+#battleScreen .skillBtn{
+  min-height:42px!important;
+  height:42px!important;
+  padding:4px 5px!important;
+  text-align:center!important;
+  border-radius:9px!important;
+}
+#battleScreen .skillBtn b{font-size:7px!important;margin:0!important}
+#battleScreen .skillBtn span{
+  font-size:10px!important;
+  line-height:13px!important;
+  margin-top:1px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#battleScreen .skillBtn small{
+  display:block!important;
+  font-size:7px!important;
+  line-height:9px!important;
+  margin:1px 0 0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+/* Hide long prose but keep CT visible by adding a compact CT badge through data-independent labels. */
+#battleScreen #uniqueSkillDesc{font-size:0!important}
+#battleScreen #uniqueSkillDesc::after{content:"CT " attr(data-ct);font-size:8px}
+
+/* Preserve room for the battlefield when commands are open. */
+#battleScreen .skillPanel.show + .panel{margin-top:0!important}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -656,7 +781,7 @@ function prepareSortie(){saveParties();sortieQueue=parties.map((p,i)=>({slot:i,i
 function initBattle(){prepareSortie()}
 function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
 function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=makeEnemies(floor);takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
-function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)||units.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)}html+=`<div class="slot ${row}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
+function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)||units.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
 function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${Math.max(0,u.hp)} / ${u.max}</div></div></div>`}
 function forecast(n=10){
  const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,cid:u.cid,ct:u.skill?.ct||0,cost:actionCost(u)}));
@@ -781,7 +906,7 @@ async function mizukiAttack(att,defenders){
  att.mirror=Math.min(16,(att.mirror||0)+1);document.querySelector('#status').textContent=`《明鏡止水》2Hit必中！ 🪞${att.mirror}`;
  if(t.hp<=0){let targetEl=document.getElementById(t.id);if(targetEl){targetEl.classList.add('dying');await sleep(300)}const pulled=handleFrontlineDeath(t);if(pulled){renderBattle();await sleep(500)}}await sleep(100)
 }
-function configureUniqueSkill(u){const n=document.querySelector('#uniqueSkillName'),d=document.querySelector('#uniqueSkillDesc'),k=document.querySelector('#uniqueSkillKind');if(!n||!d||!k)return;k.textContent='固有①';if(u&&u.cid===102){n.textContent='一世掃射';d.textContent='敵全体ATK依存／味方全体 🪞+1 🗡️+1 🛡️+1　CT5'}else{n.textContent='明鏡止水';d.textContent='2Hit必中／🪞+1　CT2'}} function waitForPlayerSkill(u){if(autoMode)return Promise.resolve();currentActor=u;configureUniqueSkill(u);document.querySelector('#skillPanel').classList.add('show');document.querySelector('#status').textContent=u.name+'のターン：技を選択';renderBattle();configureUniqueSkill(u);return new Promise(r=>resolvePlayerAction=r)}
+function configureUniqueSkill(u){const n=document.querySelector('#uniqueSkillName'),d=document.querySelector('#uniqueSkillDesc'),k=document.querySelector('#uniqueSkillKind');if(!n||!d||!k)return;k.textContent='固有①';if(u&&u.cid===102){n.textContent='一世掃射';d.textContent='敵全体ATK依存／味方全体 🪞+1 🗡️+1 🛡️+1　CT5';d.dataset.ct='5'}else{n.textContent='明鏡止水';d.textContent='2Hit必中／🪞+1　CT2';d.dataset.ct='2'}} function waitForPlayerSkill(u){if(autoMode)return Promise.resolve();currentActor=u;configureUniqueSkill(u);document.querySelector('#skillPanel').classList.add('show');document.querySelector('#status').textContent=u.name+'のターン：技を選択';renderBattle();configureUniqueSkill(u);return new Promise(r=>resolvePlayerAction=r)}
 
 async function attack(att,defenders){
  if(att.hp<=0)return;
