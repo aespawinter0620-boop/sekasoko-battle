@@ -1065,6 +1065,65 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   transform-origin:center bottom!important;
 }
 
+
+/* =========================================================
+   v0.18.3 ADOPTED: BALANCED 6v6 FORMATION + FLOOR-HEAVY CAVE
+   - v181 was too dispersed; v182 was too dense. This is the midpoint.
+   - Six allies share one visual scale; no near/far size inflation.
+   - Both horizontal and vertical spacing are wider than v182, but remain compact.
+   - Ally formation remains inside the ally half; enemy formation is mirrored.
+   - The cave background gives substantially more height to walkable stone floor.
+   ========================================================= */
+
+#battleScreen .battle{
+  background-image:
+    linear-gradient(180deg,rgba(3,7,13,.08),rgba(3,6,11,.16)),
+    url("assets/backgrounds/cave_battle_v3.webp") !important;
+  background-repeat:no-repeat,no-repeat!important;
+  background-position:center center,center center!important;
+  background-size:100% 100%,cover!important;
+}
+
+/* One consistent character scale. Individual source-image whitespace is the only remaining visual difference. */
+#battleScreen .unit[data-cid="101"] .sprite,
+#battleScreen .unit[data-cid="102"] .sprite,
+#battleScreen .unit[data-cid="103"] .sprite,
+#battleScreen .unit[data-cid="201"] .sprite,
+#battleScreen .unit[data-cid="202"] .sprite,
+#battleScreen .unit[data-cid="203"] .sprite{
+  transform:translateY(11px) scale(1.24)!important;
+  scale:1!important;
+  transform-origin:center bottom!important;
+}
+
+/* Balanced ally 3x2 block: moderate overlap, readable faces, no center-line invasion. */
+#battleScreen .ally .slot{
+  width:52%!important;
+  height:29%!important;
+  min-height:112px!important;
+  overflow:visible!important;
+}
+#battleScreen .ally .col:first-child .slot-0{left:0%!important;top:9%!important;z-index:11!important}
+#battleScreen .ally .col:last-child  .slot-0{left:40%!important;top:12%!important;z-index:12!important}
+#battleScreen .ally .col:first-child .slot-1{left:-4%!important;top:34%!important;z-index:21!important}
+#battleScreen .ally .col:last-child  .slot-1{left:36%!important;top:37%!important;z-index:22!important}
+#battleScreen .ally .col:first-child .slot-2{left:-8%!important;top:59%!important;z-index:31!important}
+#battleScreen .ally .col:last-child  .slot-2{left:32%!important;top:62%!important;z-index:32!important}
+
+/* Future enemy six-character block: mirror of the ally concept. */
+#battleScreen .enemy .slot{
+  width:52%!important;
+  height:29%!important;
+  min-height:112px!important;
+  overflow:visible!important;
+}
+#battleScreen .enemy .col:first-child .slot-0{left:8%!important;top:12%!important;z-index:12!important}
+#battleScreen .enemy .col:last-child  .slot-0{left:48%!important;top:9%!important;z-index:11!important}
+#battleScreen .enemy .col:first-child .slot-1{left:12%!important;top:37%!important;z-index:22!important}
+#battleScreen .enemy .col:last-child  .slot-1{left:52%!important;top:34%!important;z-index:21!important}
+#battleScreen .enemy .col:first-child .slot-2{left:16%!important;top:62%!important;z-index:32!important}
+#battleScreen .enemy .col:last-child  .slot-2{left:56%!important;top:59%!important;z-index:31!important}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
