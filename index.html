@@ -479,6 +479,27 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   object-position:center bottom !important;
 }
 
+
+/* v0.17.0 透波 battle scale / footing alignment */
+#battleScreen .unit[data-cid="101"] .sprite{
+  transform:translateY(8px) scale(1.12) !important;
+  transform-origin:center bottom !important;
+  z-index:3 !important;
+}
+#battleScreen .unit[data-cid="101"] .sprite img{
+  object-fit:contain !important;
+  object-position:center bottom !important;
+}
+#battleScreen .unit[data-cid="102"] .sprite{
+  transform:translateY(27px) scale(1.38) !important;
+  transform-origin:center bottom !important;
+  z-index:3 !important;
+}
+#battleScreen .unit[data-cid="102"] .sprite img{
+  object-fit:contain !important;
+  object-position:center bottom !important;
+}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
