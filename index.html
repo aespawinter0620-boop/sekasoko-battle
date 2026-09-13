@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.201</title>
+<title>セカソコ ver.202</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.201";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.202";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1286,10 +1286,10 @@ const allies=[
 {name:'凛',icon:'◆',hp:88,atk:24,row:'back',cid:303,spd:70,skill:{name:'一閃（仮）',ct:4}}
 ];
 const enemyBase=[
-{name:'深層スライム',icon:'●',sprite:'assets/slime.png',hp:70,atk:17,row:'front',cid:1001,spd:100,skill:{name:'体当たり',ct:2}},
-{name:'骸の少女',icon:'☠',hp:95,atk:22,row:'front',cid:1002,spd:70,skill:{name:'骨砕き',ct:3}},
-{name:'影喰い',icon:'◉',hp:76,atk:26,row:'back',cid:1003,spd:90,skill:{name:'影撃ち',ct:5}},
-{name:'黒兎',icon:'♠',hp:66,atk:24,row:'back',cid:1004,spd:55,skill:{name:'黒爪',ct:2}}
+{name:'深層スライム',icon:'●',sprite:'assets/characters/nagi.PNG',hp:70,atk:17,row:'front',cid:1001,spd:100,skill:{name:'体当たり',ct:2}},
+{name:'骸の少女',icon:'☠',sprite:'assets/characters/yuzu.PNG',hp:95,atk:22,row:'front',cid:1002,spd:70,skill:{name:'骨砕き',ct:3}},
+{name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:26,row:'back',cid:1003,spd:90,skill:{name:'影撃ち',ct:5}},
+{name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:24,row:'back',cid:1004,spd:55,skill:{name:'黒爪',ct:2}}
 ];
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,sortieQueue=[],activePartyIndex=0;
 let floor=1,worldDepth=1,maxFloor=10,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runStartMaxHP=0;
