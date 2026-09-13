@@ -1219,6 +1219,138 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   transform-origin:center bottom!important;
 }
 
+
+/* =========================================================
+   SEKASOKO 6v6 FORMATION ENGINE — AUTHORITATIVE RESET
+   Formation / artwork / action movement are independent.
+   ========================================================= */
+
+/* --- formation layer: two equal columns x three equal rows --- */
+#battleScreen .battle{
+  grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr)!important;
+  gap:0!important;
+  padding:0 6px!important;
+}
+#battleScreen .army{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  gap:0!important;
+  overflow:visible!important;
+}
+#battleScreen .army .col{
+  position:relative!important;
+  display:grid!important;
+  grid-template-rows:repeat(3,minmax(0,1fr))!important;
+  width:100%!important;
+  height:100%!important;
+  gap:0!important;
+  transform:none!important;
+}
+#battleScreen .army .slot,
+#battleScreen .ally .col:first-child .slot,
+#battleScreen .ally .col:last-child .slot,
+#battleScreen .enemy .col:first-child .slot,
+#battleScreen .enemy .col:last-child .slot{
+  position:relative!important;
+  inset:auto!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  transform:none!important;
+  scale:1!important;
+  overflow:visible!important;
+  z-index:1!important;
+}
+
+/* --- action layer: unit owns movement, slot never moves --- */
+#battleScreen .army .unit{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  transform:none!important;
+  scale:1!important;
+  overflow:visible!important;
+  z-index:2!important;
+}
+
+/* --- artwork layer: every character uses the same cell envelope --- */
+#battleScreen .army .sprite,
+#battleScreen .unit[data-cid="101"] .sprite,
+#battleScreen .unit[data-cid="102"] .sprite,
+#battleScreen .unit[data-cid="103"] .sprite,
+#battleScreen .unit[data-cid="201"] .sprite,
+#battleScreen .unit[data-cid="202"] .sprite,
+#battleScreen .unit[data-cid="203"] .sprite{
+  position:absolute!important;
+  left:2%!important;
+  right:2%!important;
+  top:1%!important;
+  bottom:1%!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  transform:none!important;
+  scale:1!important;
+  overflow:visible!important;
+  transform-origin:center bottom!important;
+}
+#battleScreen .army .sprite img,
+#battleScreen .unit[data-cid="101"] .sprite img,
+#battleScreen .unit[data-cid="102"] .sprite img,
+#battleScreen .unit[data-cid="103"] .sprite img,
+#battleScreen .unit[data-cid="201"] .sprite img,
+#battleScreen .unit[data-cid="202"] .sprite img,
+#battleScreen .unit[data-cid="203"] .sprite img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  transform:none!important;
+  scale:1!important;
+}
+
+/* Facing is derived from the explicit side class, not formation CSS. */
+#battleScreen .unit.side-E .sprite img{
+  transform:scaleX(-1)!important;
+  transform-origin:center center!important;
+}
+
+/* Attack movement is independent of formation and artwork transforms. */
+#battleScreen .unit.side-A.attacking{
+  z-index:50!important;
+  animation:sekasokoAttackAlly .42s ease-in-out!important;
+}
+#battleScreen .unit.side-E.attacking{
+  z-index:50!important;
+  animation:sekasokoAttackEnemy .42s ease-in-out!important;
+}
+@keyframes sekasokoAttackAlly{
+  0%,100%{transform:translateX(0) scale(1)}
+  45%{transform:translateX(clamp(38px,9vw,66px)) scale(1.06)}
+}
+@keyframes sekasokoAttackEnemy{
+  0%,100%{transform:translateX(0) scale(1)}
+  45%{transform:translateX(clamp(-66px,-9vw,-38px)) scale(1.06)}
+}
+
+/* Keep HUD/name layers from changing the art envelope. */
+#battleScreen .army .name{display:none!important}
+#battleScreen .army .unitBottom{display:none!important}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -1350,8 +1482,8 @@ function prepareSortie(){saveParties();sortieQueue=parties.map((p,i)=>({slot:i,i
 function initBattle(){prepareSortie()}
 function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
 function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=makeEnemies(floor);takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
-function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)||units.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
-function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${Math.max(0,u.hp)} / ${u.max}</div></div></div>`}
+function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)||units.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u,side):''}</div>`}html+='</div>'}return html}
+function unitHTML(u,side=u.side){return `<div class="unit side-${side} ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${Math.max(0,u.hp)} / ${u.max}</div></div></div>`}
 function forecast(n=10){
  const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,cid:u.cid,ct:u.skill?.ct||0,cost:actionCost(u)}));
  const out=[];
