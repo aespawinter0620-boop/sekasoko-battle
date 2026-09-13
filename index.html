@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.209</title>
+<title>セカソコ ver.210</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.209";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.210";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1234,6 +1234,27 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-position:center center,center center!important;
   background-size:100% 100%,cover!important;
   background-color:#070b12!important;
+}
+
+
+/* =========================================================
+   ver.210 KYOKA IDLE BREATH EXPERIMENT
+   - Kyoka (cid101) only
+   - base size / unit position / six-slot layout untouched
+   - subtle whole-body breathing while idle
+   ========================================================= */
+@keyframes kyokaIdleBreath{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-2px) scale(1.008)}
+}
+
+#battleScreen #allyArmy .unit[data-cid="101"]:not(.attacking) .sprite{
+  animation:kyokaIdleBreath 3.6s ease-in-out infinite!important;
+  transform-origin:center bottom!important;
+}
+
+#battleScreen #allyArmy .unit[data-cid="101"].attacking .sprite{
+  animation:none!important;
 }
 
 </style></head>
