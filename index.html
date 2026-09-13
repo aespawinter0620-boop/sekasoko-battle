@@ -1430,6 +1430,50 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #formationTuner .ftActions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:12px}
 #formationTuner .ftNote{opacity:.72;font-size:11px;line-height:1.4;margin-top:9px}
 
+
+/* =========================================================
+   DEBUG FORMATION TUNER v2 — visibility / compact formation
+   ========================================================= */
+
+/* DEBUGを開いても戦闘画面を暗転させない */
+body:has(#formationTuner:not([hidden])) .modalBackdrop,
+body:has(#formationTuner:not([hidden])) .backdrop,
+body:has(#formationTuner:not([hidden])) .debugBackdrop{
+  display:none!important;
+}
+
+/* パネル自体を半透明化。背景のキャラを見ながら調整できる */
+#formationTuner{
+  inset:15% 10px auto 10px!important;
+  max-height:68dvh!important;
+  background:rgba(8,12,24,.74)!important;
+  -webkit-backdrop-filter:blur(5px)!important;
+  backdrop-filter:blur(5px)!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.28)!important;
+}
+
+/* 基本陣形を縦方向に圧縮。
+   3段を戦闘領域の中央寄りへ集め、微調整パネルで扱える範囲にする */
+#battleScreen .army{
+  grid-template-rows:1fr!important;
+  align-items:center!important;
+}
+#battleScreen .army .col{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  height:78%!important;
+  margin:auto 0!important;
+  row-gap:var(--dbg-row-gap)!important;
+}
+#battleScreen .army .slot{
+  flex:1 1 0!important;
+  min-height:0!important;
+  height:auto!important;
+}
+
+/* v1で保存済みの極端な値をv2へ持ち越さない */
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -2026,6 +2070,45 @@ renderHome();initBattle();
      setTimeout(()=>el.classList.remove('attacking'),450);
    }).observe(msg,{childList:true,subtree:true,characterData:true});
  }
+})();
+</script>
+
+
+<script>
+(()=>{
+  /* v2は旧調整値を一度だけリセット。スクショの0.55x / -68px等を引き継がない */
+  const V2='sekasoko_formation_tuner_v2_initialized';
+  if(!localStorage.getItem(V2)){
+    localStorage.removeItem('sekasoko_formation_tuner_v1');
+    localStorage.setItem(V2,'1');
+    location.reload();
+    return;
+  }
+
+  const panel=document.getElementById('formationTuner');
+  if(!panel)return;
+
+  /* DEBUG連打によるブラウザのズーム/フォーカス寄りを防止 */
+  const stopZoom=e=>{
+    const b=e.target.closest && e.target.closest('button');
+    if(!b || !(b.textContent||'').includes('DEBUG')) return;
+    e.preventDefault();
+    b.blur();
+    if(panel.hidden && window.openFormationTuner) window.openFormationTuner();
+  };
+  document.addEventListener('dblclick',stopZoom,{capture:true,passive:false});
+  document.addEventListener('touchend',e=>{
+    const b=e.target.closest && e.target.closest('button');
+    if(!b || !(b.textContent||'').includes('DEBUG')) return;
+    b.blur();
+  },{capture:true,passive:true});
+
+  /* 調整中に既存DEBUGモーダルが残っていたら閉じ、暗幕だけ残る事故も防ぐ */
+  const cleanLegacyOverlay=()=>{
+    document.querySelectorAll('.modalBackdrop,.backdrop,.debugBackdrop').forEach(x=>x.style.display='none');
+  };
+  new MutationObserver(()=>{ if(!panel.hidden) cleanLegacyOverlay(); })
+    .observe(panel,{attributes:true,attributeFilter:['hidden']});
 })();
 </script>
 
