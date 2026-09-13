@@ -1177,6 +1177,20 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .ally .col:first-child .slot-2{left:-2%!important}
 #battleScreen .ally .col:last-child  .slot-2{left:38%!important}
 
+
+/* ADOPTED: enemy-side character art automatically faces the center.
+   Flip the image itself so existing per-character sprite positioning/scaling stays intact. */
+#battleScreen .enemy .sprite img{
+  transform:scaleX(-1) !important;
+  transform-origin:center center !important;
+}
+
+/* Enemy portraits in the ACTION timeline follow the same facing rule. */
+#battleScreen .orderChip.enemyOrder img{
+  transform:scaleX(-1) !important;
+  transform-origin:center center !important;
+}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
