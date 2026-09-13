@@ -1351,6 +1351,85 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .army .name{display:none!important}
 #battleScreen .army .unitBottom{display:none!important}
 
+
+/* =========================================================
+   DEBUG FORMATION TUNER v1
+   Runtime CSS variables are the single source for micro tuning.
+   ========================================================= */
+:root{
+  --dbg-char-scale:1;
+  --dbg-ally-x:0px;
+  --dbg-enemy-x:0px;
+  --dbg-row-gap:0px;
+  --dbg-col-gap:0px;
+  --dbg-field-y:0px;
+  --dbg-attack-step:58px;
+}
+#battleScreen .battle{
+  transform:translateY(var(--dbg-field-y))!important;
+}
+#battleScreen .army{
+  column-gap:var(--dbg-col-gap)!important;
+}
+#battleScreen .army .col{
+  row-gap:var(--dbg-row-gap)!important;
+}
+#battleScreen .ally{
+  translate:var(--dbg-ally-x) 0!important;
+}
+#battleScreen .enemy{
+  translate:var(--dbg-enemy-x) 0!important;
+}
+#battleScreen .army .sprite{
+  scale:var(--dbg-char-scale)!important;
+}
+
+/* Attack movement: class and data-state hooks, so either renderer path works. */
+#battleScreen .unit.side-A.attacking,
+#battleScreen .unit.side-A.attack,
+#battleScreen .unit.side-A[data-attacking="true"]{
+  z-index:80!important;
+  animation:dbgAttackAlly .38s ease-in-out!important;
+}
+#battleScreen .unit.side-E.attacking,
+#battleScreen .unit.side-E.attack,
+#battleScreen .unit.side-E[data-attacking="true"]{
+  z-index:80!important;
+  animation:dbgAttackEnemy .38s ease-in-out!important;
+}
+@keyframes dbgAttackAlly{
+  0%,100%{translate:0 0}
+  45%{translate:var(--dbg-attack-step) 0}
+}
+@keyframes dbgAttackEnemy{
+  0%,100%{translate:0 0}
+  45%{translate:calc(var(--dbg-attack-step) * -1) 0}
+}
+
+/* Tuner UI */
+#formationTuner{
+  position:fixed; inset:8% 10px auto 10px; z-index:10050;
+  max-height:82dvh; overflow:auto;
+  background:rgba(8,12,24,.97); border:1px solid #5f6b86; border-radius:14px;
+  padding:12px; box-shadow:0 16px 50px rgba(0,0,0,.55);
+  color:#fff; font-size:13px;
+}
+#formationTuner[hidden]{display:none!important}
+#formationTuner .ftHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+#formationTuner .ftHead b{font-size:16px}
+#formationTuner .ftClose{width:38px;height:32px;border-radius:9px}
+#formationTuner .ftRow{
+  display:grid;grid-template-columns:1.25fr 44px 64px 44px;gap:6px;
+  align-items:center;margin:7px 0;
+}
+#formationTuner button{
+  min-height:36px;border:1px solid #667089;border-radius:9px;
+  background:#151b2a;color:#fff;font-weight:800;
+}
+#formationTuner .ftVal{text-align:center;font-variant-numeric:tabular-nums}
+#formationTuner .ftActions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:12px}
+#formationTuner .ftNote{opacity:.72;font-size:11px;line-height:1.4;margin-top:9px}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -1853,4 +1932,101 @@ renderHome();initBattle();
  panel.addEventListener('contextmenu',e=>{const b=e.target.closest('.skillBtn');if(!b)return;e.preventDefault();show(b);setTimeout(hide,1800)});
 })();
 
-</script></body></html>
+</script>
+<div id="formationTuner" hidden>
+  <div class="ftHead"><b>🛠 配置調整</b><button class="ftClose" type="button">×</button></div>
+  <div class="ftRow" data-key="charScale"><span>キャラサイズ</span><button data-d="-0.02">−</button><span class="ftVal"></span><button data-d="0.02">＋</button></div>
+  <div class="ftRow" data-key="allyX"><span>味方 X</span><button data-d="-4">←</button><span class="ftVal"></span><button data-d="4">→</button></div>
+  <div class="ftRow" data-key="enemyX"><span>敵 X</span><button data-d="-4">←</button><span class="ftVal"></span><button data-d="4">→</button></div>
+  <div class="ftRow" data-key="colGap"><span>前後列 間隔</span><button data-d="-2">−</button><span class="ftVal"></span><button data-d="2">＋</button></div>
+  <div class="ftRow" data-key="rowGap"><span>上下 間隔</span><button data-d="-2">−</button><span class="ftVal"></span><button data-d="2">＋</button></div>
+  <div class="ftRow" data-key="fieldY"><span>全体 Y</span><button data-d="-4">↑</button><span class="ftVal"></span><button data-d="4">↓</button></div>
+  <div class="ftRow" data-key="attackStep"><span>攻撃前進</span><button data-d="-4">−</button><span class="ftVal"></span><button data-d="4">＋</button></div>
+  <div class="ftActions">
+    <button id="ftTest" type="button">前進テスト</button>
+    <button id="ftSave" type="button">保存</button>
+    <button id="ftReset" type="button">初期化</button>
+  </div>
+  <div class="ftNote">値はこの端末のlocalStorageに保存。まず実機でベスト位置を決めるための開発用パネル。</div>
+</div>
+<script>
+(()=>{
+ const KEY='sekasoko_formation_tuner_v1';
+ const defaults={charScale:1,allyX:0,enemyX:0,colGap:0,rowGap:0,fieldY:0,attackStep:58};
+ let cfg={...defaults};
+ try{cfg={...cfg,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){}
+ const root=document.documentElement;
+ const vars={charScale:'--dbg-char-scale',allyX:'--dbg-ally-x',enemyX:'--dbg-enemy-x',
+             colGap:'--dbg-col-gap',rowGap:'--dbg-row-gap',fieldY:'--dbg-field-y',
+             attackStep:'--dbg-attack-step'};
+ const units={charScale:'×',allyX:'px',enemyX:'px',colGap:'px',rowGap:'px',fieldY:'px',attackStep:'px'};
+ function apply(){
+   for(const [k,v] of Object.entries(cfg)){
+     root.style.setProperty(vars[k], k==='charScale'?String(v):v+'px');
+   }
+   document.querySelectorAll('#formationTuner .ftRow').forEach(r=>{
+     const k=r.dataset.key, el=r.querySelector('.ftVal');
+     if(el) el.textContent=k==='charScale'?Number(cfg[k]).toFixed(2)+'×':Math.round(cfg[k])+'px';
+   });
+ }
+ apply();
+
+ const panel=document.getElementById('formationTuner');
+ function openTuner(){panel.hidden=false;apply()}
+ function closeTuner(){panel.hidden=true}
+ panel.querySelector('.ftClose').addEventListener('click',closeTuner);
+ panel.addEventListener('click',e=>{
+   const b=e.target.closest('button[data-d]'); if(!b)return;
+   const row=b.closest('.ftRow'), k=row.dataset.key, d=Number(b.dataset.d);
+   cfg[k]=Number(cfg[k])+d;
+   if(k==='charScale') cfg[k]=Math.max(.55,Math.min(1.35,Math.round(cfg[k]*100)/100));
+   if(k==='attackStep') cfg[k]=Math.max(0,Math.min(160,cfg[k]));
+   apply();
+ });
+ document.getElementById('ftSave').addEventListener('click',()=>{
+   localStorage.setItem(KEY,JSON.stringify(cfg)); apply();
+ });
+ document.getElementById('ftReset').addEventListener('click',()=>{
+   cfg={...defaults}; localStorage.removeItem(KEY); apply();
+ });
+ document.getElementById('ftTest').addEventListener('click',()=>{
+   const a=document.querySelector('#battleScreen .unit.side-A:not(.dead)');
+   const e=document.querySelector('#battleScreen .unit.side-E:not(.dead)');
+   [a,e].forEach(u=>{if(!u)return;u.classList.remove('attacking');void u.offsetWidth;u.classList.add('attacking');setTimeout(()=>u.classList.remove('attacking'),450)});
+ });
+
+ /* Existing DEBUG button opens the tuner without removing its original behavior. */
+ document.addEventListener('click',e=>{
+   const b=e.target.closest('button');
+   if(!b || panel.contains(b)) return;
+   if((b.textContent||'').includes('DEBUG')){
+     setTimeout(openTuner,0);
+   }
+ },true);
+
+ /* Fallback: expose it for console/debug integrations. */
+ window.openFormationTuner=openTuner;
+
+ /* Repair attack-forward behavior at the actual attack entry point:
+    observe attack/skill message changes and animate the currently acting unit.
+    This is deliberately independent from formation coordinates. */
+ const msg=document.querySelector('#battleScreen .msg');
+ if(msg){
+   new MutationObserver(()=>{
+     const s=(msg.textContent||'');
+     if(!s || (!s.includes('攻撃') && !s.includes('《') && !s.includes('固有'))) return;
+     const actorName=s.split('のターン')[0].split('「')[0].trim();
+     if(!actorName)return;
+     const all=[...(window.allUnits?window.allUnits():[])];
+     const u=all.find(x=>x&&x.name===actorName);
+     if(!u)return;
+     const el=document.getElementById(u.id);
+     if(!el)return;
+     el.classList.remove('attacking'); void el.offsetWidth; el.classList.add('attacking');
+     setTimeout(()=>el.classList.remove('attacking'),450);
+   }).observe(msg,{childList:true,subtree:true,characterData:true});
+ }
+})();
+</script>
+
+</body></html>
