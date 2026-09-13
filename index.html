@@ -1474,6 +1474,24 @@ body:has(#formationTuner:not([hidden])) .debugBackdrop{
 
 /* v1で保存済みの極端な値をv2へ持ち越さない */
 
+
+/* =========================================================
+   6v6 BASE FORMATION — STRAIGHT / NO STAGGER
+   味方: 後衛・前衛 / 敵: 前衛・後衛
+   3段は同じ高さに揃える
+   ========================================================= */
+#battleScreen .army .col{
+  height:72%!important;
+  margin:auto 0!important;
+  transform:none!important;
+  row-gap:var(--dbg-row-gap)!important;
+}
+
+/* 前後列とも各段のY位置を完全一致 */
+#battleScreen .army .slot{
+  transform:none!important;
+}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
