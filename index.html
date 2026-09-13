@@ -1654,6 +1654,176 @@ body:has(#formationTuner:not([hidden])) .debugBackdrop{
   45%{translate:calc(var(--dbg-attack-step,58px) * -1) 0}
 }
 
+
+/* =========================================================
+   ver.185 — 6v6 VISIBILITY FIX / ABSOLUTE SLOT ENGINE
+   Full battlefield (including behind skill panel) is the 100% area.
+   ========================================================= */
+
+/* Version badge: survives battle-log text rewrites */
+#battleScreen .battleLog{
+  position:relative!important;
+  padding-left:64px!important;
+  padding-right:64px!important;
+}
+#battleScreen .battleLog::before{
+  content:"ver.185";
+  position:absolute;
+  left:8px;
+  top:0;
+  height:100%;
+  display:flex;
+  align-items:center;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.04em;
+  color:#8992a8;
+  pointer-events:none;
+}
+
+/* The battlefield side wrappers fill the entire viewport.
+   Lane labels float above the field and consume no layout height. */
+#battleScreen .battle>div:not(.middle){
+  position:relative!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+#battleScreen .laneLabel{
+  position:absolute!important;
+  top:2px!important;
+  left:0!important;
+  right:0!important;
+  z-index:20!important;
+  pointer-events:none!important;
+}
+
+/* Kill accumulated grid/flex geometry: army is now one clean coordinate plane. */
+#battleScreen .army,
+#battleScreen .ally,
+#battleScreen .enemy{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+
+/* Two equal columns. */
+#battleScreen .army .col{
+  position:absolute!important;
+  top:0!important;
+  bottom:0!important;
+  width:50%!important;
+  height:100%!important;
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+}
+#battleScreen .army .col:first-child{left:0!important;right:auto!important}
+#battleScreen .army .col:last-child{left:50%!important;right:auto!important}
+
+/* Three exact equal rows over the FULL battlefield height. */
+#battleScreen .army .slot{
+  position:absolute!important;
+  left:0!important;
+  right:auto!important;
+  width:100%!important;
+  height:33.333333%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+  overflow:visible!important;
+}
+#battleScreen .army .slot-0{top:0!important;bottom:auto!important}
+#battleScreen .army .slot-1{top:33.333333%!important;bottom:auto!important}
+#battleScreen .army .slot-2{top:66.666666%!important;bottom:auto!important}
+
+/* Unit and artwork are guaranteed to have a real box. */
+#battleScreen .army .unit{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  opacity:1;
+  overflow:visible!important;
+}
+#battleScreen .army .unit.dead{opacity:.15!important}
+
+#battleScreen .army .sprite,
+#battleScreen .unit[data-cid="101"] .sprite,
+#battleScreen .unit[data-cid="102"] .sprite,
+#battleScreen .unit[data-cid="103"] .sprite,
+#battleScreen .unit[data-cid="201"] .sprite,
+#battleScreen .unit[data-cid="202"] .sprite,
+#battleScreen .unit[data-cid="203"] .sprite{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  transform:none!important;
+  translate:none!important;
+  scale:var(--dbg-char-scale,1)!important;
+  transform-origin:center bottom!important;
+  overflow:visible!important;
+}
+#battleScreen .army .sprite img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  opacity:1!important;
+}
+
+/* Adopted enemy facing rule. */
+#battleScreen .unit.side-E .sprite img{
+  transform:scaleX(-1)!important;
+  transform-origin:center center!important;
+}
+
+/* DEBUG remains only an offset/tuning layer. */
+#battleScreen .ally{translate:var(--dbg-ally-x,0px) 0!important}
+#battleScreen .enemy{translate:var(--dbg-enemy-x,0px) 0!important}
+
+/* Attack motion stays on unit, never on formation coordinates. */
+#battleScreen .unit.side-A.attacking,
+#battleScreen .unit.side-A.attack,
+#battleScreen .unit.side-A[data-attacking="true"]{
+  z-index:80!important;
+  animation:v185AttackA .38s ease-in-out!important;
+}
+#battleScreen .unit.side-E.attacking,
+#battleScreen .unit.side-E.attack,
+#battleScreen .unit.side-E[data-attacking="true"]{
+  z-index:80!important;
+  animation:v185AttackE .38s ease-in-out!important;
+}
+@keyframes v185AttackA{
+  0%,100%{translate:0 0}
+  45%{translate:var(--dbg-attack-step,58px) 0}
+}
+@keyframes v185AttackE{
+  0%,100%{translate:0 0}
+  45%{translate:calc(var(--dbg-attack-step,58px) * -1) 0}
+}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
