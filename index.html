@@ -1492,6 +1492,168 @@ body:has(#formationTuner:not([hidden])) .debugBackdrop{
   transform:none!important;
 }
 
+
+/* =========================================================
+   SEKASOKO 6v6 FORMATION ENGINE v4 — CLEAN AUTHORITATIVE BASE
+   Battlefield top-to-bottom = 100% placement area.
+   Skill panel is an overlay and DOES NOT reduce placement area.
+   ========================================================= */
+
+#battleScreen .battle{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr)!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:0 6px!important;
+  gap:0!important;
+  transform:translateY(var(--dbg-field-y,0px))!important;
+  overflow:visible!important;
+}
+
+/* Each army owns exactly half the battlefield. */
+#battleScreen .army,
+#battleScreen .ally,
+#battleScreen .enemy{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:1fr!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  gap:var(--dbg-col-gap,0px)!important;
+  align-self:stretch!important;
+  overflow:visible!important;
+}
+#battleScreen .ally{translate:var(--dbg-ally-x,0px) 0!important}
+#battleScreen .enemy{translate:var(--dbg-enemy-x,0px) 0!important}
+
+/* Front/back columns share the SAME three Y rows. No stagger. */
+#battleScreen .army .col,
+#battleScreen .ally .col:first-child,
+#battleScreen .ally .col:last-child,
+#battleScreen .enemy .col:first-child,
+#battleScreen .enemy .col:last-child{
+  position:relative!important;
+  display:grid!important;
+  grid-template-rows:repeat(3,minmax(0,1fr))!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  gap:var(--dbg-row-gap,0px)!important;
+  inset:auto!important;
+  transform:none!important;
+  translate:none!important;
+  overflow:visible!important;
+}
+
+/* Every slot is one third of the FULL battlefield height. */
+#battleScreen .army .slot,
+#battleScreen .ally .col:first-child .slot,
+#battleScreen .ally .col:last-child .slot,
+#battleScreen .enemy .col:first-child .slot,
+#battleScreen .enemy .col:last-child .slot{
+  position:relative!important;
+  inset:auto!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+  translate:none!important;
+  scale:1!important;
+  overflow:visible!important;
+}
+
+/* Unit movement layer. Formation itself never animates. */
+#battleScreen .army .unit{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  scale:1!important;
+  overflow:visible!important;
+}
+
+/* Artwork stays bottom-anchored inside its own 1/3-height cell. */
+#battleScreen .army .sprite,
+#battleScreen .unit[data-cid="101"] .sprite,
+#battleScreen .unit[data-cid="102"] .sprite,
+#battleScreen .unit[data-cid="103"] .sprite,
+#battleScreen .unit[data-cid="201"] .sprite,
+#battleScreen .unit[data-cid="202"] .sprite,
+#battleScreen .unit[data-cid="203"] .sprite{
+  position:absolute!important;
+  inset:2% 2% 2% 2%!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  transform:none!important;
+  translate:none!important;
+  scale:var(--dbg-char-scale,1)!important;
+  transform-origin:center bottom!important;
+  overflow:visible!important;
+}
+#battleScreen .army .sprite img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+}
+
+/* Enemy facing remains side-driven and independent from placement. */
+#battleScreen .unit.side-E .sprite img{
+  transform:scaleX(-1)!important;
+  transform-origin:center center!important;
+}
+
+/* Skill panel remains an overlay. It never participates in formation sizing. */
+#battleScreen .skillPanel,
+#battleScreen .skill-panel{
+  z-index:500!important;
+}
+
+/* Attack motion uses the unit layer only. */
+#battleScreen .unit.side-A.attacking,
+#battleScreen .unit.side-A.attack,
+#battleScreen .unit.side-A[data-attacking="true"]{
+  z-index:80!important;
+  animation:sekasokoV4AttackA .38s ease-in-out!important;
+}
+#battleScreen .unit.side-E.attacking,
+#battleScreen .unit.side-E.attack,
+#battleScreen .unit.side-E[data-attacking="true"]{
+  z-index:80!important;
+  animation:sekasokoV4AttackE .38s ease-in-out!important;
+}
+@keyframes sekasokoV4AttackA{
+  0%,100%{translate:0 0}
+  45%{translate:var(--dbg-attack-step,58px) 0}
+}
+@keyframes sekasokoV4AttackE{
+  0%,100%{translate:0 0}
+  45%{translate:calc(var(--dbg-attack-step,58px) * -1) 0}
+}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -2127,6 +2289,25 @@ renderHome();initBattle();
   };
   new MutationObserver(()=>{ if(!panel.hidden) cleanLegacyOverlay(); })
     .observe(panel,{attributes:true,attributeFilter:['hidden']});
+})();
+</script>
+
+
+<script>
+(()=>{
+  const K='sekasoko_clean_6v6_v4_initialized';
+  if(localStorage.getItem(K)) return;
+  localStorage.removeItem('sekasoko_formation_tuner_v1');
+  localStorage.setItem(K,'1');
+  /* Apply neutral runtime values immediately; no reload loop. */
+  const r=document.documentElement;
+  r.style.setProperty('--dbg-char-scale','1');
+  r.style.setProperty('--dbg-ally-x','0px');
+  r.style.setProperty('--dbg-enemy-x','0px');
+  r.style.setProperty('--dbg-col-gap','0px');
+  r.style.setProperty('--dbg-row-gap','0px');
+  r.style.setProperty('--dbg-field-y','0px');
+  r.style.setProperty('--dbg-attack-step','58px');
 })();
 </script>
 
