@@ -1271,10 +1271,12 @@ const allies=[
 {name:'凛',icon:'◆',hp:88,atk:24,row:'back',cid:303,spd:70,skill:{name:'一閃（仮）',ct:4}}
 ];
 const enemyBase=[
-{name:'深層スライム',icon:'●',sprite:'assets/slime.png',hp:70,atk:17,row:'front',cid:1001,spd:100,skill:{name:'体当たり',ct:2}},
-{name:'骸の少女',icon:'☠',hp:95,atk:22,row:'front',cid:1002,spd:70,skill:{name:'骨砕き',ct:3}},
-{name:'影喰い',icon:'◉',hp:76,atk:26,row:'back',cid:1003,spd:90,skill:{name:'影撃ち',ct:5}},
-{name:'黒兎',icon:'♠',hp:66,atk:24,row:'back',cid:1004,spd:55,skill:{name:'黒爪',ct:2}}
+{name:'水月 京花',icon:'🌙',sprite:(formationRosterData.find(c=>c.id==='mizuki')||{}).sprite,actionSprite:(formationRosterData.find(c=>c.id==='mizuki')||{}).actionSprite,hp:88,atk:29,row:'front',cid:101,spd:18,mirror:0,sword:0,shield:0,skill:{name:'固有《明鏡止水》',ct:2}},
+{name:'月城 凪',icon:'🌪️',sprite:'assets/characters/nagi.PNG',actionSprite:'assets/characters/nagi.PNG',hp:104,atk:26,row:'front',cid:102,spd:112,mirror:0,sword:0,shield:0,skill:{name:'固有《一世掃射》',ct:5}},
+{name:'緋村 柚',icon:'🥷',sprite:'assets/characters/yuzu.PNG',actionSprite:'assets/characters/yuzu.PNG',hp:92,atk:30,row:'front',cid:103,spd:108,mirror:0,sword:0,shield:0,skill:{name:'固有《雲隠霧消》',ct:3}},
+{name:'聖なる乳牛ハトホル',icon:'🥛',sprite:'assets/characters/hathor.PNG',actionSprite:'assets/characters/hathor.PNG',attr:'乳牛・天',hp:145,atk:18,row:'back',cid:201,spd:55,milk:0,skill:{name:'固有《聖なる雫》',ct:0}},
+{name:'豊穣の乳牛バアル',icon:'🐮',sprite:'assets/characters/baal.PNG',actionSprite:'assets/characters/baal.PNG',attr:'乳牛・地',hp:145,atk:18,row:'back',cid:202,spd:55,milk:0,skill:{name:'固有《豊穣の雫》',ct:0}},
+{name:'恵みの乳牛ナンディ',icon:'🍼',sprite:'assets/characters/nandi.PNG',actionSprite:'assets/characters/nandi.PNG',attr:'乳牛・人',hp:145,atk:18,row:'back',cid:203,spd:55,milk:0,skill:{name:'固有《搾乳の恵み》',ct:0}}
 ];
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,sortieQueue=[],activePartyIndex=0;
 let floor=1,worldDepth=1,maxFloor=10,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runStartMaxHP=0;
