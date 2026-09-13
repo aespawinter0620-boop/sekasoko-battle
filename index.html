@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.203</title>
+<title>セカソコ ver.204</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.203";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.204";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1193,31 +1193,64 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
+
+
 /* =========================================================
-   ver.203 UNIT BOX VISUALIZATION TEST
-   - visualize existing unit rectangles only
-   - no placement / size / transform / combat changes
+   ver.204 NON-OVERLAPPING SIX-SLOT FOUNDATION
+   - logical slots only: 2 columns x 3 rows per side
+   - no overlap between slot rectangles
+   - character art remains overflow-visible and keeps current size
+   - enemy mirror / combat logic / attack behavior unchanged
    ========================================================= */
-#battleScreen #allyArmy .unit,
-#battleScreen #enemyArmy .unit{
-  outline:2px solid rgba(255,255,255,.82)!important;
-  outline-offset:-2px!important;
-  background:rgba(255,255,255,.045)!important;
+#battleScreen .ally,
+#battleScreen .enemy{
+  position:relative!important;
+  overflow:visible!important;
 }
-#battleScreen #allyArmy .unit::after,
-#battleScreen #enemyArmy .unit::after{
-  content:attr(data-slot);
-  position:absolute;
-  left:3px;
-  top:3px;
-  z-index:9999;
-  padding:1px 4px;
-  border-radius:4px;
-  background:rgba(0,0,0,.72);
-  color:#fff;
-  font-size:8px;
-  line-height:1.25;
-  pointer-events:none;
+
+/* Reset historical stagger / diagonal transforms on the logical containers only. */
+#battleScreen .ally .col,
+#battleScreen .enemy .col,
+#battleScreen .ally .slot,
+#battleScreen .enemy .slot{
+  transform:none!important;
+}
+
+/* Two exact columns inside each army half. */
+#battleScreen .ally .col,
+#battleScreen .enemy .col{
+  position:absolute!important;
+  top:0!important;
+  width:50%!important;
+  height:100%!important;
+  overflow:visible!important;
+}
+#battleScreen .ally .col:first-child,
+#battleScreen .enemy .col:first-child{left:0!important}
+#battleScreen .ally .col:last-child,
+#battleScreen .enemy .col:last-child{left:50%!important}
+
+/* Three exact rows; rectangles touch edges but never overlap. */
+#battleScreen .ally .slot,
+#battleScreen .enemy .slot{
+  position:absolute!important;
+  left:0!important;
+  width:100%!important;
+  height:33.333333%!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+#battleScreen .ally .slot-0,
+#battleScreen .enemy .slot-0{top:0!important}
+#battleScreen .ally .slot-1,
+#battleScreen .enemy .slot-1{top:33.333333%!important}
+#battleScreen .ally .slot-2,
+#battleScreen .enemy .slot-2{top:66.666666%!important}
+
+/* Preserve current large-art presentation: artwork may extend outside its logical slot. */
+#battleScreen .ally .sprite,
+#battleScreen .enemy .sprite{
+  overflow:visible!important;
 }
 
 </style></head>
