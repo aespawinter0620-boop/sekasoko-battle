@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.208</title>
+<title>セカソコ ver.209</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.208";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.209";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1460,6 +1460,10 @@ function addMilk(u,n){
 function milkAllies(){return living(A).filter(u=>String(u.attr||'').includes('乳牛'))}
 function frontEnemies(defenders){const f=living(defenders).filter(x=>x.row==='front');return f.length?f:living(defenders)}
 async function hathorHolyDrop(att,defenders){
+  /* ver.209: allied cow attack action */
+  const attacker = document.getElementById(att.id);
+  if(attacker) attacker.classList.add('attacking');
+
  const pool=frontEnemies(defenders);if(!pool.length)return;const t=pool[Math.floor(Math.random()*pool.length)];
  const dmg=Math.max(1,Math.floor(att.max/2));document.querySelector('#status').textContent=`${att.name}「固有《聖なる雫》」`;
  const el=document.getElementById(t.id);t.hp=Math.max(0,t.hp-dmg);damagePop(el,dmg);if(el)el.classList.add('hit');await sleep(220);if(el)el.classList.remove('hit');
@@ -1467,6 +1471,10 @@ async function hathorHolyDrop(att,defenders){
  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(260);if(handleFrontlineDeath(t)){renderBattle();await sleep(320)}}
 }
 async function baalFertileDrop(att,defenders){
+  /* ver.209: allied cow attack action */
+  const attacker = document.getElementById(att.id);
+  if(attacker) attacker.classList.add('attacking');
+
  const pool=frontEnemies(defenders);if(!pool.length)return;const dmg=Math.max(1,Math.floor(att.max/4));document.querySelector('#status').textContent=`${att.name}「固有《豊穣の雫》」`;
  for(const t of pool){const el=document.getElementById(t.id);t.hp=Math.max(0,t.hp-dmg);damagePop(el,dmg);if(el)el.classList.add('hit')}
  await sleep(220);pool.forEach(t=>{const el=document.getElementById(t.id);if(el)el.classList.remove('hit')});addMilk(att,15);
@@ -1474,6 +1482,10 @@ async function baalFertileDrop(att,defenders){
  let pulled=false;for(const t of pool.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(320)}
 }
 async function nandiMilkingGrace(att,defenders){
+  /* ver.209: allied cow attack action */
+  const attacker = document.getElementById(att.id);
+  if(attacker) attacker.classList.add('attacking');
+
  const pool=frontEnemies(defenders);if(!pool.length)return;const t=pool[Math.floor(Math.random()*pool.length)];const dmg=Math.max(1,Math.floor(att.max/10));
  document.querySelector('#status').textContent=`${att.name}「固有《搾乳の恵み》」`;const el=document.getElementById(t.id);const before=t.hp;t.hp=Math.max(0,t.hp-dmg);const dealt=Math.max(0,before-t.hp);damagePop(el,dealt);if(el)el.classList.add('hit');await sleep(220);if(el)el.classList.remove('hit');
  for(const u of milkAllies()){u.hp=Math.min(u.max,u.hp+dealt);addMilk(u,3)}
