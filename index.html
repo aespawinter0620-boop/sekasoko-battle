@@ -1191,6 +1191,103 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   transform-origin:center center !important;
 }
 
+
+/* =========================================================
+   6v6 CLEAN GRID TEST
+   Purpose: temporarily remove all formation overlap and place
+   all 12 characters evenly so the battlefield/background size
+   can be judged without perspective-layout noise.
+   ========================================================= */
+
+/* Each side is a strict 2 columns x 3 rows grid. */
+#battleScreen .ally,
+#battleScreen .enemy{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:1fr!important;
+  gap:0!important;
+  position:relative!important;
+  overflow:visible!important;
+}
+
+#battleScreen .ally .col,
+#battleScreen .enemy .col{
+  display:grid!important;
+  grid-template-rows:repeat(3,minmax(0,1fr))!important;
+  gap:0!important;
+  position:relative!important;
+  min-width:0!important;
+}
+
+/* Cancel every old absolute/staggered slot position. */
+#battleScreen .ally .slot,
+#battleScreen .enemy .slot,
+#battleScreen .ally .col:first-child .slot,
+#battleScreen .ally .col:last-child .slot,
+#battleScreen .enemy .col:first-child .slot,
+#battleScreen .enemy .col:last-child .slot{
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  width:100%!important;
+  height:33.333%!important;
+  min-height:0!important;
+  transform:none!important;
+  overflow:visible!important;
+}
+
+/* Give every character exactly one cell and keep the art inside it. */
+#battleScreen .ally .unit,
+#battleScreen .enemy .unit{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  transform:none!important;
+}
+
+#battleScreen .ally .sprite,
+#battleScreen .enemy .sprite,
+#battleScreen .unit[data-cid="101"] .sprite,
+#battleScreen .unit[data-cid="102"] .sprite,
+#battleScreen .unit[data-cid="103"] .sprite,
+#battleScreen .unit[data-cid="201"] .sprite,
+#battleScreen .unit[data-cid="202"] .sprite,
+#battleScreen .unit[data-cid="203"] .sprite{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  scale:1!important;
+  transform:none!important;
+  transform-origin:center bottom!important;
+  overflow:visible!important;
+}
+
+#battleScreen .ally .sprite img,
+#battleScreen .enemy .sprite img,
+#battleScreen .unit[data-cid="101"] .sprite img,
+#battleScreen .unit[data-cid="102"] .sprite img,
+#battleScreen .unit[data-cid="103"] .sprite img,
+#battleScreen .unit[data-cid="201"] .sprite img,
+#battleScreen .unit[data-cid="202"] .sprite img,
+#battleScreen .unit[data-cid="203"] .sprite img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+}
+
+/* Enemy art keeps the adopted automatic mirror. */
+#battleScreen .enemy .sprite img{
+  transform:scaleX(-1)!important;
+  transform-origin:center center!important;
+}
+
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
