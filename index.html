@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.214</title>
+<title>セカソコ ver.215</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.214";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.215";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1448,10 +1448,15 @@ function handleFrontlineDeath(u){
  return null;
 }
 function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
-// ver.214 共通ダメージ処理
+// ver.215 共通ダメージ処理
 // 原則：戦闘数値の小数点以下は、一連の計算結果の最後に1回だけ切り捨てる。
 // DEF：元ダメージの30%は最低保証領域、70%のみDEFで減算。
 // 🛡️盾：DEF適用後ダメージを1スタック=1ダメージで0まで相殺可能。
+// ver.215 🗡️剣：永続蓄積型。1スタックにつき実効ATK+1。
+function effectiveAtk(u){
+ return Math.max(0,(Number(u?.atk)||0)+Math.floor(Number(u?.sword)||0));
+}
+
 function applyCombatDamage(t,rawDamage,{ignoreDef=false,ignoreShield=false}={}){
  const raw=Math.max(0,Number(rawDamage)||0);
  if(raw<=0)return{raw:0,afterDef:0,shieldUsed:0,damage:0};
@@ -1478,7 +1483,7 @@ function addMilk(u,n){
 function milkAllies(){return living(A).filter(u=>String(u.attr||'').includes('乳牛'))}
 function frontEnemies(defenders){const f=living(defenders).filter(x=>x.row==='front');return f.length?f:living(defenders)}
 async function hathorHolyDrop(att,defenders){
-  /* ver.214: allied cow attack action */
+  /* ver.215: allied cow attack action */
   const attacker = document.getElementById(att.id);
   if(attacker) attacker.classList.add('attacking');
 
@@ -1489,7 +1494,7 @@ async function hathorHolyDrop(att,defenders){
  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(260);if(handleFrontlineDeath(t)){renderBattle();await sleep(320)}}
 }
 async function baalFertileDrop(att,defenders){
-  /* ver.214: allied cow attack action */
+  /* ver.215: allied cow attack action */
   const attacker = document.getElementById(att.id);
   if(attacker) attacker.classList.add('attacking');
 
@@ -1500,7 +1505,7 @@ async function baalFertileDrop(att,defenders){
  let pulled=false;for(const t of pool.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(320)}
 }
 async function nandiMilkingGrace(att,defenders){
-  /* ver.214: allied cow attack action */
+  /* ver.215: allied cow attack action */
   const attacker = document.getElementById(att.id);
   if(attacker) attacker.classList.add('attacking');
 
@@ -1599,7 +1604,7 @@ async function absoluteDomainAttack(att,defenders){
  if(!targets.length)return;
  document.querySelector('#status').textContent=`${att.name}「固有技《絶対領域展開》」 CT2`;
  const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
- const dmg=Math.max(1,Math.floor(att.atk*.5));
+ const dmg=Math.max(1,Math.floor(effectiveAtk(att)*.5));
  for(const t of [...targets]){
    if(t.hp<=0)continue;
    await sleep(80);
@@ -1626,7 +1631,7 @@ async function resolveAbsoluteDomain(att,defenders){
  att.absoluteDomain=false;
  if(shots<=0){document.querySelector('#status').textContent=`${att.name}《絶対領域》終了｜🪞0`;renderBattle();await sleep(120);return}
  document.querySelector('#status').textContent=`${att.name}《絶対領域》終撃！ 🪞${shots}を全消費`;
- const dmg=Math.max(1,Math.floor(att.atk*.5));
+ const dmg=Math.max(1,Math.floor(effectiveAtk(att)*.5));
  for(let i=0;i<shots&&living(defenders).length;i++){
    const pool=living(defenders);
    const t=pool[Math.floor(Math.random()*pool.length)];
@@ -1684,7 +1689,7 @@ async function attack(att,defenders){
    if(targetEl)targetEl.classList.remove('hit');
    return;
  }
- const rawDmg=(t.side==='A'&&debugInvincible)?0:att.atk;
+ const rawDmg=(t.side==='A'&&debugInvincible)?0:effectiveAtk(att);
  const hit=rawDmg>0?applyCombatDamage(t,rawDmg):{damage:0,shieldUsed:0,afterDef:0};
  damagePop(targetEl,hit.damage);
  await sleep(170);
