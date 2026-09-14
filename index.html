@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.229</title>
+<title>セカソコ ver.230</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.229";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.230";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1248,7 +1248,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.229: suppress iOS/Safari save/share callout for battlefield character art */
+/* ver.230: suppress iOS/Safari save/share callout for battlefield character art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1256,7 +1256,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.229: dedicated face icon standard — no full-body crop transform */
+/* ver.230: dedicated face icon standard — no full-body crop transform */
 #battleScreen .orderChip.actionFace img[src*="/icons/"],
 .charStatusFace img[src*="/icons/"],
 .battleDetailIcon img[src*="/icons/"]{
@@ -1268,7 +1268,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   image-rendering:auto!important;
 }
 
-/* ver.229: suppress remaining Safari image preview/drag behavior on battlefield art */
+/* ver.230: suppress remaining Safari image preview/drag behavior on battlefield art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1671,14 +1671,13 @@ async function absoluteDomainAttack(u,enemies){
   const hit=applyCombatDamage(t,raw);damagePop(el,hit.damage);
   u.mirror=16;
   grantSwift(u,16);
-  u.shield=(u.shield||0)+16;
   u.sword=(u.sword||0)+16;
   u.harden=(u.harden||0)+16;
   u.absoluteDomain=true;
   await sleep(180);
   if(attacker)attacker.classList.remove('attacking');if(el)el.classList.remove('hit');
   if(t.hp<=0&&handleFrontlineDeath(t)){renderBattle();await sleep(120)}
-  document.querySelector('#status').textContent='《絶対領域展開》｜🪞16 👞16 🛡️16 🗡️16 💪16';
+  document.querySelector('#status').textContent='《絶対領域展開》｜🪞16 👞16 🗡️16 💪16';
   renderBattle();
 }
 async function absoluteDomainRelease(u,enemies){
@@ -1716,8 +1715,8 @@ function configureUniqueSkill(u){
    n.textContent='雲隠霧消';d.textContent='後列2Hit／透波🪞+2　CT3';d.dataset.ct='3';
    btn.dataset.skillDetail='《雲隠霧消》｜CT3（暫定）｜敵後列からランダム1体へATK依存2回攻撃。後列がいない場合は前列を対象。使用後、本人を含む部隊内の透波属性メンバー全員に明鏡止水×2。';
  }else{
-   n.textContent='絶対領域展開';d.textContent='単体ATK50%／5種+16　CT200';d.dataset.ct='200';
-   btn.dataset.skillDetail='《絶対領域展開》｜CT200｜ランダム敵単体へATK依存小ダメージ（ATK50%）。自身に🪞明鏡止水×16（上限16）、👞俊足×16、🛡️盾×16、🗡️剣×16、💪硬化×16。次回自身ターン直前まで回避率+20%。';
+   n.textContent='絶対領域展開';d.textContent='単体ATK50%／4種+16　CT200';d.dataset.ct='200';
+   btn.dataset.skillDetail='《絶対領域展開》｜CT200｜ランダム敵単体へATK依存小ダメージ（ATK50%）。自身に🪞明鏡止水×16（上限16）、👞俊足×16、🗡️剣×16、💪硬化×16。次回自身ターン直前まで回避率+20%。';
  }
 
  const n2=document.querySelector('#uniqueSkill2Name'),d2=document.querySelector('#uniqueSkill2Desc'),btn2=document.querySelector('#uniqueSkill2');
