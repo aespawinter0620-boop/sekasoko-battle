@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.222</title>
+<title>セカソコ ver.223</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.222";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.223";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1245,6 +1245,14 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   -webkit-user-select:none!important;
   user-select:none!important;
   -webkit-touch-callout:none!important;
+}
+
+
+/* ver.223: suppress iOS/Safari save/share callout for battlefield character art */
+#battleScreen .unit .sprite img{
+  -webkit-touch-callout:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
 }
 
 </style></head>
@@ -1347,7 +1355,7 @@ const enemyBase=[
 {name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:24,row:'back',cid:1004,spd:55,skill:{name:'黒爪',ct:2}}
 ];
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,sortieQueue=[],activePartyIndex=0;
-let floor=1,worldDepth=1,maxFloor=10,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runStartMaxHP=0;
+let floor=1,worldDepth=1,maxFloor=100,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runStartMaxHP=0;
 const sleep=m=>new Promise(r=>setTimeout(r,m/debugSpeed));
 const baseWait=u=>Math.max(20,Math.round(1000/Math.sqrt(u.spd)));
 const actionCost=u=>baseWait(u)+(u.skill?.ct||0)*10;
