@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.227</title>
+<title>セカソコ ver.228</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.227";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.228";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1248,7 +1248,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.227: suppress iOS/Safari save/share callout for battlefield character art */
+/* ver.228: suppress iOS/Safari save/share callout for battlefield character art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1256,7 +1256,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.227: dedicated face icon standard — no full-body crop transform */
+/* ver.228: dedicated face icon standard — no full-body crop transform */
 #battleScreen .orderChip.actionFace img[src*="/icons/"],
 .charStatusFace img[src*="/icons/"],
 .battleDetailIcon img[src*="/icons/"]{
@@ -1268,7 +1268,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   image-rendering:auto!important;
 }
 
-/* ver.227: suppress remaining Safari image preview/drag behavior on battlefield art */
+/* ver.228: suppress remaining Safari image preview/drag behavior on battlefield art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1378,7 +1378,21 @@ const enemyBase=[
 ];
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,sortieQueue=[],activePartyIndex=0;
 let floor=1,worldDepth=1,maxFloor=100,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runStartMaxHP=0;
-const sleep=m=>new Promise(r=>setTimeout(r,m/debugSpeed)); const effectiveSpd=u=>Math.max(0,(Number(u?.spd)||0)+Math.floor(Number(u?.swift)||0));
+const sleep=m=>new Promise(r=>setTimeout(r,m/debugSpeed)); const swiftTotal=u=>Array.isArray(u?.swiftBatches)?u.swiftBatches.reduce((sum,b)=>sum+Math.max(0,Math.floor(Number(b?.amount)||0)),0):Math.max(0,Math.floor(Number(u?.swift)||0));
+const syncSwift=u=>{if(u)u.swift=swiftTotal(u);return u?.swift||0};
+const effectiveSpd=u=>Math.max(0,(Number(u?.spd)||0)+swiftTotal(u));
+function grantSwift(u,amount){
+  amount=Math.max(0,Math.floor(Number(amount)||0));if(!u||!amount)return;
+  if(!Array.isArray(u.swiftBatches))u.swiftBatches=[];
+  u.swiftBatches.push({amount,turns:0});syncSwift(u);
+}
+function tickSwiftAtTurnStart(u){
+  if(!u)return;
+  if(!Array.isArray(u.swiftBatches)){u.swiftBatches=[];if(u.swift>0)u.swiftBatches.push({amount:Math.floor(Number(u.swift)||0),turns:0});}
+  u.swiftBatches.forEach(b=>b.turns=(b.turns||0)+1);
+  u.swiftBatches=u.swiftBatches.filter(b=>b.turns<2);
+  syncSwift(u);
+}
 const baseWait=u=>Math.max(20,Math.round(1000/Math.sqrt(Math.max(1,effectiveSpd(u)))));
 const actionCost=u=>baseWait(u)+(u.skill?.ct||0)*10;
 function allUnits(){return [...A,...E]}
@@ -1416,7 +1430,7 @@ function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingPar
 function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)||units.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
 function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${Math.max(0,u.hp)+(u.shield||0)} / ${u.max}</div></div></div>`}
 function forecast(n=10){
- const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,swift:u.swift||0,cid:u.cid,ct:u.skill?.ct||0,cost:actionCost(u)}));
+ const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,swift:u.swift||0,swiftBatches:clone(u.swiftBatches||[]),cid:u.cid,ct:u.skill?.ct||0,cost:actionCost(u)}));
  const out=[];
  for(let i=0;i<n&&sim.length;i++){sim.sort(compareTurn);const u=sim[0];out.push({...u});u.next+=u.cost}
  return out;
@@ -1434,7 +1448,7 @@ function unitStateTags(u){
  if(u.healBlock)tags.push(`❤️‍🩹 回復阻害 ${u.healBlock}`);
  if(u.shield)tags.push(`🛡️ 盾 ${u.shield}`);
  if(u.invincible)tags.push(`⭐️ 無敵 ${u.invincible}`);
- if(u.sword)tags.push(`🗡️ ${u.sword}`);  if(u.swift)tags.push(`👞 俊足 ${u.swift}`);
+ if(u.sword)tags.push(`🗡️ ${u.sword}`);  if(swiftTotal(u))tags.push(`👞 俊足 ${swiftTotal(u)}`);
  return tags;
 }
 function renderActorStates(){
@@ -1448,7 +1462,7 @@ function openBattleUnitDetail(u){
  if(!u)return;const tags=unitStateTags(u),side=u.side==='A'?'味方':'敵',row=u.row==='front'?'前衛':'後衛';
  const detailFace=u.faceIcon||u.actionSprite||u.sprite;const visual=detailFace?`<img src="${detailFace}" alt="${u.name}">`:u.icon;
  const power=calcPower({hp:u.max,atk:u.atk||0,def:u.def||0,spd:u.spd||0}),floors=getFloorCounts()[u.rosterId||u.name]||0;
- document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="battleDetailHero"><div class="battleDetailIcon ${u.sprite?'faceCrop':''}">${visual}</div><div class="battleDetailMeta">${side}｜${row}<br>総合戦力 ${power.toLocaleString()}<br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div></div><div class="stats"><div class="stat">HP<b>${Math.max(0,u.hp)+(u.shield||0)} / ${u.max}</b><small>HP ${Math.max(0,u.hp)} + 🛡️${u.shield||0}</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}</small></div><div class="stat">DEF<b>${Math.max(0,(Number(u.def)||0)+Math.floor(Number(u.harden)||0))}</b><small>DEF ${u.def??0} + 💪${u.harden||0}</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${u.swift||0}</small></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="battleDetailHero"><div class="battleDetailIcon ${u.sprite?'faceCrop':''}">${visual}</div><div class="battleDetailMeta">${side}｜${row}<br>総合戦力 ${power.toLocaleString()}<br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div></div><div class="stats"><div class="stat">HP<b>${Math.max(0,u.hp)+(u.shield||0)} / ${u.max}</b><small>HP ${Math.max(0,u.hp)} + 🛡️${u.shield||0}</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}</small></div><div class="stat">DEF<b>${Math.max(0,(Number(u.def)||0)+Math.floor(Number(u.harden)||0))}</b><small>DEF ${u.def??0} + 💪${u.harden||0}</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
  document.querySelector('#modal').classList.add('show');
 }
 function bindBattleUnitDetails(){
@@ -1763,7 +1777,7 @@ async function battle(){
    while(living(E).length&&turnNo<600){
      if(!living(A).length){syncActiveParty();document.querySelector('#status').textContent='部隊'+(sortieQueue[activePartyIndex].slot+1)+' 壊滅';await sleep(450);if(!deployNextParty())break;await sleep(350)}
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
-     if(u.swift>0)u.swift=0;turnNo++;
+     tickSwiftAtTurnStart(u);turnNo++;
      if(u.side==='A'&&u.cid===101&&u.absoluteDomain){await resolveAbsoluteDomain(u,E);if(!running)return;if(!living(E).length)continue}
      if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;if(u.cid===101)await absoluteDomainAttack(u,E);else if(u.cid===102)await nagiIsseiSousha(u,E);else if(u.cid===103)await yuzuUninMusho(u,E);else if(u.cid===201)await hathorHolyDrop(u,E);else if(u.cid===202)await baalFertileDrop(u,E);else await nandiMilkingGrace(u,E);currentActor=null;resolvePlayerAction=null}else{await attack(u,u.side==='A'?E:A)}
      u.next+=actionCost(u);syncActiveParty();renderBattle();
