@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.210</title>
+<title>セカソコ ver.211</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.210";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.211";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1380,7 +1380,7 @@ function renderOrder(){
 function unitStateTags(u){
  const tags=[];
  if(u.milk)tags.push(`🥛 牛乳 ${u.milk}`);
- if(u.mirror){tags.push(`🪞 明鏡止水 ${u.mirror}`)}if(u.cid===101){const m=u.mirror||0;tags.push(`回避 ${Math.min(80,m*5)}%`)}
+ if(u.mirror){tags.push(`🪞 明鏡止水 ${u.mirror}`);tags.push(`回避 ${Math.min(80,u.mirror*5)}%`)}
  if(u.poison)tags.push(`☠️ 毒 ${u.poison}`);
  if(u.paralysis)tags.push(`⚡ 麻痺 ${u.paralysis}`);
  if(u.healBlock)tags.push(`❤️‍🩹 回復阻害 ${u.healBlock}`);
@@ -1448,7 +1448,7 @@ function handleFrontlineDeath(u){
  return null;
 }
 function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
-function tryEvade(t){if(t.cid!==101||!t.mirror)return false;const rate=Math.min(80,t.mirror*5);if(Math.random()*100<rate){t.mirror--;document.querySelector('#status').textContent=`${t.name} が回避！ MISS　🪞${t.mirror}`;return true}return false}
+function tryEvade(t){if(!t||!t.mirror)return false;const rate=Math.min(80,t.mirror*5);if(Math.random()*100<rate){t.mirror--;document.querySelector('#status').textContent=`${t.name} が回避！ MISS　🪞${t.mirror}`;return true}return false}
 
 
 function addMilk(u,n){
@@ -1460,7 +1460,7 @@ function addMilk(u,n){
 function milkAllies(){return living(A).filter(u=>String(u.attr||'').includes('乳牛'))}
 function frontEnemies(defenders){const f=living(defenders).filter(x=>x.row==='front');return f.length?f:living(defenders)}
 async function hathorHolyDrop(att,defenders){
-  /* ver.210: allied cow attack action */
+  /* ver.211: allied cow attack action */
   const attacker = document.getElementById(att.id);
   if(attacker) attacker.classList.add('attacking');
 
@@ -1471,7 +1471,7 @@ async function hathorHolyDrop(att,defenders){
  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(260);if(handleFrontlineDeath(t)){renderBattle();await sleep(320)}}
 }
 async function baalFertileDrop(att,defenders){
-  /* ver.210: allied cow attack action */
+  /* ver.211: allied cow attack action */
   const attacker = document.getElementById(att.id);
   if(attacker) attacker.classList.add('attacking');
 
@@ -1482,7 +1482,7 @@ async function baalFertileDrop(att,defenders){
  let pulled=false;for(const t of pool.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(320)}
 }
 async function nandiMilkingGrace(att,defenders){
-  /* ver.210: allied cow attack action */
+  /* ver.211: allied cow attack action */
   const attacker = document.getElementById(att.id);
   if(attacker) attacker.classList.add('attacking');
 
