@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.234</title>
+<title>セカソコ ver.235</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.234";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.235";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1248,7 +1248,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.234: suppress iOS/Safari save/share callout for battlefield character art */
+/* ver.235: suppress iOS/Safari save/share callout for battlefield character art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1256,7 +1256,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.234: dedicated face icon standard — no full-body crop transform */
+/* ver.235: dedicated face icon standard — no full-body crop transform */
 #battleScreen .orderChip.actionFace img[src*="/icons/"],
 .charStatusFace img[src*="/icons/"],
 .battleDetailIcon img[src*="/icons/"]{
@@ -1268,7 +1268,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   image-rendering:auto!important;
 }
 
-/* ver.234: suppress remaining Safari image preview/drag behavior on battlefield art */
+/* ver.235: suppress remaining Safari image preview/drag behavior on battlefield art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1520,7 +1520,7 @@ function handleFrontlineDeath(u){
  return null;
 }
 function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
-// ver.234 ステータス系スタック共通ルール
+// ver.235 ステータス系スタック共通ルール
 // 🗡️1 = 付与された本人の基礎ATK 1% / 💪1 = 本人の基礎DEF 1% / 🛡️1 = 本人の基礎最大HP 1%分を吸収。
 // 原則：一連の計算結果の最後に切り捨て。🛡️は吸収した実量に応じてスタックを消費する。
 function baseMaxHp(u){return Math.max(1,Number(u?.baseMax)||Number(u?.max)||Number(u?.hp)||1)}
@@ -1683,7 +1683,7 @@ function configureUniqueSkill(u){
    btn.dataset.skillDetail='《雲隠霧消》｜CT5｜敵後衛ランダム1体へATK依存中×2。後衛不在時は前衛。生存透波全員へ🪞+3・🛡️+10。';
  }else{
    n.textContent='絶対領域展開';d.textContent='単体ATK50%／🪞8 👞100 🗡️7 💪7　CT10';d.dataset.ct='10';
-   btn.dataset.skillDetail='《絶対領域展開》｜CT200｜ランダム敵単体へATK依存小ダメージ（ATK50%）。自身に🪞明鏡止水×16（上限16）、👞俊足×16、🗡️剣×16、💪硬化×16。次回自身ターン直前まで回避率+20%。';
+   btn.dataset.skillDetail='《絶対領域展開》｜CT10｜敵ランダム1体へATK依存小ダメージ（ATK50%）。自身に🪞明鏡止水×8（上限16）、👞俊足×100、🗡️剣×7、💪硬化×7。次回自身ターン直前まで「絶対領域」：回避率+20%。総回避率＝🪞明鏡止水st×5%＋20%。';
  }
 
  const n2=document.querySelector('#uniqueSkill2Name'),d2=document.querySelector('#uniqueSkill2Desc'),btn2=document.querySelector('#uniqueSkill2');
