@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.245</title>
+<title>セカソコ ver.246</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.245";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.246";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1248,7 +1248,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.245: suppress iOS/Safari save/share callout for battlefield character art */
+/* ver.246: suppress iOS/Safari save/share callout for battlefield character art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1256,7 +1256,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.245: dedicated face icon standard — no full-body crop transform */
+/* ver.246: dedicated face icon standard — no full-body crop transform */
 #battleScreen .orderChip.actionFace img[src*="/icons/"],
 .charStatusFace img[src*="/icons/"],
 .battleDetailIcon img[src*="/icons/"]{
@@ -1268,7 +1268,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   image-rendering:auto!important;
 }
 
-/* ver.245: suppress remaining Safari image preview/drag behavior on battlefield art */
+/* ver.246: suppress remaining Safari image preview/drag behavior on battlefield art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1279,9 +1279,26 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 </style>
 
-<style id="ver245-live-buffs">
-#battleScreen .unit{overflow:visible!important}
-#battleScreen .battleBuffRow{position:absolute!important;left:-3px!important;right:-3px!important;bottom:26px!important;z-index:12!important;display:block!important;height:13px!important;line-height:13px!important;font-size:8px!important;font-weight:900!important;color:#fff!important;text-align:center!important;white-space:nowrap!important;overflow:visible!important;pointer-events:none!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
+<style id="ver246-live-buffs">
+/* Overlay only. No height/padding/position changes to battlefield units or HP plate. */
+#battleScreen .battleBuffRow{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:31px!important;
+  z-index:40!important;
+  display:block!important;
+  height:14px!important;
+  line-height:14px!important;
+  font-size:9px!important;
+  font-weight:1000!important;
+  color:#fff!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  pointer-events:none!important;
+  text-shadow:0 1px 2px #000,0 0 4px #000,0 0 4px #000!important;
+}
 #battleScreen .battleBuffRow:empty{display:none!important}
 </style></head>
 <body><main class="app">
@@ -1467,7 +1484,7 @@ function battleBuffSummary(u){
  const swift=swiftTotal(u);if(swift>0)parts.push(`👞${Math.floor(swift)}`);
  return parts.join(' ');
 }
-function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="unitBottom"><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</div></div></div>`}
+function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</div></div></div>`}
 function forecast(n=10){
  const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,swift:u.swift||0,swiftBatches:clone(u.swiftBatches||[]),cid:u.cid,ct:u.skill?.ct||0,cost:actionCost(u)}));
  const out=[];
@@ -1549,7 +1566,7 @@ function handleFrontlineDeath(u){
  return null;
 }
 function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
-// ver.245 ステータス系スタック共通ルール
+// ver.246 ステータス系スタック共通ルール
 // 🗡️1 = 付与された本人の基礎ATK 1% / 💪1 = 本人の基礎DEF 1% / 🛡️1 = 本人の基礎最大HP 1%分を吸収。
 // 原則：一連の計算結果の最後に切り捨て。🛡️は吸収した実量に応じてスタックを消費する。
 function baseMaxHp(u){return Math.max(1,Number(u?.baseMax)||Number(u?.max)||Number(u?.hp)||1)}
