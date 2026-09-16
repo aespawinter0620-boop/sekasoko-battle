@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.246</title>
+<title>セカソコ ver.247</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.246";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.247";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1248,7 +1248,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.246: suppress iOS/Safari save/share callout for battlefield character art */
+/* ver.247: suppress iOS/Safari save/share callout for battlefield character art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1256,7 +1256,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.246: dedicated face icon standard — no full-body crop transform */
+/* ver.247: dedicated face icon standard — no full-body crop transform */
 #battleScreen .orderChip.actionFace img[src*="/icons/"],
 .charStatusFace img[src*="/icons/"],
 .battleDetailIcon img[src*="/icons/"]{
@@ -1268,7 +1268,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   image-rendering:auto!important;
 }
 
-/* ver.246: suppress remaining Safari image preview/drag behavior on battlefield art */
+/* ver.247: suppress remaining Safari image preview/drag behavior on battlefield art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1279,27 +1279,42 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 </style>
 
-<style id="ver246-live-buffs">
-/* Overlay only. No height/padding/position changes to battlefield units or HP plate. */
+<style id="ver247-three-line-hud">
+/* Three-line foot HUD: 2 buff lines + existing HP line.
+   Character art size and battlefield cell size are unchanged. */
 #battleScreen .battleBuffRow{
   position:absolute!important;
-  left:0!important;
-  right:0!important;
-  bottom:31px!important;
+  left:2px!important;
+  right:2px!important;
+  bottom:24px!important;
   z-index:40!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:0!important;
+  height:22px!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+}
+#battleScreen .battleBuffRow span{
   display:block!important;
-  height:14px!important;
-  line-height:14px!important;
-  font-size:9px!important;
+  width:100%!important;
+  height:11px!important;
+  line-height:11px!important;
+  font-size:7px!important;
   font-weight:1000!important;
   color:#fff!important;
   text-align:center!important;
   white-space:nowrap!important;
-  overflow:visible!important;
-  pointer-events:none!important;
-  text-shadow:0 1px 2px #000,0 0 4px #000,0 0 4px #000!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  text-shadow:0 1px 2px #000,0 0 3px #000!important;
 }
+#battleScreen .battleBuffRow span:empty{display:none!important}
 #battleScreen .battleBuffRow:empty{display:none!important}
+/* Move only the existing HP plate slightly downward within the same cell. */
+#battleScreen .unitBottom{bottom:1px!important}
 </style></head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -1475,14 +1490,16 @@ function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(n
 function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=makeEnemies(floor);takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
 function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)||units.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
 function battleBuffSummary(u){
- const parts=[];
- if((u.sword||0)>0)parts.push(`🗡️${Math.floor(u.sword)}`);
- if((u.shield||0)>0)parts.push(`🛡️${shieldStackDisplay(u)}`);
- if((u.milk||0)>0)parts.push(`🥛${Math.floor(u.milk)}`);
+ const items=[];
+ if((u.sword||0)>0)items.push(`🗡️${Math.floor(u.sword)}`);
+ if((u.shield||0)>0)items.push(`🛡️${Math.floor(Number(shieldStackDisplay(u))||0)}`);
+ if((u.milk||0)>0)items.push(`🥛${Math.floor(u.milk)}`);
  const evade=Math.min(16,Math.max(0,Math.floor(Number(u.mirror)||0)))*5+(u.absoluteDomain?20:0);
- if(evade>0)parts.push(`回避${evade}%`);
- const swift=swiftTotal(u);if(swift>0)parts.push(`👞${Math.floor(swift)}`);
- return parts.join(' ');
+ if(evade>0)items.push(`回避${evade}%`);
+ const swift=swiftTotal(u);if(swift>0)items.push(`👞${Math.floor(swift)}`);
+ if(!items.length)return '';
+ const split=Math.ceil(items.length/2);
+ return `<span>${items.slice(0,split).join(' ')}</span><span>${items.slice(split).join(' ')}</span>`;
 }
 function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</div></div></div>`}
 function forecast(n=10){
@@ -1566,7 +1583,7 @@ function handleFrontlineDeath(u){
  return null;
 }
 function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
-// ver.246 ステータス系スタック共通ルール
+// ver.247 ステータス系スタック共通ルール
 // 🗡️1 = 付与された本人の基礎ATK 1% / 💪1 = 本人の基礎DEF 1% / 🛡️1 = 本人の基礎最大HP 1%分を吸収。
 // 原則：一連の計算結果の最後に切り捨て。🛡️は吸収した実量に応じてスタックを消費する。
 function baseMaxHp(u){return Math.max(1,Number(u?.baseMax)||Number(u?.max)||Number(u?.hp)||1)}
