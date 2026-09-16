@@ -1174,7 +1174,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.269";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.270";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1287,8 +1287,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 
-<style id="ver269-canonical-horizontal-formation">
-/* ver.269 canonical battlefield placement.
+<style id="ver270-canonical-horizontal-formation">
+/* ver.270 canonical battlefield placement.
    Old diagonal/experimental placement is superseded here by one shared geometry. */
 #battleScreen #allyArmy .slot,
 #battleScreen #enemyArmy .slot{
@@ -1334,8 +1334,9 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   object-position:center bottom!important;
   transform-origin:center bottom!important;
 }
-#battleScreen #allyArmy .sprite img{transform:none!important}
-#battleScreen #enemyArmy .sprite img{transform:scaleX(-1)!important}
+/* ver.270: enlarge character art only. Keep slot/Y/HP geometry unchanged. */
+#battleScreen #allyArmy .sprite img{transform:scale(1.18)!important}
+#battleScreen #enemyArmy .sprite img{transform:scale(-1.18,1.18)!important}
 </style>
 
 </head>
