@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.241</title>
+<title>セカソコ ver.242</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1180,7 +1180,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.241";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.242";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1248,7 +1248,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.241: suppress iOS/Safari save/share callout for battlefield character art */
+/* ver.242: suppress iOS/Safari save/share callout for battlefield character art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1256,7 +1256,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.241: dedicated face icon standard — no full-body crop transform */
+/* ver.242: dedicated face icon standard — no full-body crop transform */
 #battleScreen .orderChip.actionFace img[src*="/icons/"],
 .charStatusFace img[src*="/icons/"],
 .battleDetailIcon img[src*="/icons/"]{
@@ -1268,7 +1268,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   image-rendering:auto!important;
 }
 
-/* ver.241: suppress remaining Safari image preview/drag behavior on battlefield art */
+/* ver.242: suppress remaining Safari image preview/drag behavior on battlefield art */
 #battleScreen .unit .sprite img{
   -webkit-touch-callout:none!important;
   -webkit-user-select:none!important;
@@ -1520,7 +1520,7 @@ function handleFrontlineDeath(u){
  return null;
 }
 function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
-// ver.241 ステータス系スタック共通ルール
+// ver.242 ステータス系スタック共通ルール
 // 🗡️1 = 付与された本人の基礎ATK 1% / 💪1 = 本人の基礎DEF 1% / 🛡️1 = 本人の基礎最大HP 1%分を吸収。
 // 原則：一連の計算結果の最後に切り捨て。🛡️は吸収した実量に応じてスタックを消費する。
 function baseMaxHp(u){return Math.max(1,Number(u?.baseMax)||Number(u?.max)||Number(u?.hp)||1)}
@@ -1697,41 +1697,40 @@ function waitForPlayerSkill(u){if(autoMode){selectedSkillSlot=u.autoSkillSlot||1
 
 async function attack(att,defenders){
  if(att.hp<=0)return;
- const t=target(defenders);
- if(!t)return;
- document.querySelector('#status').textContent=`${att.name}「${att.skill.name}」 CT${att.skill.ct}`;
  const attacker=document.getElementById(att.id);
+ document.querySelector('#status').textContent=`${att.name}「${att.skill.name}」 CT${att.skill.ct}`;
  if(attacker)attacker.classList.add('attacking');
  await sleep(180);
- const targetEl=document.getElementById(t.id);
- document.querySelector('#flash').classList.add('on');
- if(targetEl)targetEl.classList.add('hit');
- if(t.side==='A'&&!debugInvincible&&tryEvade(t)){
-   damagePop(targetEl,'MISS');
-   await sleep(220);
-   document.querySelector('#flash').classList.remove('on');
-   if(targetEl)targetEl.classList.remove('hit');
-   return;
- }
- const rawDmg=(t.side==='A'&&debugInvincible)?0:effectiveAtk(att);
- const hit=rawDmg>0?applyCombatDamage(t,rawDmg):{damage:0,shieldUsed:0,afterDef:0};
- damagePop(targetEl,hit.damage);
- await sleep(170);
- document.querySelector('#flash').classList.remove('on');
- if(targetEl)targetEl.classList.remove('hit');
- if(t.hp<=0){
-   if(targetEl)targetEl.classList.add('dying');
-   document.querySelector('#status').textContent=`${t.name} を倒した！`;
-   await sleep(420);
-   const pulled=handleFrontlineDeath(t);
-   if(pulled){
-     // 同じ攻撃処理はここで完全終了。新前衛へダメージを引き継がない。
-     if(t.side==='A')syncActiveParty();
-     renderBattle();
-     await sleep(500);
+ const enemyTestAttack=att.side==='E';
+ const hitCount=enemyTestAttack?2:1;
+ for(let i=0;i<hitCount;i++){
+   const alive=living(defenders),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;
+   if(!pool.length)break;
+   const t=enemyTestAttack?pool[Math.floor(Math.random()*pool.length)]:pool[0];
+   const targetEl=document.getElementById(t.id);
+   document.querySelector('#flash').classList.add('on');
+   if(targetEl)targetEl.classList.add('hit');
+   if(t.side==='A'&&!debugInvincible&&tryEvade(t)){
+     damagePop(targetEl,'MISS');
+     await sleep(170);
+     document.querySelector('#flash').classList.remove('on');
+     if(targetEl)targetEl.classList.remove('hit');
+   }else{
+     const rawDmg=(t.side==='A'&&debugInvincible)?0:Math.floor(effectiveAtk(att)*(enemyTestAttack?.5:1));
+     const hit=rawDmg>0?applyCombatDamage(t,rawDmg):{damage:0,shieldUsed:0,afterDef:0};
+     damagePop(targetEl,hit.damage);
+     await sleep(150);
+     document.querySelector('#flash').classList.remove('on');
+     if(targetEl)targetEl.classList.remove('hit');
+     if(t.hp<=0){
+       if(targetEl)targetEl.classList.add('dying');
+       await sleep(120);
+       if(handleFrontlineDeath(t)){renderBattle();await sleep(140)}
+     }
    }
+   if(enemyTestAttack&&i<hitCount-1)await sleep(80);
  }
- await sleep(120);
+ if(attacker)attacker.classList.remove('attacking');
 }
 async function battle(){
  if(running)return;running=true;document.querySelector('#status').textContent=floor+'F｜SPD＋CTタイムライン';updateFloorUI();renderBattle();
