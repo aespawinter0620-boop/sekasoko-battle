@@ -1174,7 +1174,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.271";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.272";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1287,8 +1287,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 
-<style id="ver271-canonical-horizontal-formation">
-/* ver.271 canonical battlefield placement.
+<style id="ver272-canonical-horizontal-formation">
+/* ver.272 canonical battlefield placement.
    Old diagonal/experimental placement is superseded here by one shared geometry. */
 #battleScreen #allyArmy .slot,
 #battleScreen #enemyArmy .slot{
@@ -1334,7 +1334,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   object-position:center bottom!important;
   transform-origin:center bottom!important;
 }
-/* ver.271: one shared size rule for ally and enemy art.
+/* ver.272: one shared size rule for ally and enemy art.
    Enemy mirroring is orientation only; it must not alter visual size. */
 #battleScreen #allyArmy .sprite img,
 #battleScreen #enemyArmy .sprite img{
@@ -1344,6 +1344,16 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen #enemyArmy .sprite img{transform:scaleX(-1)!important}
 </style>
 
+
+<style id="ver272-third-row-hp-safe-zone">
+/* ver.272: Home-screen/PWA safe HP placement.
+   Keep character/slot geometry unchanged; only lift the third-row foot HP HUD
+   above the fixed skill panel. Rows 1-2 remain exactly as ver.271. */
+#battleScreen #allyArmy .slot-2 .footHpRow,
+#battleScreen #enemyArmy .slot-2 .footHpRow{
+  bottom:50px!important;
+}
+</style>
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
