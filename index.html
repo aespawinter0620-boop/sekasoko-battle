@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.267</title>
+<title>セカソコ ver.274</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1174,7 +1174,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.273";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.274";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1356,6 +1356,41 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen #allyArmy .slot-2,
 #battleScreen #enemyArmy .slot-2{
   --foot-hp-bottom:50px;
+}
+</style>
+
+<style id="ver274-hp-ground-anchor">
+/* ver.274: HP bar is the canonical ground line for character art.
+   One shared rule drives ally/enemy and all three rows.
+   HP HUD positions, character scale, X geometry, stacks and combat logic stay unchanged. */
+#battleScreen #allyArmy .slot,
+#battleScreen #enemyArmy .slot{
+  --character-ground-y:calc(var(--foot-hp-bottom,22px) + 4px);
+}
+
+/* Remove flex-flow Y dependence: the sprite is grounded directly from the HP anchor. */
+#battleScreen #allyArmy .unit,
+#battleScreen #enemyArmy .unit{
+  position:relative!important;
+}
+#battleScreen #allyArmy .sprite,
+#battleScreen #enemyArmy .sprite{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:var(--character-ground-y)!important;
+  width:100%!important;
+  height:calc(100% - 30px)!important;
+  margin:0!important;
+  scale:1!important;
+  transform:translateY(0)!important;
+  transform-origin:center bottom!important;
+  overflow:visible!important;
+}
+#battleScreen #allyArmy .sprite img,
+#battleScreen #enemyArmy .sprite img{
+  object-position:center bottom!important;
+  transform-origin:center bottom!important;
 }
 </style>
 </head>
