@@ -1174,7 +1174,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.272";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.273";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1274,10 +1274,10 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 <style id="ver248-three-line-hud">
-#battleScreen .battleBuffRow{position:absolute!important;left:2px!important;right:2px!important;bottom:34px!important;z-index:40!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;height:22px!important;overflow:hidden!important;pointer-events:none!important}
+#battleScreen .battleBuffRow{position:absolute!important;left:2px!important;right:2px!important;bottom:calc(var(--foot-hp-bottom,22px) + 12px)!important;z-index:40!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;height:22px!important;overflow:hidden!important;pointer-events:none!important}
 #battleScreen .battleBuffRow span{display:block!important;width:100%!important;height:11px!important;line-height:11px!important;font-size:9px!important;font-weight:1000!important;color:#fff!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
 #battleScreen .battleBuffRow:empty{display:none!important}
-#battleScreen .footHpRow{position:absolute!important;left:4px!important;right:4px!important;bottom:22px!important;z-index:41!important;height:11px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;pointer-events:none!important}
+#battleScreen .footHpRow{position:absolute!important;left:4px!important;right:4px!important;bottom:var(--foot-hp-bottom,22px)!important;z-index:41!important;height:11px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;pointer-events:none!important}
 #battleScreen .footHpBar{height:4px!important;flex:0 1 70%!important;max-width:70%!important;border-radius:999px!important;overflow:hidden!important;background:rgba(0,0,0,.72)!important}
 #battleScreen .footHpBar i{display:block!important;height:100%!important;background:#22d866!important}
 #battleScreen .footHpRow b{font-size:9px!important;line-height:9px!important;color:#fff!important;white-space:nowrap!important;text-shadow:0 1px 2px #000!important}
@@ -1287,8 +1287,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 
-<style id="ver272-canonical-horizontal-formation">
-/* ver.272 canonical battlefield placement.
+<style id="ver273-canonical-horizontal-formation">
+/* ver.273 canonical battlefield placement.
    Old diagonal/experimental placement is superseded here by one shared geometry. */
 #battleScreen #allyArmy .slot,
 #battleScreen #enemyArmy .slot{
@@ -1334,7 +1334,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   object-position:center bottom!important;
   transform-origin:center bottom!important;
 }
-/* ver.272: one shared size rule for ally and enemy art.
+/* ver.273: one shared size rule for ally and enemy art.
    Enemy mirroring is orientation only; it must not alter visual size. */
 #battleScreen #allyArmy .sprite img,
 #battleScreen #enemyArmy .sprite img{
@@ -1345,13 +1345,17 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 
-<style id="ver272-third-row-hp-safe-zone">
-/* ver.272: Home-screen/PWA safe HP placement.
+<style id="ver273-third-row-hp-safe-zone">
+/* ver.273: Home-screen/PWA safe HP placement.
    Keep character/slot geometry unchanged; only lift the third-row foot HP HUD
    above the fixed skill panel. Rows 1-2 remain exactly as ver.271. */
-#battleScreen #allyArmy .slot-2 .footHpRow,
-#battleScreen #enemyArmy .slot-2 .footHpRow{
-  bottom:50px!important;
+#battleScreen #allyArmy .slot,
+#battleScreen #enemyArmy .slot{
+  --foot-hp-bottom:22px;
+}
+#battleScreen #allyArmy .slot-2,
+#battleScreen #enemyArmy .slot-2{
+  --foot-hp-bottom:50px;
 }
 </style>
 </head>
