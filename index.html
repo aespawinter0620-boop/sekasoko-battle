@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.284</title>
+<title>セカソコ ver.285</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1579,7 +1579,14 @@ function allUnits(){return [...A,...E]}
 function compareTurn(a,b){return (a.next-b.next)||(effectiveSpd(b)-effectiveSpd(a))||(a.cid-b.cid)}
 function clone(x){return JSON.parse(JSON.stringify(x))}
 function makePartyUnits(ids,partyIndex=0){return ids.map((id,i)=>{let x=formationRosterData.find(c=>c.id===id);if(!x)return null;const homeChar=Object.values(homeRoster).flat().find(c=>c.name===x.name);return({...clone(x),def:x.def??homeChar?.def??0,max:x.hp,baseMax:x.hp,rosterId:id,id:'a'+partyIndex+'_'+i,formationSlot:i,homeSlot:i,row:i<3?'front':'back',pulledForward:false,pullVulnerableUntilTurn:0,side:'A',next:baseWait(x)})}).filter(Boolean)}
-function makeEnemies(f){let mult=1+(f-1)*0.10,frontI=0,backI=0;return enemyBase.map((x,i)=>{const slot=x.row==='front'?frontI++:3+backI++;return({...clone(x),hp:Math.round(x.hp*mult),max:Math.round(x.hp*mult),baseMax:Math.round(x.hp*mult),atk:Math.round(x.atk*(1+(f-1)*0.002)),def:Math.round((x.def??0)*(1+(f-1)*0.055)),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',next:baseWait(x)})})}
+function makeEnemies(f){
+ const hpMult=1+(f-1)*0.10;
+ const atkMult=1+(f-1)*0.005;
+ const defMult=1+(f-1)*0.055;
+ const makeUnit=(x,i,slot,row=x.row,boss=false)=>{const hp=Math.round(x.hp*hpMult*(boss?2:1));const atk=Math.round(x.atk*atkMult*(boss?1.2:1));return({...clone(x),name:boss?'BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.round((x.def??0)*defMult),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss,next:baseWait(x)})};
+ if(f%10===0){const bossIndex=((f/10)-1)%enemyBase.length;return [makeUnit(enemyBase[bossIndex],bossIndex,1,'front',true)]}
+ let frontI=0,backI=0;return enemyBase.map((x,i)=>{const slot=x.row==='front'?frontI++:3+backI++;return makeUnit(x,i,slot,x.row,false)})
+}
 function syncActiveParty(){if(runPartyStates[activePartyIndex])runPartyStates[activePartyIndex]=clone(A)}
 function resetTimelineForFloor(){let units=[...runPartyStates.flat().filter(u=>u.hp>0)];units.forEach(u=>u.next=baseWait(u));}
 function firstLivingParty(){return runPartyStates.findIndex(p=>p.some(u=>u.hp>0))}
