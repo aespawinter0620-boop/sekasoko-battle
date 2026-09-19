@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.290</title>
+<title>セカソコ ver.292</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1181,7 +1181,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.290";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.292";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1294,7 +1294,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .battleBuffRow{position:absolute!important;left:2px!important;right:2px!important;bottom:calc(var(--foot-hp-bottom,22px) + 12px)!important;z-index:40!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;height:28px!important;overflow:hidden!important;pointer-events:none!important}
 #battleScreen .battleBuffRow span{display:block!important;width:100%!important;height:14px!important;line-height:14px!important;font-size:11px!important;font-weight:1000!important;color:#fff!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
 #battleScreen .battleBuffRow:empty{display:none!important}
-/* ver.290 adopted tier HUD: white numbers; tier rarity is shown by the compact frame. */
+/* ver.292 adopted tier HUD: white numbers; tier rarity is shown by the compact frame. */
 #battleScreen .battleBuffRow .tierStackCompact{display:inline-flex!important;width:auto!important;height:13px!important;line-height:13px!important;font-size:11px!important;font-weight:1000!important;color:#fff!important;text-align:center!important;white-space:nowrap!important;overflow:visible!important;align-items:center!important;vertical-align:middle!important;box-sizing:border-box!important;padding:0 2px!important;border:1px solid transparent!important;border-radius:4px!important;background:rgba(4,7,12,.18)!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
 #battleScreen .battleBuffRow .tierIcon,#battleScreen .battleBuffRow .tierNum,#battleScreen .battleBuffRow .tierSep{font-style:normal!important;font-weight:1000!important;color:#fff!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
 #battleScreen .battleBuffRow .tierIcon{margin-right:1px!important}
@@ -1589,9 +1589,9 @@ function compareTurn(a,b){return (a.next-b.next)||(effectiveSpd(b)-effectiveSpd(
 function clone(x){return JSON.parse(JSON.stringify(x))}
 
 // =========================================================
-// ver.290 BUFF FOUNDATION
+// ver.292 BUFF FOUNDATION
 // Tier data/HUD foundation for 🪞🥛🛡️🎲🧸.
-// ver.290 activates the adopted 🪞 effects and revised Suppa unique skills.
+// ver.292 activates the adopted 🪞 effects and revised Suppa unique skills.
 // Tier promotion is NEVER automatic: skills explicitly consume lower tiers and grant upper tiers.
 // =========================================================
 const TIER_BUFF_ORDER=['mirror','milk','shield','gamble','idol'];
@@ -1639,9 +1639,21 @@ function setTierBuff(u,key,tier,value){
  if(!u||!TIER_BUFF_META[key]||!TIER_BUFF_NAMES[tier])return 0;
  const state=ensureTierBuffState(u);state[key][tier]=cleanStackNumber(value);
  if(tier==='copper')syncLegacyCopperFromTier(u,key);
+ if(key==='milk')recomputeMilkMaxHp(u);
  return state[key][tier];
 }
-function addTierBuff(u,key,tier,amount){return setTierBuff(u,key,tier,getTierBuff(u,key,tier)+cleanStackNumber(amount))}
+function addTierBuff(u,key,tier,amount){
+ const gain=cleanStackNumber(amount);
+ const milkSilverGain=!!u&&key==='milk'&&tier==='silver'&&gain>0;
+ const beforeMax=milkSilverGain?Math.max(1,Number(u.max)||milkAdjustedMaxHp(u)):0;
+ const result=setTierBuff(u,key,tier,getTierBuff(u,key,tier)+gain);
+ // 銀🥛取得時は、増えた最大HPと同量だけ現在HPも増加する。
+ if(milkSilverGain){
+  const afterMax=Math.max(1,Number(u.max)||beforeMax),hpGain=Math.max(0,afterMax-beforeMax);
+  if(hpGain>0)u.hp=Math.min(afterMax,Math.max(0,Number(u.hp)||0)+hpGain);
+ }
+ return result;
+}
 function consumeTierBuff(u,key,tier,amount){
  const have=getTierBuff(u,key,tier),spent=Math.min(have,cleanStackNumber(amount));setTierBuff(u,key,tier,have-spent);return spent;
 }
@@ -1657,7 +1669,7 @@ function convertTierBuffs(u,key){
  syncLegacyCopperFromTier(u,key);
  return{copperToSilver,silverToGold};
 }
-function syncAllTierBuffs(units){for(const u of units||[])syncTierBuffsFromLegacy(u)}
+function syncAllTierBuffs(units){for(const u of units||[]){syncTierBuffsFromLegacy(u);recomputeMilkMaxHp(u)}}
 function formatStackNumber(v){const n=cleanStackNumber(v);return Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,'')}
 function addMirrorCopper(u,amount){
  const cur=getTierBuff(u,'mirror','copper');
@@ -1949,20 +1961,46 @@ function consumeBloodOnEnemyAttack(att,target){
 }
 
 
+function milkAdjustedMaxHp(u){
+ if(!u)return 1;
+ const base=baseMaxHp(u),state=syncTierBuffsFromLegacy(u).milk;
+ const copper=Math.max(0,cleanStackNumber(state.copper)),silver=Math.max(0,cleanStackNumber(state.silver));
+ // 銅は最大HPへ固定値加算。銀は「銀適用前の最大HP」に対して1st=+1%を加算する。
+ return Math.max(1,Math.floor((base+copper)*(1+silver/100)));
+}
+function recomputeMilkMaxHp(u){
+ if(!u)return 1;
+ const nextMax=milkAdjustedMaxHp(u);
+ u.max=nextMax;
+ if(Number(u.hp)>nextMax)u.hp=nextMax;
+ return nextMax;
+}
 function addMilk(u,n){
- if(!u||u.hp<=0||n<=0)return;
- u.milk=(u.milk||0)+n;
- u.max=(u.max||u.hp)+n;
- u.hp=Math.min(u.max,(u.hp||0)+n);
+ if(!u||u.hp<=0||n<=0)return 0;
+ const gain=cleanStackNumber(n);
+ const result=addTierBuff(u,'milk','copper',gain);
+ // 銅🥛1stにつき最大HP+1、現在HPも+1。
+ u.hp=Math.min(Math.max(1,Number(u.max)||1),Math.max(0,Number(u.hp)||0)+gain);
+ return result;
 }
 function consumeMilk(u,n){
  if(!u||n<=0)return 0;
- const spent=Math.min(Math.max(0,Math.floor(Number(u.milk)||0)),Math.floor(n));
- if(spent<=0)return 0;
- u.milk=Math.max(0,(u.milk||0)-spent);
- u.max=Math.max(1,(u.max||1)-spent);
- u.hp=Math.min(u.hp,u.max);
- return spent;
+ return consumeTierBuff(u,'milk','copper',Math.floor(n));
+}
+async function resolveMilkGoldTurnStart(u){
+ if(!u||u.hp<=0)return{gold:0,healed:0};
+ recomputeMilkMaxHp(u);
+ const gold=Math.max(0,Math.floor(getTierBuff(u,'milk','gold')));
+ if(gold<=0)return{gold:0,healed:0};
+ const max=Math.max(1,Number(u.max)||1),planned=Math.floor(max*gold/100),missing=Math.max(0,max-(Number(u.hp)||0));
+ const healed=Math.min(planned,missing);
+ if(healed>0){
+  u.hp+=healed;
+  const el=document.getElementById(u.id);if(el)damagePop(el,`+${healed}`);
+  document.querySelector('#status').textContent=`${u.name}｜金🥛${gold} ターン開始回復 HP+${healed}`;
+  renderBattle();await sleep(100);
+ }
+ return{gold,healed};
 }
 function milkAllies(){return living(A).filter(u=>String(u.attr||'').includes('乳牛'))}
 function frontEnemies(defenders){const f=living(defenders).filter(x=>x.row==='front');return f.length?f:living(defenders)}
@@ -2183,6 +2221,7 @@ async function battle(){
    while(living(E).length&&turnNo<600){
      if(!living(A).length){syncActiveParty();document.querySelector('#status').textContent='部隊'+(sortieQueue[activePartyIndex].slot+1)+' 壊滅';await sleep(450);if(!deployNextParty())break;await sleep(350)}
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
+     await resolveMilkGoldTurnStart(u);
      tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
      if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=3){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A)}else if(u.cid===101){if(selectedSkillSlot===2)await absoluteDomainRelease(u,E);else await absoluteDomainAttack(u,E)}else if(u.cid===102){if(selectedSkillSlot===2)await nagiTaikiMeirei(u);else await nagiIsseiSousha(u,E)}else if(u.cid===103){if(selectedSkillSlot===2)await yuzuShidenIssen(u,E);else await yuzuUninMusho(u,E)}else if(u.cid===201){if(selectedSkillSlot===2)await hathorHolyMilking(u,E);else await hathorHolyDrop(u,E)}else if(u.cid===202){if(selectedSkillSlot===2)await baalMilkMissile(u,E);else await baalFertileDrop(u,E)}else{if(selectedSkillSlot===2)await nandiDrinkLots(u);else await nandiMilkingGrace(u,E)};currentActor=null;resolvePlayerAction=null}else{await attack(u,u.side==='A'?E:A)}
      u.next+=chosenActionCost(u,selectedSkillSlot);syncActiveParty();renderBattle();
