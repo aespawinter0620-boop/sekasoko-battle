@@ -1291,16 +1291,18 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 <style id="ver248-three-line-hud">
-#battleScreen .battleBuffRow{position:absolute!important;left:2px!important;right:2px!important;bottom:calc(var(--foot-hp-bottom,22px) + 12px)!important;z-index:40!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;height:22px!important;overflow:hidden!important;pointer-events:none!important}
-#battleScreen .battleBuffRow span{display:block!important;width:100%!important;height:11px!important;line-height:11px!important;font-size:9px!important;font-weight:1000!important;color:#fff!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
+#battleScreen .battleBuffRow{position:absolute!important;left:2px!important;right:2px!important;bottom:calc(var(--foot-hp-bottom,22px) + 12px)!important;z-index:40!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;height:28px!important;overflow:hidden!important;pointer-events:none!important}
+#battleScreen .battleBuffRow span{display:block!important;width:100%!important;height:14px!important;line-height:14px!important;font-size:11px!important;font-weight:1000!important;color:#fff!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
 #battleScreen .battleBuffRow:empty{display:none!important}
-/* ver.290 adopted tier HUD: one attribute icon + colored Gold/Silver/Copper numbers */
-#battleScreen .battleBuffRow .tierStackCompact{display:inline!important;width:auto!important;height:auto!important;line-height:inherit!important;font-size:inherit!important;font-weight:inherit!important;color:inherit!important;text-align:inherit!important;white-space:nowrap!important;overflow:visible!important;text-shadow:inherit!important}
-#battleScreen .battleBuffRow .tierNum,#battleScreen .battleBuffRow .tierSep{font-style:normal!important;font-weight:1000!important}
-#battleScreen .battleBuffRow .tierGold{color:#ffd85a!important;text-shadow:0 1px 2px #000,0 0 5px rgba(255,216,90,.58)!important}
-#battleScreen .battleBuffRow .tierSilver{color:#dce8f5!important;text-shadow:0 1px 2px #000,0 0 4px rgba(220,232,245,.38)!important}
-#battleScreen .battleBuffRow .tierCopper{color:#d88a5b!important;text-shadow:0 1px 2px #000,0 0 4px rgba(216,138,91,.40)!important}
-#battleScreen .battleBuffRow .tierSep{color:rgba(255,255,255,.72)!important;padding:0 1px!important;text-shadow:0 1px 2px #000!important}
+/* ver.290 adopted tier HUD: white numbers; tier rarity is shown by the compact frame. */
+#battleScreen .battleBuffRow .tierStackCompact{display:inline-flex!important;width:auto!important;height:13px!important;line-height:13px!important;font-size:11px!important;font-weight:1000!important;color:#fff!important;text-align:center!important;white-space:nowrap!important;overflow:visible!important;align-items:center!important;vertical-align:middle!important;box-sizing:border-box!important;padding:0 2px!important;border:1px solid transparent!important;border-radius:4px!important;background:rgba(4,7,12,.18)!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
+#battleScreen .battleBuffRow .tierIcon,#battleScreen .battleBuffRow .tierNum,#battleScreen .battleBuffRow .tierSep{font-style:normal!important;font-weight:1000!important;color:#fff!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
+#battleScreen .battleBuffRow .tierIcon{margin-right:1px!important}
+#battleScreen .battleBuffRow .tierGold,#battleScreen .battleBuffRow .tierSilver,#battleScreen .battleBuffRow .tierCopper{color:#fff!important}
+#battleScreen .battleBuffRow .tierSep{color:rgba(255,255,255,.76)!important;padding:0 1px!important}
+#battleScreen .battleBuffRow .tierFrameCopper{border-color:transparent!important;box-shadow:none!important}
+#battleScreen .battleBuffRow .tierFrameSilver{border-color:rgba(92,174,255,.92)!important;background:rgba(20,64,104,.22)!important;box-shadow:0 0 3px rgba(92,174,255,.22)!important}
+#battleScreen .battleBuffRow .tierFrameGold{border-color:rgba(255,211,92,.95)!important;background:rgba(92,66,13,.22)!important;box-shadow:0 0 4px rgba(255,211,92,.32)!important}
 #battleScreen .footHpRow{position:absolute!important;left:4px!important;right:4px!important;bottom:var(--foot-hp-bottom,22px)!important;z-index:41!important;height:11px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;pointer-events:none!important}
 #battleScreen .footHpBar{height:4px!important;flex:0 1 70%!important;max-width:70%!important;border-radius:999px!important;overflow:hidden!important;background:rgba(0,0,0,.72)!important}
 #battleScreen .footHpBar i{display:block!important;height:100%!important;background:#22d866!important}
@@ -1662,7 +1664,8 @@ function tierBuffHudToken(u,key){
  const copper=cleanStackNumber(b.copper),silver=cleanStackNumber(b.silver),gold=cleanStackNumber(b.gold);
  if(copper<=0&&silver<=0&&gold<=0)return'';
  // HUD compact tier notation: highest owned tier -> lower tiers.
- // Gold/Silver/Copper are identified by number color, not medal emoji.
+ // Numbers stay white; the highest owned tier is communicated by the frame.
+ const frameClass=gold>0?'tierFrameGold':silver>0?'tierFrameSilver':'tierFrameCopper';
  const parts=[];
  if(gold>0){
   parts.push(`<i class="tierNum tierGold">${formatStackNumber(gold)}</i>`);
@@ -1677,7 +1680,7 @@ function tierBuffHudToken(u,key){
  }else{
   parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
  }
- return `${meta.icon}<span class="tierStackCompact">${parts.join('')}</span>`;
+ return `<span class="tierStackCompact ${frameClass}"><i class="tierIcon">${meta.icon}</i>${parts.join('')}</span>`;
 }
 function tierBuffDetailTags(u){
  const state=syncTierBuffsFromLegacy(u),tags=[];
