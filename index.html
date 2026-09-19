@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.282</title>
+<title>セカソコ ver.283</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1181,7 +1181,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.282";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.283";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1518,10 +1518,10 @@ const allies=[
 {name:'凛',icon:'◆',hp:88,atk:24,row:'back',cid:303,spd:70,skill:{name:'一閃（仮）',ct:4}}
 ];
 const enemyBase=[
-{name:'深層スライム',icon:'●',sprite:'assets/characters/nagi.PNG',hp:70,atk:50,def:50,row:'front',cid:1001,spd:100,skill:{name:'体当たり',ct:100}},
-{name:'骸の少女',icon:'☠',sprite:'assets/characters/yuzu.PNG',hp:95,atk:50,def:50,row:'front',cid:1002,spd:100,skill:{name:'骨砕き',ct:100}},
-{name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:50,def:50,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
-{name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:50,def:50,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
+{name:'深層スライム',icon:'●',sprite:'assets/characters/nagi.PNG',hp:70,atk:100,def:50,row:'front',cid:1001,spd:100,skill:{name:'体当たり',ct:100}},
+{name:'骸の少女',icon:'☠',sprite:'assets/characters/yuzu.PNG',hp:95,atk:100,def:50,row:'front',cid:1002,spd:100,skill:{name:'骨砕き',ct:100}},
+{name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:100,def:50,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
+{name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:100,def:50,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
 ];
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,selectedSkillSlot=1,sortieQueue=[],activePartyIndex=0;
 let targetSelection=null;
@@ -1574,7 +1574,7 @@ function allUnits(){return [...A,...E]}
 function compareTurn(a,b){return (a.next-b.next)||(effectiveSpd(b)-effectiveSpd(a))||(a.cid-b.cid)}
 function clone(x){return JSON.parse(JSON.stringify(x))}
 function makePartyUnits(ids,partyIndex=0){return ids.map((id,i)=>{let x=formationRosterData.find(c=>c.id===id);if(!x)return null;const homeChar=Object.values(homeRoster).flat().find(c=>c.name===x.name);return({...clone(x),def:x.def??homeChar?.def??0,max:x.hp,baseMax:x.hp,rosterId:id,id:'a'+partyIndex+'_'+i,formationSlot:i,homeSlot:i,row:i<3?'front':'back',pulledForward:false,pullVulnerableUntilTurn:0,side:'A',next:baseWait(x)})}).filter(Boolean)}
-function makeEnemies(f){let mult=1+(f-1)*0.10,frontI=0,backI=0;return enemyBase.map((x,i)=>{const slot=x.row==='front'?frontI++:3+backI++;return({...clone(x),hp:Math.round(x.hp*mult),max:Math.round(x.hp*mult),baseMax:Math.round(x.hp*mult),atk:Math.round(x.atk*(1+(f-1)*0.055)),def:Math.round((x.def??0)*(1+(f-1)*0.055)),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',next:baseWait(x)})})}
+function makeEnemies(f){let mult=1+(f-1)*0.10,frontI=0,backI=0;return enemyBase.map((x,i)=>{const slot=x.row==='front'?frontI++:3+backI++;return({...clone(x),hp:Math.round(x.hp*mult),max:Math.round(x.hp*mult),baseMax:Math.round(x.hp*mult),atk:Math.round(x.atk*(1+(f-1)*0.002)),def:Math.round((x.def??0)*(1+(f-1)*0.055)),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',next:baseWait(x)})})}
 function syncActiveParty(){if(runPartyStates[activePartyIndex])runPartyStates[activePartyIndex]=clone(A)}
 function resetTimelineForFloor(){let units=[...runPartyStates.flat().filter(u=>u.hp>0)];units.forEach(u=>u.next=baseWait(u));}
 function firstLivingParty(){return runPartyStates.findIndex(p=>p.some(u=>u.hp>0))}
@@ -1954,7 +1954,7 @@ async function attack(att,defenders){
  if(attacker)attacker.classList.add('attacking');
  await sleep(180);
  const enemyTestAttack=att.side==='E';
- const hitCount=enemyTestAttack?2:1;
+ const hitCount=1;
  for(let i=0;i<hitCount;i++){
    const alive=living(defenders),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;
    if(!pool.length)break;
@@ -1968,7 +1968,7 @@ async function attack(att,defenders){
      document.querySelector('#flash').classList.remove('on');
      if(targetEl)targetEl.classList.remove('hit');
    }else{
-     const rawDmg=(t.side==='A'&&debugInvincible)?0:Math.floor(effectiveAtk(att)*(enemyTestAttack?.5:1));
+     const rawDmg=(t.side==='A'&&debugInvincible)?0:Math.floor(effectiveAtk(att));
      const hit=rawDmg>0?applyCombatDamage(t,rawDmg):{damage:0,shieldUsed:0,afterDef:0};
      damagePop(targetEl,hit.damage);
      await sleep(150);
