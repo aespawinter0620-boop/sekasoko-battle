@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.289</title>
+<title>セカソコ ver.290</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1181,7 +1181,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.289";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.290";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1578,7 +1578,89 @@ const chosenActionCost=(u,slot=1)=>baseWait(u)+(slot===0?0:chosenSkillCt(u,slot)
 function allUnits(){return [...A,...E]}
 function compareTurn(a,b){return (a.next-b.next)||(effectiveSpd(b)-effectiveSpd(a))||(a.cid-b.cid)}
 function clone(x){return JSON.parse(JSON.stringify(x))}
-function makePartyUnits(ids,partyIndex=0){return ids.map((id,i)=>{let x=formationRosterData.find(c=>c.id===id);if(!x)return null;const homeChar=Object.values(homeRoster).flat().find(c=>c.name===x.name);return({...clone(x),def:x.def??homeChar?.def??0,max:x.hp,baseMax:x.hp,rosterId:id,id:'a'+partyIndex+'_'+i,formationSlot:i,homeSlot:i,row:i<3?'front':'back',pulledForward:false,pullVulnerableUntilTurn:0,side:'A',next:baseWait(x)})}).filter(Boolean)}
+
+// =========================================================
+// ver.290 BUFF FOUNDATION
+// Phase 1 only: data/HUD foundation. Existing skill behavior and AUTO logic stay untouched.
+// Five adopted tier buffs: 🪞🥛🛡️🎲🧸. Common conversion is available explicitly,
+// but is NOT auto-invoked by legacy skills in this phase.
+// =========================================================
+const TIER_BUFF_ORDER=['mirror','milk','shield','gamble','idol'];
+const TIER_BUFF_META={
+ mirror:{icon:'🪞',label:'明鏡止水',legacy:'mirror'},
+ milk:{icon:'🥛',label:'乳牛',legacy:'milk'},
+ shield:{icon:'🛡️',label:'盾姫',legacy:'shield'},
+ gamble:{icon:'🎲',label:'賭博',legacy:'gamble'},
+ idol:{icon:'🧸',label:'偶像',legacy:'idol'}
+};
+const TIER_BUFF_NAMES={copper:'銅',silver:'銀',gold:'金'};
+const TIER_BUFF_MARKS={copper:'🥉',silver:'🥈',gold:'🥇'};
+const TIER_CONVERSION_COST=20;
+function cleanStackNumber(v){const n=Number(v);return Number.isFinite(n)?Math.max(0,n):0}
+function createTierBuffState(){return Object.fromEntries(TIER_BUFF_ORDER.map(k=>[k,{copper:0,silver:0,gold:0}]))}
+function ensureTierBuffState(u){
+ if(!u)return createTierBuffState();
+ if(!u.tierBuffs||typeof u.tierBuffs!=='object')u.tierBuffs=createTierBuffState();
+ for(const key of TIER_BUFF_ORDER){
+  if(!u.tierBuffs[key]||typeof u.tierBuffs[key]!=='object')u.tierBuffs[key]={copper:0,silver:0,gold:0};
+  const b=u.tierBuffs[key];
+  b.copper=cleanStackNumber(b.copper);b.silver=cleanStackNumber(b.silver);b.gold=cleanStackNumber(b.gold);
+ }
+ return u.tierBuffs;
+}
+function syncTierBuffsFromLegacy(u){
+ if(!u)return createTierBuffState();
+ const state=ensureTierBuffState(u);
+ // ver.289 skills still write these legacy copper fields directly. Mirror them into the new foundation.
+ for(const key of ['mirror','milk','shield'])state[key].copper=cleanStackNumber(u[key]);
+ // Reserved compatibility for future units that already carry direct 🎲/🧸 values.
+ if(Object.prototype.hasOwnProperty.call(u,'gamble'))state.gamble.copper=cleanStackNumber(u.gamble);
+ if(Object.prototype.hasOwnProperty.call(u,'idol'))state.idol.copper=cleanStackNumber(u.idol);
+ return state;
+}
+function syncLegacyCopperFromTier(u,key){
+ const meta=TIER_BUFF_META[key];if(!u||!meta)return;
+ const state=ensureTierBuffState(u),v=cleanStackNumber(state[key].copper);
+ if(meta.legacy)u[meta.legacy]=v;
+}
+function getTierBuff(u,key,tier='copper'){
+ const state=syncTierBuffsFromLegacy(u);return cleanStackNumber(state?.[key]?.[tier]);
+}
+function setTierBuff(u,key,tier,value){
+ if(!u||!TIER_BUFF_META[key]||!TIER_BUFF_NAMES[tier])return 0;
+ const state=ensureTierBuffState(u);state[key][tier]=cleanStackNumber(value);
+ if(tier==='copper')syncLegacyCopperFromTier(u,key);
+ return state[key][tier];
+}
+function addTierBuff(u,key,tier,amount){return setTierBuff(u,key,tier,getTierBuff(u,key,tier)+cleanStackNumber(amount))}
+function consumeTierBuff(u,key,tier,amount){
+ const have=getTierBuff(u,key,tier),spent=Math.min(have,cleanStackNumber(amount));setTierBuff(u,key,tier,have-spent);return spent;
+}
+function convertTierBuffs(u,key){
+ // Explicit common conversion foundation: 🥉20→🥈1, then 🥈20→🥇1.
+ // Not called automatically in ver.290 Phase 1, so current skills/AUTO retain ver.289 behavior.
+ if(!u||!TIER_BUFF_META[key])return{copperToSilver:0,silverToGold:0};
+ const state=syncTierBuffsFromLegacy(u),b=state[key];
+ const copperToSilver=Math.floor(cleanStackNumber(b.copper)/TIER_CONVERSION_COST);
+ if(copperToSilver>0){b.copper-=copperToSilver*TIER_CONVERSION_COST;b.silver+=copperToSilver}
+ const silverToGold=Math.floor(cleanStackNumber(b.silver)/TIER_CONVERSION_COST);
+ if(silverToGold>0){b.silver-=silverToGold*TIER_CONVERSION_COST;b.gold+=silverToGold}
+ syncLegacyCopperFromTier(u,key);
+ return{copperToSilver,silverToGold};
+}
+function syncAllTierBuffs(units){for(const u of units||[])syncTierBuffsFromLegacy(u)}
+function formatStackNumber(v){const n=cleanStackNumber(v);return Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,'')}
+function tierBuffHudToken(u,key){
+ const b=syncTierBuffsFromLegacy(u)[key],meta=TIER_BUFF_META[key];if(!meta)return'';
+ const parts=[];if(b.copper>0)parts.push(`🥉${formatStackNumber(b.copper)}`);if(b.silver>0)parts.push(`🥈${formatStackNumber(b.silver)}`);if(b.gold>0)parts.push(`🥇${formatStackNumber(b.gold)}`);
+ return parts.length?`${meta.icon}${parts.join('')}`:'';
+}
+function tierBuffDetailTags(u){
+ const state=syncTierBuffsFromLegacy(u),tags=[];
+ for(const key of TIER_BUFF_ORDER){const meta=TIER_BUFF_META[key],b=state[key];for(const tier of ['copper','silver','gold'])if(b[tier]>0)tags.push(`${TIER_BUFF_MARKS[tier]}${meta.icon} ${TIER_BUFF_NAMES[tier]} ${formatStackNumber(b[tier])}`)}
+ return tags;
+}
+function makePartyUnits(ids,partyIndex=0){return ids.map((id,i)=>{let x=formationRosterData.find(c=>c.id===id);if(!x)return null;const homeChar=Object.values(homeRoster).flat().find(c=>c.name===x.name);const u={...clone(x),def:x.def??homeChar?.def??0,max:x.hp,baseMax:x.hp,rosterId:id,id:'a'+partyIndex+'_'+i,formationSlot:i,homeSlot:i,row:i<3?'front':'back',pulledForward:false,pullVulnerableUntilTurn:0,side:'A',next:baseWait(x)};syncTierBuffsFromLegacy(u);return u}).filter(Boolean)}
 function makeEnemies(f){
  const hpMult=1+(f-1)*0.10;
  const atkMult=1+(f-1)*0.005;
@@ -1589,7 +1671,7 @@ function makeEnemies(f){
   const hp=Math.round(x.hp*hpMult*hpRate);
   const atk=Math.round(x.atk*atkMult*atkRate);
   const isBoss=rank==='boss',isMidboss=rank==='midboss';
-  return({...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.round((x.def??0)*defMult),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,next:baseWait(x)})
+  const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.round((x.def??0)*defMult),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
  };
  if(f%10===0){
   const bossIndex=((f/10)-1)%enemyBase.length;
@@ -1602,10 +1684,10 @@ function makeEnemies(f){
  let frontI=0,backI=0;
  return enemyBase.map((x,i)=>{const slot=x.row==='front'?frontI++:3+backI++;return makeUnit(x,i,slot,x.row,'normal')})
 }
-function syncActiveParty(){if(runPartyStates[activePartyIndex])runPartyStates[activePartyIndex]=clone(A)}
+function syncActiveParty(){syncAllTierBuffs(A);if(runPartyStates[activePartyIndex])runPartyStates[activePartyIndex]=clone(A)}
 function resetTimelineForFloor(){let units=[...runPartyStates.flat().filter(u=>u.hp>0)];units.forEach(u=>u.next=baseWait(u));}
 function firstLivingParty(){return runPartyStates.findIndex(p=>p.some(u=>u.hp>0))}
-function setActiveParty(i){activePartyIndex=i;A=runPartyStates[i]||[]}
+function setActiveParty(i){activePartyIndex=i;A=runPartyStates[i]||[];syncAllTierBuffs(A)}
 function totalRemainingHP(){syncActiveParty();return runPartyStates.flat().reduce((sum,u)=>sum+Math.max(0,u.hp||0),0)}
 function damageRate(){
  syncActiveParty();
@@ -1624,7 +1706,7 @@ function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.text
  const tr=document.querySelector('#topReward');if(tr)tr.textContent=`報酬×${damageRewardMultiplier(damageRate()).toFixed(2)}`;
 }
 function takeFloorSnapshot(){syncActiveParty();floorSnapshot={floor,activePartyIndex,runPartyStates:clone(runPartyStates),enemies:clone(E),turnNo,runLoot,runStartMaxHP}}
-function restoreFloorSnapshot(){if(!floorSnapshot)return;clearTargetSelection();floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;runStartMaxHP=floorSnapshot.runStartMaxHP;currentActor=null;resolvePlayerAction=null;document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
+function restoreFloorSnapshot(){if(!floorSnapshot)return;clearTargetSelection();floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);syncAllTierBuffs(A);syncAllTierBuffs(E);turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;runStartMaxHP=floorSnapshot.runStartMaxHP;currentActor=null;resolvePlayerAction=null;document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
 function prepareSortie(){if(!validateFormationForSave()){showScreen('formation');return false}saveParties();sortieQueue=parties.map((p,i)=>({slot:i,ids:[...p]})).filter(x=>x.ids.some(Boolean));if(!sortieQueue.length)sortieQueue=[{slot:0,ids:['mizuki']}];runPartyStates=sortieQueue.map((x,i)=>makePartyUnits(x.ids,i));runStartMaxHP=runPartyStates.flat().reduce((sum,u)=>sum+u.max,0);floor=1;runLoot=0;turnNo=0;setActiveParty(0);E=makeEnemies(floor);running=false;document.querySelector('#overlay').classList.remove('show');document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#status').textContent='1F｜部隊'+(sortieQueue[0].slot+1)+' 出撃準備';takeFloorSnapshot();updateFloorUI();renderBattle()}
 function initBattle(){prepareSortie()}
 function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
@@ -1632,10 +1714,9 @@ function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingPar
 function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&x.formationSlot===i+3)||units.find(x=>x.row==='back'&&x.formationSlot===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
 function battleBuffSummary(u){
  const items=[];
+ for(const key of TIER_BUFF_ORDER){const token=tierBuffHudToken(u,key);if(token)items.push(token)}
  if((u.sword||0)>0)items.push(`🗡️${Math.floor(u.sword)}`);
- if((u.shield||0)>0)items.push(`🛡️${Math.floor(Number(shieldStackDisplay(u))||0)}`);
- if((u.milk||0)>0)items.push(`🥛${Math.floor(u.milk)}`);
- if((u.mirror||0)>0)items.push(`🪞${Math.min(20,Math.floor(u.mirror))}`);
+ if((u.harden||0)>0)items.push(`💪${Math.floor(u.harden)}`);
  if((u.blood||0)>0)items.push(`🩸${Math.floor(u.blood)}`);
  const swift=swiftTotal(u);if(swift>0)items.push(`👞${Math.floor(swift)}`);
  if(!items.length)return '';
@@ -1654,15 +1735,14 @@ function renderOrder(){
  bar.innerHTML=list.map(u=>{const src=allUnits().find(x=>x.id===u.id);const faceSrc=src?.faceIcon||src?.actionSprite||src?.sprite;const visual=faceSrc?`<img src="${faceSrc}" alt="">`:`<span>${src?.icon||'?'}</span>`;return `<div class="orderChip actionFace ${u.side==='E'?'enemyOrder':''}" title="${u.name}" aria-label="${u.side==='A'?'味方':'敵'} ${u.name}">${visual}</div>`}).join('');
 }
 function unitStateTags(u){
- const tags=[];
- if(u.milk)tags.push(`🥛 牛乳 ${u.milk}`);
- if(u.mirror)tags.push(`🪞 明鏡止水 ${u.mirror}`);if(u.blood)tags.push(`🩸 吸血 ${Math.floor(u.blood)}`);const evadeRate=Math.min(20,u.mirror||0)*5;if(evadeRate)tags.push(`回避 ${evadeRate}%`);if(u.absoluteDomain)tags.push('絶対領域 展開中');
+ const tags=tierBuffDetailTags(u);
+ if(u.blood)tags.push(`🩸 吸血 ${Math.floor(u.blood)}`);const evadeRate=Math.min(20,u.mirror||0)*5;if(evadeRate)tags.push(`回避 ${evadeRate}%`);if(u.absoluteDomain)tags.push('絶対領域 展開中');
  if(u.poison)tags.push(`☠️ 毒 ${u.poison}`);
  if(u.paralysis)tags.push(`⚡ 麻痺 ${u.paralysis}`);
  if(u.healBlock)tags.push(`❤️‍🩹 回復阻害 ${u.healBlock}`);
- if(u.shield)tags.push(`🛡️ 盾 ${shieldStackDisplay(u)}（吸収${shieldValueDisplay(u)}）`);
+ if(u.shield)tags.push(`🛡️ 現行吸収量 ${shieldValueDisplay(u)}`);
  if(u.invincible)tags.push(`⭐️ 無敵 ${u.invincible}`);
- if(u.sword)tags.push(`🗡️ ${u.sword}`);  if(swiftTotal(u))tags.push(`👞 俊足 ${swiftTotal(u)}`);
+ if(u.sword)tags.push(`🗡️ ${u.sword}`);if(u.harden)tags.push(`💪 ${u.harden}`);if(swiftTotal(u))tags.push(`👞 俊足 ${swiftTotal(u)}`);
  return tags;
 }
 function swapColumn(u){
@@ -1720,6 +1800,7 @@ function renderHpOverview(){
   if(ah)ah.innerHTML=make(A,'A'); if(eh)eh.innerHTML=make(E,'E');
 }
 function renderBattle(){
+ syncAllTierBuffs(A);syncAllTierBuffs(E);
  document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');renderHpOverview();
  document.querySelector('#turn').textContent=running?`部隊${(sortieQueue[activePartyIndex]?.slot??activePartyIndex)+1}`:'部隊-';updateFloorUI();
  const now=allUnits().filter(x=>x.hp>0).sort(compareTurn).slice(0,5);
