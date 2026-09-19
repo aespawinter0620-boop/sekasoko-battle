@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.281</title>
+<title>セカソコ ver.282</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -169,6 +169,13 @@
 #battleScreen .statusRow{display:none!important}
 #battleScreen .skillTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:20px}
 #battleScreen .skillActor{white-space:nowrap;font-weight:900;color:#d8ddea}
+#battleScreen .swapBtn{
+  flex:0 0 auto;min-width:78px;height:26px;padding:0 10px;border-radius:9px;
+  border:1px solid rgba(255,255,255,.26);background:#202737;color:#f5f0e8;
+  font-size:10px;font-weight:1000;letter-spacing:.03em
+}
+#battleScreen .swapBtn:active:not(:disabled){transform:scale(.96);background:#30394d}
+#battleScreen .swapBtn:disabled{opacity:.28}
 #battleScreen .actorStates{display:flex;justify-content:flex-end;align-items:center;gap:4px;min-width:0;overflow-x:auto;scrollbar-width:none;color:#e8f1ff}
 #battleScreen .actorStates::-webkit-scrollbar{display:none}
 #battleScreen .actorStateChip{flex:0 0 auto;padding:2px 6px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);font-size:9px;white-space:nowrap}
@@ -1174,7 +1181,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.281";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.282";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1424,7 +1431,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <div class="battleViewport" id="battleViewport"><section class="battle" id="battleZoomLayer"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section></div>
 <div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。</div></div></div>
-<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜技を選択</span><span class="actorStates" id="actorStates"></span></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル①"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">未設定</span><small id="uniqueSkillDesc">固有スキル①</small></button><button class="skillBtn" id="uniqueSkill2" data-skill-detail="固有スキル②"><b id="uniqueSkill2Kind">固有②</b><span id="uniqueSkill2Name">未設定</span><small id="uniqueSkill2Desc">固有スキル②</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b id="freeSkill1Kind">スキ①</b><span id="freeSkill1Name">未設定</span><small id="freeSkill1Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span id="freeSkill2Name">未設定</span><small id="freeSkill2Desc">装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div></section>
+<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜技を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル①"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">未設定</span><small id="uniqueSkillDesc">固有スキル①</small></button><button class="skillBtn" id="uniqueSkill2" data-skill-detail="固有スキル②"><b id="uniqueSkill2Kind">固有②</b><span id="uniqueSkill2Name">未設定</span><small id="uniqueSkill2Desc">固有スキル②</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b id="freeSkill1Kind">スキ①</b><span id="freeSkill1Name">未設定</span><small id="freeSkill1Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span id="freeSkill2Name">未設定</span><small id="freeSkill2Desc">装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">素材を持って拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
@@ -1562,7 +1569,7 @@ const chosenSkillCt=(u,slot=1)=>{
  if(u?.cid===203)return slot===2?300:10;
  return u?.skill?.ct||0;
 };
-const chosenActionCost=(u,slot=1)=>baseWait(u)+chosenSkillCt(u,slot);
+const chosenActionCost=(u,slot=1)=>baseWait(u)+(slot===0?0:chosenSkillCt(u,slot));
 function allUnits(){return [...A,...E]}
 function compareTurn(a,b){return (a.next-b.next)||(effectiveSpd(b)-effectiveSpd(a))||(a.cid-b.cid)}
 function clone(x){return JSON.parse(JSON.stringify(x))}
@@ -1595,7 +1602,7 @@ function prepareSortie(){if(!validateFormationForSave()){showScreen('formation')
 function initBattle(){prepareSortie()}
 function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
 function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=makeEnemies(floor);takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
-function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)||units.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
+function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&x.formationSlot===i+3)||units.find(x=>x.row==='back'&&x.formationSlot===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
 function battleBuffSummary(u){
  const items=[];
  if((u.sword||0)>0)items.push(`🗡️${Math.floor(u.sword)}`);
@@ -1631,12 +1638,40 @@ function unitStateTags(u){
  if(u.sword)tags.push(`🗡️ ${u.sword}`);  if(swiftTotal(u))tags.push(`👞 俊足 ${swiftTotal(u)}`);
  return tags;
 }
+function swapColumn(u){
+ if(!u||u.side!=='A'||u.hp<=0)return -1;
+ const slot=Number(u.formationSlot);
+ if(u.row==='front'&&slot>=0&&slot<3)return slot;
+ if(u.row==='back'&&slot>=3&&slot<6)return slot-3;
+ return -1;
+}
+function findSwapPartner(u){
+ const col=swapColumn(u);if(col<0)return null;
+ const wantedSlot=u.row==='front'?col+3:col;
+ const wantedRow=u.row==='front'?'back':'front';
+ return A.find(x=>x!==u&&x.hp>0&&x.row===wantedRow&&x.formationSlot===wantedSlot)||null;
+}
 function renderActorStates(){
  const actor=currentActor&&currentActor.side==='A'?currentActor:null;
- const title=document.querySelector('#skillActor'),box=document.querySelector('#actorStates');if(!title||!box)return;
- if(!actor){title.textContent='技を選択';box.innerHTML='';return}
+ const title=document.querySelector('#skillActor'),btn=document.querySelector('#swapBtn');if(!title||!btn)return;
+ if(!actor){title.textContent='技を選択';btn.disabled=true;btn.textContent='↕ 交代';btn.title='';return}
  title.textContent=actor.name+'｜技を選択';
- const tags=unitStateTags(actor);box.innerHTML=(tags.length?tags:['状態異常なし']).map(x=>`<span class="actorStateChip">${x}</span>`).join('');
+ const partner=findSwapPartner(actor);
+ btn.disabled=!partner;
+ btn.textContent=partner?'↕ 交代':'↕ 交代不可';
+ btn.title=partner?`${partner.name}と同列バトンタッチ`:'同列に生存している交代相手がいません';
+}
+async function executeBattleSwap(u){
+ const partner=findSwapPartner(u);if(!partner)return false;
+ const uSlot=u.formationSlot,pSlot=partner.formationSlot;
+ const uWasFront=u.row==='front';
+ u.formationSlot=pSlot;partner.formationSlot=uSlot;
+ u.row=uWasFront?'back':'front';partner.row=uWasFront?'front':'back';
+ u.pulledForward=false;partner.pulledForward=false;
+ u.pullVulnerableUntilTurn=0;partner.pullVulnerableUntilTurn=0;
+ document.querySelector('#status').textContent=`${u.name} ⇄ ${partner.name}｜バトンタッチ！`;
+ renderBattle();await sleep(180);
+ return true;
 }
 function openBattleUnitDetail(u){
  if(!u)return;const tags=unitStateTags(u),side=u.side==='A'?'味方':'敵',row=u.row==='front'?'前衛':'後衛';
@@ -1670,7 +1705,7 @@ function pullForwardForSlot(side,frontSlot){
  const army=side==='A'?A:E;
  const front=army.find(x=>x.formationSlot===frontSlot&&x.hp>0);
  if(front)return null;
- const back=army.find(x=>x.row==='back'&&(x.homeSlot??x.formationSlot)===frontSlot+3&&x.hp>0);
+ const back=army.find(x=>x.row==='back'&&x.formationSlot===frontSlot+3&&x.hp>0);
  if(!back)return null;
  const hpBefore=back.hp,maxBefore=back.max,nextBefore=back.next;
  const deadFront=army.find(x=>x!==back&&x.hp<=0&&x.row==='front'&&x.formationSlot===frontSlot);
@@ -1956,7 +1991,7 @@ async function battle(){
      if(!living(A).length){syncActiveParty();document.querySelector('#status').textContent='部隊'+(sortieQueue[activePartyIndex].slot+1)+' 壊滅';await sleep(450);if(!deployNextParty())break;await sleep(350)}
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
      tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
-     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;if(selectedSkillSlot>=3){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A)}else if(u.cid===101){if(selectedSkillSlot===2)await absoluteDomainRelease(u,E);else await absoluteDomainAttack(u,E)}else if(u.cid===102){if(selectedSkillSlot===2)await nagiTaikiMeirei(u);else await nagiIsseiSousha(u,E)}else if(u.cid===103){if(selectedSkillSlot===2)await yuzuShidenIssen(u,E);else await yuzuUninMusho(u,E)}else if(u.cid===201){if(selectedSkillSlot===2)await hathorHolyMilking(u,E);else await hathorHolyDrop(u,E)}else if(u.cid===202){if(selectedSkillSlot===2)await baalMilkMissile(u,E);else await baalFertileDrop(u,E)}else{if(selectedSkillSlot===2)await nandiDrinkLots(u);else await nandiMilkingGrace(u,E)};currentActor=null;resolvePlayerAction=null}else{await attack(u,u.side==='A'?E:A)}
+     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=3){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A)}else if(u.cid===101){if(selectedSkillSlot===2)await absoluteDomainRelease(u,E);else await absoluteDomainAttack(u,E)}else if(u.cid===102){if(selectedSkillSlot===2)await nagiTaikiMeirei(u);else await nagiIsseiSousha(u,E)}else if(u.cid===103){if(selectedSkillSlot===2)await yuzuShidenIssen(u,E);else await yuzuUninMusho(u,E)}else if(u.cid===201){if(selectedSkillSlot===2)await hathorHolyMilking(u,E);else await hathorHolyDrop(u,E)}else if(u.cid===202){if(selectedSkillSlot===2)await baalMilkMissile(u,E);else await baalFertileDrop(u,E)}else{if(selectedSkillSlot===2)await nandiDrinkLots(u);else await nandiMilkingGrace(u,E)};currentActor=null;resolvePlayerAction=null}else{await attack(u,u.side==='A'?E:A)}
      u.next+=chosenActionCost(u,selectedSkillSlot);syncActiveParty();renderBattle();
    }
    if(!living(E).length){addFloorClearForRun();const baseReward=10*floor,mult=damageRewardMultiplier();runLoot+=Math.round(baseReward*mult);document.querySelector('#status').textContent=floor+'F CLEAR｜損壊率 '+damageRate().toFixed(1)+'%｜報酬 ×'+mult.toFixed(2);await sleep(500);if(floor>=maxFloor){running=false;showRunResult(true);return}await sleep(250);if(!nextFloor()){running=false;showRunResult(false);return}continue}
@@ -1965,6 +2000,7 @@ async function battle(){
 }
 function showRunResult(win){document.querySelector('#resultText').textContent=win?`${maxFloor}F 踏破！`:'GAME OVER';document.querySelector('#resultDetail').textContent=win?'検証ダンジョン踏破｜獲得素材 '+runLoot:floor+'Fで全出撃部隊が壊滅｜獲得素材 '+runLoot;document.querySelector('#continueFloor').style.display=win?'none':'block';document.querySelector('#again').textContent=win?'素材を持って拠点へ戻る':'素材を持って拠点へ戻る';document.querySelector('#overlay').classList.add('show')}
 function retreatHome(){clearTargetSelection();running=false;if(resolvePlayerAction){let r=resolvePlayerAction;resolvePlayerAction=null;r()}document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');openInfo('攻略終了','獲得素材 '+runLoot+' を持ち帰りました。次回の世界深度攻略は1Fから開始します。','🎒');showScreen('home')}
+document.querySelector('#swapBtn').onclick=()=>{if(resolvePlayerAction&&currentActor&&findSwapPartner(currentActor)){selectedSkillSlot=0;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};
 document.querySelector('#uniqueSkill').onclick=()=>{if(resolvePlayerAction){selectedSkillSlot=1;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};
 document.querySelector('#uniqueSkill2').onclick=()=>{if(resolvePlayerAction&&[101,102,103,201,202,203].includes(currentActor?.cid)){if(currentActor?.cid===103&&(currentActor.mirror||0)<5){document.querySelector('#status').textContent='《紫電一閃》は🪞5以上で発動可能';return}selectedSkillSlot=2;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};document.querySelector('#freeSkill1').onclick=()=>{if(resolvePlayerAction&&equippedSkillBook(currentActor,3)){selectedSkillSlot=3;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};document.querySelector('#freeSkill2').onclick=()=>{if(resolvePlayerAction&&equippedSkillBook(currentActor,4)){selectedSkillSlot=4;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};document.querySelector('#autoToggle').onclick=()=>{autoMode=!autoMode;if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、素材を持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
 const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpen').onclick=()=>dp.classList.add('show');document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
