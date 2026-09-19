@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.280</title>
+<title>セカソコ ver.281</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1174,7 +1174,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.280";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.281";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1800,7 +1800,7 @@ async function yuzuUninMusho(att,defenders){
  if(att.hp<=0)return;const pool=frontEnemies(defenders);if(!pool.length)return;
  const t=pool[Math.floor(Math.random()*pool.length)],attacker=document.getElementById(att.id),targetEl=document.getElementById(t.id);
  document.querySelector('#status').textContent=`${att.name}「固有①《雲隠霧消》」`;if(attacker)attacker.classList.add('attacking');await sleep(160);
- for(let i=0;i<2;i++){if(t.hp<=0)break;if(targetEl)targetEl.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)*.5));damagePop(targetEl,hit.damage);await sleep(120);if(targetEl)targetEl.classList.remove('hit')}
+ for(let i=0;i<2;i++){if(t.hp<=0)break;if(targetEl)targetEl.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)*1.0));damagePop(targetEl,hit.damage);await sleep(120);if(targetEl)targetEl.classList.remove('hit')}
  for(const ally of living(A)){if(String(ally.attr||'').includes('透波')){ally.mirror=Math.min(20,(ally.mirror||0)+1);ally.shield=(ally.shield||0)+1}}
  if(t.hp<=0){if(targetEl)targetEl.classList.add('dying');await sleep(180);if(handleFrontlineDeath(t)){renderBattle();await sleep(220)}}
  if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent='《雲隠霧消》！ 透波全員 🪞+1 / 🛡️+1';await sleep(100);
@@ -1819,7 +1819,7 @@ async function yuzuShidenIssen(att,defenders){
 async function nagiIsseiSousha(att,defenders){
  if(att.hp<=0)return;const attacker=document.getElementById(att.id);document.querySelector('#status').textContent=`${att.name}「固有①《一世掃射》」 CT150`;
  if(attacker)attacker.classList.add('attacking');await sleep(150);
- for(let i=0;i<5;i++){const fronts=frontEnemies(defenders);if(!fronts.length)break;const t=fronts[Math.floor(Math.random()*fronts.length)],el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)*.5));damagePop(el,hit.damage);await sleep(100);if(el)el.classList.remove('hit');if(t.hp<=0){if(el)el.classList.add('dying');await sleep(100);if(handleFrontlineDeath(t)){renderBattle();await sleep(150)}}}
+ for(let i=0;i<5;i++){const fronts=frontEnemies(defenders);if(!fronts.length)break;const t=fronts[Math.floor(Math.random()*fronts.length)],el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)*1.0));damagePop(el,hit.damage);await sleep(100);if(el)el.classList.remove('hit');if(t.hp<=0){if(el)el.classList.add('dying');await sleep(100);if(handleFrontlineDeath(t)){renderBattle();await sleep(150)}}}
  for(const ally of living(A)){ally.mirror=Math.min(20,(ally.mirror||0)+1);ally.sword=(ally.sword||0)+1;ally.shield=(ally.shield||0)+1}
  if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent='《一世掃射》！ 味方全員 🪞+1 / 🗡️+1 / 🛡️+1';await sleep(100);
 }
@@ -1833,7 +1833,7 @@ async function nagiTaikiMeirei(att){
 async function absoluteDomainAttack(u,enemies){
  const alive=living(enemies);if(!alive.length)return;const t=alive[Math.floor(Math.random()*alive.length)],attacker=document.getElementById(u.id),el=document.getElementById(t.id);
  document.querySelector('#status').textContent='名切 命《絶対領域展開》';if(attacker)attacker.classList.add('attacking');await sleep(150);if(el)el.classList.add('hit');
- const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*.5));damagePop(el,hit.damage);
+ const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*1.0));damagePop(el,hit.damage);
  u.mirror=Math.min(20,(u.mirror||0)+1);u.sword=(u.sword||0)+1;u.shield=(u.shield||0)+1;u.absoluteDomain=true;
  await sleep(140);if(attacker)attacker.classList.remove('attacking');if(el)el.classList.remove('hit');if(t.hp<=0&&handleFrontlineDeath(t)){renderBattle();await sleep(150)}
  document.querySelector('#status').textContent='《絶対領域展開》｜🪞+1 🗡️+1 🛡️+1';renderBattle();
@@ -1842,10 +1842,10 @@ async function absoluteDomainRelease(u,enemies){
  const fronts=frontEnemies(enemies);if(!fronts.length)return;
  const spent=Math.max(0,Math.floor(Number(u.mirror)||0)),shots=spent,attacker=document.getElementById(u.id);
  document.querySelector('#status').textContent=`名切 命《絶対領域解放》｜前衛＋${shots}Hit`;if(attacker)attacker.classList.add('attacking');
- for(const t of [...fronts]){const el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*.5));damagePop(el,hit.damage)}
+ for(const t of [...fronts]){const el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*1.0));damagePop(el,hit.damage)}
  await sleep(150);for(const t of enemies){const el=document.getElementById(t.id);if(el)el.classList.remove('hit')}
  u.mirror=0;u.absoluteDomain=false;
- for(let i=0;i<shots;i++){const pool=frontEnemies(enemies);if(!pool.length)break;const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*.5));damagePop(el,hit.damage);await sleep(100);if(el)el.classList.remove('hit');if(t.hp<=0&&handleFrontlineDeath(t)){renderBattle();await sleep(120)}}
+ for(let i=0;i<shots;i++){const pool=frontEnemies(enemies);if(!pool.length)break;const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*1.0));damagePop(el,hit.damage);await sleep(100);if(el)el.classList.remove('hit');if(t.hp<=0&&handleFrontlineDeath(t)){renderBattle();await sleep(120)}}
  const planned=Math.floor((Number(u.max)||0)*spent/100),missing=Math.max(0,(Number(u.max)||0)-(Number(u.hp)||0)),healed=Math.min(planned,missing);if(healed>0)u.hp+=healed;
  for(const t of enemies.filter(x=>x.hp<=0))handleFrontlineDeath(t);
  if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《絶対領域解放》｜前衛＋${shots}Hit / HP${spent}%回復`;renderBattle();await sleep(120);
