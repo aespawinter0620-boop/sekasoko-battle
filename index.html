@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.279</title>
+<title>セカソコ ver.280</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1174,7 +1174,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.279";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.280";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1886,9 +1886,9 @@ function configureUniqueSkill(u){
  const n=document.querySelector('#uniqueSkillName'),d=document.querySelector('#uniqueSkillDesc'),k=document.querySelector('#uniqueSkillKind'),btn=document.querySelector('#uniqueSkill');
  if(!n||!d||!k||!btn)return;k.textContent='固有①';
  const data={
-  101:['絶対領域展開','単体ATK50%／自身🪞1 🗡️1 🛡️1　CT20','20','《絶対領域展開》｜CT20｜敵ランダム1体へATK依存小（ATK50%）。自身へ🪞+1、🗡️+1、🛡️+1。'],
-  102:['一世掃射','前衛ランダムATK50%×5／味方🪞1 🗡️1 🛡️1　CT150','150','《一世掃射》｜CT150｜敵前衛ランダムへATK依存小×5。生存味方全員へ🪞+1、🗡️+1、🛡️+1。'],
-  103:['雲隠霧消','前衛ランダムATK50%×2／透波🪞1 🛡️1　CT50','50','《雲隠霧消》｜CT50｜敵前衛ランダム1体へATK依存小×2。生存透波全員へ🪞+1、🛡️+1。'],
+  101:['絶対領域展開','単体ATK100%／自身🪞1 🗡️1 🛡️1　CT20','20','《絶対領域展開》｜CT20｜敵ランダム1体へATK依存小（ATK100%）。自身へ🪞+1、🗡️+1、🛡️+1。'],
+  102:['一世掃射','前衛ランダムATK100%×5／味方🪞1 🗡️1 🛡️1　CT150','150','《一世掃射》｜CT150｜敵前衛ランダムへATK依存小×5。生存味方全員へ🪞+1、🗡️+1、🛡️+1。'],
+  103:['雲隠霧消','前衛ランダムATK100%×2／透波🪞1 🛡️1　CT50','50','《雲隠霧消》｜CT50｜敵前衛ランダム1体へATK依存小×2。生存透波全員へ🪞+1、🛡️+1。'],
   201:['聖なる雫','残存HP×1/4／自身🥛3　CT50','50','《聖なる雫》｜CT50｜敵前衛ランダム1体へ自身残存HP×1/4ダメージ。自身へ🥛+3。'],
   202:['豊穣の雫','前衛全体 最大HP×1/5／全員🥛2 自身さらに3　CT100','100','《豊穣の雫》｜CT100｜敵前衛全体へ自身最大HP×1/5ダメージ。生存味方全員へ🥛+2、自身へさらに🥛+3。'],
   203:['搾乳の恵み','最大HP×1/10／自身🥛1　CT10','10','《搾乳の恵み》｜CT10｜敵前衛ランダム1体へ自身最大HP×1/10ダメージ。ナンディ自身へ🥛+1。']
@@ -1897,7 +1897,7 @@ function configureUniqueSkill(u){
  const n2=document.querySelector('#uniqueSkill2Name'),d2=document.querySelector('#uniqueSkill2Desc'),btn2=document.querySelector('#uniqueSkill2');
  if(!n2||!d2||!btn2)return;
  const data2={
-  101:['絶対領域解放','前衛ATK50%＋🪞全消費→同数追撃＋同%回復　CT120','120','《絶対領域解放》｜CT120｜敵前衛へATK依存小。残存🪞を全消費し、消費数と同回数だけ敵前衛単体へランダム追撃。自身HPを消費数%回復。'],
+  101:['絶対領域解放','前衛ATK100%＋🪞全消費→同数追撃＋同%回復　CT120','120','《絶対領域解放》｜CT120｜敵前衛へATK依存小。残存🪞を全消費し、消費数と同回数だけ敵前衛単体へランダム追撃。自身HPを消費数%回復。'],
   102:['待機命令','自身🪞全消費／前衛HP消費数%回復＋各🛡️5　CT150','150','《待機命令》｜CT150｜自身の🪞を全消費。生存味方前衛を各自の最大HPの「消費🪞数×1%」回復し、回復対象それぞれへ🛡️+5。'],
   103:['紫電一閃','🪞5消費／後衛ATK150%／透波🛡️5 🗡️5　CT120','120','《紫電一閃》｜CT120｜🪞5消費。敵後衛ランダム1体へATK依存大（ATK150%）。生存透波全員へ🛡️+5、🗡️+5。🪞5未満は発動不可。'],
   201:['聖なる搾乳','残存HP×1/2／🥛3消費＋最低HP率味方5%回復　CT140','140','《聖なる搾乳》｜CT140｜敵前衛ランダム1体へ自身残存HP×1/2ダメージ。自身の🥛を3消費。生存味方のうち残存HP率最低の1体を、ハトホル自身の最大HP5%回復。'],
