@@ -1294,6 +1294,13 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .battleBuffRow{position:absolute!important;left:2px!important;right:2px!important;bottom:calc(var(--foot-hp-bottom,22px) + 12px)!important;z-index:40!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;height:22px!important;overflow:hidden!important;pointer-events:none!important}
 #battleScreen .battleBuffRow span{display:block!important;width:100%!important;height:11px!important;line-height:11px!important;font-size:9px!important;font-weight:1000!important;color:#fff!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-shadow:0 1px 2px #000,0 0 3px #000!important}
 #battleScreen .battleBuffRow:empty{display:none!important}
+/* ver.290 adopted tier HUD: one attribute icon + colored Gold/Silver/Copper numbers */
+#battleScreen .battleBuffRow .tierStackCompact{display:inline!important;width:auto!important;height:auto!important;line-height:inherit!important;font-size:inherit!important;font-weight:inherit!important;color:inherit!important;text-align:inherit!important;white-space:nowrap!important;overflow:visible!important;text-shadow:inherit!important}
+#battleScreen .battleBuffRow .tierNum,#battleScreen .battleBuffRow .tierSep{font-style:normal!important;font-weight:1000!important}
+#battleScreen .battleBuffRow .tierGold{color:#ffd85a!important;text-shadow:0 1px 2px #000,0 0 5px rgba(255,216,90,.58)!important}
+#battleScreen .battleBuffRow .tierSilver{color:#dce8f5!important;text-shadow:0 1px 2px #000,0 0 4px rgba(220,232,245,.38)!important}
+#battleScreen .battleBuffRow .tierCopper{color:#d88a5b!important;text-shadow:0 1px 2px #000,0 0 4px rgba(216,138,91,.40)!important}
+#battleScreen .battleBuffRow .tierSep{color:rgba(255,255,255,.72)!important;padding:0 1px!important;text-shadow:0 1px 2px #000!important}
 #battleScreen .footHpRow{position:absolute!important;left:4px!important;right:4px!important;bottom:var(--foot-hp-bottom,22px)!important;z-index:41!important;height:11px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;pointer-events:none!important}
 #battleScreen .footHpBar{height:4px!important;flex:0 1 70%!important;max-width:70%!important;border-radius:999px!important;overflow:hidden!important;background:rgba(0,0,0,.72)!important}
 #battleScreen .footHpBar i{display:block!important;height:100%!important;background:#22d866!important}
@@ -1652,8 +1659,25 @@ function syncAllTierBuffs(units){for(const u of units||[])syncTierBuffsFromLegac
 function formatStackNumber(v){const n=cleanStackNumber(v);return Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,'')}
 function tierBuffHudToken(u,key){
  const b=syncTierBuffsFromLegacy(u)[key],meta=TIER_BUFF_META[key];if(!meta)return'';
- const parts=[];if(b.copper>0)parts.push(`🥉${formatStackNumber(b.copper)}`);if(b.silver>0)parts.push(`🥈${formatStackNumber(b.silver)}`);if(b.gold>0)parts.push(`🥇${formatStackNumber(b.gold)}`);
- return parts.length?`${meta.icon}${parts.join('')}`:'';
+ const copper=cleanStackNumber(b.copper),silver=cleanStackNumber(b.silver),gold=cleanStackNumber(b.gold);
+ if(copper<=0&&silver<=0&&gold<=0)return'';
+ // HUD compact tier notation: highest owned tier -> lower tiers.
+ // Gold/Silver/Copper are identified by number color, not medal emoji.
+ const parts=[];
+ if(gold>0){
+  parts.push(`<i class="tierNum tierGold">${formatStackNumber(gold)}</i>`);
+  parts.push(`<i class="tierSep">/</i>`);
+  parts.push(`<i class="tierNum tierSilver">${formatStackNumber(silver)}</i>`);
+  parts.push(`<i class="tierSep">/</i>`);
+  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
+ }else if(silver>0){
+  parts.push(`<i class="tierNum tierSilver">${formatStackNumber(silver)}</i>`);
+  parts.push(`<i class="tierSep">/</i>`);
+  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
+ }else{
+  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
+ }
+ return `${meta.icon}<span class="tierStackCompact">${parts.join('')}</span>`;
 }
 function tierBuffDetailTags(u){
  const state=syncTierBuffsFromLegacy(u),tags=[];
