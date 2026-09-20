@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.295</title>
+<title>セカソコ ver.297</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1208,7 +1208,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.295";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.297";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1474,7 +1474,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </main>
 <script>
 const attributes=[{id:'suppa',name:'透波',count:'3/3',unlocked:true},{id:'cow',name:'乳牛',count:'3/3',unlocked:true},{id:'vampire',name:'吸血',count:'0/3',unlocked:false},{id:'shield',name:'盾姫',count:'0/3',unlocked:false},{id:'poison',name:'毒牙',count:'0/3',unlocked:false},{id:'undead',name:'屍霊',count:'0/3',unlocked:false},{id:'water',name:'水棲',count:'0/3',unlocked:false},{id:'time',name:'時空',count:'0/3',unlocked:false},{id:'treasure',name:'宝盗',count:'0/3',unlocked:false},{id:'gamble',name:'賭博',count:'0/3',unlocked:false},{id:'abyss',name:'深淵',count:'0/3',unlocked:false}];
-const homeRoster={suppa:[{name:'名切 命',icon:'🌙',sub:'透波｜技巧型',hp:110,atk:100,def:100,spd:100,skills:['固有①《絶対領域展開》 CT20','敵ランダム1体：ATK150%｜自身🪞+1／🗡️+1／🛡️+1','固有②《絶対領域解放》 CT120｜敵前衛全体ATK120%→🪞全消費→消費数ぶん前衛ランダム単体ATK100%追撃→同%自己回復｜20消費時のみ銀🪞+1／🗡️+1／💪+1']},{name:'月城 凪',icon:'🌪️',sub:'透波・天｜指揮官',hp:104,atk:100,def:100,spd:100,skills:['固有①《一世掃射》 CT250','敵全体：ATK100%｜生存透波全員🪞+1','固有②《待機命令》 CT250｜自身🪞全消費→選択した生存味方前衛1体を消費数%回復｜20消費時のみ銀🪞+1／💪+1／🗡️+1']},{name:'緋村 柚',icon:'🥷',sub:'透波・地｜奇襲',hp:92,atk:100,def:100,spd:100,skills:['固有①《雲隠霧消》 CT50','敵前衛ランダム1体：ATK100%×2｜選択した生存透波1体へ🪞+2','固有②《紫電一閃》 CT120｜自身🪞20消費｜選択した敵後衛1体ATK200%（後衛不在時は前衛）｜自身に銀🪞+1／💪+1／🗡️+1｜🪞20未満は発動不可']}],cow:[{name:'聖なる乳牛ハトホル',icon:'🥛',sub:'乳牛・天｜生命・回復',hp:145,atk:100,def:100,spd:100,skills:['固有①《聖なる雫》 CT50','敵前衛ランダム1体：自身残存HP×1/4のDEF無視ダメージ｜自身🥛+3','固有②《聖なる搾乳》 CT200｜敵前衛ランダム1体：自身残存HP×1/2のDEF無視ダメージ｜自身🥛を最大20消費→選択味方1体を消費前の自身最大HP×消費数%回復｜20消費時のみ銀🥛+1／🗡️+1／🛡️+1／💪+1']},{name:'豊穣の乳牛バアル',icon:'🐮',sub:'乳牛・地｜耐久・蓄積',hp:145,atk:100,def:100,spd:100,skills:['固有①《豊穣の雫》 CT190','敵前衛全体：自身最大HP×1/5のDEF無視ダメージ｜選択味方1体へ🥛+5','固有②《ミルクミサイル》 CT250｜🥛20以上で使用可｜選択した敵前衛1体へATK200%×2｜🥛20消費→自身に銀🥛+1']},{name:'恵みの乳牛ナンディ',icon:'🍼',sub:'乳牛・人｜供給・支援',hp:145,atk:100,def:100,spd:100,skills:['固有①《搾乳の恵み》 CT10','敵前衛ランダム1体：自身最大HP×1/10のDEF無視ダメージ｜自身🥛+3','固有②《多乳の恵み》 CT300｜自身🥛全消費→選択した自分以外の味方1体へ同数🥛付与｜20以上消費時、自身に銀🥛+2／🗡️+1／🛡️+1／💪+1']}]};
+const homeRoster={suppa:[{name:'名切 命',icon:'🌙',sub:'透波｜技巧型',hp:110,atk:100,def:100,spd:100,skills:['固有①《絶対領域展開》 CT20','敵ランダム1体：ATK150%｜自身🪞+3／🗡️+1／🛡️+1','固有②《絶対領域解放》 CT120｜敵前衛全体ATK120%→🪞全消費→消費数ぶん前衛ランダム単体ATK100%追撃→同%自己回復｜20消費時のみ銀🪞+1／🗡️+1／💪+1']},{name:'月城 凪',icon:'🌪️',sub:'透波・天｜指揮官',hp:104,atk:100,def:100,spd:100,skills:['固有①《一世掃射》 CT250','敵全体：ATK100%｜生存透波全員🪞+2','固有②《待機命令》 CT250｜自身🪞全消費→選択した生存味方前衛1体を消費数%回復｜20消費時のみ銀🪞+1／💪+1／🗡️+1']},{name:'緋村 柚',icon:'🥷',sub:'透波・地｜奇襲',hp:92,atk:100,def:100,spd:100,skills:['固有①《雲隠霧消》 CT50','敵前衛ランダム1体：ATK100%×2｜選択した生存透波1体へ🪞+4','固有②《紫電一閃》 CT120｜自身🪞20消費｜選択した敵後衛1体ATK200%（後衛不在時は前衛）｜自身に銀🪞+1／💪+1／🗡️+1｜🪞20未満は発動不可']}],cow:[{name:'聖なる乳牛ハトホル',icon:'🥛',sub:'乳牛・天｜生命・回復',hp:145,atk:100,def:100,spd:100,skills:['固有①《聖なる雫》 CT50','敵前衛ランダム1体：自身残存HP×1/4のDEF無視ダメージ｜自身🥛+3','固有②《聖なる搾乳》 CT200｜敵前衛ランダム1体：自身残存HP×1/2のDEF無視ダメージ｜自身🥛を最大20消費→選択味方1体を消費前の自身最大HP×消費数%回復｜20消費時のみ銀🥛+1／🗡️+1／🛡️+1／💪+1']},{name:'豊穣の乳牛バアル',icon:'🐮',sub:'乳牛・地｜耐久・蓄積',hp:145,atk:100,def:100,spd:100,skills:['固有①《豊穣の雫》 CT190','敵前衛全体：自身最大HP×1/5のDEF無視ダメージ｜選択味方1体へ🥛+5','固有②《ミルクミサイル》 CT250｜🥛20以上で使用可｜選択した敵前衛1体へATK200%×2｜🥛20消費→自身に銀🥛+1']},{name:'恵みの乳牛ナンディ',icon:'🍼',sub:'乳牛・人｜供給・支援',hp:145,atk:100,def:100,spd:100,skills:['固有①《搾乳の恵み》 CT10','敵前衛ランダム1体：自身最大HP×1/10のDEF無視ダメージ｜自身🥛+3','固有②《多乳の恵み》 CT300｜自身🥛全消費→選択した自分以外の味方1体へ同数🥛付与｜20以上消費時、自身に銀🥛+2／🗡️+1／🛡️+1／💪+1']}]};
 let currentAttr=localStorage.getItem('sekasokoHomeAttr')||'suppa';
 function showScreen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
 function renderHome(){const a=attributes.find(x=>x.id===currentAttr)||attributes[0];document.querySelector('#areaName').textContent=a.unlocked?a.name:'？？？';document.querySelector('#areaCount').textContent=a.unlocked?a.count:'未発見';const chars=a.unlocked?(homeRoster[a.id]||[]):[];let html=chars.map((c,i)=>`<div class="char" data-char="${i}"><div class="portrait">${c.icon}</div><div class="charName">${c.name}</div><div class="charSub">${c.sub}</div></div>`).join('');for(let i=chars.length;i<3;i++)html+=`<div class="char emptyChar"><div class="portrait">？</div><div class="charName">${a.unlocked?'未加入':'？？？'}</div><div class="charSub">${a.unlocked?'空席':'未発見'}</div></div>`;document.querySelector('#homeCharacters').innerHTML=html;document.querySelectorAll('[data-char]').forEach(el=>el.onclick=()=>openCharacter(chars[+el.dataset.char]));document.querySelector('#attrNav').innerHTML=attributes.map(x=>`<button class="attrBtn ${x.id===currentAttr?'active':''} ${!x.unlocked?'locked':''}" data-attr="${x.id}">${x.unlocked?x.name:'？？？'}<span>${x.unlocked?x.count:'未発見'}</span></button>`).join('');document.querySelectorAll('[data-attr]').forEach(el=>el.onclick=()=>{const x=attributes.find(a=>a.id===el.dataset.attr);if(!x.unlocked){openInfo('？？？','まだ、この気配の正体を知らない。','❔');return}currentAttr=x.id;localStorage.setItem('sekasokoHomeAttr',currentAttr);renderHome()})}
@@ -1969,6 +1969,8 @@ function tryEvade(t){
 }
 async function resolveMirrorEvadeEffects(evader,source){
  if(!evader)return{counterDamage:0,healed:0};
+ // ver.296: successful evasion consumes exactly 1 copper 🪞. Silver/gold are not consumed.
+ consumeTierBuff(evader,'mirror','copper',1);
  const silver=Math.max(0,Math.floor(getTierBuff(evader,'mirror','silver')));
  const gold=Math.max(0,Math.floor(getTierBuff(evader,'mirror','gold')));
  let counterDamage=0,healed=0;
@@ -2100,9 +2102,9 @@ async function yuzuUninMusho(att,defenders){
  document.querySelector('#status').textContent=`${att.name}「固有①《雲隠霧消》」`;if(attacker)attacker.classList.add('attacking');await sleep(160);
  for(let i=0;i<2;i++){if(t.hp<=0)break;if(targetEl)targetEl.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)*1.0));damagePop(targetEl,hit.damage);await sleep(120);if(targetEl)targetEl.classList.remove('hit')}
  if(t.hp<=0){if(targetEl)targetEl.classList.add('dying');await sleep(140);if(handleFrontlineDeath(t)){renderBattle();await sleep(180)}}
- const suppa=livingSuppa(),chosen=autoMode?autoRandomTarget(suppa):await selectBattleTarget(suppa,`${att.name}《雲隠霧消》｜🪞+2する透波を選択`);
- if(chosen)addMirrorCopper(chosen,2);
- if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《雲隠霧消》！ ${chosen?chosen.name+'へ🪞+2':'対象なし'}`;renderBattle();await sleep(100);
+ const suppa=livingSuppa(),chosen=autoMode?autoRandomTarget(suppa):await selectBattleTarget(suppa,`${att.name}《雲隠霧消》｜🪞+4する透波を選択`);
+ if(chosen)addMirrorCopper(chosen,4);
+ if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《雲隠霧消》！ ${chosen?chosen.name+'へ🪞+4':'対象なし'}`;renderBattle();await sleep(100);
 }
 async function yuzuShidenIssen(att,defenders){
  if(att.hp<=0||getTierBuff(att,'mirror','copper')<20)return;
@@ -2121,8 +2123,8 @@ async function nagiIsseiSousha(att,defenders){
  for(const t of targets){if(t.hp<=0)continue;const el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)));damagePop(el,hit.damage)}
  await sleep(180);for(const t of targets){const el=document.getElementById(t.id);if(el)el.classList.remove('hit')}
  let pulled=false;for(const t of targets.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(180)}
- for(const ally of livingSuppa())addMirrorCopper(ally,1);
- if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent='《一世掃射》！ 敵全体ATK100% / 生存透波全員🪞+1';renderBattle();await sleep(100);
+ for(const ally of livingSuppa())addMirrorCopper(ally,2);
+ if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent='《一世掃射》！ 敵全体ATK100% / 生存透波全員🪞+2';renderBattle();await sleep(100);
 }
 async function nagiTaikiMeirei(att){
  if(att.hp<=0)return;const fronts=living(A).filter(x=>x.row==='front');if(!fronts.length)return;
@@ -2137,9 +2139,9 @@ async function absoluteDomainAttack(u,enemies){
  const alive=living(enemies);if(!alive.length)return;const t=alive[Math.floor(Math.random()*alive.length)],attacker=document.getElementById(u.id),el=document.getElementById(t.id);
  document.querySelector('#status').textContent='名切 命《絶対領域展開》';if(attacker)attacker.classList.add('attacking');await sleep(150);if(el)el.classList.add('hit');
  const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*1.5));damagePop(el,hit.damage);
- addMirrorCopper(u,1);u.sword=(u.sword||0)+1;u.shield=(u.shield||0)+1;
+ addMirrorCopper(u,3);u.sword=(u.sword||0)+1;u.shield=(u.shield||0)+1;
  await sleep(140);if(attacker)attacker.classList.remove('attacking');if(el)el.classList.remove('hit');if(t.hp<=0){if(el)el.classList.add('dying');if(handleFrontlineDeath(t)){renderBattle();await sleep(150)}}
- document.querySelector('#status').textContent='《絶対領域展開》｜ATK150% / 🪞+1 🗡️+1 🛡️+1';renderBattle();
+ document.querySelector('#status').textContent='《絶対領域展開》｜ATK150% / 🪞+3 🗡️+1 🛡️+1';renderBattle();
 }
 async function absoluteDomainRelease(u,enemies){
  let fronts=living(enemies).filter(x=>x.row==='front');if(!fronts.length)return;
@@ -2218,9 +2220,9 @@ function configureUniqueSkill(u){
  const n=document.querySelector('#uniqueSkillName'),d=document.querySelector('#uniqueSkillDesc'),k=document.querySelector('#uniqueSkillKind'),btn=document.querySelector('#uniqueSkill');
  if(!n||!d||!k||!btn)return;k.textContent='固有①';
  const data={
-  101:['絶対領域展開','敵ランダムATK150%／自身🪞1 🗡️1 🛡️1　CT20','20','《絶対領域展開》｜CT20｜敵ランダム1体へATK150%。使用後、自身へ🪞+1、🗡️+1、🛡️+1。'],
-  102:['一世掃射','敵全体ATK100%／生存透波全員🪞1　CT250','250','《一世掃射》｜CT250｜生存している敵全体へATK100%。使用後、生存透波全員へ🪞+1。'],
-  103:['雲隠霧消','前衛ランダムATK100%×2／選択透波🪞2　CT50','50','《雲隠霧消》｜CT50｜敵前衛ランダム1体へATK100%×2。使用後、生存透波から1体を選択し🪞+2。AUTO時は有効候補からランダム選択。'],
+  101:['絶対領域展開','敵ランダムATK150%／自身🪞3 🗡️1 🛡️1　CT20','20','《絶対領域展開》｜CT20｜敵ランダム1体へATK150%。使用後、自身へ🪞+3、🗡️+1、🛡️+1。'],
+  102:['一世掃射','敵全体ATK100%／生存透波全員🪞2　CT250','250','《一世掃射》｜CT250｜生存している敵全体へATK100%。使用後、生存透波全員へ🪞+2。'],
+  103:['雲隠霧消','前衛ランダムATK100%×2／選択透波🪞4　CT50','50','《雲隠霧消》｜CT50｜敵前衛ランダム1体へATK100%×2。使用後、生存透波から1体を選択し🪞+4。AUTO時は有効候補からランダム選択。'],
   201:['聖なる雫','残存HP×1/4・DEF無視／自身🥛3　CT50','50','《聖なる雫》｜CT50｜敵前衛ランダム1体へ自身残存HP×1/4のDEF無視ダメージ。自身へ🥛+3。'],
   202:['豊穣の雫','前衛全体 最大HP×1/5・DEF無視／選択味方🥛5　CT190','190','《豊穣の雫》｜CT190｜敵前衛全体へ自身最大HP×1/5のDEF無視ダメージ。使用後、生存味方1体を選択し🥛+5。バアル本人も選択可能。AUTO時は有効候補からランダム選択。'],
   203:['搾乳の恵み','最大HP×1/10・DEF無視／自身🥛3　CT10','10','《搾乳の恵み》｜CT10｜敵前衛ランダム1体へ自身最大HP×1/10のDEF無視ダメージ。ナンディ自身へ🥛+3。']
