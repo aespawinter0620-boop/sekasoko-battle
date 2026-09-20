@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.292</title>
+<title>セカソコ ver.293</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -427,6 +427,28 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   line-height:1 !important;
   font-weight:1000 !important;
   text-shadow:0 2px 2px #000,0 0 7px rgba(0,0,0,.9) !important;
+}
+/* ver.293 combat feedback: healing is green; mirror counter gets a dedicated label. */
+.damagePop.healPop{
+  color:#5dff8f !important;
+  text-shadow:0 2px 2px #000,0 0 7px rgba(93,255,143,.72) !important;
+}
+.counterPop{
+  position:absolute;
+  z-index:82 !important;
+  pointer-events:none;
+  font-size:19px;
+  line-height:1;
+  font-weight:1000;
+  color:#fff;
+  text-shadow:0 2px 2px #000,0 0 8px rgba(130,190,255,.9);
+  animation:counterFly .72s ease-out forwards;
+}
+@keyframes counterFly{
+  0%{transform:translate(-50%,0) scale(.72);opacity:0}
+  16%{opacity:1;transform:translate(-50%,-4px) scale(1.08)}
+  68%{opacity:1}
+  100%{transform:translate(-50%,-28px) scale(1.02);opacity:0}
 }
 
 /* Mizuki: preserve v160 art but anchor her feet to the cell baseline. */
@@ -1181,7 +1203,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.292";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.293";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1857,7 +1879,8 @@ function renderBattle(){
  const now=allUnits().filter(x=>x.hp>0).sort(compareTurn).slice(0,5);
  document.querySelector('#order').innerHTML=now.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.side==='A'?'味':'敵'} ${u.name}</span>`).join('');renderOrder();renderActorStates();bindBattleUnitDetails();
 }
-function damagePop(el,n){if(!el)return;const r=el.getBoundingClientRect(),app=document.querySelector('.app').getBoundingClientRect(),d=document.createElement('div');d.className='damagePop';d.textContent=n==='MISS'?'MISS':'-'+n;d.style.left=(r.left-app.left+r.width/2)+'px';d.style.top=(r.top-app.top+Math.max(18,r.height*.28))+'px';document.querySelector('.app').appendChild(d);setTimeout(()=>d.remove(),700)}
+function damagePop(el,n){if(!el)return;const r=el.getBoundingClientRect(),app=document.querySelector('.app').getBoundingClientRect(),d=document.createElement('div'),text=String(n),isHeal=text.startsWith('+');d.className='damagePop'+(isHeal?' healPop':'');d.textContent=text==='MISS'?'MISS':isHeal?text:'-'+text;d.style.left=(r.left-app.left+r.width/2)+'px';d.style.top=(r.top-app.top+Math.max(18,r.height*.28))+'px';document.querySelector('.app').appendChild(d);setTimeout(()=>d.remove(),700)}
+function counterPop(el){if(!el)return;const r=el.getBoundingClientRect(),app=document.querySelector('.app').getBoundingClientRect(),d=document.createElement('div');d.className='counterPop';d.textContent='反撃！';d.style.left=(r.left-app.left+r.width/2)+'px';d.style.top=(r.top-app.top+Math.max(8,r.height*.18))+'px';document.querySelector('.app').appendChild(d);setTimeout(()=>d.remove(),760)}
 function living(arr){return arr.filter(x=>x.hp>0)}
 function pullForwardForSlot(side,frontSlot){
  if(frontSlot<0||frontSlot>2)return null;
@@ -1939,7 +1962,8 @@ async function resolveMirrorEvadeEffects(evader,source){
   healed=Math.min(planned,missing);if(healed>0)evader.hp+=healed;
  }
  if(silver>0&&source&&source.hp>0){
-  const raw=Math.max(1,Math.floor(effectiveAtk(evader)*(1+silver*.05))),hit=applyCombatDamage(source,raw),sourceEl=document.getElementById(source.id);
+  const raw=Math.max(1,Math.floor(effectiveAtk(evader)*(1+silver*.05))),hit=applyCombatDamage(source,raw),sourceEl=document.getElementById(source.id),evaderEl=document.getElementById(evader.id);
+  if(evaderEl)counterPop(evaderEl);
   counterDamage=hit.damage;if(sourceEl){sourceEl.classList.add('hit');damagePop(sourceEl,hit.damage)}
   await sleep(100);if(sourceEl)sourceEl.classList.remove('hit');
   if(source.hp<=0){if(sourceEl)sourceEl.classList.add('dying');await sleep(100);if(handleFrontlineDeath(source)){renderBattle();await sleep(100)}}
