@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.306</title>
+<title>セカソコ ver.307</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1208,7 +1208,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.306";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.307";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1449,7 +1449,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 <style>
-/* ver.306: Mikoto afterimage exact-source rendering.
+/* ver.307: Mikoto afterimage exact-source rendering.
    Character body is NEVER redrawn: every rank uses the exact playable
    mizuki_v160 2.png sprite already embedded in the allies data.
    Rank differences are CSS-only darkness + aura filters.
@@ -1491,14 +1491,14 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
          drop-shadow(0 0 5px rgba(255,45,45,.96))
          drop-shadow(0 0 13px rgba(220,22,30,.72))!important;
 }
-/* ver.306: iOS/Safari hit-flash artifact fix for afterimages only.
+/* ver.307: iOS/Safari hit-flash artifact fix for afterimages only.
    Keep the existing hit translation/damage feedback, but do not apply the
    parent-unit brightness filter over children that already use aura filters. */
 #battleScreen .unit.hit[data-afterimage-rank]:not([data-afterimage-rank=""]){
   filter:none!important;
 }
 
-/* ver.306: iOS/Safari target-selection artifact fix for afterimages only.
+/* ver.307: iOS/Safari target-selection artifact fix for afterimages only.
    Never apply parent/sprite filters on afterimages while selecting targets;
    use opacity only so the compositing rectangle cannot appear. */
 #battleScreen.targetSelectMode .unit[data-afterimage-rank]:not([data-afterimage-rank=""]){
@@ -1515,7 +1515,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   opacity:1!important;
 }
 
-/* ver.306: afterimage ACTION face icons.
+/* ver.307: afterimage ACTION face icons.
    Reuse Mikoto's adopted face icon without redrawing; rank is shown by frame color. */
 #battleScreen .orderChip.actionFace[data-afterimage-rank] img{
   filter:grayscale(1) brightness(.44) contrast(1.05)!important;
@@ -1643,10 +1643,10 @@ const enemyBase=[
 {name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:100,def:50,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
 {name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:100,def:50,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
 ];
-/* ver.306: Floor 1 visual check — exact-source Mikoto afterimage ★1〜★5.
+/* ver.307: Floor 1 visual check — exact-source Mikoto afterimage ★1〜★5.
    Each image is derived from the current Mikoto transparent artwork, so facial/design identity is preserved.
    Enemy stats/skills remain based on the existing enemyBase values; boss/midboss logic is unchanged. */
-// ver.306: exact-source rule — DO NOT redraw/regen Mikoto for enemy afterimages.
+// ver.307: exact-source rule — DO NOT redraw/regen Mikoto for enemy afterimages.
 // Reuse the playable Mizuki/Mikoto sprite byte-for-byte; ranks are CSS-only.
 const mikotoAfterimageBase=formationRosterData.find(c=>c.id==='mizuki');
 const mikotoAfterimageBaseSprite=mikotoAfterimageBase.sprite;
@@ -1967,7 +1967,7 @@ async function executeBattleSwap(u){
 }
 function openBattleUnitDetail(u){
  if(!u)return;const tags=unitStateTags(u),side=u.side==='A'?'味方':'敵',row=u.row==='front'?'前衛':'後衛';
- const detailFace=u.faceIcon||u.actionSprite||u.sprite;const visual=detailFace?`<img src="${detailFace}" alt="${u.name}">`:u.icon;
+ const detailFace=u.afterimageFaceIcon||u.faceIcon||u.actionSprite||u.sprite;const visual=detailFace?`<img src="${detailFace}" alt="${u.name}">`:u.icon;
  const power=calcPower({hp:u.max,atk:u.atk||0,def:u.def||0,spd:u.spd||0}),floors=getFloorCounts()[u.rosterId||u.name]||0;
  document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="battleDetailHero"><div class="battleDetailIcon ${u.sprite?'faceCrop':''}">${visual}</div><div class="battleDetailMeta">${side}｜${row}<br>総合戦力 ${power.toLocaleString()}<br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div></div><div class="stats"><div class="stat">HP<b>${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</b><small>HP ${Math.max(0,u.hp)} + 🛡️${shieldValueDisplay(u)}（${shieldStackDisplay(u)}st）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
  document.querySelector('#modal').classList.add('show');
