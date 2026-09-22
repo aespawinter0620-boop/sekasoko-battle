@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.315</title>
+<title>セカソコ ver.316</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1208,7 +1208,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.315";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.316";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1306,7 +1306,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.315: manual target selection without parent/sprite filters.
+/* ver.316: manual target selection without parent/sprite filters.
    iOS/Safari can clip oversized character art to the unit compositor rectangle
    when filter is applied to the parent. Keep the real character art filter-free;
    non-targets dim by opacity. Selectable units use a duplicate image layer for
@@ -1463,7 +1463,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 <style>
-/* ver.315: Afterimage exact-source rendering.
+/* ver.316: Afterimage exact-source rendering.
    Mikoto remains the HTML-embedded master example; Nagi is the first assets-managed afterimage test.*/
    Character body is NEVER redrawn: every rank uses the exact playable
    mizuki_v160 2.png sprite already embedded in the allies data.
@@ -1506,14 +1506,14 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
          drop-shadow(0 0 5px rgba(255,45,45,.96))
          drop-shadow(0 0 13px rgba(220,22,30,.72))!important;
 }
-/* ver.315: iOS/Safari hit-flash artifact fix for afterimages only.
+/* ver.316: iOS/Safari hit-flash artifact fix for afterimages only.
    Keep the existing hit translation/damage feedback, but do not apply the
    parent-unit brightness filter over children that already use aura filters. */
 #battleScreen .unit.hit[data-afterimage-rank]:not([data-afterimage-rank=""]){
   filter:none!important;
 }
 
-/* ver.315: iOS/Safari target-selection artifact fix for afterimages only.
+/* ver.316: iOS/Safari target-selection artifact fix for afterimages only.
    Never apply parent/sprite filters on afterimages while selecting targets;
    use opacity only so the compositing rectangle cannot appear. */
 #battleScreen.targetSelectMode .unit[data-afterimage-rank]:not([data-afterimage-rank=""]){
@@ -1530,7 +1530,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   opacity:1!important;
 }
 
-/* ver.315: afterimage ACTION face icons.
+/* ver.316: afterimage ACTION face icons.
    Reuse Mikoto's adopted face icon without redrawing; rank is shown by frame color. */
 #battleScreen .orderChip.actionFace[data-afterimage-rank] img{
   filter:grayscale(1) brightness(.44) contrast(1.05)!important;
@@ -1540,7 +1540,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="3"]{border-color:#557cff!important;box-shadow:inset 0 0 0 1px rgba(85,124,255,.22)}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="4"]{border-color:#e4b73f!important;box-shadow:inset 0 0 0 1px rgba(228,183,63,.24)}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="5"]{border-color:#d64747!important;box-shadow:inset 0 0 0 1px rgba(214,71,71,.26)}
-/* ver.315: battle detail icon mirrors the ACTION afterimage icon treatment. */
+/* ver.316: battle detail icon mirrors the ACTION afterimage icon treatment. */
 #modal .battleDetailIcon[data-afterimage-rank] img{
   filter:grayscale(1) brightness(.44) contrast(1.05)!important;
 }
@@ -1550,7 +1550,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #modal .battleDetailIcon[data-afterimage-rank="4"]{border-color:#e4b73f!important;box-shadow:inset 0 0 0 1px rgba(228,183,63,.24)}
 #modal .battleDetailIcon[data-afterimage-rank="5"]{border-color:#d64747!important;box-shadow:inset 0 0 0 1px rgba(214,71,71,.26)}
 
-/* ver.315: target glow clone. The real sprite remains untouched, while this
+/* ver.316: target glow clone. The real sprite remains untouched, while this
    identical transparent image supplies the old bright white/gold pulse safely.
    Global selector intentionally covers ally-target skills and enemy-target skills
    such as Blood Sword with the exact same selection language. */
@@ -1584,7 +1584,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   to{opacity:.50}
 }
 
-/* ver.315: hit-flash clipping fix for BOTH allies and enemies.
+/* ver.316: hit-flash clipping fix for BOTH allies and enemies.
    Keep the hit translation, but never brightness-filter the whole unit.
    The transparent duplicate sprite carries the brief flash instead. */
 #battleScreen .unit.hit{
@@ -1720,11 +1720,10 @@ const enemyBase=[
 {name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:100,def:50,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
 {name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:100,def:50,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
 ];
-/* ver.315: Floor 1/2 visual check — exact-source Mikoto + first assets-managed Nagi afterimage ★1〜★5.
-   Each image is derived from the current Mikoto transparent artwork, so facial/design identity is preserved.
+/* ver.316: Floor 1/2/3 visual check — exact-source Mikoto + assets-managed Nagi/Yuzu afterimage ★1〜★5.
+   Each afterimage reuses the adopted playable transparent artwork exactly; ranks are CSS-only.
    Enemy stats/skills remain based on the existing enemyBase values; boss/midboss logic is unchanged. */
-// ver.315: exact-source rule — DO NOT redraw/regen adopted playable art for enemy afterimages.
-// Reuse the playable Mizuki/Mikoto sprite byte-for-byte; ranks are CSS-only.
+// ver.316: exact-source rule — DO NOT redraw/regen adopted playable art for enemy afterimages.
 const AFTERIMAGE_TEST_SLOTS=[0,3,1,4,2];
 function getAfterimageSource(rosterId){
  const base=formationRosterData.find(c=>c.id===rosterId);
@@ -1737,6 +1736,7 @@ function getAfterimageSource(rosterId){
 }
 const mikotoAfterimageSource=getAfterimageSource('mizuki');
 const nagiAfterimageSource=getAfterimageSource('nagi');
+const yuzuAfterimageSource=getAfterimageSource('yuzu');
 function buildAfterimageTestWave(source,label){
  if(!source||!source.sprite)return [];
  return AFTERIMAGE_TEST_SLOTS.map((slot,i)=>{
@@ -1950,6 +1950,12 @@ function makeEnemies(f){
  if(f===2){
   // First assets-managed expansion test: all five Nagi afterimage grades on Floor 2.
   return buildAfterimageTestWave(nagiAfterimageSource,'凪').map((x,i)=>
+   makeUnit({...x.base,name:x.name,sprite:x.sprite,afterimageFaceIcon:x.afterimageFaceIcon,afterimageRank:x.afterimageRank},i,x.slot,x.row,'normal')
+  );
+ }
+ if(f===3){
+  // Third-character production check: all five Yuzu afterimage grades on Floor 3.
+  return buildAfterimageTestWave(yuzuAfterimageSource,'柚').map((x,i)=>
    makeUnit({...x.base,name:x.name,sprite:x.sprite,afterimageFaceIcon:x.afterimageFaceIcon,afterimageRank:x.afterimageRank},i,x.slot,x.row,'normal')
   );
  }
