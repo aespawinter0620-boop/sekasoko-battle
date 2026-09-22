@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.317</title>
+<title>セカソコ ver.318</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -187,6 +187,55 @@
 .battleStateList{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}
 .battleStateTag{padding:5px 8px;border-radius:999px;background:#ffffff0c;border:1px solid #ffffff1f;font-size:11px}
 .battleBackBtn{width:100%;border:1px solid #ffffff30;background:#eee;color:#111;border-radius:10px;padding:11px;font-weight:900}
+
+/* ver.318: playable character detail — large official standing art + subtle breathing.
+   Playable art is never redrawn; the adopted sprite is reused as-is. Enemy/afterimage detail remains unchanged. */
+.playableDetailCard{max-height:min(80dvh,680px);overflow:auto;scrollbar-width:none}
+.playableDetailCard::-webkit-scrollbar{display:none}
+.playableDetailStage{
+  position:relative;min-height:320px;margin:10px 0 12px;border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;overflow:hidden;background:
+    radial-gradient(ellipse at 18% 88%,rgba(222,190,111,.18),transparent 42%),
+    linear-gradient(145deg,rgba(28,32,46,.96),rgba(10,13,21,.98) 58%,rgba(20,24,37,.96));
+}
+.playableDetailStage::before{
+  content:"";position:absolute;left:-12%;bottom:-12%;width:78%;height:44%;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(255,224,151,.16),transparent 68%);
+}
+.playableDetailStanding{
+  position:absolute;left:-3%;bottom:0;width:58%;height:100%;z-index:1;pointer-events:none;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.playableDetailStanding img{
+  width:98%;height:98%;object-fit:contain;object-position:center bottom;transform-origin:50% 88%;
+  animation:playableDetailBreath 3.4s ease-in-out infinite;will-change:transform;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;
+}
+.playableDetailStandingFallback{font-size:92px;align-items:center;justify-content:center}
+@keyframes playableDetailBreath{
+  0%,100%{transform:translateY(1px) scale(1)}
+  50%{transform:translateY(-2px) scale(1.006,1.012)}
+}
+.playableDetailInfo{
+  position:relative;z-index:2;margin-left:44%;min-height:320px;padding:12px 9px 10px;
+  display:flex;flex-direction:column;justify-content:center;gap:9px;
+}
+.playableDetailIdentity{
+  padding:9px 10px;border-radius:11px;border:1px solid rgba(255,255,255,.11);
+  background:rgba(7,10,18,.72);font-size:10px;color:#adb5c9;line-height:1.65;
+}
+.playableDetailIdentity b{display:block;color:#f1f4fb;font-size:12px;margin-bottom:3px}
+.playableDetailIdentity strong{color:#fff;font-size:16px}
+.playableDetailStats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0}
+.playableDetailStats .stat{padding:7px 8px;background:rgba(7,10,18,.72);border:1px solid rgba(255,255,255,.09)}
+.playableDetailStats .stat b{font-size:15px;white-space:nowrap}
+.playableDetailStats .stat small{display:block;margin-top:2px;font-size:8px;line-height:1.35;color:#99a3b8}
+@media (max-width:360px){
+  .playableDetailStage{min-height:300px}
+  .playableDetailInfo{min-height:300px;margin-left:43%;padding-left:7px;padding-right:7px}
+  .playableDetailStanding{width:57%;left:-4%}
+}
+@media (prefers-reduced-motion:reduce){.playableDetailStanding img{animation:none}}
 
 
 /* v0.15.5 Mizuki embedded-art fit test: self-contained image data to avoid deployment path failures */
@@ -1208,7 +1257,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.317";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.318";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1306,7 +1355,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.317: manual target selection without parent/sprite filters.
+/* ver.318: manual target selection without parent/sprite filters.
    iOS/Safari can clip oversized character art to the unit compositor rectangle
    when filter is applied to the parent. Keep the real character art filter-free;
    non-targets dim by opacity. Selectable units use a duplicate image layer for
@@ -1463,7 +1512,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 <style>
-/* ver.317: Afterimage exact-source rendering.
+/* ver.318: Afterimage exact-source rendering.
    Mikoto remains the HTML-embedded master example; Nagi is the first assets-managed afterimage test.*/
    Character body is NEVER redrawn: every rank uses the exact playable
    mizuki_v160 2.png sprite already embedded in the allies data.
@@ -1506,14 +1555,14 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
          drop-shadow(0 0 5px rgba(255,45,45,.96))
          drop-shadow(0 0 13px rgba(220,22,30,.72))!important;
 }
-/* ver.317: iOS/Safari hit-flash artifact fix for afterimages only.
+/* ver.318: iOS/Safari hit-flash artifact fix for afterimages only.
    Keep the existing hit translation/damage feedback, but do not apply the
    parent-unit brightness filter over children that already use aura filters. */
 #battleScreen .unit.hit[data-afterimage-rank]:not([data-afterimage-rank=""]){
   filter:none!important;
 }
 
-/* ver.317: iOS/Safari target-selection artifact fix for afterimages only.
+/* ver.318: iOS/Safari target-selection artifact fix for afterimages only.
    Never apply parent/sprite filters on afterimages while selecting targets;
    use opacity only so the compositing rectangle cannot appear. */
 #battleScreen.targetSelectMode .unit[data-afterimage-rank]:not([data-afterimage-rank=""]){
@@ -1530,7 +1579,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   opacity:1!important;
 }
 
-/* ver.317: afterimage ACTION face icons.
+/* ver.318: afterimage ACTION face icons.
    Reuse Mikoto's adopted face icon without redrawing; rank is shown by frame color. */
 #battleScreen .orderChip.actionFace[data-afterimage-rank] img{
   filter:grayscale(1) brightness(.44) contrast(1.05)!important;
@@ -1540,7 +1589,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="3"]{border-color:#557cff!important;box-shadow:inset 0 0 0 1px rgba(85,124,255,.22)}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="4"]{border-color:#e4b73f!important;box-shadow:inset 0 0 0 1px rgba(228,183,63,.24)}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="5"]{border-color:#d64747!important;box-shadow:inset 0 0 0 1px rgba(214,71,71,.26)}
-/* ver.317: battle detail icon mirrors the ACTION afterimage icon treatment. */
+/* ver.318: battle detail icon mirrors the ACTION afterimage icon treatment. */
 #modal .battleDetailIcon[data-afterimage-rank] img{
   filter:grayscale(1) brightness(.44) contrast(1.05)!important;
 }
@@ -1550,7 +1599,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #modal .battleDetailIcon[data-afterimage-rank="4"]{border-color:#e4b73f!important;box-shadow:inset 0 0 0 1px rgba(228,183,63,.24)}
 #modal .battleDetailIcon[data-afterimage-rank="5"]{border-color:#d64747!important;box-shadow:inset 0 0 0 1px rgba(214,71,71,.26)}
 
-/* ver.317: target glow clone. The real sprite remains untouched, while this
+/* ver.318: target glow clone. The real sprite remains untouched, while this
    identical transparent image supplies the old bright white/gold pulse safely.
    Global selector intentionally covers ally-target skills and enemy-target skills
    such as Blood Sword with the exact same selection language. */
@@ -1584,7 +1633,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   to{opacity:.50}
 }
 
-/* ver.317: hit-flash clipping fix for BOTH allies and enemies.
+/* ver.318: hit-flash clipping fix for BOTH allies and enemies.
    Keep the hit translation, but never brightness-filter the whole unit.
    The transparent duplicate sprite carries the brief flash instead. */
 #battleScreen .unit.hit{
@@ -1637,7 +1686,12 @@ function renderHome(){const a=attributes.find(x=>x.id===currentAttr)||attributes
 function calcPower(c){return Math.max(1,Math.round((c.hp||0)*2+(c.atk||0)*10+(c.def||0)*8+(c.spd||0)*6))}
 function getFloorCounts(){try{return JSON.parse(localStorage.getItem('sekasokoCharacterFloorCounts')||'{}')}catch(e){return {}}}
 function addFloorClearForRun(){const counts=getFloorCounts(),seen=new Set();runPartyStates.flat().forEach(u=>{const key=u.rosterId||u.name;if(!key||seen.has(key))return;seen.add(key);counts[key]=(counts[key]||0)+1});localStorage.setItem('sekasokoCharacterFloorCounts',JSON.stringify(counts))}
-function openCharacter(c){const battleRef=formationRosterData?.find?.(x=>x.name===c.name),sprite=battleRef?.faceIcon||battleRef?.actionSprite||battleRef?.sprite||null;const face=sprite?`<div class="charStatusFace"><img src="${sprite}" alt="${c.name}"></div>`:`<div class="charStatusFace" style="display:flex;align-items:center;justify-content:center;font-size:42px">${c.icon}</div>`;const key=battleRef?.id||c.name,floors=getFloorCounts()[key]||0,power=calcPower(c);document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="charStatusHero">${face}<div class="charStatusMeta"><div class="sub">${c.sub}</div><div class="power">総合戦力 <b>${power.toLocaleString()}</b></div></div></div><div class="progressStats"><div class="progressStat">総階層踏破数<b>${floors.toLocaleString()} F</b></div><div class="progressStat">戦力評価<b>${power.toLocaleString()}</b></div></div><div class="stats"><div class="stat">HP<b>${c.hp}</b></div><div class="stat">ATK<b>${c.atk}</b></div><div class="stat">DEF<b>${c.def}</b></div><div class="stat">SPD<b>${c.spd}</b></div></div><div class="skills"><b>SKILLS</b><br>${c.skills.map(x=>'・'+x).join('<br>')}<br><br><span style="color:#8d93a5">※ 戦力値は全ステータス参照の暫定式。今後スキル・固有性能も加味して調整。</span></div><button class="charEquipBtn" onclick="openSkillEquip(\'${key}\')">📕 スキルブック装備</button>`;document.querySelector('#modal').classList.add('show')}
+function openCharacter(c){
+ const battleRef=formationRosterData?.find?.(x=>x.name===c.name),standing=battleRef?.sprite||null,key=battleRef?.id||c.name,floors=getFloorCounts()[key]||0,power=calcPower(c);
+ const art=standing?`<div class="playableDetailStanding"><img src="${standing}" alt="${c.name}"></div>`:`<div class="playableDetailStanding playableDetailStandingFallback">${c.icon}</div>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="playableDetailCard"><div class="cardHead"><h2>${c.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${c.sub}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F</div><div class="stats playableDetailStats"><div class="stat">HP<b>${c.hp}</b></div><div class="stat">ATK<b>${c.atk}</b></div><div class="stat">DEF<b>${c.def}</b></div><div class="stat">SPD<b>${c.spd}</b></div></div></div></div><div class="skills"><b>SKILLS</b><br>${c.skills.map(x=>'・'+x).join('<br>')}<br><br><span style="color:#8d93a5">※ 戦力値は全ステータス参照の暫定式。今後スキル・固有性能も加味して調整。</span></div><button class="charEquipBtn" onclick="openSkillEquip('${key}')">📕 スキルブック装備</button></div>`;
+ document.querySelector('#modal').classList.add('show')
+}
 function openInfo(title,text,icon){document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${title}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="coming"><span class="big">${icon}</span>${text}</div>`;document.querySelector('#modal').classList.add('show')}
 function closeModal(){document.querySelector('#modal').classList.remove('show')}
 document.querySelector('#book').onclick=()=>openSkillBookInventory();document.querySelector('#shop').onclick=()=>openInfo('欠片ショップ','記憶の欠片でアイテムを購入する場所。ショップ本体は次段階で実装。','🎁');document.querySelector('#descend').onclick=()=>{prepareSortie();showScreen('battleScreen');setTimeout(()=>battle(),80)};document.querySelector('#formation').onclick=()=>{renderFormation();showScreen('formationScreen')};document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
@@ -1720,10 +1774,10 @@ const enemyBase=[
 {name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:100,def:50,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
 {name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:100,def:50,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
 ];
-/* ver.317: Floor 1〜6 visual check — exact-source Mikoto + assets-managed Nagi/Yuzu/Cow girls afterimage ★1〜★5.
+/* ver.318: Floor 1〜6 visual check — exact-source Mikoto + assets-managed Nagi/Yuzu/Cow girls afterimage ★1〜★5.
    Each afterimage reuses the adopted playable transparent artwork exactly; ranks are CSS-only.
    Enemy stats/skills remain based on the existing enemyBase values; boss/midboss logic is unchanged. */
-// ver.317: exact-source rule — DO NOT redraw/regen adopted playable art for enemy afterimages.
+// ver.318: exact-source rule — DO NOT redraw/regen adopted playable art for enemy afterimages.
 const AFTERIMAGE_TEST_SLOTS=[0,3,1,4,2];
 function getAfterimageSource(rosterId){
  const base=formationRosterData.find(c=>c.id===rosterId);
@@ -2092,7 +2146,13 @@ function openBattleUnitDetail(u){
  const detailFace=u.afterimageFaceIcon||u.faceIcon||u.actionSprite||u.sprite;const visual=detailFace?`<img src="${detailFace}" alt="${u.name}">`:u.icon;
  const detailRankAttr=u.afterimageRank?` data-afterimage-rank="${u.afterimageRank}"`:'';
  const power=calcPower({hp:u.max,atk:u.atk||0,def:u.def||0,spd:u.spd||0}),floors=getFloorCounts()[u.rosterId||u.name]||0;
- document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="battleDetailHero"><div class="battleDetailIcon ${u.sprite?'faceCrop':''}"${detailRankAttr}>${visual}</div><div class="battleDetailMeta">${side}｜${row}<br>総合戦力 ${power.toLocaleString()}<br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div></div><div class="stats"><div class="stat">HP<b>${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</b><small>HP ${Math.max(0,u.hp)} + 🛡️${shieldValueDisplay(u)}（${shieldStackDisplay(u)}st）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
+ const playableDetail=u.side==='A'&&!!u.sprite;
+ if(playableDetail){
+  const art=`<div class="playableDetailStanding"><img src="${u.sprite}" alt="${u.name}"></div>`;
+  document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard playableDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${side}｜${row}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div><div class="stats playableDetailStats"><div class="stat">HP<b>${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</b><small>HP ${Math.max(0,u.hp)} + 🛡️${shieldValueDisplay(u)}（${shieldStackDisplay(u)}st）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
+ }else{
+  document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="battleDetailHero"><div class="battleDetailIcon ${u.sprite?'faceCrop':''}"${detailRankAttr}>${visual}</div><div class="battleDetailMeta">${side}｜${row}<br>総合戦力 ${power.toLocaleString()}<br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div></div><div class="stats"><div class="stat">HP<b>${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</b><small>HP ${Math.max(0,u.hp)} + 🛡️${shieldValueDisplay(u)}（${shieldStackDisplay(u)}st）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
+ }
  document.querySelector('#modal').classList.add('show');
 }
 function bindBattleUnitDetails(){
