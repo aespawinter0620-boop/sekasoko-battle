@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.319</title>
+<title>セカソコ ver.320</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -188,13 +188,17 @@
 .battleStateTag{padding:5px 8px;border-radius:999px;background:#ffffff0c;border:1px solid #ffffff1f;font-size:11px}
 .battleBackBtn{width:100%;border:1px solid #ffffff30;background:#eee;color:#111;border-radius:10px;padding:11px;font-weight:900}
 
-/* ver.319: playable character detail — full-screen character page.
+/* ver.320: playable character detail — full-screen character page.
    The detail layer now covers the whole game viewport, including the battle command/skill area.
    Official standing art and the existing subtle breathing motion are preserved as-is.
    Enemy/afterimage detail remains on the existing compact modal. */
 #modal.playableDetailMode{
-  padding:0;align-items:stretch;justify-content:stretch;background:#070a12;
+  position:fixed!important;inset:0!important;width:100vw;height:100dvh;
+  z-index:100!important;padding:0;align-items:stretch;justify-content:stretch;background:#070a12;
 }
+/* ver.320: while battle ally detail is open, the fixed command bar is fully suppressed.
+   This prevents both visual overlap and accidental skill selection behind the detail page. */
+#battleScreen #skillPanel.detailSuppressed{visibility:hidden!important;pointer-events:none!important;}
 #modal.playableDetailMode #modalCard{
   width:100%;max-width:none;height:100%;margin:0;padding:0;border:0;border-radius:0;
   background:linear-gradient(180deg,#111522 0%,#0b0f19 52%,#080b12 100%);box-shadow:none;overflow:hidden;
@@ -1295,7 +1299,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.319";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.320";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1393,7 +1397,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 
-/* ver.319: manual target selection without parent/sprite filters.
+/* ver.320: manual target selection without parent/sprite filters.
    iOS/Safari can clip oversized character art to the unit compositor rectangle
    when filter is applied to the parent. Keep the real character art filter-free;
    non-targets dim by opacity. Selectable units use a duplicate image layer for
@@ -1550,7 +1554,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 
 <style>
-/* ver.319: Afterimage exact-source rendering.
+/* ver.320: Afterimage exact-source rendering.
    Mikoto remains the HTML-embedded master example; Nagi is the first assets-managed afterimage test.*/
    Character body is NEVER redrawn: every rank uses the exact playable
    mizuki_v160 2.png sprite already embedded in the allies data.
@@ -1593,14 +1597,14 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
          drop-shadow(0 0 5px rgba(255,45,45,.96))
          drop-shadow(0 0 13px rgba(220,22,30,.72))!important;
 }
-/* ver.319: iOS/Safari hit-flash artifact fix for afterimages only.
+/* ver.320: iOS/Safari hit-flash artifact fix for afterimages only.
    Keep the existing hit translation/damage feedback, but do not apply the
    parent-unit brightness filter over children that already use aura filters. */
 #battleScreen .unit.hit[data-afterimage-rank]:not([data-afterimage-rank=""]){
   filter:none!important;
 }
 
-/* ver.319: iOS/Safari target-selection artifact fix for afterimages only.
+/* ver.320: iOS/Safari target-selection artifact fix for afterimages only.
    Never apply parent/sprite filters on afterimages while selecting targets;
    use opacity only so the compositing rectangle cannot appear. */
 #battleScreen.targetSelectMode .unit[data-afterimage-rank]:not([data-afterimage-rank=""]){
@@ -1617,7 +1621,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   opacity:1!important;
 }
 
-/* ver.319: afterimage ACTION face icons.
+/* ver.320: afterimage ACTION face icons.
    Reuse Mikoto's adopted face icon without redrawing; rank is shown by frame color. */
 #battleScreen .orderChip.actionFace[data-afterimage-rank] img{
   filter:grayscale(1) brightness(.44) contrast(1.05)!important;
@@ -1627,7 +1631,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="3"]{border-color:#557cff!important;box-shadow:inset 0 0 0 1px rgba(85,124,255,.22)}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="4"]{border-color:#e4b73f!important;box-shadow:inset 0 0 0 1px rgba(228,183,63,.24)}
 #battleScreen .orderChip.actionFace[data-afterimage-rank="5"]{border-color:#d64747!important;box-shadow:inset 0 0 0 1px rgba(214,71,71,.26)}
-/* ver.319: battle detail icon mirrors the ACTION afterimage icon treatment. */
+/* ver.320: battle detail icon mirrors the ACTION afterimage icon treatment. */
 #modal .battleDetailIcon[data-afterimage-rank] img{
   filter:grayscale(1) brightness(.44) contrast(1.05)!important;
 }
@@ -1637,7 +1641,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #modal .battleDetailIcon[data-afterimage-rank="4"]{border-color:#e4b73f!important;box-shadow:inset 0 0 0 1px rgba(228,183,63,.24)}
 #modal .battleDetailIcon[data-afterimage-rank="5"]{border-color:#d64747!important;box-shadow:inset 0 0 0 1px rgba(214,71,71,.26)}
 
-/* ver.319: target glow clone. The real sprite remains untouched, while this
+/* ver.320: target glow clone. The real sprite remains untouched, while this
    identical transparent image supplies the old bright white/gold pulse safely.
    Global selector intentionally covers ally-target skills and enemy-target skills
    such as Blood Sword with the exact same selection language. */
@@ -1671,7 +1675,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   to{opacity:.50}
 }
 
-/* ver.319: hit-flash clipping fix for BOTH allies and enemies.
+/* ver.320: hit-flash clipping fix for BOTH allies and enemies.
    Keep the hit translation, but never brightness-filter the whole unit.
    The transparent duplicate sprite carries the brief flash instead. */
 #battleScreen .unit.hit{
@@ -1731,7 +1735,7 @@ function openCharacter(c){
  const modal=document.querySelector('#modal');modal.classList.add('playableDetailMode','show')
 }
 function openInfo(title,text,icon){document.querySelector('#modal').classList.remove('playableDetailMode');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${title}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="coming"><span class="big">${icon}</span>${text}</div>`;document.querySelector('#modal').classList.add('show')}
-function closeModal(){document.querySelector('#modal').classList.remove('show','playableDetailMode')}
+function closeModal(){document.querySelector('#skillPanel')?.classList.remove('detailSuppressed');document.querySelector('#modal').classList.remove('show','playableDetailMode')}
 document.querySelector('#book').onclick=()=>openSkillBookInventory();document.querySelector('#shop').onclick=()=>openInfo('欠片ショップ','記憶の欠片でアイテムを購入する場所。ショップ本体は次段階で実装。','🎁');document.querySelector('#descend').onclick=()=>{prepareSortie();showScreen('battleScreen');setTimeout(()=>battle(),80)};document.querySelector('#formation').onclick=()=>{renderFormation();showScreen('formationScreen')};document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
 
 const formationRosterData=[
@@ -1812,10 +1816,10 @@ const enemyBase=[
 {name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:100,def:50,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
 {name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:100,def:50,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
 ];
-/* ver.319: Floor 1〜6 visual check — exact-source Mikoto + assets-managed Nagi/Yuzu/Cow girls afterimage ★1〜★5.
+/* ver.320: Floor 1〜6 visual check — exact-source Mikoto + assets-managed Nagi/Yuzu/Cow girls afterimage ★1〜★5.
    Each afterimage reuses the adopted playable transparent artwork exactly; ranks are CSS-only.
    Enemy stats/skills remain based on the existing enemyBase values; boss/midboss logic is unchanged. */
-// ver.319: exact-source rule — DO NOT redraw/regen adopted playable art for enemy afterimages.
+// ver.320: exact-source rule — DO NOT redraw/regen adopted playable art for enemy afterimages.
 const AFTERIMAGE_TEST_SLOTS=[0,3,1,4,2];
 function getAfterimageSource(rosterId){
  const base=formationRosterData.find(c=>c.id===rosterId);
@@ -2186,10 +2190,12 @@ function openBattleUnitDetail(u){
  const power=calcPower({hp:u.max,atk:u.atk||0,def:u.def||0,spd:u.spd||0}),floors=getFloorCounts()[u.rosterId||u.name]||0;
  const playableDetail=u.side==='A'&&!!u.sprite;
  if(playableDetail){
+  document.querySelector('#skillPanel')?.classList.add('detailSuppressed');
   const art=`<div class="playableDetailStanding"><img src="${u.sprite}" alt="${u.name}"></div>`;
   document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard playableDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${side}｜${row}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div><div class="stats playableDetailStats"><div class="stat">HP<b>${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</b><small>HP ${Math.max(0,u.hp)} + 🛡️${shieldValueDisplay(u)}（${shieldStackDisplay(u)}st）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
   document.querySelector('#modal').classList.add('playableDetailMode');
  }else{
+  document.querySelector('#skillPanel')?.classList.remove('detailSuppressed');
   document.querySelector('#modal').classList.remove('playableDetailMode');
   document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="battleDetailHero"><div class="battleDetailIcon ${u.sprite?'faceCrop':''}"${detailRankAttr}>${visual}</div><div class="battleDetailMeta">${side}｜${row}<br>総合戦力 ${power.toLocaleString()}<br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div></div><div class="stats"><div class="stat">HP<b>${Math.max(0,u.hp)+shieldValueDisplay(u)} / ${u.max}</b><small>HP ${Math.max(0,u.hp)} + 🛡️${shieldValueDisplay(u)}（${shieldStackDisplay(u)}st）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
  }
