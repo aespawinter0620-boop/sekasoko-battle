@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.326</title>
+<title>セカソコ ver.327</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1372,7 +1372,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.326";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.327";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1493,6 +1493,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.278 skill-book equipment */
 .skillEquipSummary{margin:10px 0;padding:10px;border:1px solid #ffffff1c;border-radius:12px;background:#0c1019}.skillEquipSummary h3{margin:0 0 8px;font-size:13px}.skillSlotsRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.skillSlotEquip,.skillBookCard{border:1px solid #ffffff28;background:#151a27;border-radius:10px;padding:10px;text-align:left;color:#fff}.skillSlotEquip b,.skillSlotEquip span,.skillSlotEquip small,.skillBookCard b,.skillBookCard span,.skillBookCard small{display:block}.skillSlotEquip span,.skillBookCard span{margin-top:4px;font-weight:900}.skillSlotEquip small,.skillBookCard small{margin-top:3px;color:#9ba3b7;font-size:9px;line-height:1.4}.skillBookList{display:grid;gap:8px;margin-top:10px}.skillBookCard.equipped{outline:2px solid #ffffff66;outline-offset:-3px}.skillEquipBack,.charEquipBtn{width:100%;margin-top:10px;border:1px solid #ffffff35;border-radius:10px;padding:11px;font-weight:900}.skillEquipBack{background:#171b28;color:#fff}.charEquipBtn{background:#e9e9ee;color:#111}
+/* ver.327: HOME skill descriptions live in the skill-book equipment screen. */
+.skillSlotEquip.fixedSkill{background:#101521;cursor:default}.skillSlotEquip.fixedSkill small{color:#c6ccda;line-height:1.55}
 </style>
 
 <style id="ver248-three-line-hud">
@@ -1804,7 +1806,7 @@ function addFloorClearForRun(){const counts=getFloorCounts(),seen=new Set();runP
 function openCharacter(c){
  const battleRef=formationRosterData?.find?.(x=>x.name===c.name),standing=battleRef?.sprite||null,key=battleRef?.id||c.name,floors=getFloorCounts()[key]||0,power=calcPower(c);
  const art=standing?`<div class="playableDetailStanding"><div class="playableDetailZoom"><img src="${standing}" alt="${c.name}"></div></div>`:`<div class="playableDetailStanding playableDetailStandingFallback">${c.icon}</div>`;
- document.querySelector('#modalCard').innerHTML=`<div class="playableDetailCard${key==='baal'?' detailBaal':''}"><div class="cardHead"><h2>${c.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${c.sub}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F</div><div class="stats playableDetailStats"><div class="stat">HP<b>${c.hp}</b></div><div class="stat">ATK<b>${c.atk}</b></div><div class="stat">DEF<b>${c.def}</b></div><div class="stat">SPD<b>${c.spd}</b></div></div></div></div><div class="skills"><b>SKILLS</b><br>${c.skills.map(x=>'・'+x).join('<br>')}<br><br><span style="color:#8d93a5">※ 戦力値は全ステータス参照の暫定式。今後スキル・固有性能も加味して調整。</span></div><button class="charEquipBtn" onclick="openSkillEquip('${key}')">📕 スキルブック装備</button></div>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="playableDetailCard${key==='baal'?' detailBaal':''}"><div class="cardHead"><h2>${c.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${c.sub}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F</div><div class="stats playableDetailStats"><div class="stat">HP<b>${c.hp}</b></div><div class="stat">ATK<b>${c.atk}</b></div><div class="stat">DEF<b>${c.def}</b></div><div class="stat">SPD<b>${c.spd}</b></div></div></div></div><button class="charEquipBtn" onclick="openSkillEquip('${key}')">📕 スキルブック装備</button></div>`;
  const modal=document.querySelector('#modal');modal.classList.add('playableDetailMode','show');initPlayableDetailZoom()
 }
 function initPlayableDetailZoom(){
@@ -2026,7 +2028,17 @@ function skillBookUsable(u,book){return !skillBookBlockReason(u,book)}
 const availableSkillSlots=u=>[1,2,...[3,4].filter(slot=>{const book=equippedSkillBook(u,slot);return !!book&&skillBookUsable(u,book)})];
 function setSkillBookEquip(rid,slot,id){const d=loadSkillEquip();d[rid]=d[rid]||{};if(!id)delete d[rid][slot];else{for(const slots of Object.values(d))for(const sl of ['3','4'])if(slots?.[sl]===id)delete slots[sl];d[rid][slot]=id}saveSkillEquip(d)}
 function skillBookOwner(id){const d=loadSkillEquip();for(const [rid,slots] of Object.entries(d))for(const sl of ['3','4'])if(slots?.[sl]===id)return{rid,slot:+sl};return null}
-function openSkillEquip(rid){document.querySelector('#modal').classList.remove('playableDetailMode');const c=formationRosterData.find(x=>x.id===rid);if(!c)return;const eq=loadSkillEquip()[rid]||{},slots=[3,4].map(sl=>{const b=skillBooks[eq[sl]];return `<button class="skillSlotEquip" onclick="openSkillSlotPicker('${rid}',${sl})"><b>自由スキル${sl===3?'①':'②'}</b><span>${b?b.name:'未設定'}</span><small>${b?b.short:'タップしてスキルブックを装備'}</small></button>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキル装備</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>装備中</h3><div class="skillSlotsRow">${slots}</div></div><div class="coming" style="padding:8px 0;color:#9ba3b7;font-size:10px">自由スキル①・②は所持スキルブックから付け替え可能。1冊につき1枠へ装備。</div>`;document.querySelector('#modal').classList.add('show')}
+function openSkillEquip(rid){
+ document.querySelector('#modal').classList.remove('playableDetailMode');
+ const c=formationRosterData.find(x=>x.id===rid);if(!c)return;
+ const homeC=[...(homeRoster.suppa||[]),...(homeRoster.cow||[])].find(x=>x.name===c.name);
+ const unique1Title=homeC?.skills?.[0]||'固有① 未設定',unique1Detail=homeC?.skills?.[1]||'詳細未設定';
+ const unique2Raw=homeC?.skills?.[2]||'固有② 未設定',unique2Parts=String(unique2Raw).split('｜'),unique2Title=unique2Parts.shift()||'固有② 未設定',unique2Detail=unique2Parts.join('｜')||'詳細未設定';
+ const uniqueSlots=`<div class="skillSlotEquip fixedSkill"><b>固有スキル①</b><span>${unique1Title.replace(/^固有①/,'').trim()}</span><small>${unique1Detail}</small></div><div class="skillSlotEquip fixedSkill"><b>固有スキル②</b><span>${unique2Title.replace(/^固有②/,'').trim()}</span><small>${unique2Detail}</small></div>`;
+ const eq=loadSkillEquip()[rid]||{},freeSlots=[3,4].map(sl=>{const b=skillBooks[eq[sl]];return `<button class="skillSlotEquip" onclick="openSkillSlotPicker('${rid}',${sl})"><b>自由スキル${sl===3?'①':'②'}</b><span>${b?b.name:'未設定'}</span><small>${b?b.short:'タップしてスキルブックを装備'}</small></button>`}).join('');
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキル装備</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>自由スキル</h3><div class="skillSlotsRow">${freeSlots}</div></div><div class="coming" style="padding:8px 0;color:#9ba3b7;font-size:10px">固有①・②の詳細確認と、自由スキル①・②の付け替えをこの画面に集約。自由スキルは1冊につき1枠へ装備。</div>`;
+ document.querySelector('#modal').classList.add('show')
+}
 function openSkillSlotPicker(rid,slot){document.querySelector('#modal').classList.remove('playableDetailMode');const c=formationRosterData.find(x=>x.id===rid),cur=loadSkillEquip()?.[rid]?.[slot]||null;const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),here=cur===id,who=o&&!here?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'';return `<button class="skillBookCard ${here?'equipped':''}" onclick="equipPickedBook('${rid}',${slot},'${id}')"><b>📕 CT${b.ct}</b><span>${b.name}${here?'　✓装備中':''}</span><small>${b.detail}${who?`<br>現在：${who}の自由スキル${o.slot===3?'①':'②'}（選ぶと付け替え）`:''}</small></button>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c?.name||''}｜自由スキル${slot===3?'①':'②'}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList"><button class="skillBookCard" onclick="equipPickedBook('${rid}',${slot},'')"><b>装備解除</b><span>未設定にする</span><small>この自由スキル枠を空にする。</small></button>${cards}</div><button class="skillEquipBack" onclick="openSkillEquip('${rid}')">← 装備画面へ戻る</button>`}
 function equipPickedBook(rid,slot,id){setSkillBookEquip(rid,slot,id);openSkillEquip(rid)}
 function openSkillBookInventory(){document.querySelector('#modal').classList.remove('playableDetailMode');const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),who=o?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'未装備';return `<div class="skillBookCard"><b>📕 所持 ×1｜CT${b.ct}</b><span>${b.name}</span><small>${b.detail}<br>装備：${who}${o?` 自由スキル${o.slot===3?'①':'②'}`:''}</small></div>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList">${cards}</div><div class="coming" style="padding:10px 0;color:#9ba3b7;font-size:10px">キャラクター詳細の「📕 スキルブック装備」から付け替えできます。</div>`;document.querySelector('#modal').classList.add('show')}
