@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.334</title>
+<title>セカソコ ver.335</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -17,6 +17,7 @@
 
 .autoBtn.on{background:#eee;color:#111}.damageMeter{margin:7px 10px 0;padding:9px 11px;border:1px solid #ffffff24;background:#111521;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}.damageMeter strong{font-size:16px}.damageMeter small{display:block;color:#969db0;font-size:9px;margin-top:2px}.damageReward{text-align:right;font-size:10px;color:#d9d0ac}.floorBadge{font-weight:1000;color:#f1e8c7}.resultActions{display:flex;flex-direction:column;gap:8px;margin-top:12px}.resultActions button{width:100%;border:1px solid #ffffff30;background:#171b28;border-radius:10px;padding:11px;font-weight:900}.resultActions .primary{background:#eee;color:#111}
 /* ver.334: OVERKILL system (all enemies, 100-2000% display, +100-500% reward). */
+/* ver.335: Absolute Domain Release keeps all scheduled pursuit hits in the OVERKILL action, even after the wave is wiped. */
 /* ver.333: WD stat enhancement + long-press controls. */
 /* ver.330: AUTO checkpoint result display extended to 2 seconds. */
 .expeditionResult{width:min(86vw,360px);margin:0 auto;padding:14px;border:1px solid #ffffff26;border-radius:16px;background:#10131dcc;text-align:left;box-shadow:0 18px 50px #0007}
@@ -1389,7 +1390,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.334";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.335";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2733,12 +2734,23 @@ async function absoluteDomainAttack(u,enemies){
 }
 async function absoluteDomainRelease(u,enemies){
  let fronts=living(enemies).filter(x=>x.row==='front');if(!fronts.length)return;
- const attacker=document.getElementById(u.id);document.querySelector('#status').textContent='名切 命《絶対領域解放》';if(attacker)attacker.classList.add('attacking');
+ const actionTargets=new Set(fronts),attacker=document.getElementById(u.id);document.querySelector('#status').textContent='名切 命《絶対領域解放》';if(attacker)attacker.classList.add('attacking');
  for(const t of [...fronts]){const el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*1.2));damagePop(el,hit.damage)}
  await sleep(150);for(const t of enemies){const el=document.getElementById(t.id);if(el)el.classList.remove('hit')}
  let pulled=false;for(const t of fronts.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(120)}
  const spent=consumeAllMirrorCopper(u),shots=spent;
- for(let i=0;i<shots;i++){const pool=living(enemies).filter(x=>x.row==='front');if(!pool.length)break;const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)));damagePop(el,hit.damage);await sleep(90);if(el)el.classList.remove('hit');if(t.hp<=0){if(el)el.classList.add('dying');if(handleFrontlineDeath(t)){renderBattle();await sleep(100)}}}
+ for(let i=0;i<shots;i++){
+  const pool=living(enemies).filter(x=>x.row==='front');
+  if(pool.length){
+   const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);actionTargets.add(t);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)));damagePop(el,hit.damage);await sleep(90);if(el)el.classList.remove('hit');if(t.hp<=0){if(el)el.classList.add('dying');if(handleFrontlineDeath(t)){renderBattle();await sleep(100)}}
+  }else{
+   // OVERKILL scoring follows the full scheduled skill damage. Once the wave is wiped,
+   // remaining pursuit hits continue against a defeated target touched by this action.
+   const deadPool=[...actionTargets].filter(x=>x&&x.hp<=0);if(!deadPool.length)break;
+   const t=deadPool[Math.floor(Math.random()*deadPool.length)],el=document.getElementById(t.id)||document.querySelector('#enemyArmy');
+   const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)));damagePop(el,hit.damage);await sleep(90);
+  }
+ }
  const planned=Math.floor((Number(u.max)||0)*spent/100),missing=Math.max(0,(Number(u.max)||0)-(Number(u.hp)||0)),healed=Math.min(planned,missing);if(healed>0)u.hp+=healed;
  if(spent===20)grantSuppaUpperReward(u);
  if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《絶対領域解放》｜前衛ATK120%＋${shots}Hit / HP+${healed}${spent===20?' / 銀🪞+1 🗡️+1 💪+1':''}`;renderBattle();await sleep(120);
