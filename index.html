@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.337</title>
+<title>セカソコ ver.338</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -19,6 +19,7 @@
 /* ver.334: OVERKILL system (all enemies, 100-2000% display, +100-500% reward). */
 /* ver.336: Nagi Wait Command now shows the actual green healing float on the healed frontline ally. */
 /* ver.337: enemy-specific WD base rewards + afterimage rank reward multipliers. */
+/* ver.338: finalized damage-rate reward multipliers (5% steps/10% bands, x1.5 to x0.5). */
 /* ver.333: WD stat enhancement + long-press controls. */
 /* ver.330: AUTO checkpoint result display extended to 2 seconds. */
 .expeditionResult{width:min(86vw,360px);margin:0 auto;padding:14px;border:1px solid #ffffff26;border-radius:16px;background:#10131dcc;text-align:left;box-shadow:0 18px 50px #0007}
@@ -1391,7 +1392,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.337";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.338";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1804,13 +1805,13 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 <section class="screen" id="formationScreen"><div class="formationTop"><button class="miniBtn" id="formationBack">← 拠点</button><h2>部隊編成<small>最大12部隊 ／ 1部隊最大6マス</small></h2><button class="miniBtn" id="clearParty">この部隊を空に</button><button class="miniBtn" id="clearAllParties">全12部隊を空に</button></div><div class="formationBody"><div class="partyTabs" id="partyTabs"></div><div class="partyArea"><div class="partyMeta"><b id="partyName">部隊1</b><span id="partyCount">0 / 6マス</span></div><div class="partyGrid" id="partyGrid"></div></div><div class="partyNote">1〜3＝前衛 ／ 4〜6＝後衛。同じ番号で前後1列。後衛4〜6は、対応する前衛1〜3がいる時だけ配置可能。空きマスをタップして配置先を選択 → キャラをタップ。</div><div class="roster" id="formationRoster"></div></div><div class="formationBottom"><button id="formationHome">キャンセル</button><button class="saveFormation" id="saveFormation">編成を保存</button></div></section>
 <section class="screen" id="battleScreen">
-<div class="top battleSummary"><div class="battleSummaryLine"><span id="worldFloor">世界深度 1 / 1F/10F</span><span id="turn">部隊1</span><span id="topDamage">損壊 0.0%</span><span id="topReward">報酬×3.00</span><button class="topBattleBtn autoBtn" id="autoToggle">AUTO OFF</button><button class="topBattleBtn retreatBtn" id="homeBack">撤退</button></div></div>
+<div class="top battleSummary"><div class="battleSummaryLine"><span id="worldFloor">世界深度 1 / 1F/10F</span><span id="turn">部隊1</span><span id="topDamage">損壊 0.0%</span><span id="topReward">報酬×1.50</span><button class="topBattleBtn autoBtn" id="autoToggle">AUTO OFF</button><button class="topBattleBtn retreatBtn" id="homeBack">撤退</button></div></div>
 <div class="planBox battlePlan"><div class="planTitle">ACTION｜行動予測</div><div class="orderBar" id="orderBar"></div></div>
 <div class="status battleLog" id="status">SPDから初期行動順を自動計算</div><div class="battleHpOverview" id="battleHpOverview"><div class="hpTeam allyHp" id="allyHpOverview"></div><div class="hpTeam enemyHp" id="enemyHpOverview"></div></div>
 <div class="battleViewport" id="battleViewport"><section class="battle" id="battleZoomLayer"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section></div>
 <div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。</div></div></div>
-<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜技を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル①"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">未設定</span><small id="uniqueSkillDesc">固有スキル①</small></button><button class="skillBtn" id="uniqueSkill2" data-skill-detail="固有スキル②"><b id="uniqueSkill2Kind">固有②</b><span id="uniqueSkill2Name">未設定</span><small id="uniqueSkill2Desc">固有スキル②</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b id="freeSkill1Kind">スキ①</b><span id="freeSkill1Name">未設定</span><small id="freeSkill1Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span id="freeSkill2Name">未設定</span><small id="freeSkill2Desc">装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×3.00（仮）</span></div></section>
+<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜技を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル①"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">未設定</span><small id="uniqueSkillDesc">固有スキル①</small></button><button class="skillBtn" id="uniqueSkill2" data-skill-detail="固有スキル②"><b id="uniqueSkill2Kind">固有②</b><span id="uniqueSkill2Name">未設定</span><small id="uniqueSkill2Desc">固有スキル②</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b id="freeSkill1Kind">スキ①</b><span id="freeSkill1Name">未設定</span><small id="freeSkill1Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span id="freeSkill2Name">未設定</span><small id="freeSkill2Desc">装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
@@ -2358,9 +2359,22 @@ function damageRate(){
  if(totalMaxHP<=0)return 0;
  return Math.max(0,Math.min(100,(1-totalHP/totalMaxHP)*100));
 }
-// 検証用の仮倍率。正式な倍率テーブルは報酬経済設計後に調整する。
-function damageRewardMultiplier(rate=damageRate()){if(rate<5)return 3.00;if(rate<10)return 2.50;if(rate<20)return 2.00;if(rate<35)return 1.50;if(rate<50)return 1.00;if(rate<75)return .75;return .50}
-function updateDamageUI(){let r=damageRate(),m=damageRewardMultiplier(r),el=document.querySelector('#damageRate'),rw=document.querySelector('#damageReward');if(el)el.textContent='損壊 '+r.toFixed(1)+'%';if(rw)rw.textContent='報酬 ×'+m.toFixed(2)+'（仮）'}
+// ver.338: finalized damage-rate reward table. Thresholds are inclusive.
+function damageRewardMultiplier(rate=damageRate()){
+ rate=Math.max(0,Math.min(100,Number(rate)||0));
+ if(rate<=5)return 1.50;
+ if(rate<=10)return 1.40;
+ if(rate<=20)return 1.30;
+ if(rate<=30)return 1.20;
+ if(rate<=40)return 1.10;
+ if(rate<=50)return 1.00;
+ if(rate<=60)return .90;
+ if(rate<=70)return .80;
+ if(rate<=80)return .70;
+ if(rate<=90)return .60;
+ return .50;
+}
+function updateDamageUI(){let r=damageRate(),m=damageRewardMultiplier(r),el=document.querySelector('#damageRate'),rw=document.querySelector('#damageReward');if(el)el.textContent='損壊 '+r.toFixed(1)+'%';if(rw)rw.textContent='報酬 ×'+m.toFixed(2)}
 function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent='AUTO '+(autoMode?'ON':'OFF');a.classList.toggle('on',autoMode)}updateDamageUI()
  const wf=document.querySelector('#worldFloor');if(wf)wf.textContent=`世界深度 ${worldDepth} / ${floor}F/${maxFloor}F`;
  const td=document.querySelector('#topDamage');if(td)td.textContent=`損壊 ${damageRate().toFixed(1)}%`;
@@ -2918,7 +2932,7 @@ async function battle(){
  }
 }
 function resultSpecialRows(sectionOverkillGain=0){let html='';if(sectionOverkillGain>0)html+=`<div class="resultRow specialBonus"><span>🔥 OVERKILL報酬</span><b>+💎${Math.floor(sectionOverkillGain).toLocaleString()} WD</b></div>`;if(runStrongRouteBonusWD>0)html+=`<div class="resultRow specialBonus"><span>⚠️ 強敵ルート報酬</span><b>+💎${Math.floor(runStrongRouteBonusWD).toLocaleString()} WD</b></div>`;return html}
-function expeditionResultHTML(sectionBaseGain,sectionOverkillGain=0){const r=currentRunReward(),sectionGain=Math.max(0,Math.floor(sectionBaseGain))+Math.max(0,Math.floor(sectionOverkillGain));return `<div class="expeditionResult"><div class="resultLead">今回の区間獲得</div><div class="resultWD">💎${sectionGain.toLocaleString()} WD</div><div class="resultRow"><span>遠征累計</span><b>💎${r.base.toLocaleString()} WD</b></div><div class="resultRow"><span>現在の損壊率</span><b>${damageRate().toFixed(1)}%</b></div><div class="resultRow"><span>損壊率倍率（仮）</span><b>×${r.damageMult.toFixed(2)}</b></div><div class="resultRow bonusRow"><span>踏破ボーナス</span><b>+${r.bossPct}%（×${r.bossMult.toFixed(2)}）</b></div>${resultSpecialRows(sectionOverkillGain)}<div class="resultTotal"><span>持ち帰り見込</span><b>💎${r.total.toLocaleString()} WD</b></div></div>`}
+function expeditionResultHTML(sectionBaseGain,sectionOverkillGain=0){const r=currentRunReward(),sectionGain=Math.max(0,Math.floor(sectionBaseGain))+Math.max(0,Math.floor(sectionOverkillGain));return `<div class="expeditionResult"><div class="resultLead">今回の区間獲得</div><div class="resultWD">💎${sectionGain.toLocaleString()} WD</div><div class="resultRow"><span>遠征累計</span><b>💎${r.base.toLocaleString()} WD</b></div><div class="resultRow"><span>現在の損壊率</span><b>${damageRate().toFixed(1)}%</b></div><div class="resultRow"><span>損壊率倍率</span><b>×${r.damageMult.toFixed(2)}</b></div><div class="resultRow bonusRow"><span>踏破ボーナス</span><b>+${r.bossPct}%（×${r.bossMult.toFixed(2)}）</b></div>${resultSpecialRows(sectionOverkillGain)}<div class="resultTotal"><span>持ち帰り見込</span><b>💎${r.total.toLocaleString()} WD</b></div></div>`}
 function advanceCheckpoint(){if(overlayMode!=='checkpoint')return;if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}document.querySelector('#overlay').classList.remove('show');document.querySelector('#overlay .result')?.classList.remove('checkpointResult');runCheckpointStartLoot=runLoot;runCheckpointStartOverkillBonusWD=runOverkillBonusWD;overlayMode='';if(!nextFloor()){showRunResult(false);return}updateFloorUI();setTimeout(()=>battle(),80)}
 function showCheckpointResult(){overlayMode='checkpoint';const box=document.querySelector('#overlay .result');box?.classList.add('checkpointResult');document.querySelector('#resultText').textContent=`${floor}F RESULT`;document.querySelector('#resultDetail').innerHTML=expeditionResultHTML(runLoot-runCheckpointStartLoot,runOverkillBonusWD-runCheckpointStartOverkillBonusWD);const next=document.querySelector('#continueFloor'),home=document.querySelector('#again');next.style.display='block';next.textContent=autoMode?'AUTO｜次の階層へ…':'次の階層へ';home.style.display='none';document.querySelector('#overlay').classList.add('show');if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}if(autoMode)checkpointAutoTimer=setTimeout(()=>advanceCheckpoint(),2000)}
 function showRunResult(win){overlayMode=win?'complete':'gameover';document.querySelector('#overlay .result')?.classList.remove('checkpointResult');const r=currentRunReward();document.querySelector('#resultText').textContent=win?`${maxFloor}F 踏破！`:'GAME OVER';document.querySelector('#resultDetail').innerHTML=expeditionResultHTML(runLoot-runCheckpointStartLoot,runOverkillBonusWD-runCheckpointStartOverkillBonusWD);const next=document.querySelector('#continueFloor'),home=document.querySelector('#again');if(win){next.style.display='none';home.style.display='block';home.textContent='拠点へ戻る'}else{next.style.display='block';next.textContent='この階層からコンティニュー';home.style.display='block';home.textContent='拠点へ戻る'}document.querySelector('#overlay').classList.add('show')}
