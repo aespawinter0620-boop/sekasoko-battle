@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.336</title>
+<title>セカソコ ver.337</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -18,6 +18,7 @@
 .autoBtn.on{background:#eee;color:#111}.damageMeter{margin:7px 10px 0;padding:9px 11px;border:1px solid #ffffff24;background:#111521;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}.damageMeter strong{font-size:16px}.damageMeter small{display:block;color:#969db0;font-size:9px;margin-top:2px}.damageReward{text-align:right;font-size:10px;color:#d9d0ac}.floorBadge{font-weight:1000;color:#f1e8c7}.resultActions{display:flex;flex-direction:column;gap:8px;margin-top:12px}.resultActions button{width:100%;border:1px solid #ffffff30;background:#171b28;border-radius:10px;padding:11px;font-weight:900}.resultActions .primary{background:#eee;color:#111}
 /* ver.334: OVERKILL system (all enemies, 100-2000% display, +100-500% reward). */
 /* ver.336: Nagi Wait Command now shows the actual green healing float on the healed frontline ally. */
+/* ver.337: enemy-specific WD base rewards + afterimage rank reward multipliers. */
 /* ver.333: WD stat enhancement + long-press controls. */
 /* ver.330: AUTO checkpoint result display extended to 2 seconds. */
 .expeditionResult{width:min(86vw,360px);margin:0 auto;padding:14px;border:1px solid #ffffff26;border-radius:16px;background:#10131dcc;text-align:left;box-shadow:0 18px 50px #0007}
@@ -1390,7 +1391,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.336";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.337";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2013,17 +2014,25 @@ let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentA
 let targetSelection=null;
 let floor=1,worldDepth=1,maxFloor=100,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runCheckpointStartLoot=0,runCheckpointStartOverkillBonusWD=0,runStartMaxHP=0,checkpointAutoTimer=null;
 let runOverkillBonusWD=0,runStrongRouteBonusWD=0,runRewardClaimed=false,overlayMode='',overkillAction=null;
-const WD_PER_FLOOR=100,WD_STORAGE_KEY='sekasokoWaldonium';
+const WD_STORAGE_KEY='sekasokoWaldonium';
+const ENEMY_BASE_REWARD_WD={normal:2,midboss:20,boss:40,finalBoss:100};
+const AFTERIMAGE_REWARD_MULTIPLIER={1:1.5,2:2.0,3:2.5,4:3.5,5:4.0};
 const OVERKILL_MIN_PCT=100,OVERKILL_DISPLAY_CAP=2000,OVERKILL_REWARD_CAP=500;
 function getWaldonium(){const n=Number(localStorage.getItem(WD_STORAGE_KEY)||0);return Number.isFinite(n)&&n>0?Math.floor(n):0}
 function addWaldonium(n){const gain=Math.max(0,Math.floor(Number(n)||0)),next=getWaldonium()+gain;localStorage.setItem(WD_STORAGE_KEY,String(next));return next}
-// ver.334 OVERKILL: each floor's base WD is evenly assigned to that floor's enemies for bonus calculation.
-function assignEnemyBaseRewards(enemies){const list=(enemies||[]).filter(Boolean),share=WD_PER_FLOOR/Math.max(1,list.length);for(const e of list)e.baseRewardWD=share;return enemies}
+// ver.337: every enemy owns a base WD reward; afterimages multiply that base by rank.
+function enemyBaseRewardWD(e){
+ const base=e?.finalBoss?ENEMY_BASE_REWARD_WD.finalBoss:e?.boss?ENEMY_BASE_REWARD_WD.boss:e?.midboss?ENEMY_BASE_REWARD_WD.midboss:ENEMY_BASE_REWARD_WD.normal;
+ const rank=Math.max(0,Math.floor(Number(e?.afterimageRank)||0)),rankMult=AFTERIMAGE_REWARD_MULTIPLIER[rank]||1;
+ return Math.max(0,Math.round(base*rankMult));
+}
+function assignEnemyBaseRewards(enemies){for(const e of (enemies||[]).filter(Boolean)){e.afterimageRewardMultiplier=AFTERIMAGE_REWARD_MULTIPLIER[Math.max(0,Math.floor(Number(e.afterimageRank)||0))]||1;e.baseRewardWD=enemyBaseRewardWD(e)}return enemies}
+function currentFloorBaseReward(){return Math.max(0,Math.round((E||[]).reduce((sum,e)=>sum+(Number.isFinite(Number(e?.baseRewardWD))?Number(e.baseRewardWD):enemyBaseRewardWD(e)),0)))}
 function overkillRate(totalDamage,startHp,maxHp){const max=Math.max(1,Number(maxHp)||1),excess=Math.max(0,(Number(totalDamage)||0)-(Number(startHp)||0));return excess/max*100}
 function beginOverkillAction(att){overkillAction=att?.side==='A'?{attackerId:att.id,targets:new Map()}:null}
 function recordOverkillDamage(t,beforeHp,damage){if(!overkillAction||!t||t.side!=='E'||damage<=0)return;let rec=overkillAction.targets.get(t);if(!rec){rec={target:t,startHp:Math.max(0,Number(beforeHp)||0),maxHp:Math.max(1,Number(t.max)||1),totalDamage:0};overkillAction.targets.set(t,rec)}rec.totalDamage+=Math.max(0,Number(damage)||0)}
 function overkillPop(target,displayPct,bonusWD){const el=document.getElementById(target?.id)||document.querySelector('#enemyArmy');if(!el)return;const r=el.getBoundingClientRect(),app=document.querySelector('.app').getBoundingClientRect(),d=document.createElement('div');d.className='overkillPop';d.innerHTML=`<b>🔥 OVERKILL ${displayPct}%</b><small>+💎${Math.max(0,Math.floor(bonusWD)).toLocaleString()} WD</small>`;d.style.left=(r.left-app.left+r.width/2)+'px';d.style.top=(r.top-app.top+Math.max(8,r.height*.14))+'px';document.querySelector('.app').appendChild(d);setTimeout(()=>d.remove(),1100)}
-function finalizeOverkillAction(){const ctx=overkillAction;overkillAction=null;if(!ctx)return[];const results=[];for(const rec of ctx.targets.values()){const t=rec.target;if(!t||t.hp>0)continue;const rawPct=overkillRate(rec.totalDamage,rec.startHp,rec.maxHp);if(rawPct<OVERKILL_MIN_PCT)continue;const wholePct=Math.floor(rawPct),displayPct=Math.min(OVERKILL_DISPLAY_CAP,wholePct),rewardPct=Math.min(OVERKILL_REWARD_CAP,wholePct),fallbackShare=WD_PER_FLOOR/Math.max(1,E.length||1),baseReward=Math.max(0,Number(t.baseRewardWD)||fallbackShare),bonusWD=Math.max(0,Math.floor(baseReward*rewardPct/100));if(bonusWD<=0)continue;runOverkillBonusWD+=bonusWD;results.push({target:t,displayPct,rewardPct,bonusWD,rawPct});overkillPop(t,displayPct,bonusWD)}if(results.length){const bonus=results.reduce((n,x)=>n+x.bonusWD,0);document.querySelector('#status').textContent=results.length===1?`🔥 OVERKILL ${results[0].displayPct}%｜+💎${bonus.toLocaleString()} WD`:`🔥 OVERKILL ×${results.length}｜+💎${bonus.toLocaleString()} WD`}return results}
+function finalizeOverkillAction(){const ctx=overkillAction;overkillAction=null;if(!ctx)return[];const results=[];for(const rec of ctx.targets.values()){const t=rec.target;if(!t||t.hp>0)continue;const rawPct=overkillRate(rec.totalDamage,rec.startHp,rec.maxHp);if(rawPct<OVERKILL_MIN_PCT)continue;const wholePct=Math.floor(rawPct),displayPct=Math.min(OVERKILL_DISPLAY_CAP,wholePct),rewardPct=Math.min(OVERKILL_REWARD_CAP,wholePct),fallbackReward=enemyBaseRewardWD(t),baseReward=Math.max(0,Number.isFinite(Number(t.baseRewardWD))?Number(t.baseRewardWD):fallbackReward),bonusWD=Math.max(0,Math.floor(baseReward*rewardPct/100));if(bonusWD<=0)continue;runOverkillBonusWD+=bonusWD;results.push({target:t,displayPct,rewardPct,bonusWD,rawPct});overkillPop(t,displayPct,bonusWD)}if(results.length){const bonus=results.reduce((n,x)=>n+x.bonusWD,0);document.querySelector('#status').textContent=results.length===1?`🔥 OVERKILL ${results[0].displayPct}%｜+💎${bonus.toLocaleString()} WD`:`🔥 OVERKILL ×${results.length}｜+💎${bonus.toLocaleString()} WD`}return results}
 const STAT_UPGRADE_KEY='sekasokoStatUpgrades_v1',STAT_UPGRADE_COST=100,STAT_KEYS=['hp','atk','def','spd'];
 let pendingStatUpgrade=null;
 function loadStatUpgrades(){let d={};try{d=JSON.parse(localStorage.getItem(STAT_UPGRADE_KEY)||'{}')||{}}catch(e){}return d}
@@ -2287,7 +2296,7 @@ function makeEnemies(f){
   const hp=Math.round(x.hp*hpMult*hpRate);
   const atk=Math.round(x.atk*atkMult*atkRate);
   const isBoss=rank==='boss',isMidboss=rank==='midboss';
-  const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.round((x.def??0)*defMult),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
+  const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.round((x.def??0)*defMult),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,finalBoss:isBoss&&f===100,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
  };
  if(f===1){
   // Real-device visual check master: all five Mikoto afterimage grades on Floor 1.
@@ -2898,7 +2907,7 @@ async function battle(){
    }
    if(!living(E).length){
      addFloorClearForRun();
-     const floorReward=WD_PER_FLOOR;runLoot+=floorReward;
+     const floorReward=currentFloorBaseReward();runLoot+=floorReward;
      document.querySelector('#status').textContent=floor+'F CLEAR｜💎'+floorReward.toLocaleString()+' WD 獲得｜損壊率 '+damageRate().toFixed(1)+'%';
      await sleep(500);
      if(floor>=maxFloor){running=false;showRunResult(true);return}
