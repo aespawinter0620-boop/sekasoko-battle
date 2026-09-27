@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.340</title>
+<title>セカソコ ver.341</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -21,6 +21,7 @@
 /* ver.337: enemy-specific WD base rewards + afterimage rank reward multipliers. */
 /* ver.338: finalized damage-rate reward multipliers (5% steps/10% bands, x1.5 to x0.5). */
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
+/* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.340: standard enemies/bosses use DEF 0; floor-based enemy DEF growth removed. Nonzero DEF remains available for individually armored enemies. */
 /* ver.333: WD stat enhancement + long-press controls. */
 /* ver.330: AUTO checkpoint result display extended to 2 seconds. */
@@ -1394,7 +1395,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.340";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.341";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1518,7 +1519,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* ver.333: HOME stat enhancement supports tap and long-press +/- input. */
 /* ver.330: AUTO shows 5F checkpoint result for 2 seconds, then advances automatically; manual keeps Next button. */
 /* ver.327: HOME skill descriptions live in the skill-book equipment screen. */
-.skillSlotEquip.fixedSkill{background:#101521;cursor:default}.skillSlotEquip.fixedSkill small{color:#c6ccda;line-height:1.55}
+.skillSlotEquip.fixedSkill{background:#101521;cursor:default}.skillSlotEquip.fixedSkill small{color:#c6ccda;line-height:1.55}.skillSlotsRow.freeThree .skillSlotEquip:last-child{grid-column:1/-1}
 </style>
 
 <style id="ver248-three-line-hud">
@@ -1813,14 +1814,14 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <div class="battleViewport" id="battleViewport"><section class="battle" id="battleZoomLayer"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section></div>
 <div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。</div></div></div>
-<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜技を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル①"><b id="uniqueSkillKind">固有①</b><span id="uniqueSkillName">未設定</span><small id="uniqueSkillDesc">固有スキル①</small></button><button class="skillBtn" id="uniqueSkill2" data-skill-detail="固有スキル②"><b id="uniqueSkill2Kind">固有②</b><span id="uniqueSkill2Name">未設定</span><small id="uniqueSkill2Desc">固有スキル②</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b id="freeSkill1Kind">スキ①</b><span id="freeSkill1Name">未設定</span><small id="freeSkill1Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span id="freeSkill2Name">未設定</span><small id="freeSkill2Desc">装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
+<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜技を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル"><b id="uniqueSkillKind">固有</b><span id="uniqueSkillName">未設定</span><small id="uniqueSkillDesc">固有スキル</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ①</b><span id="freeSkill1Name">未設定</span><small id="freeSkill1Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span id="freeSkill2Name">未設定</span><small id="freeSkill2Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill3" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ③</b><span id="freeSkill3Name">未設定</span><small id="freeSkill3Desc">装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0.0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
 </main>
 <script>
 const attributes=[{id:'suppa',name:'透波',count:'3/3',unlocked:true},{id:'cow',name:'乳牛',count:'3/3',unlocked:true},{id:'vampire',name:'吸血',count:'0/3',unlocked:false},{id:'shield',name:'盾姫',count:'0/3',unlocked:false},{id:'poison',name:'毒牙',count:'0/3',unlocked:false},{id:'undead',name:'屍霊',count:'0/3',unlocked:false},{id:'water',name:'水棲',count:'0/3',unlocked:false},{id:'time',name:'時空',count:'0/3',unlocked:false},{id:'treasure',name:'宝盗',count:'0/3',unlocked:false},{id:'gamble',name:'賭博',count:'0/3',unlocked:false},{id:'abyss',name:'深淵',count:'0/3',unlocked:false}];
-const homeRoster={suppa:[{name:'名切 命',icon:'🌙',sub:'透波｜技巧型',hp:110,atk:100,def:100,spd:100,skills:['固有①《絶対領域展開》 CT20','敵ランダム1体：ATK150%｜自身🪞+3／🗡️+1／🛡️+1｜【🪞銅】1スタックにつき回避率+5%。回避成功時に1消費。','固有②《絶対領域解放》 CT120｜敵前衛全体ATK120%→🪞全消費→消費数ぶん前衛ランダム単体ATK100%追撃→同%自己回復｜20消費時のみ銀🪞+1／🗡️+1／💪+1｜【🪞銀】回避成功時に反撃。反撃威力はスタック数で上昇。発動時に消費しない。']},{name:'月城 凪',icon:'🌪️',sub:'透波・天｜指揮官',hp:104,atk:100,def:100,spd:100,skills:['固有①《一世掃射》 CT250','敵全体：ATK100%｜生存透波全員🪞+2／自身🗡️+1｜【🪞銅】1スタックにつき回避率+5%。回避成功時に1消費。','固有②《待機命令》 CT250｜自身🪞全消費→選択した生存味方前衛1体を消費数%回復｜20消費時のみ銀🪞+1／💪+1／🗡️+1｜【🪞銀】回避成功時に反撃。反撃威力はスタック数で上昇。発動時に消費しない。']},{name:'緋村 柚',icon:'🥷',sub:'透波・地｜奇襲',hp:92,atk:100,def:100,spd:100,skills:['固有①《雲隠霧消》 CT50','敵前衛ランダム1体：ATK100%×2｜選択した生存透波1体へ🪞+4／自身🗡️+1｜【🪞銅】1スタックにつき回避率+5%。回避成功時に1消費。','固有②《紫電一閃》 CT120｜自身🪞20消費｜選択した敵後衛1体ATK200%（後衛不在時は前衛）｜自身に銀🪞+1／💪+1／🗡️+1｜🪞20未満は発動不可｜【🪞銀】回避成功時に反撃。反撃威力はスタック数で上昇。発動時に消費しない。']}],cow:[{name:'聖なる乳牛ハトホル',icon:'🥛',sub:'乳牛・天｜生命・回復',hp:145,atk:100,def:100,spd:100,skills:['固有①《聖なる雫》 CT50','敵前衛ランダム1体：自身残存HP×1/4のDEF無視ダメージ｜自身🥛+3｜【🥛銅】1スタックにつき最大HP+1。獲得時、現在HPも+1。','固有②《聖なる搾乳》 CT200｜敵前衛ランダム1体：自身残存HP×1/2のDEF無視ダメージ｜自身🥛を最大20消費→選択味方1体を消費前の自身最大HP×消費数%回復｜20消費時のみ銀🥛+1／🗡️+1／🛡️+1／💪+1｜【🥛銀】1スタックにつき最大HP+1%。獲得時、現在HPも増加した最大HPと同量増加。']},{name:'豊穣の乳牛バアル',icon:'🐮',sub:'乳牛・地｜耐久・蓄積',hp:145,atk:100,def:100,spd:100,skills:['固有①《豊穣の雫》 CT190','敵前衛全体：自身最大HP×1/5のDEF無視ダメージ｜選択味方1体へ🥛+5｜【🥛銅】1スタックにつき最大HP+1。獲得時、現在HPも+1。','固有②《ミルクミサイル》 CT250｜🥛20以上で使用可｜選択した敵前衛1体へATK200%×2｜🥛20消費→自身に銀🥛+1｜【🥛銀】1スタックにつき最大HP+1%。獲得時、現在HPも増加した最大HPと同量増加。']},{name:'恵みの乳牛ナンディ',icon:'🍼',sub:'乳牛・人｜供給・支援',hp:145,atk:100,def:100,spd:100,skills:['固有①《搾乳の恵み》 CT10','敵前衛ランダム1体：自身最大HP×1/10のDEF無視ダメージ｜自身🥛+3｜【🥛銅】1スタックにつき最大HP+1。獲得時、現在HPも+1。','固有②《多乳の恵み》 CT300｜自身🥛全消費→選択した自分以外の味方1体へ同数🥛付与｜20以上消費時、自身に銀🥛+2／🗡️+1／🛡️+1／💪+1｜【🥛銀】1スタックにつき最大HP+1%。獲得時、現在HPも増加した最大HPと同量増加。']}]};
+const homeRoster={suppa:[{name:'名切 命',icon:'🌙',sub:'透波｜技巧型',hp:110,atk:100,def:100,spd:100,skills:['固有《絶対領域展開》 CT20','敵ランダム1体：ATK150%｜自身🪞+3／🗡️+1／🛡️+1｜【🪞銅】1スタックにつき回避率+5%。回避成功時に1消費。']},{name:'月城 凪',icon:'🌪️',sub:'透波・天｜指揮官',hp:104,atk:100,def:100,spd:100,skills:['固有《一世掃射》 CT250','敵全体：ATK100%｜生存透波全員🪞+2／自身🗡️+1｜【🪞銅】1スタックにつき回避率+5%。回避成功時に1消費。']},{name:'緋村 柚',icon:'🥷',sub:'透波・地｜奇襲',hp:92,atk:100,def:100,spd:100,skills:['固有《雲隠霧消》 CT50','敵前衛ランダム1体：ATK100%×2｜選択した生存透波1体へ🪞+4／自身🗡️+1｜【🪞銅】1スタックにつき回避率+5%。回避成功時に1消費。']}],cow:[{name:'聖なる乳牛ハトホル',icon:'🥛',sub:'乳牛・天｜生命・回復',hp:145,atk:100,def:100,spd:100,skills:['固有《聖なる雫》 CT50','敵前衛ランダム1体：自身残存HP×1/4のDEF無視ダメージ｜自身🥛+3｜【🥛銅】1スタックにつき最大HP+1。獲得時、現在HPも+1。']},{name:'豊穣の乳牛バアル',icon:'🐮',sub:'乳牛・地｜耐久・蓄積',hp:145,atk:100,def:100,spd:100,skills:['固有《豊穣の雫》 CT190','敵前衛全体：自身最大HP×1/5のDEF無視ダメージ｜選択味方1体へ🥛+5｜【🥛銅】1スタックにつき最大HP+1。獲得時、現在HPも+1。']},{name:'恵みの乳牛ナンディ',icon:'🍼',sub:'乳牛・人｜供給・支援',hp:145,atk:100,def:100,spd:100,skills:['固有《搾乳の恵み》 CT10','敵前衛ランダム1体：自身最大HP×1/10のDEF無視ダメージ｜自身🥛+3｜【🥛銅】1スタックにつき最大HP+1。獲得時、現在HPも+1。']}]};
 let currentAttr=localStorage.getItem('sekasokoHomeAttr')||'suppa';
 function showScreen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
 function renderHome(){const wd=document.querySelector('#homeWD');if(wd)wd.textContent='💎'+getWaldonium().toLocaleString()+' WD';const a=attributes.find(x=>x.id===currentAttr)||attributes[0];document.querySelector('#areaName').textContent=a.unlocked?a.name:'？？？';document.querySelector('#areaCount').textContent=a.unlocked?a.count:'未発見';const chars=a.unlocked?(homeRoster[a.id]||[]):[];let html=chars.map((c,i)=>`<div class="char" data-char="${i}"><div class="portrait">${c.icon}</div><div class="charName">${c.name}</div><div class="charSub">${c.sub}</div></div>`).join('');for(let i=chars.length;i<3;i++)html+=`<div class="char emptyChar"><div class="portrait">？</div><div class="charName">${a.unlocked?'未加入':'？？？'}</div><div class="charSub">${a.unlocked?'空席':'未発見'}</div></div>`;document.querySelector('#homeCharacters').innerHTML=html;document.querySelectorAll('[data-char]').forEach(el=>el.onclick=()=>openCharacter(chars[+el.dataset.char]));document.querySelector('#attrNav').innerHTML=attributes.map(x=>`<button class="attrBtn ${x.id===currentAttr?'active':''} ${!x.unlocked?'locked':''}" data-attr="${x.id}">${x.unlocked?x.name:'？？？'}<span>${x.unlocked?x.count:'未発見'}</span></button>`).join('');document.querySelectorAll('[data-attr]').forEach(el=>el.onclick=()=>{const x=attributes.find(a=>a.id===el.dataset.attr);if(!x.unlocked){openInfo('？？？','まだ、この気配の正体を知らない。','❔');return}currentAttr=x.id;localStorage.setItem('sekasokoHomeAttr',currentAttr);renderHome()})}
@@ -2121,8 +2122,22 @@ const skillBooks={
  mirrorMastery:{id:'mirrorMastery',name:'明鏡止水の極み',ct:250,targetType:'randomAll',short:'銀🪞20消費／敵全体ランダムATK100%×30／🪞20 🗡️15 💪15／金🪞1　CT250',detail:'《明鏡止水の極み》｜CT250｜銀🪞20以上で使用可能。銀🪞20消費。生存している敵全体から毎Hitランダムに1体を選び、ATK依存小ダメージ（ATK100%）を30回与える。使用後、自身に銅🪞+20、🗡️+15、💪+15、金🪞+1。属性制限なし。｜【🪞金】回避成功時、1スタックにつき最大HP1%回復。発動時に消費しない。'},
  milkingExperience:{id:'milkingExperience',name:'搾乳体験',ct:250,targetType:'allAllies',short:'銀🥛20消費／味方全員🥛20／自身🗡️10 💪10／金🥛1　CT250',detail:'《搾乳体験》｜CT250｜銀🥛20以上で使用可能。銀🥛20消費。自身を含む生存味方全員へ銅🥛+20。使用後、自身に🗡️+10、💪+10、金🥛+1。属性制限なし。｜【🥛金】自身のターン開始時、1スタックにつき最大HP1%回復。発動時に消費しない。'}
 };
-const ownedSkillBookIds=['bloodSword','heal','mirrorMastery','milkingExperience'],skillEquipKey='sekasokoSkillBookEquip_v1';
-function loadSkillEquip(){let d={};try{d=JSON.parse(localStorage.getItem(skillEquipKey)||'{}')||{}}catch(e){}if(!Object.keys(d).length){d={mizuki:{3:'bloodSword',4:'heal'}};localStorage.setItem(skillEquipKey,JSON.stringify(d))}return d}
+const ownedSkillBookIds=['bloodSword','heal','mirrorMastery','milkingExperience'],skillEquipKey='sekasokoSkillBookEquip_v1',skillEquipLayoutKey='sekasokoSkillBookLayout_v341';
+function loadSkillEquip(){
+ let d={};try{d=JSON.parse(localStorage.getItem(skillEquipKey)||'{}')||{}}catch(e){}
+ if(!Object.keys(d).length){d={mizuki:{2:'bloodSword',3:'heal'}};localStorage.setItem(skillEquipKey,JSON.stringify(d));localStorage.setItem(skillEquipLayoutKey,'1');return d}
+ if(localStorage.getItem(skillEquipLayoutKey)!=='1'){
+  for(const slots of Object.values(d)){
+   if(!slots||typeof slots!=='object')continue;
+   const old3=slots[3],old4=slots[4];
+   if(old3)slots[2]=old3;else delete slots[2];
+   if(old4)slots[3]=old4;else delete slots[3];
+   delete slots[4];
+  }
+  localStorage.setItem(skillEquipKey,JSON.stringify(d));localStorage.setItem(skillEquipLayoutKey,'1');
+ }
+ return d
+}
 function saveSkillEquip(d){localStorage.setItem(skillEquipKey,JSON.stringify(d))}
 function unitRosterKey(u){return u?.rosterId||formationRosterData.find(c=>c.cid===u?.cid)?.id||u?.id||null}
 function equippedSkillBook(u,slot){const k=unitRosterKey(u),id=k?loadSkillEquip()?.[k]?.[slot]:null;return id?skillBooks[id]||null:null}
@@ -2133,31 +2148,32 @@ function skillBookBlockReason(u,book){
  return'';
 }
 function skillBookUsable(u,book){return !skillBookBlockReason(u,book)}
-const availableSkillSlots=u=>[1,2,...[3,4].filter(slot=>{const book=equippedSkillBook(u,slot);return !!book&&skillBookUsable(u,book)})];
-function setSkillBookEquip(rid,slot,id){const d=loadSkillEquip();d[rid]=d[rid]||{};if(!id)delete d[rid][slot];else{for(const slots of Object.values(d))for(const sl of ['3','4'])if(slots?.[sl]===id)delete slots[sl];d[rid][slot]=id}saveSkillEquip(d)}
-function skillBookOwner(id){const d=loadSkillEquip();for(const [rid,slots] of Object.entries(d))for(const sl of ['3','4'])if(slots?.[sl]===id)return{rid,slot:+sl};return null}
+const freeSkillOrdinal=slot=>slot===2?'①':slot===3?'②':'③';
+const availableSkillSlots=u=>[1,...[2,3,4].filter(slot=>{const book=equippedSkillBook(u,slot);return !!book&&skillBookUsable(u,book)})];
+function setSkillBookEquip(rid,slot,id){const d=loadSkillEquip();d[rid]=d[rid]||{};if(!id)delete d[rid][slot];else{for(const slots of Object.values(d))for(const sl of ['2','3','4'])if(slots?.[sl]===id)delete slots[sl];d[rid][slot]=id}saveSkillEquip(d)}
+function skillBookOwner(id){const d=loadSkillEquip();for(const [rid,slots] of Object.entries(d))for(const sl of ['2','3','4'])if(slots?.[sl]===id)return{rid,slot:+sl};return null}
 function openSkillEquip(rid){
  document.querySelector('#modal').classList.remove('playableDetailMode');
  const c=formationRosterData.find(x=>x.id===rid);if(!c)return;
  const homeC=[...(homeRoster.suppa||[]),...(homeRoster.cow||[])].find(x=>x.name===c.name);
- const unique1Title=homeC?.skills?.[0]||'固有① 未設定',unique1Detail=homeC?.skills?.[1]||'詳細未設定';
- const unique2Raw=homeC?.skills?.[2]||'固有② 未設定',unique2Parts=String(unique2Raw).split('｜'),unique2Title=unique2Parts.shift()||'固有② 未設定',unique2Detail=unique2Parts.join('｜')||'詳細未設定';
- const uniqueSlots=`<div class="skillSlotEquip fixedSkill"><b>固有スキル①</b><span>${unique1Title.replace(/^固有①/,'').trim()}</span><small>${unique1Detail}</small></div><div class="skillSlotEquip fixedSkill"><b>固有スキル②</b><span>${unique2Title.replace(/^固有②/,'').trim()}</span><small>${unique2Detail}</small></div>`;
- const eq=loadSkillEquip()[rid]||{},freeSlots=[3,4].map(sl=>{const b=skillBooks[eq[sl]];return `<button class="skillSlotEquip" onclick="openSkillSlotPicker('${rid}',${sl})"><b>自由スキル${sl===3?'①':'②'}</b><span>${b?b.name:'未設定'}</span><small>${b?b.short:'タップしてスキルブックを装備'}</small></button>`}).join('');
- document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキル装備</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>自由スキル</h3><div class="skillSlotsRow">${freeSlots}</div></div><div class="coming" style="padding:8px 0;color:#9ba3b7;font-size:10px">固有①・②の詳細確認と、自由スキル①・②の付け替えをこの画面に集約。自由スキルは1冊につき1枠へ装備。</div>`;
+ const uniqueTitle=homeC?.skills?.[0]||'固有 未設定',uniqueDetail=homeC?.skills?.[1]||'詳細未設定';
+ const uniqueSlots=`<div class="skillSlotEquip fixedSkill"><b>固有スキル</b><span>${uniqueTitle.replace(/^固有/,'').trim()}</span><small>${uniqueDetail}</small></div>`;
+ const eq=loadSkillEquip()[rid]||{},freeSlots=[2,3,4].map(sl=>{const b=skillBooks[eq[sl]];return `<button class="skillSlotEquip" onclick="openSkillSlotPicker('${rid}',${sl})"><b>自由スキル${freeSkillOrdinal(sl)}</b><span>${b?b.name:'未設定'}</span><small>${b?b.short:'タップしてスキルブックを装備'}</small></button>`}).join('');
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキル装備</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>自由スキル</h3><div class="skillSlotsRow freeThree">${freeSlots}</div></div><div class="coming" style="padding:8px 0;color:#9ba3b7;font-size:10px">固有スキル1枠＋自由スキル3枠。自由スキルは1冊につき1枠へ装備。</div>`;
  document.querySelector('#modal').classList.add('show')
 }
-function openSkillSlotPicker(rid,slot){document.querySelector('#modal').classList.remove('playableDetailMode');const c=formationRosterData.find(x=>x.id===rid),cur=loadSkillEquip()?.[rid]?.[slot]||null;const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),here=cur===id,who=o&&!here?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'';return `<button class="skillBookCard ${here?'equipped':''}" onclick="equipPickedBook('${rid}',${slot},'${id}')"><b>📕 CT${b.ct}</b><span>${b.name}${here?'　✓装備中':''}</span><small>${b.detail}${who?`<br>現在：${who}の自由スキル${o.slot===3?'①':'②'}（選ぶと付け替え）`:''}</small></button>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c?.name||''}｜自由スキル${slot===3?'①':'②'}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList"><button class="skillBookCard" onclick="equipPickedBook('${rid}',${slot},'')"><b>装備解除</b><span>未設定にする</span><small>この自由スキル枠を空にする。</small></button>${cards}</div><button class="skillEquipBack" onclick="openSkillEquip('${rid}')">← 装備画面へ戻る</button>`}
+function openSkillSlotPicker(rid,slot){document.querySelector('#modal').classList.remove('playableDetailMode');const c=formationRosterData.find(x=>x.id===rid),cur=loadSkillEquip()?.[rid]?.[slot]||null;const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),here=cur===id,who=o&&!here?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'';return `<button class="skillBookCard ${here?'equipped':''}" onclick="equipPickedBook('${rid}',${slot},'${id}')"><b>📕 CT${b.ct}</b><span>${b.name}${here?'　✓装備中':''}</span><small>${b.detail}${who?`<br>現在：${who}の自由スキル${freeSkillOrdinal(o.slot)}（選ぶと付け替え）`:''}</small></button>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c?.name||''}｜自由スキル${freeSkillOrdinal(slot)}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList"><button class="skillBookCard" onclick="equipPickedBook('${rid}',${slot},'')"><b>装備解除</b><span>未設定にする</span><small>この自由スキル枠を空にする。</small></button>${cards}</div><button class="skillEquipBack" onclick="openSkillEquip('${rid}')">← 装備画面へ戻る</button>`}
 function equipPickedBook(rid,slot,id){setSkillBookEquip(rid,slot,id);openSkillEquip(rid)}
-function openSkillBookInventory(){document.querySelector('#modal').classList.remove('playableDetailMode');const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),who=o?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'未装備';return `<div class="skillBookCard"><b>📕 所持 ×1｜CT${b.ct}</b><span>${b.name}</span><small>${b.detail}<br>装備：${who}${o?` 自由スキル${o.slot===3?'①':'②'}`:''}</small></div>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList">${cards}</div><div class="coming" style="padding:10px 0;color:#9ba3b7;font-size:10px">キャラクター詳細の「📕 スキルブック装備」から付け替えできます。</div>`;document.querySelector('#modal').classList.add('show')}
+function openSkillBookInventory(){document.querySelector('#modal').classList.remove('playableDetailMode');const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),who=o?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'未装備';return `<div class="skillBookCard"><b>📕 所持 ×1｜CT${b.ct}</b><span>${b.name}</span><small>${b.detail}<br>装備：${who}${o?` 自由スキル${freeSkillOrdinal(o.slot)}`:''}</small></div>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList">${cards}</div><div class="coming" style="padding:10px 0;color:#9ba3b7;font-size:10px">キャラクター詳細の「📕 スキルブック装備」から付け替えできます。</div>`;document.querySelector('#modal').classList.add('show')}
 const chosenSkillCt=(u,slot=1)=>{
  const book=equippedSkillBook(u,slot);if(book)return book.ct;
- if(u?.cid===101)return slot===2?120:20;
- if(u?.cid===102)return slot===2?250:250;
- if(u?.cid===103)return slot===2?120:50;
- if(u?.cid===201)return slot===2?200:50;
- if(u?.cid===202)return slot===2?250:190;
- if(u?.cid===203)return slot===2?300:10;
+ if(slot!==1)return 0;
+ if(u?.cid===101)return 20;
+ if(u?.cid===102)return 250;
+ if(u?.cid===103)return 50;
+ if(u?.cid===201)return 50;
+ if(u?.cid===202)return 190;
+ if(u?.cid===203)return 10;
  return u?.skill?.ct||0;
 };
 const chosenActionCost=(u,slot=1)=>baseWait(u)+(slot===0?0:chosenSkillCt(u,slot));
@@ -2252,37 +2268,9 @@ function addMirrorCopper(u,amount){
  const cur=getTierBuff(u,'mirror','copper');
  return setTierBuff(u,'mirror','copper',Math.min(20,cur+cleanStackNumber(amount)));
 }
-function consumeAllMirrorCopper(u){
- const have=getTierBuff(u,'mirror','copper');
- return consumeTierBuff(u,'mirror','copper',have);
-}
 function isSuppaUnit(u){return !!u&&([101,102,103].includes(u.cid)||String(u.attr||'').includes('透波'))}
 function livingSuppa(){return living(A).filter(isSuppaUnit)}
 function autoRandomTarget(pool){const p=(pool||[]).filter(u=>u&&u.hp>0);return p.length?p[Math.floor(Math.random()*p.length)]:null}
-function grantSuppaUpperReward(u){addTierBuff(u,'mirror','silver',1);u.harden=(u.harden||0)+1;u.sword=(u.sword||0)+1}
-function tierBuffHudToken(u,key){
- const b=syncTierBuffsFromLegacy(u)[key],meta=TIER_BUFF_META[key];if(!meta)return'';
- const copper=cleanStackNumber(b.copper),silver=cleanStackNumber(b.silver),gold=cleanStackNumber(b.gold);
- if(copper<=0&&silver<=0&&gold<=0)return'';
- // HUD compact tier notation: highest owned tier -> lower tiers.
- // Numbers stay white; the highest owned tier is communicated by the frame.
- const frameClass=gold>0?'tierFrameGold':silver>0?'tierFrameSilver':'tierFrameCopper';
- const parts=[];
- if(gold>0){
-  parts.push(`<i class="tierNum tierGold">${formatStackNumber(gold)}</i>`);
-  parts.push(`<i class="tierSep">/</i>`);
-  parts.push(`<i class="tierNum tierSilver">${formatStackNumber(silver)}</i>`);
-  parts.push(`<i class="tierSep">/</i>`);
-  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
- }else if(silver>0){
-  parts.push(`<i class="tierNum tierSilver">${formatStackNumber(silver)}</i>`);
-  parts.push(`<i class="tierSep">/</i>`);
-  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
- }else{
-  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
- }
- return `<span class="tierStackCompact ${frameClass}"><i class="tierIcon">${meta.icon}</i>${parts.join('')}</span>`;
-}
 function tierBuffDetailTags(u){
  const state=syncTierBuffsFromLegacy(u),tags=[];
  for(const key of TIER_BUFF_ORDER){const meta=TIER_BUFF_META[key],b=state[key];for(const tier of ['copper','silver','gold'])if(b[tier]>0)tags.push(`${TIER_BUFF_MARKS[tier]}${meta.icon} ${TIER_BUFF_NAMES[tier]} ${formatStackNumber(b[tier])}`)}
@@ -2660,93 +2648,43 @@ function milkAllies(){return living(A).filter(u=>String(u.attr||'').includes('�
 function frontEnemies(defenders){const f=living(defenders).filter(x=>x.row==='front');return f.length?f:living(defenders)}
 async function hathorHolyDrop(att,defenders){
  const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');const pool=frontEnemies(defenders);if(!pool.length){if(attacker)attacker.classList.remove('attacking');return}
- const t=pool[Math.floor(Math.random()*pool.length)],dmg=Math.max(1,Math.floor(att.hp/4)),el=document.getElementById(t.id);document.querySelector('#status').textContent=`${att.name}「固有①《聖なる雫》」`;
+ const t=pool[Math.floor(Math.random()*pool.length)],dmg=Math.max(1,Math.floor(att.hp/4)),el=document.getElementById(t.id);document.querySelector('#status').textContent=`${att.name}「固有《聖なる雫》」`;
  const hit=applyCombatDamage(t,dmg,{ignoreDef:true});damagePop(el,hit.damage);if(el)el.classList.add('hit');await sleep(220);if(el)el.classList.remove('hit');addMilk(att,3);if(attacker)attacker.classList.remove('attacking');
  document.querySelector('#status').textContent=`《聖なる雫》 ${hit.damage}ダメージ／自身🥛+3`;if(t.hp<=0){if(el)el.classList.add('dying');await sleep(220);if(handleFrontlineDeath(t)){renderBattle();await sleep(260)}}
 }
-async function hathorHolyMilking(att,defenders){
- const attacker=document.getElementById(att.id),pool=frontEnemies(defenders);if(!pool.length)return;
- const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id),healBaseMax=Math.max(1,Number(att.max)||1),dmg=Math.max(1,Math.floor(att.hp/2));
- document.querySelector('#status').textContent=`${att.name}「固有②《聖なる搾乳》」`;if(attacker)attacker.classList.add('attacking');
- const hit=applyCombatDamage(t,dmg,{ignoreDef:true});damagePop(el,hit.damage);if(el)el.classList.add('hit');await sleep(200);if(el)el.classList.remove('hit');
- const milkSpent=consumeMilk(att,20),allies=living(A),recipient=autoMode?autoRandomTarget(allies):await selectBattleTarget(allies,`${att.name}《聖なる搾乳》｜回復する味方を選択`);
- let healed=0;if(recipient){const planned=Math.floor(healBaseMax*milkSpent/100),missing=Math.max(0,(Number(recipient.max)||0)-(Number(recipient.hp)||0));healed=Math.min(planned,missing);if(healed>0)recipient.hp+=healed;const rel=document.getElementById(recipient.id);if(rel&&healed>0)damagePop(rel,`+${healed}`)}
- if(milkSpent===20){addTierBuff(att,'milk','silver',1);att.sword=(att.sword||0)+1;att.shield=(att.shield||0)+1;att.harden=(att.harden||0)+1}
- if(attacker)attacker.classList.remove('attacking');
- if(t.hp<=0){if(el)el.classList.add('dying');await sleep(180);if(handleFrontlineDeath(t)){renderBattle();await sleep(220)}}
- document.querySelector('#status').textContent=`《聖なる搾乳》 ${hit.damage}ダメージ／🥛-${milkSpent}／${recipient?recipient.name+' HP+'+healed:'対象なし'}${milkSpent===20?'／銀🥛+1 🗡️+1 🛡️+1 💪+1':''}`;renderBattle();await sleep(100);
-}
 async function baalFertileDrop(att,defenders){
  const attacker=document.getElementById(att.id),pool=frontEnemies(defenders);if(!pool.length)return;
- const dmg=Math.max(1,Math.floor(att.max/5));document.querySelector('#status').textContent=`${att.name}「固有①《豊穣の雫》」`;if(attacker)attacker.classList.add('attacking');
+ const dmg=Math.max(1,Math.floor(att.max/5));document.querySelector('#status').textContent=`${att.name}「固有《豊穣の雫》」`;if(attacker)attacker.classList.add('attacking');
  for(const t of pool){const el=document.getElementById(t.id),hit=applyCombatDamage(t,dmg,{ignoreDef:true});damagePop(el,hit.damage);if(el)el.classList.add('hit')}
  await sleep(220);pool.forEach(t=>{const el=document.getElementById(t.id);if(el)el.classList.remove('hit')});
  const allies=living(A),recipient=autoMode?autoRandomTarget(allies):await selectBattleTarget(allies,`${att.name}《豊穣の雫》｜🥛+5する味方を選択`);if(recipient)addMilk(recipient,5);
  if(attacker)attacker.classList.remove('attacking');let pulled=false;for(const t of pool.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(220)}
  document.querySelector('#status').textContent=`《豊穣の雫》 敵前衛全体／${recipient?recipient.name+'へ🥛+5':'対象なし'}`;renderBattle();await sleep(100);
 }
-async function baalMilkMissile(att,defenders){
- if(getTierBuff(att,'milk','copper')<20)return;
- const pool=frontEnemies(defenders);if(!pool.length)return;
- const t=autoMode?autoRandomTarget(pool):await selectBattleTarget(pool,`${att.name}《ミルクミサイル》｜攻撃する敵前衛を選択`);if(!t||att.hp<=0)return;
- const attacker=document.getElementById(att.id),el=document.getElementById(t.id);document.querySelector('#status').textContent=`${att.name}「固有②《ミルクミサイル》」`;if(attacker)attacker.classList.add('attacking');
- let hits=0,total=0;for(let i=0;i<2;i++){if(t.hp<=0)break;if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)*2));hits++;total+=hit.damage;damagePop(el,hit.damage);await sleep(140);if(el)el.classList.remove('hit')}
- const milkSpent=consumeMilk(att,20);addTierBuff(att,'milk','silver',1);if(attacker)attacker.classList.remove('attacking');
- if(t.hp<=0){if(el)el.classList.add('dying');await sleep(180);if(handleFrontlineDeath(t)){renderBattle();await sleep(220)}}
- document.querySelector('#status').textContent=`《ミルクミサイル》 ${t.name}へATK200%×${hits}（計${total}）／🥛-${milkSpent}／銀🥛+1`;renderBattle();await sleep(100);
-}
 async function nandiMilkingGrace(att,defenders){
  const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');const pool=frontEnemies(defenders);if(!pool.length){if(attacker)attacker.classList.remove('attacking');return}
- const t=pool[Math.floor(Math.random()*pool.length)],dmg=Math.max(1,Math.floor(att.max/10)),el=document.getElementById(t.id);document.querySelector('#status').textContent=`${att.name}「固有①《搾乳の恵み》」`;
+ const t=pool[Math.floor(Math.random()*pool.length)],dmg=Math.max(1,Math.floor(att.max/10)),el=document.getElementById(t.id);document.querySelector('#status').textContent=`${att.name}「固有《搾乳の恵み》」`;
  const hit=applyCombatDamage(t,dmg,{ignoreDef:true});damagePop(el,hit.damage);if(el)el.classList.add('hit');await sleep(200);if(el)el.classList.remove('hit');addMilk(att,3);
  if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《搾乳の恵み》 ${hit.damage}ダメージ／自身🥛+3`;if(t.hp<=0){if(el)el.classList.add('dying');await sleep(220);if(handleFrontlineDeath(t)){renderBattle();await sleep(260)}}
-}
-async function nandiDrinkLots(att){
- const recipients=living(A).filter(u=>u!==att);if(!recipients.length)return;
- const recipient=autoMode?autoRandomTarget(recipients):await selectBattleTarget(recipients,`${att.name}《多乳の恵み》｜🥛を渡す味方を選択`);if(!recipient||att.hp<=0)return;
- const spent=Math.max(0,Math.floor(Number(att.milk)||0)),attacker=document.getElementById(att.id);document.querySelector('#status').textContent=`${att.name}「固有②《多乳の恵み》」｜🥛${spent}全消費`;if(attacker)attacker.classList.add('attacking');await sleep(160);
- consumeMilk(att,spent);addMilk(recipient,spent);
- if(spent>=20){addTierBuff(att,'milk','silver',2);att.sword=(att.sword||0)+1;att.shield=(att.shield||0)+1;att.harden=(att.harden||0)+1}
- if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《多乳の恵み》 🥛${spent}消費／${recipient.name}へ🥛+${spent}${spent>=20?'／自身に銀🥛+2 🗡️+1 🛡️+1 💪+1':''}`;renderBattle();await sleep(120);
 }
 async function yuzuUninMusho(att,defenders){
  if(att.hp<=0)return;const pool=frontEnemies(defenders);if(!pool.length)return;
  const t=pool[Math.floor(Math.random()*pool.length)],attacker=document.getElementById(att.id),targetEl=document.getElementById(t.id);
- document.querySelector('#status').textContent=`${att.name}「固有①《雲隠霧消》」`;if(attacker)attacker.classList.add('attacking');await sleep(160);
+ document.querySelector('#status').textContent=`${att.name}「固有《雲隠霧消》」`;if(attacker)attacker.classList.add('attacking');await sleep(160);
  for(let i=0;i<2;i++){if(t.hp<=0)break;if(targetEl)targetEl.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)*1.0));damagePop(targetEl,hit.damage);await sleep(120);if(targetEl)targetEl.classList.remove('hit')}
  if(t.hp<=0){if(targetEl)targetEl.classList.add('dying');await sleep(140);if(handleFrontlineDeath(t)){renderBattle();await sleep(180)}}
  const suppa=livingSuppa(),chosen=autoMode?autoRandomTarget(suppa):await selectBattleTarget(suppa,`${att.name}《雲隠霧消》｜🪞+4する透波を選択`);
  if(chosen)addMirrorCopper(chosen,4);att.sword=(att.sword||0)+1;
  if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《雲隠霧消》！ ${chosen?chosen.name+'へ🪞+4':'対象なし'} / 自身🗡️+1`;renderBattle();await sleep(100);
 }
-async function yuzuShidenIssen(att,defenders){
- if(att.hp<=0||getTierBuff(att,'mirror','copper')<20)return;
- const back=living(defenders).filter(x=>x.row==='back'),front=living(defenders).filter(x=>x.row==='front'),pool=back.length?back:front;if(!pool.length)return;
- const t=autoMode?autoRandomTarget(pool):await selectBattleTarget(pool,`${att.name}《紫電一閃》｜攻撃する敵${back.length?'後衛':'前衛'}を選択`);if(!t||att.hp<=0)return;
- const spent=consumeTierBuff(att,'mirror','copper',20),el=document.getElementById(t.id),attacker=document.getElementById(att.id);
- document.querySelector('#status').textContent=`${att.name}「固有②《紫電一閃》」｜🪞${spent}消費`;if(attacker)attacker.classList.add('attacking');await sleep(150);
- if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)*2.0));damagePop(el,hit.damage);await sleep(160);if(el)el.classList.remove('hit');
- grantSuppaUpperReward(att);
- if(t.hp<=0){if(el)el.classList.add('dying');await sleep(140);if(handleFrontlineDeath(t)){renderBattle();await sleep(180)}}
- if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent='《紫電一閃》！ 🪞20消費 / 銀🪞+1 💪+1 🗡️+1';renderBattle();await sleep(100);
-}
 async function nagiIsseiSousha(att,defenders){
  if(att.hp<=0)return;const attacker=document.getElementById(att.id),targets=[...living(defenders)];if(!targets.length)return;
- document.querySelector('#status').textContent=`${att.name}「固有①《一世掃射》」 CT250`;if(attacker)attacker.classList.add('attacking');await sleep(150);
+ document.querySelector('#status').textContent=`${att.name}「固有《一世掃射》」 CT250`;if(attacker)attacker.classList.add('attacking');await sleep(150);
  for(const t of targets){if(t.hp<=0)continue;const el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)));damagePop(el,hit.damage)}
  await sleep(180);for(const t of targets){const el=document.getElementById(t.id);if(el)el.classList.remove('hit')}
  let pulled=false;for(const t of targets.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(180)}
  for(const ally of livingSuppa())addMirrorCopper(ally,2);att.sword=(att.sword||0)+1;
  if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent='《一世掃射》！ 敵全体ATK100% / 生存透波全員🪞+2 / 自身🗡️+1';renderBattle();await sleep(100);
-}
-async function nagiTaikiMeirei(att){
- if(att.hp<=0)return;const fronts=living(A).filter(x=>x.row==='front');if(!fronts.length)return;
- const chosen=autoMode?autoRandomTarget(fronts):await selectBattleTarget(fronts,`${att.name}《待機命令》｜回復する味方前衛を選択`);if(!chosen||att.hp<=0)return;
- const attacker=document.getElementById(att.id),spent=consumeAllMirrorCopper(att);
- document.querySelector('#status').textContent=`${att.name}「固有②《待機命令》」｜🪞${spent}消費`;if(attacker)attacker.classList.add('attacking');await sleep(150);
- const max=Math.max(1,Number(chosen.max)||1),planned=Math.floor(max*spent/100),missing=Math.max(0,max-(Number(chosen.hp)||0)),healed=Math.min(planned,missing);if(healed>0){chosen.hp+=healed;const cel=document.getElementById(chosen.id);if(cel)damagePop(cel,`+${healed}`)}
- if(spent===20)grantSuppaUpperReward(att);
- if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《待機命令》！ ${chosen.name} HP+${healed}${spent===20?' / 銀🪞+1 💪+1 🗡️+1':''}`;renderBattle();await sleep(180);
 }
 async function absoluteDomainAttack(u,enemies){
  const alive=living(enemies);if(!alive.length)return;const t=alive[Math.floor(Math.random()*alive.length)],attacker=document.getElementById(u.id),el=document.getElementById(t.id);
@@ -2755,29 +2693,6 @@ async function absoluteDomainAttack(u,enemies){
  addMirrorCopper(u,3);u.sword=(u.sword||0)+1;u.shield=(u.shield||0)+1;
  await sleep(140);if(attacker)attacker.classList.remove('attacking');if(el)el.classList.remove('hit');if(t.hp<=0){if(el)el.classList.add('dying');if(handleFrontlineDeath(t)){renderBattle();await sleep(150)}}
  document.querySelector('#status').textContent='《絶対領域展開》｜ATK150% / 🪞+3 🗡️+1 🛡️+1';renderBattle();
-}
-async function absoluteDomainRelease(u,enemies){
- let fronts=living(enemies).filter(x=>x.row==='front');if(!fronts.length)return;
- const actionTargets=new Set(fronts),attacker=document.getElementById(u.id);document.querySelector('#status').textContent='名切 命《絶対領域解放》';if(attacker)attacker.classList.add('attacking');
- for(const t of [...fronts]){const el=document.getElementById(t.id);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)*1.2));damagePop(el,hit.damage)}
- await sleep(150);for(const t of enemies){const el=document.getElementById(t.id);if(el)el.classList.remove('hit')}
- let pulled=false;for(const t of fronts.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(120)}
- const spent=consumeAllMirrorCopper(u),shots=spent;
- for(let i=0;i<shots;i++){
-  const pool=living(enemies).filter(x=>x.row==='front');
-  if(pool.length){
-   const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);actionTargets.add(t);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)));damagePop(el,hit.damage);await sleep(90);if(el)el.classList.remove('hit');if(t.hp<=0){if(el)el.classList.add('dying');if(handleFrontlineDeath(t)){renderBattle();await sleep(100)}}
-  }else{
-   // OVERKILL scoring follows the full scheduled skill damage. Once the wave is wiped,
-   // remaining pursuit hits continue against a defeated target touched by this action.
-   const deadPool=[...actionTargets].filter(x=>x&&x.hp<=0);if(!deadPool.length)break;
-   const t=deadPool[Math.floor(Math.random()*deadPool.length)],el=document.getElementById(t.id)||document.querySelector('#enemyArmy');
-   const hit=applyCombatDamage(t,Math.floor(effectiveAtk(u)));damagePop(el,hit.damage);await sleep(90);
-  }
- }
- const planned=Math.floor((Number(u.max)||0)*spent/100),missing=Math.max(0,(Number(u.max)||0)-(Number(u.hp)||0)),healed=Math.min(planned,missing);if(healed>0)u.hp+=healed;
- if(spent===20)grantSuppaUpperReward(u);
- if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《絶対領域解放》｜前衛ATK120%＋${shots}Hit / HP+${healed}${spent===20?' / 銀🪞+1 🗡️+1 💪+1':''}`;renderBattle();await sleep(120);
 }
 function clearTargetSelection(){targetSelection=null;const bs=document.querySelector('#battleScreen');if(bs)bs.classList.remove('targetSelectMode')}
 function selectBattleTarget(candidates,label='対象を選択'){
@@ -2842,7 +2757,7 @@ async function skillBookMilkingExperience(att,allies){
 
 function configureUniqueSkill(u){
  const n=document.querySelector('#uniqueSkillName'),d=document.querySelector('#uniqueSkillDesc'),k=document.querySelector('#uniqueSkillKind'),btn=document.querySelector('#uniqueSkill');
- if(!n||!d||!k||!btn)return;k.textContent='固有①';
+ if(!n||!d||!k||!btn)return;k.textContent='固有';
  const data={
   101:['絶対領域展開','敵ランダムATK150%／自身🪞3 🗡️1 🛡️1　CT20','20','《絶対領域展開》｜CT20｜敵ランダム1体へATK150%。使用後、自身へ🪞+3、🗡️+1、🛡️+1。｜【🪞銅】1スタックにつき回避率+5%。回避成功時に1消費。'],
   102:['一世掃射','敵全体ATK100%／生存透波全員🪞2／自身🗡️1　CT250','250','《一世掃射》｜CT250｜生存している敵全体へATK100%。使用後、生存透波全員へ🪞+2、自身へ🗡️+1。｜【🪞銅】1スタックにつき回避率+5%。回避成功時に1消費。'],
@@ -2852,23 +2767,14 @@ function configureUniqueSkill(u){
   203:['搾乳の恵み','最大HP×1/10・DEF無視／自身🥛3　CT10','10','《搾乳の恵み》｜CT10｜敵前衛ランダム1体へ自身最大HP×1/10のDEF無視ダメージ。ナンディ自身へ🥛+3。｜【🥛銅】1スタックにつき最大HP+1。獲得時、現在HPも+1。']
  };
  const a=data[u?.cid]||data[101];n.textContent=a[0];d.textContent=a[1];d.dataset.ct=a[2];btn.dataset.skillDetail=a[3];
- const n2=document.querySelector('#uniqueSkill2Name'),d2=document.querySelector('#uniqueSkill2Desc'),btn2=document.querySelector('#uniqueSkill2');
- if(!n2||!d2||!btn2)return;
- const data2={
-  101:['絶対領域解放','前衛ATK120%＋🪞全消費→同数ATK100%追撃＋同%回復　CT120','120','《絶対領域解放》｜CT120｜敵前衛全体へATK120%。その後、自身の🪞を全消費し、消費数だけ敵前衛ランダム単体へATK100%追撃。自身HPを消費数%回復。20消費時のみ銀🪞+1、🗡️+1、💪+1。｜【🪞銀】回避成功時に反撃。反撃威力はスタック数で上昇。発動時に消費しない。'],
-  102:['待機命令','自身🪞全消費／選択味方前衛1体を消費数%回復　CT250','250','《待機命令》｜CT250｜自身の🪞を全消費。生存味方前衛1体を選択し、その最大HPの「消費🪞数×1%」回復。20消費時のみ自身に銀🪞+1、💪+1、🗡️+1。AUTO時は有効候補からランダム選択。｜【🪞銀】回避成功時に反撃。反撃威力はスタック数で上昇。発動時に消費しない。'],
-  103:['紫電一閃','🪞20消費／選択後衛ATK200%／銀🪞1 💪1 🗡️1　CT120','120','《紫電一閃》｜CT120｜自身🪞20以上で発動可能。🪞20を消費し、敵後衛1体を選択してATK200%。敵後衛がいない場合は前衛1体を選択。使用後、自身に銀🪞+1、💪+1、🗡️+1。AUTO時は有効候補からランダム選択。｜【🪞銀】回避成功時に反撃。反撃威力はスタック数で上昇。発動時に消費しない。'],
-  201:['聖なる搾乳','残存HP×1/2・DEF無視／🥛最大20消費→選択味方回復　CT200','200','《聖なる搾乳》｜CT200｜敵前衛ランダム1体へ自身残存HP×1/2のDEF無視ダメージ。自身の🥛を最大20消費（20超過分は残す）。生存味方1体を選択し、消費前のハトホル最大HP×消費🥛数%回復。本人も選択可能。20消費時のみ自身に銀🥛+1、🗡️+1、🛡️+1、💪+1。AUTO時は有効候補からランダム選択。｜【🥛銀】1スタックにつき最大HP+1%。獲得時、現在HPも増加した最大HPと同量増加。'],
-  202:['ミルクミサイル','🥛20消費／選択前衛ATK200%×2／銀🥛1　CT250','250','《ミルクミサイル》｜CT250｜自身🥛20以上で発動可能。敵前衛1体を選択しATK200%×2。同一対象を連続攻撃し、撃破時点で攻撃終了。使用後🥛20消費し、自身に銀🥛+1。AUTO時は有効候補からランダム選択。｜【🥛銀】1スタックにつき最大HP+1%。獲得時、現在HPも増加した最大HPと同量増加。'],
-  203:['多乳の恵み','自身🥛全消費→選択味方へ同数🥛／20以上で銀🥛2ほか　CT300','300','《多乳の恵み》｜CT300｜自身の🥛を全消費し、消費した🥛と同数を選択した生存味方1体へ付与。自身は対象外。20以上消費時、自身に銀🥛+2、🗡️+1、🛡️+1、💪+1。AUTO時は有効候補からランダム選択。｜【🥛銀】1スタックにつき最大HP+1%。獲得時、現在HPも増加した最大HPと同量増加。']
- };
- const b=data2[u?.cid];if(b){btn2.classList.remove('placeholderSkill');btn2.setAttribute('aria-disabled','false');n2.textContent=b[0];d2.textContent=b[1];d2.dataset.ct=b[2];btn2.dataset.skillDetail=b[3]}else{btn2.classList.add('placeholderSkill');btn2.setAttribute('aria-disabled','true');n2.textContent='未設定';d2.textContent='固有スキル② 未設定';delete d2.dataset.ct;btn2.dataset.skillDetail='固有スキル②｜未設定'}
- const fb=document.querySelector('#freeSkill1'),fn=document.querySelector('#freeSkill1Name'),fd=document.querySelector('#freeSkill1Desc');
- const book=equippedSkillBook(u,3);if(fb&&fn&&fd){if(book){fb.classList.remove('placeholderSkill');fb.setAttribute('aria-disabled','false');fn.textContent=book.name;fd.textContent=book.short;fd.dataset.ct=String(book.ct);fb.dataset.skillDetail=book.detail}else{fb.classList.add('placeholderSkill');fb.setAttribute('aria-disabled','true');fn.textContent='未設定';fd.textContent='装備スキル枠';delete fd.dataset.ct;fb.dataset.skillDetail='未設定｜装備スキル枠'}}
- const fb2=document.querySelector('#freeSkill2'),fn2=document.querySelector('#freeSkill2Name'),fd2=document.querySelector('#freeSkill2Desc'),book2=equippedSkillBook(u,4);
- if(fb2&&fn2&&fd2){if(book2){fb2.classList.remove('placeholderSkill');fb2.setAttribute('aria-disabled','false');fn2.textContent=book2.name;fd2.textContent=book2.short;fd2.dataset.ct=String(book2.ct);fb2.dataset.skillDetail=book2.detail}else{fb2.classList.add('placeholderSkill');fb2.setAttribute('aria-disabled','true');fn2.textContent='未設定';fd2.textContent='装備スキル枠';delete fd2.dataset.ct;fb2.dataset.skillDetail='未設定｜装備スキル枠'}}
+ [2,3,4].forEach((slot,i)=>{
+  const idx=i+1,fb=document.querySelector(`#freeSkill${idx}`),fn=document.querySelector(`#freeSkill${idx}Name`),fd=document.querySelector(`#freeSkill${idx}Desc`),book=equippedSkillBook(u,slot);
+  if(!fb||!fn||!fd)return;
+  if(book){fb.classList.remove('placeholderSkill');fb.setAttribute('aria-disabled','false');fn.textContent=book.name;fd.textContent=book.short;fd.dataset.ct=String(book.ct);fb.dataset.skillDetail=book.detail}
+  else{fb.classList.add('placeholderSkill');fb.setAttribute('aria-disabled','true');fn.textContent='未設定';fd.textContent='装備スキル枠';delete fd.dataset.ct;fb.dataset.skillDetail='未設定｜装備スキル枠'}
+ });
 }
-function waitForPlayerSkill(u){if(autoMode){const slots=availableSkillSlots(u);let idx=Math.max(0,slots.indexOf(u.autoSkillSlot||slots[0]));selectedSkillSlot=slots[idx];u.autoSkillSlot=slots[(idx+1)%slots.length];if(u.cid===103&&selectedSkillSlot===2&&getTierBuff(u,'mirror','copper')<20)selectedSkillSlot=1;if(u.cid===202&&selectedSkillSlot===2&&getTierBuff(u,'milk','copper')<20)selectedSkillSlot=1;return Promise.resolve()}selectedSkillSlot=1;currentActor=u;configureUniqueSkill(u);document.querySelector('#skillPanel').classList.add('show');document.querySelector('#status').textContent=u.name+'のターン：技を選択';renderBattle();configureUniqueSkill(u);return new Promise(r=>resolvePlayerAction=r)}
+function waitForPlayerSkill(u){if(autoMode){const slots=availableSkillSlots(u);let idx=Math.max(0,slots.indexOf(u.autoSkillSlot||slots[0]));selectedSkillSlot=slots[idx];u.autoSkillSlot=slots[(idx+1)%slots.length];return Promise.resolve()}selectedSkillSlot=1;currentActor=u;configureUniqueSkill(u);document.querySelector('#skillPanel').classList.add('show');document.querySelector('#status').textContent=u.name+'のターン：技を選択';renderBattle();configureUniqueSkill(u);return new Promise(r=>resolvePlayerAction=r)}
 
 async function attack(att,defenders){
  if(att.hp<=0)return;
@@ -2917,7 +2823,7 @@ async function battle(){
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
      await resolveMilkGoldTurnStart(u);
      tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
-     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=3){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A);else if(book?.id==='mirrorMastery')await skillBookMirrorMastery(u,E);else if(book?.id==='milkingExperience')await skillBookMilkingExperience(u,A)}else if(u.cid===101){if(selectedSkillSlot===2)await absoluteDomainRelease(u,E);else await absoluteDomainAttack(u,E)}else if(u.cid===102){if(selectedSkillSlot===2)await nagiTaikiMeirei(u);else await nagiIsseiSousha(u,E)}else if(u.cid===103){if(selectedSkillSlot===2)await yuzuShidenIssen(u,E);else await yuzuUninMusho(u,E)}else if(u.cid===201){if(selectedSkillSlot===2)await hathorHolyMilking(u,E);else await hathorHolyDrop(u,E)}else if(u.cid===202){if(selectedSkillSlot===2)await baalMilkMissile(u,E);else await baalFertileDrop(u,E)}else{if(selectedSkillSlot===2)await nandiDrinkLots(u);else await nandiMilkingGrace(u,E)};finalizeOverkillAction();currentActor=null;resolvePlayerAction=null}else{if(u.side==='A')beginOverkillAction(u);await attack(u,u.side==='A'?E:A);if(u.side==='A')finalizeOverkillAction()}
+     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=2){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A);else if(book?.id==='mirrorMastery')await skillBookMirrorMastery(u,E);else if(book?.id==='milkingExperience')await skillBookMilkingExperience(u,A)}else if(u.cid===101){await absoluteDomainAttack(u,E)}else if(u.cid===102){await nagiIsseiSousha(u,E)}else if(u.cid===103){await yuzuUninMusho(u,E)}else if(u.cid===201){await hathorHolyDrop(u,E)}else if(u.cid===202){await baalFertileDrop(u,E)}else{await nandiMilkingGrace(u,E)};finalizeOverkillAction();currentActor=null;resolvePlayerAction=null}else{if(u.side==='A')beginOverkillAction(u);await attack(u,u.side==='A'?E:A);if(u.side==='A')finalizeOverkillAction()}
      u.next+=chosenActionCost(u,selectedSkillSlot);syncActiveParty();renderBattle();
    }
    if(!living(E).length){
@@ -2940,8 +2846,8 @@ function showRunResult(win){overlayMode=win?'complete':'gameover';document.query
 function retreatHome(){if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}clearTargetSelection();running=false;if(resolvePlayerAction){let r=resolvePlayerAction;resolvePlayerAction=null;r()}document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');const gained=claimRunReward();overlayMode='';renderHome();showScreen('home');openInfo('攻略終了','💎'+gained.toLocaleString()+' WD を持ち帰りました。次回の世界深度攻略は1Fから開始します。','💎')}
 document.querySelector('#swapBtn').onclick=()=>{if(resolvePlayerAction&&currentActor&&findSwapPartner(currentActor)){selectedSkillSlot=0;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};
 document.querySelector('#uniqueSkill').onclick=()=>{if(resolvePlayerAction){selectedSkillSlot=1;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};
-document.querySelector('#uniqueSkill2').onclick=()=>{if(resolvePlayerAction&&[101,102,103,201,202,203].includes(currentActor?.cid)){if(currentActor?.cid===103&&getTierBuff(currentActor,'mirror','copper')<20){document.querySelector('#status').textContent='《紫電一閃》は🪞20以上で発動可能';return}if(currentActor?.cid===202&&getTierBuff(currentActor,'milk','copper')<20){document.querySelector('#status').textContent='《ミルクミサイル》は🥛20以上で発動可能';return}selectedSkillSlot=2;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};function chooseFreeSkill(slot){if(!resolvePlayerAction)return;const book=equippedSkillBook(currentActor,slot);if(!book)return;const reason=skillBookBlockReason(currentActor,book);if(reason){document.querySelector('#status').textContent=reason;return}selectedSkillSlot=slot;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
-document.querySelector('#freeSkill1').onclick=()=>chooseFreeSkill(3);document.querySelector('#freeSkill2').onclick=()=>chooseFreeSkill(4);document.querySelector('#autoToggle').onclick=()=>{autoMode=!autoMode;if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、獲得WDを持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{if(overlayMode==='checkpoint'){advanceCheckpoint();return}restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
+function chooseFreeSkill(slot){if(!resolvePlayerAction)return;const book=equippedSkillBook(currentActor,slot);if(!book)return;const reason=skillBookBlockReason(currentActor,book);if(reason){document.querySelector('#status').textContent=reason;return}selectedSkillSlot=slot;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
+document.querySelector('#freeSkill1').onclick=()=>chooseFreeSkill(2);document.querySelector('#freeSkill2').onclick=()=>chooseFreeSkill(3);document.querySelector('#freeSkill3').onclick=()=>chooseFreeSkill(4);document.querySelector('#autoToggle').onclick=()=>{autoMode=!autoMode;if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、獲得WDを持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{if(overlayMode==='checkpoint'){advanceCheckpoint();return}restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
 const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpen').onclick=()=>dp.classList.add('show');document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
 function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;renderBattle()}
 document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');dbgStatus('敵を即時撃破')};document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
