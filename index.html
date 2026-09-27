@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.341</title>
+<title>セカソコ ver.342</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -22,6 +22,7 @@
 /* ver.338: finalized damage-rate reward multipliers (5% steps/10% bands, x1.5 to x0.5). */
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
+/* ver.342: restored shared tier-buff HUD renderer accidentally removed during Unique Skill ② cleanup; checkpoint / next-floor flow verified. */
 /* ver.340: standard enemies/bosses use DEF 0; floor-based enemy DEF growth removed. Nonzero DEF remains available for individually armored enemies. */
 /* ver.333: WD stat enhancement + long-press controls. */
 /* ver.330: AUTO checkpoint result display extended to 2 seconds. */
@@ -1395,7 +1396,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.341";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.342";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2271,6 +2272,29 @@ function addMirrorCopper(u,amount){
 function isSuppaUnit(u){return !!u&&([101,102,103].includes(u.cid)||String(u.attr||'').includes('透波'))}
 function livingSuppa(){return living(A).filter(isSuppaUnit)}
 function autoRandomTarget(pool){const p=(pool||[]).filter(u=>u&&u.hp>0);return p.length?p[Math.floor(Math.random()*p.length)]:null}
+function tierBuffHudToken(u,key){
+ const b=syncTierBuffsFromLegacy(u)[key],meta=TIER_BUFF_META[key];if(!meta)return'';
+ const copper=cleanStackNumber(b.copper),silver=cleanStackNumber(b.silver),gold=cleanStackNumber(b.gold);
+ if(copper<=0&&silver<=0&&gold<=0)return'';
+ // HUD compact tier notation: highest owned tier -> lower tiers.
+ // Numbers stay white; the highest owned tier is communicated by the frame.
+ const frameClass=gold>0?'tierFrameGold':silver>0?'tierFrameSilver':'tierFrameCopper';
+ const parts=[];
+ if(gold>0){
+  parts.push(`<i class="tierNum tierGold">${formatStackNumber(gold)}</i>`);
+  parts.push(`<i class="tierSep">/</i>`);
+  parts.push(`<i class="tierNum tierSilver">${formatStackNumber(silver)}</i>`);
+  parts.push(`<i class="tierSep">/</i>`);
+  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
+ }else if(silver>0){
+  parts.push(`<i class="tierNum tierSilver">${formatStackNumber(silver)}</i>`);
+  parts.push(`<i class="tierSep">/</i>`);
+  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
+ }else{
+  parts.push(`<i class="tierNum tierCopper">${formatStackNumber(copper)}</i>`);
+ }
+ return `<span class="tierStackCompact ${frameClass}"><i class="tierIcon">${meta.icon}</i>${parts.join('')}</span>`;
+}
 function tierBuffDetailTags(u){
  const state=syncTierBuffsFromLegacy(u),tags=[];
  for(const key of TIER_BUFF_ORDER){const meta=TIER_BUFF_META[key],b=state[key];for(const tier of ['copper','silver','gold'])if(b[tier]>0)tags.push(`${TIER_BUFF_MARKS[tier]}${meta.icon} ${TIER_BUFF_NAMES[tier]} ${formatStackNumber(b[tier])}`)}
