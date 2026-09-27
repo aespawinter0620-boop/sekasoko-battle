@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.339</title>
+<title>セカソコ ver.340</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -21,6 +21,7 @@
 /* ver.337: enemy-specific WD base rewards + afterimage rank reward multipliers. */
 /* ver.338: finalized damage-rate reward multipliers (5% steps/10% bands, x1.5 to x0.5). */
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
+/* ver.340: standard enemies/bosses use DEF 0; floor-based enemy DEF growth removed. Nonzero DEF remains available for individually armored enemies. */
 /* ver.333: WD stat enhancement + long-press controls. */
 /* ver.330: AUTO checkpoint result display extended to 2 seconds. */
 .expeditionResult{width:min(86vw,360px);margin:0 auto;padding:14px;border:1px solid #ffffff26;border-radius:16px;background:#10131dcc;text-align:left;box-shadow:0 18px 50px #0007}
@@ -1393,7 +1394,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.338";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.340";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1979,10 +1980,10 @@ const allies=[
 {name:'凛',icon:'◆',hp:88,atk:24,row:'back',cid:303,spd:70,skill:{name:'一閃（仮）',ct:4}}
 ];
 const enemyBase=[
-{name:'深層スライム',icon:'●',sprite:'assets/characters/nagi.PNG',hp:70,atk:100,def:50,row:'front',cid:1001,spd:100,skill:{name:'体当たり',ct:100}},
-{name:'骸の少女',icon:'☠',sprite:'assets/characters/yuzu.PNG',hp:95,atk:100,def:50,row:'front',cid:1002,spd:100,skill:{name:'骨砕き',ct:100}},
-{name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:100,def:50,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
-{name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:100,def:50,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
+{name:'深層スライム',icon:'●',sprite:'assets/characters/nagi.PNG',hp:70,atk:100,def:0,row:'front',cid:1001,spd:100,skill:{name:'体当たり',ct:100}},
+{name:'骸の少女',icon:'☠',sprite:'assets/characters/yuzu.PNG',hp:95,atk:100,def:0,row:'front',cid:1002,spd:100,skill:{name:'骨砕き',ct:100}},
+{name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:100,def:0,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
+{name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:100,def:0,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
 ];
 /* ver.326: Floor 1〜6 visual check — exact-source Mikoto + assets-managed Nagi/Yuzu/Cow girls afterimage ★1〜★5.
    Each afterimage reuses the adopted playable transparent artwork exactly; ranks are CSS-only.
@@ -2291,14 +2292,13 @@ function makePartyUnits(ids,partyIndex=0){return ids.map((id,i)=>{const base=for
 function makeEnemies(f){
  const hpMult=1+(f-1)*0.10;
  const atkMult=1+(f-1)*0.005;
- const defMult=1+(f-1)*0.055;
  const makeUnit=(x,i,slot,row=x.row,rank='normal')=>{
   const hpRate=rank==='boss'?5:rank==='midboss'?3:1;
   const atkRate=rank==='boss'?1.2:rank==='midboss'?1.1:1;
   const hp=Math.round(x.hp*hpMult*hpRate);
   const atk=Math.round(x.atk*atkMult*atkRate);
   const isBoss=rank==='boss',isMidboss=rank==='midboss';
-  const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.round((x.def??0)*defMult),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,finalBoss:isBoss&&f===100,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
+  const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.max(0,Number(x.def)||0),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,finalBoss:isBoss&&f===100,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
  };
  if(f===1){
   // Real-device visual check master: all five Mikoto afterimage grades on Floor 1.
