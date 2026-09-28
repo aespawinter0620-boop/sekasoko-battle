@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.346</title>
+<title>セカソコ ver.347</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -22,7 +22,8 @@
 /* ver.338: finalized damage-rate reward multipliers (5% steps/10% bands, x1.5 to x0.5). */
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
-/* ver.346: Mikoto 《絶対領域展開》 simplified unique tree implemented on top of the ver.345 mirror core. Free skill books remain unchanged for the next step. */
+/* ver.347: Mikoto free skill books implemented: 《絶対領域解放》《宣戦布告》《明鏡止水》, initially equipped to Mikoto. */
+/* ver.346: Mikoto 《絶対領域展開》 simplified unique tree implemented on top of the ver.345 mirror core. */
 /* ver.345: mirror buff core rework only. Copper/Silver/Gold now chain through evade/counter. */
 /* ver.344: HOME playable-detail action buttons unified in width/height spacing; Mikoto unique-tree button now matches the other actions and excessive vertical gaps were removed. */
 /* ver.343: Mikoto Unique Skill Tree foundation implemented (★1 → ★5+1, linear, temporary 100 WD per unlock/upgrade) and 《絶対領域展開》 now scales from the saved tree stage. */
@@ -1408,7 +1409,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.346";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.347";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2196,15 +2197,21 @@ function tickSwiftAtTurnStart(u){
 const baseWait=u=>Math.max(20,Math.round(1000/Math.sqrt(Math.max(1,effectiveSpd(u)))));
 const actionCost=u=>baseWait(u)+(u.skill?.ct||0);
 const skillBooks={
+ mikotoAbsoluteRelease:{id:'mikotoAbsoluteRelease',name:'絶対領域解放',ct:150,targetType:'randomFrontFive',short:'銅🪞全消費／消費数%ATK×5　CT150',detail:'《絶対領域解放》｜CT150｜自身の銅🪞を全て消費。消費したスタック数%のATK依存ダメージを、敵前衛ランダム単体へ5回与える。各Hitごとに生存前衛からランダム対象を選ぶ。'},
+ mikotoWarDeclaration:{id:'mikotoWarDeclaration',name:'宣戦布告',ct:50,targetType:'randomFront',short:'銅🪞20消費／ATK50%／🗡️+10　CT50',detail:'《宣戦布告》｜CT50｜銅🪞20消費。敵前衛ランダム1体へATK50%ダメージ。使用後、自身へ🗡️+10。'},
+ mikotoMeikyoShisui:{id:'mikotoMeikyoShisui',name:'明鏡止水',ct:100,targetType:'self',short:'銅🪞30消費／最大HP1%回復／🛡️+10　CT100',detail:'《明鏡止水》｜CT100｜銅🪞30消費。自身の最大HP1%を回復し、自身へ🛡️+10。'},
  bloodSword:{id:'bloodSword',name:'ブラッドソード',ct:100,targetType:'selectFront',power:1.0,short:'敵前衛1体を選択 ATK100%／自身🩸+1 🗡️+1　CT100',detail:'《ブラッドソード》｜CT100｜選択した敵前衛1体へATK依存中（ATK100%）。攻撃後、自身に🩸吸血+1、🗡️剣+1。手動時は対象を選択。AUTO時は生存している敵前衛からランダム1体を選ぶ。'},
  heal:{id:'heal',name:'ヒール',ct:120,targetType:'selectAlly',power:.05,short:'味方単体を選択 HP5%回復　CT120',detail:'《ヒール》｜CT120｜生存している味方単体を選択し、その対象の最大HP5%を回復。AUTO時は生存している味方から自動選択。'},
  mirrorMastery:{id:'mirrorMastery',name:'明鏡止水の極み',ct:250,targetType:'randomAll',short:'銀🪞20消費／敵全体ランダムATK100%×30／🪞20 🗡️15 💪15／金🪞1　CT250',detail:'《明鏡止水の極み》｜CT250｜銀🪞20以上で使用可能。銀🪞20消費。生存している敵全体から毎Hitランダムに1体を選び、ATK依存小ダメージ（ATK100%）を30回与える。使用後、自身に銅🪞+20、🗡️+15、💪+15、金🪞+1。属性制限なし。｜【金🪞】最大100。反撃成功時、金🪞+1後の現在スタック数%で発動し、金🪞を全消費して消費数と同数の🛡️を得る。'},
  milkingExperience:{id:'milkingExperience',name:'搾乳体験',ct:250,targetType:'allAllies',short:'銀🥛20消費／味方全員🥛20／自身🗡️10 💪10／金🥛1　CT250',detail:'《搾乳体験》｜CT250｜銀🥛20以上で使用可能。銀🥛20消費。自身を含む生存味方全員へ銅🥛+20。使用後、自身に🗡️+10、💪+10、金🥛+1。属性制限なし。｜【🥛金】自身のターン開始時、1スタックにつき最大HP1%回復。発動時に消費しない。'}
 };
-const ownedSkillBookIds=['bloodSword','heal','mirrorMastery','milkingExperience'],skillEquipKey='sekasokoSkillBookEquip_v1',skillEquipLayoutKey='sekasokoSkillBookLayout_v341';
+const ownedSkillBookIds=['mikotoAbsoluteRelease','mikotoWarDeclaration','mikotoMeikyoShisui','bloodSword','heal','mirrorMastery','milkingExperience'],skillEquipKey='sekasokoSkillBookEquip_v1',skillEquipLayoutKey='sekasokoSkillBookLayout_v341',mikotoFreeSkillMigrationKey='sekasokoMikotoFreeSkills_v347';
 function loadSkillEquip(){
  let d={};try{d=JSON.parse(localStorage.getItem(skillEquipKey)||'{}')||{}}catch(e){}
- if(!Object.keys(d).length){d={mizuki:{2:'bloodSword',3:'heal'}};localStorage.setItem(skillEquipKey,JSON.stringify(d));localStorage.setItem(skillEquipLayoutKey,'1');return d}
+ if(!Object.keys(d).length){
+  d={mizuki:{2:'mikotoAbsoluteRelease',3:'mikotoWarDeclaration',4:'mikotoMeikyoShisui'}};
+  localStorage.setItem(skillEquipKey,JSON.stringify(d));localStorage.setItem(skillEquipLayoutKey,'1');localStorage.setItem(mikotoFreeSkillMigrationKey,'1');return d
+ }
  if(localStorage.getItem(skillEquipLayoutKey)!=='1'){
   for(const slots of Object.values(d)){
    if(!slots||typeof slots!=='object')continue;
@@ -2213,8 +2220,14 @@ function loadSkillEquip(){
    if(old4)slots[3]=old4;else delete slots[3];
    delete slots[4];
   }
-  localStorage.setItem(skillEquipKey,JSON.stringify(d));localStorage.setItem(skillEquipLayoutKey,'1');
+  localStorage.setItem(skillEquipLayoutKey,'1');
  }
+ if(localStorage.getItem(mikotoFreeSkillMigrationKey)!=='1'){
+  d.mizuki=d.mizuki||{};
+  d.mizuki[2]='mikotoAbsoluteRelease';d.mizuki[3]='mikotoWarDeclaration';d.mizuki[4]='mikotoMeikyoShisui';
+  localStorage.setItem(mikotoFreeSkillMigrationKey,'1');
+ }
+ localStorage.setItem(skillEquipKey,JSON.stringify(d));
  return d
 }
 function saveSkillEquip(d){localStorage.setItem(skillEquipKey,JSON.stringify(d))}
@@ -2222,6 +2235,9 @@ function unitRosterKey(u){return u?.rosterId||formationRosterData.find(c=>c.cid=
 function equippedSkillBook(u,slot){const k=unitRosterKey(u),id=k?loadSkillEquip()?.[k]?.[slot]:null;return id?skillBooks[id]||null:null}
 function skillBookBlockReason(u,book){
  if(!u||!book)return'';
+ if(book.id==='mikotoAbsoluteRelease'&&getTierBuff(u,'mirror','copper')<1)return'《絶対領域解放》は銅🪞1以上で発動可能';
+ if(book.id==='mikotoWarDeclaration'&&getTierBuff(u,'mirror','copper')<20)return'《宣戦布告》は銅🪞20以上で発動可能';
+ if(book.id==='mikotoMeikyoShisui'&&getTierBuff(u,'mirror','copper')<30)return'《明鏡止水》は銅🪞30以上で発動可能';
  if(book.id==='mirrorMastery'&&getTierBuff(u,'mirror','silver')<20)return'《明鏡止水の極み》は銀🪞20以上で発動可能';
  if(book.id==='milkingExperience'&&getTierBuff(u,'milk','silver')<20)return'《搾乳体験》は銀🥛20以上で発動可能';
  return'';
@@ -2841,6 +2857,43 @@ function selectBattleTarget(candidates,label='対象を選択'){
  document.querySelectorAll('#battleScreen [data-unit]').forEach(el=>el.classList.toggle('targetableUnit',targetSelection.ids.has(el.dataset.unit)));
  return new Promise(resolve=>targetSelection.resolve=resolve);
 }
+async function skillBookMikotoAbsoluteRelease(att,defenders){
+ if(!att||att.hp<=0)return;
+ const spent=Math.floor(getTierBuff(att,'mirror','copper'));if(spent<1)return;
+ consumeTierBuff(att,'mirror','copper',spent);
+ const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
+ const pct=spent,rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(pct/100)));
+ document.querySelector('#status').textContent=`${att.name}「スキルブック《絶対領域解放》」｜銅🪞${spent}全消費｜ATK${pct}%×5`;renderBattle();await sleep(130);
+ let hits=0,total=0;
+ for(let i=0;i<5;i++){
+  const pool=frontEnemies(defenders);if(!pool.length)break;
+  const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);
+  if(el)el.classList.add('hit');const hit=applyCombatDamage(t,rawPerHit);hits++;total+=hit.damage;damagePop(el,hit.damage);
+  await sleep(75);if(el)el.classList.remove('hit');
+  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
+ }
+ if(attacker)attacker.classList.remove('attacking');
+ document.querySelector('#status').textContent=`《絶対領域解放》 銅🪞${spent}消費｜ATK${pct}%×${hits}Hit／計${total}ダメージ`;renderBattle();await sleep(120);
+}
+async function skillBookMikotoWarDeclaration(att,defenders){
+ if(!att||att.hp<=0||getTierBuff(att,'mirror','copper')<20)return;
+ const pool=frontEnemies(defenders);if(!pool.length)return;
+ consumeTierBuff(att,'mirror','copper',20);
+ const t=pool[Math.floor(Math.random()*pool.length)],attacker=document.getElementById(att.id),el=document.getElementById(t.id);
+ if(attacker)attacker.classList.add('attacking');document.querySelector('#status').textContent=`${att.name}「スキルブック《宣戦布告》」｜銅🪞20消費`;renderBattle();await sleep(110);
+ if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.max(1,Math.floor(effectiveAtk(att)*.5)));damagePop(el,hit.damage);await sleep(100);if(el)el.classList.remove('hit');
+ att.sword=(att.sword||0)+10;
+ if(t.hp<=0){if(el)el.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
+ if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《宣戦布告》 ${hit.damage}ダメージ｜銅🪞-20／🗡️+10`;renderBattle();await sleep(110);
+}
+async function skillBookMikotoMeikyoShisui(att){
+ if(!att||att.hp<=0||getTierBuff(att,'mirror','copper')<30)return;
+ consumeTierBuff(att,'mirror','copper',30);
+ const amount=Math.max(1,Math.floor(Math.max(1,att.max)*.01)),actual=Math.min(amount,Math.max(0,att.max-att.hp));att.hp+=actual;att.shield=(att.shield||0)+10;
+ const el=document.getElementById(att.id);if(el&&actual>0)damagePop(el,`+${actual}`);
+ document.querySelector('#status').textContent=`${att.name}《明鏡止水》｜銅🪞-30／HP+${actual}／🛡️+10`;renderBattle();await sleep(140);
+}
+
 async function skillBookBloodSword(att,defenders){
  const pool=frontEnemies(defenders);if(!pool.length)return;
  const t=autoMode?pool[Math.floor(Math.random()*pool.length)]:await selectBattleTarget(pool,`${att.name}《ブラッドソード》｜攻撃する敵前衛を選択`);
@@ -2961,7 +3014,7 @@ async function battle(){
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
      await resolveMilkGoldTurnStart(u);
      tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
-     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=2){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A);else if(book?.id==='mirrorMastery')await skillBookMirrorMastery(u,E);else if(book?.id==='milkingExperience')await skillBookMilkingExperience(u,A)}else if(u.cid===101){await absoluteDomainAttack(u,E)}else if(u.cid===102){await nagiIsseiSousha(u,E)}else if(u.cid===103){await yuzuUninMusho(u,E)}else if(u.cid===201){await hathorHolyDrop(u,E)}else if(u.cid===202){await baalFertileDrop(u,E)}else{await nandiMilkingGrace(u,E)};finalizeOverkillAction();currentActor=null;resolvePlayerAction=null}else{if(u.side==='A')beginOverkillAction(u);await attack(u,u.side==='A'?E:A);if(u.side==='A')finalizeOverkillAction()}
+     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=2){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='mikotoAbsoluteRelease')await skillBookMikotoAbsoluteRelease(u,E);else if(book?.id==='mikotoWarDeclaration')await skillBookMikotoWarDeclaration(u,E);else if(book?.id==='mikotoMeikyoShisui')await skillBookMikotoMeikyoShisui(u);else if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A);else if(book?.id==='mirrorMastery')await skillBookMirrorMastery(u,E);else if(book?.id==='milkingExperience')await skillBookMilkingExperience(u,A)}else if(u.cid===101){await absoluteDomainAttack(u,E)}else if(u.cid===102){await nagiIsseiSousha(u,E)}else if(u.cid===103){await yuzuUninMusho(u,E)}else if(u.cid===201){await hathorHolyDrop(u,E)}else if(u.cid===202){await baalFertileDrop(u,E)}else{await nandiMilkingGrace(u,E)};finalizeOverkillAction();currentActor=null;resolvePlayerAction=null}else{if(u.side==='A')beginOverkillAction(u);await attack(u,u.side==='A'?E:A);if(u.side==='A')finalizeOverkillAction()}
      u.next+=chosenActionCost(u,selectedSkillSlot);syncActiveParty();renderBattle();
    }
    if(!living(E).length){
