@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.350</title>
+<title>セカソコ ver.351</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,7 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
-/* ver.350: user-facing reward multipliers omit redundant trailing zeros (e.g. ×0.70 → ×0.7). */
+/* ver.351: enemy action CT is now calculated from the enemy's own skill, independent of the player's selected free-skill slot. */
 /* ver.346: Mikoto 《絶対領域展開》 simplified unique tree implemented on top of the ver.345 mirror core. */
 /* ver.345: mirror buff core rework only. Copper/Silver/Gold now chain through evade/counter. */
 /* ver.344: HOME playable-detail action buttons unified in width/height spacing; Mikoto unique-tree button now matches the other actions and excessive vertical gaps were removed. */
@@ -1410,7 +1410,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.350";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.351";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2272,7 +2272,7 @@ const chosenSkillCt=(u,slot=1)=>{
  if(u?.cid===203)return 10;
  return u?.skill?.ct||0;
 };
-const chosenActionCost=(u,slot=1)=>baseWait(u)+(slot===0?0:chosenSkillCt(u,slot));
+const chosenActionCost=(u,slot=1)=>baseWait(u)+(slot===0?0:(u?.side==='E'?(u?.skill?.ct||0):chosenSkillCt(u,slot)));
 function allUnits(){return [...A,...E]}
 function compareTurn(a,b){return (a.next-b.next)||(effectiveSpd(b)-effectiveSpd(a))||(a.cid-b.cid)}
 function clone(x){return JSON.parse(JSON.stringify(x))}
