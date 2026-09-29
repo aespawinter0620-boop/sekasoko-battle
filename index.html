@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.351</title>
+<title>セカソコ ver.352</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.352: Mikoto afterimage enemy group implemented. ★5 every 10F, ★4 every 5F, ★1/2/3 on normal floors by depth. Old boss stat multipliers removed. */
 /* ver.351: enemy action CT is now calculated from the enemy's own skill, independent of the player's selected free-skill slot. */
 /* ver.346: Mikoto 《絶対領域展開》 simplified unique tree implemented on top of the ver.345 mirror core. */
 /* ver.345: mirror buff core rework only. Copper/Silver/Gold now chain through evade/counter. */
@@ -1410,7 +1411,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.351";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.352";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2003,11 +2004,8 @@ const enemyBase=[
 {name:'影喰い',icon:'◉',sprite:'assets/characters/hathor.PNG',hp:76,atk:100,def:0,row:'back',cid:1003,spd:100,skill:{name:'影撃ち',ct:100}},
 {name:'黒兎',icon:'♠',sprite:'assets/characters/baal.PNG',hp:66,atk:100,def:0,row:'back',cid:1004,spd:100,skill:{name:'黒爪',ct:100}}
 ];
-/* ver.326: Floor 1〜6 visual check — exact-source Mikoto + assets-managed Nagi/Yuzu/Cow girls afterimage ★1〜★5.
-   Each afterimage reuses the adopted playable transparent artwork exactly; ranks are CSS-only.
-   Enemy stats/skills remain based on the existing enemyBase values; boss/midboss logic is unchanged. */
-// ver.326: exact-source rule — DO NOT redraw/regen adopted playable art for enemy afterimages.
-const AFTERIMAGE_TEST_SLOTS=[0,3,1,4,2];
+/* ver.352: production afterimage foundation.
+   Existing adopted playable artwork is reused exactly; afterimage rank changes enemy stats/skill, not the source illustration. */
 function getAfterimageSource(rosterId){
  const base=formationRosterData.find(c=>c.id===rosterId);
  if(!base)return null;
@@ -2023,13 +2021,34 @@ const yuzuAfterimageSource=getAfterimageSource('yuzu');
 const hathorAfterimageSource=getAfterimageSource('hathor');
 const baalAfterimageSource=getAfterimageSource('baal');
 const nandiAfterimageSource=getAfterimageSource('nandi');
-function buildAfterimageTestWave(source,label){
- if(!source||!source.sprite)return [];
- return AFTERIMAGE_TEST_SLOTS.map((slot,i)=>{
-  const base=enemyBase[i%enemyBase.length];
-  const row=slot<3?'front':'back';
-  return {base,slot,row,name:`${label}残像★${i+1}`,sprite:source.sprite,afterimageFaceIcon:source.faceIcon,afterimageRank:i+1};
- });
+
+const MIKOTO_AFTERIMAGE_RANK_SPECS={
+ 1:{hp:100,atk:100,def:0,spd:110,hits:2},
+ 2:{hp:150,atk:105,def:0,spd:120,hits:4},
+ 3:{hp:200,atk:110,def:0,spd:130,hits:6},
+ 4:{hp:250,atk:115,def:0,spd:140,hits:8},
+ 5:{hp:300,atk:120,def:0,spd:150,hits:10}
+};
+function mikotoAfterimageBase(rank){
+ const r=Math.max(1,Math.min(5,Math.floor(Number(rank)||1)));
+ const spec=MIKOTO_AFTERIMAGE_RANK_SPECS[r];
+ return {
+  name:`命残像★${r}`,
+  icon:'🌙',
+  sprite:mikotoAfterimageSource?.sprite||null,
+  afterimageFaceIcon:mikotoAfterimageSource?.faceIcon||mikotoAfterimageSource?.sprite||null,
+  hp:spec.hp,atk:spec.atk,def:spec.def,row:'front',cid:1100+r,spd:spec.spd,
+  afterimageRank:r,
+  enemySkillType:'mikotoAfterimageMulti',
+  afterimageHitCount:spec.hits,
+  afterimageHitRate:0.10,
+  skill:{name:`残像連撃（ATK10%×${spec.hits}）`,ct:100}
+ };
+}
+function mikotoNormalAfterimageRank(f){
+ if(f>=60)return 3;
+ if(f>=30)return 2;
+ return 1;
 }
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,selectedSkillSlot=1,sortieQueue=[],activePartyIndex=0;
 let targetSelection=null;
@@ -2404,59 +2423,31 @@ function makeEnemies(f){
  const hpMult=1+(f-1)*0.10;
  const atkMult=1+(f-1)*0.005;
  const makeUnit=(x,i,slot,row=x.row,rank='normal')=>{
-  const hpRate=rank==='boss'?5:rank==='midboss'?3:1;
-  const atkRate=rank==='boss'?1.2:rank==='midboss'?1.1:1;
-  const hp=Math.round(x.hp*hpMult*hpRate);
-  const atk=Math.round(x.atk*atkMult*atkRate);
+  const hp=Math.round(x.hp*hpMult);
+  const atk=Math.round(x.atk*atkMult);
   const isBoss=rank==='boss',isMidboss=rank==='midboss';
   const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.max(0,Number(x.def)||0),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,finalBoss:isBoss&&f===100,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
  };
- if(f===1){
-  // Real-device visual check master: all five Mikoto afterimage grades on Floor 1.
-  return buildAfterimageTestWave(mikotoAfterimageSource,'命').map((x,i)=>
-   makeUnit({...x.base,name:x.name,sprite:x.sprite,afterimageFaceIcon:x.afterimageFaceIcon,afterimageRank:x.afterimageRank},i,x.slot,x.row,'normal')
-  );
- }
- if(f===2){
-  // First assets-managed expansion test: all five Nagi afterimage grades on Floor 2.
-  return buildAfterimageTestWave(nagiAfterimageSource,'凪').map((x,i)=>
-   makeUnit({...x.base,name:x.name,sprite:x.sprite,afterimageFaceIcon:x.afterimageFaceIcon,afterimageRank:x.afterimageRank},i,x.slot,x.row,'normal')
-  );
- }
- if(f===3){
-  // Third-character production check: all five Yuzu afterimage grades on Floor 3.
-  return buildAfterimageTestWave(yuzuAfterimageSource,'柚').map((x,i)=>
-   makeUnit({...x.base,name:x.name,sprite:x.sprite,afterimageFaceIcon:x.afterimageFaceIcon,afterimageRank:x.afterimageRank},i,x.slot,x.row,'normal')
-  );
- }
- if(f===4){
-  // Cow-girl production check 1: all five Hathor afterimage grades on Floor 4.
-  return buildAfterimageTestWave(hathorAfterimageSource,'ハトホル').map((x,i)=>
-   makeUnit({...x.base,name:x.name,sprite:x.sprite,afterimageFaceIcon:x.afterimageFaceIcon,afterimageRank:x.afterimageRank},i,x.slot,x.row,'normal')
-  );
- }
- if(f===5){
-  // Cow-girl production check 2: all five Baal afterimage grades on Floor 5.
-  return buildAfterimageTestWave(baalAfterimageSource,'バアル').map((x,i)=>
-   makeUnit({...x.base,name:x.name,sprite:x.sprite,afterimageFaceIcon:x.afterimageFaceIcon,afterimageRank:x.afterimageRank},i,x.slot,x.row,'normal')
-  );
- }
- if(f===6){
-  // Cow-girl production check 3: all five Nandi afterimage grades on Floor 6.
-  return buildAfterimageTestWave(nandiAfterimageSource,'ナンディ').map((x,i)=>
-   makeUnit({...x.base,name:x.name,sprite:x.sprite,afterimageFaceIcon:x.afterimageFaceIcon,afterimageRank:x.afterimageRank},i,x.slot,x.row,'normal')
-  );
- }
- if(f%10===0){
-  const bossIndex=((f/10)-1)%enemyBase.length;
-  return [makeUnit(enemyBase[bossIndex],bossIndex,1,'front','boss')]
- }
- if(f%5===0){
-  const midIndex=((f/5)-1)%enemyBase.length;
-  return [makeUnit(enemyBase[midIndex],midIndex,1,'front','midboss')]
- }
+ // 10Fごと：★5 命残像単騎。旧BOSS HP×5 / ATK×1.2 は使用しない。
+ if(f%10===0)return [makeUnit(mikotoAfterimageBase(5),0,1,'front','boss')];
+ // 5Fごと（10F倍数を除く）：★4 命残像単騎。旧MID HP×3 / ATK×1.1 は使用しない。
+ if(f%5===0)return [makeUnit(mikotoAfterimageBase(4),0,1,'front','midboss')];
+
+ // 通常階：命残像1体＋通常雑魚3体。
+ // ★1=1〜29F、★2=30〜59F、★3=60F以上。
+ const rank=mikotoNormalAfterimageRank(f);
+ const enemies=[makeUnit(mikotoAfterimageBase(rank),0,1,'front','normal')];
+
+ // 通常雑魚4種から毎階1種だけ外し、3体をローテーションさせる。
+ const omitIndex=(Math.max(1,Math.floor(f))-1)%enemyBase.length;
+ const mobs=enemyBase.filter((_,i)=>i!==omitIndex);
+ const frontSlots=[0,2],backSlots=[3,4,5];
  let frontI=0,backI=0;
- return enemyBase.map((x,i)=>{const slot=x.row==='front'?frontI++:3+backI++;return makeUnit(x,i,slot,x.row,'normal')})
+ mobs.forEach((x,j)=>{
+  const slot=x.row==='front'?frontSlots[frontI++]:backSlots[backI++];
+  enemies.push(makeUnit(x,j+1,slot,x.row,'normal'));
+ });
+ return enemies;
 }
 function syncActiveParty(){syncAllTierBuffs(A);if(runPartyStates[activePartyIndex])runPartyStates[activePartyIndex]=clone(A)}
 function resetTimelineForFloor(){let units=[...runPartyStates.flat().filter(u=>u.hp>0)];units.forEach(u=>u.next=baseWait(u));}
@@ -2977,12 +2968,14 @@ async function attack(att,defenders){
  document.querySelector('#status').textContent=`${att.name}「${att.skill.name}」 CT${att.skill.ct}`;
  if(attacker)attacker.classList.add('attacking');
  await sleep(180);
- const enemyTestAttack=att.side==='E';
- const hitCount=att.side==='E'?(att.boss?3:att.midboss?2:1):1;
+ const enemyAttack=att.side==='E';
+ const isMikotoAfterimage=enemyAttack&&att.enemySkillType==='mikotoAfterimageMulti';
+ const hitCount=isMikotoAfterimage?Math.max(1,Math.floor(Number(att.afterimageHitCount)||1)):1;
+ const hitRate=isMikotoAfterimage?Math.max(0,Number(att.afterimageHitRate)||0.10):1;
  for(let i=0;i<hitCount;i++){
    const alive=living(defenders),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;
    if(!pool.length)break;
-   const t=enemyTestAttack?pool[Math.floor(Math.random()*pool.length)]:pool[0];
+   const t=enemyAttack?pool[Math.floor(Math.random()*pool.length)]:pool[0];
    const targetEl=document.getElementById(t.id);
    document.querySelector('#flash').classList.add('on');
    if(targetEl)targetEl.classList.add('hit');
@@ -2994,7 +2987,7 @@ async function attack(att,defenders){
      if(targetEl)targetEl.classList.remove('hit');
      if(att.hp<=0)break;
    }else{
-     const rawDmg=(t.side==='A'&&debugInvincible)?0:Math.floor(effectiveAtk(att));
+     const rawDmg=(t.side==='A'&&debugInvincible)?0:Math.max(1,Math.floor(effectiveAtk(att)*hitRate));
      const hit=rawDmg>0?applyCombatDamage(t,rawDmg):{damage:0,shieldUsed:0,afterDef:0};
      damagePop(targetEl,hit.damage);
      await sleep(150);
@@ -3006,7 +2999,7 @@ async function attack(att,defenders){
        if(handleFrontlineDeath(t)){renderBattle();await sleep(140)}
      }
    }
-   if(enemyTestAttack&&i<hitCount-1)await sleep(80);
+   if(enemyAttack&&i<hitCount-1)await sleep(80);
  }
  if(attacker)attacker.classList.remove('attacking');
 }
