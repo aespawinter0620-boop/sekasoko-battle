@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.353</title>
+<title>セカソコ ver.354</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.354: 10F boss WARNING presentation + boss HP x3. 5F midboss unchanged. */
 /* ver.353: DEBUG save reset added. Deletes only sekasoko* localStorage keys, then reloads to fresh defaults. */
 /* ver.352: Mikoto afterimage enemy group implemented. ★5 every 10F, ★4 every 5F, ★1/2/3 on normal floors by depth. Old boss stat multipliers removed. */
 /* ver.351: enemy action CT is now calculated from the enemy's own skill, independent of the player's selected free-skill slot. */
@@ -1412,7 +1413,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.353";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.354";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1812,6 +1813,93 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   0%{opacity:.46}
   100%{opacity:0}
 }
+
+/* ver.354: 10F boss warning presentation. Visual-only; battle logic waits for it. */
+#battleScreen .bossWarning{
+  position:absolute;
+  inset:0;
+  z-index:90;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,36,36,.055) 0 2px,transparent 2px 7px),
+    radial-gradient(circle at 50% 50%,rgba(125,0,0,.32),rgba(2,3,7,.96) 68%);
+  opacity:0;
+}
+#battleScreen .bossWarning.show{
+  display:flex;
+  animation:bossWarningScreen 1.45s ease both;
+}
+#battleScreen .bossWarning::before,
+#battleScreen .bossWarning::after{
+  content:"";
+  position:absolute;
+  left:-10%;
+  width:120%;
+  height:4px;
+  background:#ff3131;
+  box-shadow:0 0 14px #ff2d2d,0 0 34px rgba(255,0,0,.75);
+}
+#battleScreen .bossWarning::before{top:31%;animation:bossWarnBarTop 1.45s ease both}
+#battleScreen .bossWarning::after{bottom:31%;animation:bossWarnBarBottom 1.45s ease both}
+#battleScreen .bossWarningInner{
+  position:relative;
+  width:100%;
+  text-align:center;
+  transform:skewX(-5deg);
+  text-shadow:0 0 8px rgba(255,0,0,.9),0 0 22px rgba(255,0,0,.65);
+}
+#battleScreen .bossWarningMain{
+  display:block;
+  font-size:clamp(48px,14vw,82px);
+  line-height:.9;
+  font-weight:1000;
+  letter-spacing:.08em;
+  color:#ff3030;
+  animation:bossWarnText .72s steps(2,end) infinite;
+}
+#battleScreen .bossWarningSub{
+  display:block;
+  margin-top:14px;
+  font-size:clamp(13px,4.3vw,20px);
+  font-weight:1000;
+  letter-spacing:.32em;
+  color:#fff;
+}
+#battleScreen .bossWarningFloor{
+  display:block;
+  margin-top:8px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.18em;
+  color:#ff9c9c;
+}
+@keyframes bossWarningScreen{
+  0%{opacity:0}
+  9%{opacity:1}
+  80%{opacity:1}
+  100%{opacity:0}
+}
+@keyframes bossWarnBarTop{
+  0%{transform:translateY(-22vh);opacity:0}
+  18%{transform:translateY(0);opacity:1}
+  78%{transform:translateY(0);opacity:1}
+  100%{transform:translateY(-10vh);opacity:0}
+}
+@keyframes bossWarnBarBottom{
+  0%{transform:translateY(22vh);opacity:0}
+  18%{transform:translateY(0);opacity:1}
+  78%{transform:translateY(0);opacity:1}
+  100%{transform:translateY(10vh);opacity:0}
+}
+@keyframes bossWarnText{
+  0%,45%{opacity:1;transform:translateX(0)}
+  46%,52%{opacity:.45;transform:translateX(-3px)}
+  53%,100%{opacity:1;transform:translateX(0)}
+}
 </style>
 </head>
 <body><main class="app">
@@ -1831,7 +1919,9 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <div class="planBox battlePlan"><div class="planTitle">ACTION｜行動予測</div><div class="orderBar" id="orderBar"></div></div>
 <div class="status battleLog" id="status">SPDから初期行動順を自動計算</div><div class="battleHpOverview" id="battleHpOverview"><div class="hpTeam allyHp" id="allyHpOverview"></div><div class="hpTeam enemyHp" id="enemyHpOverview"></div></div>
 <div class="battleViewport" id="battleViewport"><section class="battle" id="battleZoomLayer"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section></div>
-<div class="attackFlash" id="flash"></div><button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
+<div class="attackFlash" id="flash"></div>
+<div class="bossWarning" id="bossWarning" aria-hidden="true"><div class="bossWarningInner"><b class="bossWarningMain">WARNING!!</b><span class="bossWarningSub">BOSS ENCOUNTER</span><span class="bossWarningFloor" id="bossWarningFloor">10F</span></div></div>
+<button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button><button class="debugAction danger" id="dbgResetSave">⚠️ セーブデータ初期化</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。<br>「セーブデータ初期化」はWD・ステ強化・踏破数・固有ツリー・スキル装備・編成など、本ゲームの保存データを初期状態へ戻します。</div></div></div>
 <div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜技を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル"><b id="uniqueSkillKind">固有</b><span id="uniqueSkillName">未設定</span><small id="uniqueSkillDesc">固有スキル</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ①</b><span id="freeSkill1Name">未設定</span><small id="freeSkill1Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span id="freeSkill2Name">未設定</span><small id="freeSkill2Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill3" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ③</b><span id="freeSkill3Name">未設定</span><small id="freeSkill3Desc">装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">拠点へ戻る</button></div></div></div>
@@ -2054,7 +2144,7 @@ function mikotoNormalAfterimageRank(f){
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,selectedSkillSlot=1,sortieQueue=[],activePartyIndex=0;
 let targetSelection=null;
 let floor=1,worldDepth=1,maxFloor=100,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runCheckpointStartLoot=0,runCheckpointStartOverkillBonusWD=0,runStartMaxHP=0,checkpointAutoTimer=null;
-let runOverkillBonusWD=0,runStrongRouteBonusWD=0,runRewardClaimed=false,overlayMode='',overkillAction=null;
+let runOverkillBonusWD=0,runStrongRouteBonusWD=0,runRewardClaimed=false,overlayMode='',overkillAction=null,bossWarningShownFloor=0;
 const WD_STORAGE_KEY='sekasokoWaldonium';
 const ENEMY_BASE_REWARD_WD={normal:2,midboss:20,boss:40,finalBoss:100};
 const AFTERIMAGE_REWARD_MULTIPLIER={1:1.5,2:2.0,3:2.5,4:3.5,5:4.0};
@@ -2424,12 +2514,13 @@ function makeEnemies(f){
  const hpMult=1+(f-1)*0.10;
  const atkMult=1+(f-1)*0.005;
  const makeUnit=(x,i,slot,row=x.row,rank='normal')=>{
-  const hp=Math.round(x.hp*hpMult);
-  const atk=Math.round(x.atk*atkMult);
   const isBoss=rank==='boss',isMidboss=rank==='midboss';
+  const bossHpMult=isBoss?3:1;
+  const hp=Math.round(x.hp*hpMult*bossHpMult);
+  const atk=Math.round(x.atk*atkMult);
   const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.max(0,Number(x.def)||0),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,finalBoss:isBoss&&f===100,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
  };
- // 10Fごと：★5 命残像単騎。旧BOSS HP×5 / ATK×1.2 は使用しない。
+ // 10Fごと：★5 命残像単騎。ver.354で現行HPをさらに×3。ATKは据え置き。旧BOSS ATK×1.2 は使用しない。
  if(f%10===0)return [makeUnit(mikotoAfterimageBase(5),0,1,'front','boss')];
  // 5Fごと（10F倍数を除く）：★4 命残像単騎。旧MID HP×3 / ATK×1.1 は使用しない。
  if(f%5===0)return [makeUnit(mikotoAfterimageBase(4),0,1,'front','midboss')];
@@ -2480,14 +2571,28 @@ function damageRewardMultiplier(rate=damageRate()){
 }
 function formatDamageRateLabel(rate=damageRate()){return String(Math.max(0,Math.round(Number(rate)||0)))}
 function updateDamageUI(){let r=damageRate(),m=damageRewardMultiplier(r),el=document.querySelector('#damageRate'),rw=document.querySelector('#damageReward');if(el)el.textContent='損壊 '+formatDamageRateLabel(r)+'%';if(rw)rw.textContent='報酬 ×'+formatMultiplier(m)}
+async function showBossWarningIfNeeded(){
+ if(floor%10!==0||bossWarningShownFloor===floor)return;
+ const el=document.querySelector('#bossWarning'),label=document.querySelector('#bossWarningFloor');
+ if(!el)return;
+ bossWarningShownFloor=floor;
+ if(label)label.textContent=`${floor}F｜★5 命残像`;
+ el.setAttribute('aria-hidden','false');
+ el.classList.remove('show');
+ void el.offsetWidth;
+ el.classList.add('show');
+ await new Promise(resolve=>setTimeout(resolve,1450));
+ el.classList.remove('show');
+ el.setAttribute('aria-hidden','true');
+}
 function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent='AUTO '+(autoMode?'ON':'OFF');a.classList.toggle('on',autoMode)}updateDamageUI()
  const wf=document.querySelector('#worldFloor');if(wf)wf.textContent=`世界深度 ${worldDepth} / ${floor}F/${maxFloor}F`;
  const td=document.querySelector('#topDamage');if(td)td.textContent=`損壊 ${formatDamageRateLabel(damageRate())}%`;
  const tr=document.querySelector('#topReward');if(tr)tr.textContent=`報酬×${formatMultiplier(damageRewardMultiplier(damageRate()))}`;
 }
 function takeFloorSnapshot(){syncActiveParty();floorSnapshot={floor,activePartyIndex,runPartyStates:clone(runPartyStates),enemies:clone(E),turnNo,runLoot,runCheckpointStartLoot,runCheckpointStartOverkillBonusWD,runOverkillBonusWD,runStrongRouteBonusWD,runStartMaxHP}}
-function restoreFloorSnapshot(){if(!floorSnapshot)return;clearTargetSelection();floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);syncAllTierBuffs(A);syncAllTierBuffs(E);turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;runCheckpointStartLoot=floorSnapshot.runCheckpointStartLoot||0;runCheckpointStartOverkillBonusWD=floorSnapshot.runCheckpointStartOverkillBonusWD||0;runOverkillBonusWD=floorSnapshot.runOverkillBonusWD||0;runStrongRouteBonusWD=floorSnapshot.runStrongRouteBonusWD||0;runStartMaxHP=floorSnapshot.runStartMaxHP;currentActor=null;resolvePlayerAction=null;overlayMode='';document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
-function prepareSortie(){if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}if(!validateFormationForSave()){showScreen('formation');return false}saveParties();sortieQueue=parties.map((p,i)=>({slot:i,ids:[...p]})).filter(x=>x.ids.some(Boolean));if(!sortieQueue.length)sortieQueue=[{slot:0,ids:['mizuki']}];runPartyStates=sortieQueue.map((x,i)=>makePartyUnits(x.ids,i));runStartMaxHP=runPartyStates.flat().reduce((sum,u)=>sum+u.max,0);floor=1;runLoot=0;runCheckpointStartLoot=0;runCheckpointStartOverkillBonusWD=0;runOverkillBonusWD=0;runStrongRouteBonusWD=0;runRewardClaimed=false;overlayMode='';turnNo=0;setActiveParty(0);E=assignEnemyBaseRewards(makeEnemies(floor));running=false;document.querySelector('#overlay').classList.remove('show');document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#status').textContent='1F｜部隊'+(sortieQueue[0].slot+1)+' 出撃準備';takeFloorSnapshot();updateFloorUI();renderBattle()}
+function restoreFloorSnapshot(){if(!floorSnapshot)return;clearTargetSelection();floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);syncAllTierBuffs(A);syncAllTierBuffs(E);turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;runCheckpointStartLoot=floorSnapshot.runCheckpointStartLoot||0;runCheckpointStartOverkillBonusWD=floorSnapshot.runCheckpointStartOverkillBonusWD||0;runOverkillBonusWD=floorSnapshot.runOverkillBonusWD||0;runStrongRouteBonusWD=floorSnapshot.runStrongRouteBonusWD||0;runStartMaxHP=floorSnapshot.runStartMaxHP;currentActor=null;resolvePlayerAction=null;overlayMode='';if(floor%10===0)bossWarningShownFloor=0;document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
+function prepareSortie(){if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}if(!validateFormationForSave()){showScreen('formation');return false}saveParties();sortieQueue=parties.map((p,i)=>({slot:i,ids:[...p]})).filter(x=>x.ids.some(Boolean));if(!sortieQueue.length)sortieQueue=[{slot:0,ids:['mizuki']}];runPartyStates=sortieQueue.map((x,i)=>makePartyUnits(x.ids,i));runStartMaxHP=runPartyStates.flat().reduce((sum,u)=>sum+u.max,0);floor=1;runLoot=0;runCheckpointStartLoot=0;runCheckpointStartOverkillBonusWD=0;runOverkillBonusWD=0;runStrongRouteBonusWD=0;runRewardClaimed=false;overlayMode='';bossWarningShownFloor=0;turnNo=0;setActiveParty(0);E=assignEnemyBaseRewards(makeEnemies(floor));running=false;document.querySelector('#overlay').classList.remove('show');document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#status').textContent='1F｜部隊'+(sortieQueue[0].slot+1)+' 出撃準備';takeFloorSnapshot();updateFloorUI();renderBattle()}
 function initBattle(){prepareSortie()}
 function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
 function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=assignEnemyBaseRewards(makeEnemies(floor));takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
@@ -3007,6 +3112,7 @@ async function attack(att,defenders){
 async function battle(){
  if(running)return;running=true;document.querySelector('#status').textContent=floor+'F｜SPD＋CTタイムライン';updateFloorUI();renderBattle();
  while(running){
+   await showBossWarningIfNeeded();
    while(living(E).length&&turnNo<600){
      if(!living(A).length){syncActiveParty();document.querySelector('#status').textContent='部隊'+(sortieQueue[activePartyIndex].slot+1)+' 壊滅';await sleep(450);if(!deployNextParty())break;await sleep(350)}
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
