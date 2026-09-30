@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.354</title>
+<title>セカソコ ver.355</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,7 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
-/* ver.354: 10F boss WARNING presentation + boss HP x3. 5F midboss unchanged. */
+/* ver.355: free-skill-book tree data/storage foundation + legacy/fresh-save migration. */
 /* ver.353: DEBUG save reset added. Deletes only sekasoko* localStorage keys, then reloads to fresh defaults. */
 /* ver.352: Mikoto afterimage enemy group implemented. ★5 every 10F, ★4 every 5F, ★1/2/3 on normal floors by depth. Old boss stat multipliers removed. */
 /* ver.351: enemy action CT is now calculated from the enemy's own skill, independent of the player's selected free-skill slot. */
@@ -1413,7 +1413,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.354";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.355";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1922,7 +1922,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <div class="attackFlash" id="flash"></div>
 <div class="bossWarning" id="bossWarning" aria-hidden="true"><div class="bossWarningInner"><b class="bossWarningMain">WARNING!!</b><span class="bossWarningSub">BOSS ENCOUNTER</span><span class="bossWarningFloor" id="bossWarningFloor">10F</span></div></div>
 <button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
-<div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button><button class="debugAction danger" id="dbgResetSave">⚠️ セーブデータ初期化</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。<br>「セーブデータ初期化」はWD・ステ強化・踏破数・固有ツリー・スキル装備・編成など、本ゲームの保存データを初期状態へ戻します。</div></div></div>
+<div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button><button class="debugAction danger" id="dbgResetSave">⚠️ セーブデータ初期化</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。<br>「セーブデータ初期化」はWD・ステ強化・踏破数・固有ツリー・自由スキルツリー・スキル装備・編成など、本ゲームの保存データを初期状態へ戻します。</div></div></div>
 <div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜技を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="固有スキル"><b id="uniqueSkillKind">固有</b><span id="uniqueSkillName">未設定</span><small id="uniqueSkillDesc">固有スキル</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ①</b><span id="freeSkill1Name">未設定</span><small id="freeSkill1Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ②</b><span id="freeSkill2Name">未設定</span><small id="freeSkill2Desc">装備スキル枠</small></button><button class="skillBtn placeholderSkill" id="freeSkill3" aria-disabled="true" data-skill-detail="未設定｜装備スキル枠"><b>スキ③</b><span id="freeSkill3Name">未設定</span><small id="freeSkill3Desc">装備スキル枠</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">拠点へ戻る</button></div></div></div>
 </section>
@@ -2317,6 +2317,96 @@ const skillBooks={
  milkingExperience:{id:'milkingExperience',name:'搾乳体験',ct:250,targetType:'allAllies',short:'銀🥛20消費／味方全員🥛20／自身🗡️10 💪10／金🥛1　CT250',detail:'《搾乳体験》｜CT250｜銀🥛20以上で使用可能。銀🥛20消費。自身を含む生存味方全員へ銅🥛+20。使用後、自身に🗡️+10、💪+10、金🥛+1。属性制限なし。｜【🥛金】自身のターン開始時、1スタックにつき最大HP1%回復。発動時に消費しない。'}
 };
 const ownedSkillBookIds=['mikotoAbsoluteRelease','mikotoWarDeclaration','mikotoMeikyoShisui','bloodSword','heal','mirrorMastery','milkingExperience'],skillEquipKey='sekasokoSkillBookEquip_v1',skillEquipLayoutKey='sekasokoSkillBookLayout_v341',mikotoFreeSkillMigrationKey='sekasokoMikotoFreeSkills_v347';
+
+// =========================================================
+// ver.355 FREE SKILL BOOK TREE FOUNDATION
+// - Progress belongs to the book ID, never to a character/slot.
+// - Existing pre-v355 saves migrate Mikoto's three books to ★5+1 (stage 9).
+// - A completely fresh save (including DEBUG full reset) starts them at ★1 (stage 0).
+// - ver.355 stores tree progress/data only; battle performance/UI remain unchanged until later steps.
+// =========================================================
+const FREE_SKILL_TREE_KEY='sekasokoFreeSkillTree_v1';
+const FREE_SKILL_TREE_MIGRATION_KEY='sekasokoFreeSkillTreeMigration_v355';
+const FREE_SKILL_TREE_TEMP_COST=100;
+const FREE_SKILL_STAGE_LABELS=['★1','★1+1','★2','★2+1','★3','★3+1','★4','★4+1','★5','★5+1'];
+const MIKOTO_FREE_SKILL_BOOK_IDS=['mikotoAbsoluteRelease','mikotoWarDeclaration','mikotoMeikyoShisui'];
+const FREE_SKILL_TREE_DATA={
+ mikotoAbsoluteRelease:{
+  name:'絶対領域解放',
+  role:'銅🪞を全消費して瞬間火力へ変換し、一部を銀🪞へ還元する。',
+  stages:[
+   {label:'★1',delta:'CT180。銅🪞全消費。消費数%ATK×5Hit。使用後、消費数の5%分だけ銀🪞を得る（端数切り捨て）。'},
+   {label:'★1+1',delta:'CT180 → CT170。'},
+   {label:'★2',delta:'攻撃回数 5Hit → 6Hit。'},
+   {label:'★2+1',delta:'銀🪞還元率 5% → 6%。'},
+   {label:'★3',delta:'攻撃回数 6Hit → 7Hit。'},
+   {label:'★3+1',delta:'CT170 → CT160。'},
+   {label:'★4',delta:'攻撃回数 7Hit → 8Hit。銀🪞還元率 6% → 8%。'},
+   {label:'★4+1',delta:'CT160 → CT150。'},
+   {label:'★5',delta:'攻撃回数 8Hit → 10Hit。'},
+   {label:'★5+1',delta:'銀🪞還元率 8% → 10%。完成。'}
+  ]
+ },
+ mikotoWarDeclaration:{
+  name:'宣戦布告',
+  role:'銅🪞を少量消費して攻撃し、🗡️へ変換する長期育成型スキル。',
+  stages:[
+   {label:'★1',delta:'CT70。銅🪞20消費。敵前衛ランダム1体へATK70%。使用後🗡️+3。'},
+   {label:'★1+1',delta:'CT70 → CT65。'},
+   {label:'★2',delta:'ATK70% → ATK80%。🗡️+3 → +4。'},
+   {label:'★2+1',delta:'銅🪞消費 20 → 15。'},
+   {label:'★3',delta:'攻撃回数 1Hit → 2Hit。🗡️+4 → +5。'},
+   {label:'★3+1',delta:'CT65 → CT60。'},
+   {label:'★4',delta:'ATK80%×2 → ATK90%×2。🗡️+5 → +7。'},
+   {label:'★4+1',delta:'銅🪞消費 15 → 10。'},
+   {label:'★5',delta:'ATK90%×2 → ATK100%×2。🗡️+7 → +10。'},
+   {label:'★5+1',delta:'CT60 → CT50。完成。'}
+  ]
+ },
+ mikotoMeikyoShisui:{
+  name:'明鏡止水',
+  role:'銅🪞を消費してHPを回復し、銀🪞へ変換する立て直しスキル。',
+  stages:[
+   {label:'★1',delta:'CT130。銅🪞30消費。最大HP8%回復。使用後、銀🪞+5。'},
+   {label:'★1+1',delta:'HP回復 8% → 10%。'},
+   {label:'★2',delta:'銀🪞獲得 +5 → +8。'},
+   {label:'★2+1',delta:'CT130 → CT120。'},
+   {label:'★3',delta:'銅🪞消費 30 → 25。HP回復10% → 12%。銀🪞+8 → +10。'},
+   {label:'★3+1',delta:'HP回復 12% → 15%。'},
+   {label:'★4',delta:'銀🪞獲得 +10 → +15。'},
+   {label:'★4+1',delta:'CT120 → CT110。'},
+   {label:'★5',delta:'銅🪞消費 25 → 20。HP回復15% → 20%。銀🪞+15 → +20。'},
+   {label:'★5+1',delta:'CT110 → CT100。完成。'}
+  ]
+ }
+};
+function loadFreeSkillTree(){let d={};try{d=JSON.parse(localStorage.getItem(FREE_SKILL_TREE_KEY)||'{}')||{}}catch(e){}return d}
+function saveFreeSkillTree(d){localStorage.setItem(FREE_SKILL_TREE_KEY,JSON.stringify(d))}
+function getFreeSkillBookStage(bookId){
+ const data=FREE_SKILL_TREE_DATA[bookId],max=Math.max(0,(data?.stages?.length||FREE_SKILL_STAGE_LABELS.length)-1),d=loadFreeSkillTree(),v=Math.floor(Number(d?.[bookId]?.stage)||0);
+ return Math.max(0,Math.min(max,v));
+}
+function setFreeSkillBookStage(bookId,stage){
+ const data=FREE_SKILL_TREE_DATA[bookId];if(!data)return 0;
+ const max=Math.max(0,data.stages.length-1),d=loadFreeSkillTree();d[bookId]=d[bookId]||{};d[bookId].stage=Math.max(0,Math.min(max,Math.floor(Number(stage)||0)));saveFreeSkillTree(d);return d[bookId].stage;
+}
+function freeSkillBookStageLabel(bookId){
+ const data=FREE_SKILL_TREE_DATA[bookId],stage=getFreeSkillBookStage(bookId);return data?.stages?.[stage]?.label||FREE_SKILL_STAGE_LABELS[stage]||'★1';
+}
+function hasPreV355SekasokoSave(){
+ for(let i=0;i<localStorage.length;i++){
+  const key=localStorage.key(i);
+  if(key&&key.startsWith('sekasoko')&&key!==FREE_SKILL_TREE_KEY&&key!==FREE_SKILL_TREE_MIGRATION_KEY)return true;
+ }
+ return false;
+}
+function initializeFreeSkillTreeV355(){
+ if(localStorage.getItem(FREE_SKILL_TREE_MIGRATION_KEY)==='1')return;
+ const legacySave=hasPreV355SekasokoSave(),stage=legacySave?FREE_SKILL_STAGE_LABELS.length-1:0,d=loadFreeSkillTree();
+ for(const id of MIKOTO_FREE_SKILL_BOOK_IDS){d[id]=d[id]||{};d[id].stage=stage}
+ saveFreeSkillTree(d);localStorage.setItem(FREE_SKILL_TREE_MIGRATION_KEY,'1');
+}
+initializeFreeSkillTreeV355();
 function loadSkillEquip(){
  let d={};try{d=JSON.parse(localStorage.getItem(skillEquipKey)||'{}')||{}}catch(e){}
  if(!Object.keys(d).length){
@@ -3153,7 +3243,7 @@ function resetSekasokoSave(){
  location.reload();
 }
 document.querySelector('#dbgResetSave').onclick=()=>{
- if(!confirm('セカソコのセーブデータをすべて初期化します。\n\nWD・ステータス強化・踏破数・固有スキルツリー・スキル装備・編成などが初期状態に戻ります。\nこの操作は元に戻せません。\n\n本当に初期化しますか？'))return;
+ if(!confirm('セカソコのセーブデータをすべて初期化します。\n\nWD・ステータス強化・踏破数・固有スキルツリー・自由スキルツリー・スキル装備・編成などが初期状態に戻ります。\nこの操作は元に戻せません。\n\n本当に初期化しますか？'))return;
  resetSekasokoSave();
 };
 renderHome();initBattle();
