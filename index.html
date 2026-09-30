@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.355</title>
+<title>セカソコ ver.356</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.356: skill-book hub UI now combines equipment, book details, and free-skill tree growth. */
 /* ver.355: free-skill-book tree data/storage foundation + legacy/fresh-save migration. */
 /* ver.353: DEBUG save reset added. Deletes only sekasoko* localStorage keys, then reloads to fresh defaults. */
 /* ver.352: Mikoto afterimage enemy group implemented. ★5 every 10F, ★4 every 5F, ★1/2/3 on normal floors by depth. Old boss stat multipliers removed. */
@@ -1413,7 +1414,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.355";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.356";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1533,7 +1534,9 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 
 /* ver.278 skill-book equipment */
-.skillEquipSummary{margin:10px 0;padding:10px;border:1px solid #ffffff1c;border-radius:12px;background:#0c1019}.skillEquipSummary h3{margin:0 0 8px;font-size:13px}.skillSlotsRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.skillSlotEquip,.skillBookCard{border:1px solid #ffffff28;background:#151a27;border-radius:10px;padding:10px;text-align:left;color:#fff}.skillSlotEquip b,.skillSlotEquip span,.skillSlotEquip small,.skillBookCard b,.skillBookCard span,.skillBookCard small{display:block}.skillSlotEquip span,.skillBookCard span{margin-top:4px;font-weight:900}.skillSlotEquip small,.skillBookCard small{margin-top:3px;color:#9ba3b7;font-size:9px;line-height:1.4}.skillBookList{display:grid;gap:8px;margin-top:10px}.skillBookCard.equipped{outline:2px solid #ffffff66;outline-offset:-3px}.skillEquipBack,.charEquipBtn,.charUpgradeBtn{width:100%;margin-top:10px;border:1px solid #ffffff35;border-radius:10px;padding:11px;font-weight:900}.skillEquipBack{background:#171b28;color:#fff}.charEquipBtn{background:#e9e9ee;color:#111}.charUpgradeBtn{background:linear-gradient(135deg,#253149,#171f31);color:#fff;border-color:#6f86ad}.statUpgradePanel{display:grid;gap:9px;margin-top:10px}.statUpgradeWD{padding:10px 12px;border:1px solid #ffffff22;border-radius:12px;background:#0f1420;font-weight:900;text-align:center}.statUpgradeRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid #ffffff1d;border-radius:12px;background:#101521}.statUpgradeInfo b{display:block;font-size:13px}.statUpgradeInfo span{display:block;margin-top:3px;color:#aeb7ca;font-size:10px}.statUpgradeInfo strong{color:#fff;font-size:17px}.statUpgradeControls{display:flex;align-items:center;gap:7px}.statUpgradeControls button{width:36px;height:34px;border-radius:9px;border:1px solid #ffffff2e;background:#20283a;color:#fff;font-size:18px;font-weight:900;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.statUpgradeControls button:disabled{opacity:.28}.statUpgradePending{min-width:42px;text-align:center;font-weight:900;color:#ffe19a}.statUpgradeTotal{margin-top:10px;padding:11px 12px;border-radius:12px;border:1px solid #ffffff20;background:#0c1019;line-height:1.6}.statUpgradeConfirm{width:100%;margin-top:10px;padding:12px;border:0;border-radius:11px;font-weight:900;background:#f0d88c;color:#17140b}.statUpgradeConfirm:disabled{opacity:.4}.statUpgradeBack{width:100%;margin-top:8px;padding:10px;border-radius:10px;border:1px solid #ffffff2b;background:#171b28;color:#fff;font-weight:900}.statUpgradeDone{margin:8px 0;padding:8px 10px;border-radius:10px;background:#24402c;border:1px solid #7fd79255;color:#caffe0;font-size:11px;font-weight:900;text-align:center}
+.skillEquipSummary{margin:10px 0;padding:10px;border:1px solid #ffffff1c;border-radius:12px;background:#0c1019}.skillEquipSummary h3{margin:0 0 8px;font-size:13px}.skillSlotsRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.skillSlotEquip,.skillBookCard{border:1px solid #ffffff28;background:#151a27;border-radius:10px;padding:10px;text-align:left;color:#fff}.skillSlotEquip b,.skillSlotEquip span,.skillSlotEquip small,.skillBookCard b,.skillBookCard span,.skillBookCard small{display:block}.skillSlotEquip span,.skillBookCard span{margin-top:4px;font-weight:900}.skillSlotEquip small,.skillBookCard small{margin-top:3px;color:#9ba3b7;font-size:9px;line-height:1.4}.skillBookList{display:grid;gap:8px;margin-top:10px}.skillBookCard.equipped{outline:2px solid #ffffff66;outline-offset:-3px}.skillEquipBack,.charEquipBtn,.charUpgradeBtn{width:100%;margin-top:10px;border:1px solid #ffffff35;border-radius:10px;padding:11px;font-weight:900}.skillEquipBack{background:#171b28;color:#fff}.charEquipBtn{background:#e9e9ee;color:#111}.charUpgradeBtn{background:linear-gradient(135deg,#253149,#171f31);color:#fff;border-color:#6f86ad}
+/* ver.356: skill-book equipment + growth hub. */
+.skillBookHubHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0 7px}.skillBookHubHead h3{margin:0;font-size:13px}.skillBookHubHead small{font-size:9px;color:#9ba3b7}.skillBookHubList{display:grid;gap:8px;max-height:32vh;overflow:auto;padding-right:2px}.skillBookCard.clickable{width:100%;cursor:pointer}.skillBookCard.clickable:active{transform:scale(.985)}.skillBookCardTop{display:flex!important;align-items:center;justify-content:space-between;gap:8px}.skillBookStageBadge{display:inline-flex!important;align-items:center;justify-content:center;min-width:48px;padding:3px 7px;border-radius:999px;border:1px solid #d9b85f66;background:#2b2415;color:#ffe49a;font-size:9px;font-weight:1000}.skillBookEquipOwner{color:#b9c6df!important}.skillBookDetailTop{margin:10px 0;padding:11px;border:1px solid #ffffff20;border-radius:12px;background:#0d111b}.skillBookDetailTop .skillBookDetailTitle{display:flex;justify-content:space-between;align-items:center;gap:8px}.skillBookDetailTop h3{margin:0;font-size:15px}.skillBookRole{margin-top:7px;font-size:10px;line-height:1.55;color:#b9c0cf}.skillBookCurrent{margin-top:9px;padding:10px;border-radius:10px;border:1px solid #ffffff1b;background:#151a27}.skillBookCurrent b{display:block;font-size:11px;color:#ffe49a;margin-bottom:5px}.skillBookCurrent p{margin:0;font-size:10px;line-height:1.65;color:#eef1f7}.skillBookActionGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.skillBookActionGrid button,.skillBookTreeBtn{border:1px solid #ffffff2d;border-radius:10px;padding:10px 6px;font-size:10px;font-weight:900;background:#1b2130;color:#fff}.skillBookActionGrid button.active{background:#eee;color:#111}.skillBookActionGrid button:disabled{opacity:.45}.skillBookTreeBtn{width:100%;margin-top:9px;background:linear-gradient(135deg,#3b2e13,#1b1720);border-color:#d9b85f66;color:#ffe7a3}.skillBookUiNote{margin-top:9px;padding:9px 10px;border-radius:10px;background:#0c1018;border:1px solid #ffffff18;color:#9ea7bb;font-size:9px;line-height:1.55}.freeSkillTreeComplete{color:#ffe49a;font-weight:900}.statUpgradePanel{display:grid;gap:9px;margin-top:10px}.statUpgradeWD{padding:10px 12px;border:1px solid #ffffff22;border-radius:12px;background:#0f1420;font-weight:900;text-align:center}.statUpgradeRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid #ffffff1d;border-radius:12px;background:#101521}.statUpgradeInfo b{display:block;font-size:13px}.statUpgradeInfo span{display:block;margin-top:3px;color:#aeb7ca;font-size:10px}.statUpgradeInfo strong{color:#fff;font-size:17px}.statUpgradeControls{display:flex;align-items:center;gap:7px}.statUpgradeControls button{width:36px;height:34px;border-radius:9px;border:1px solid #ffffff2e;background:#20283a;color:#fff;font-size:18px;font-weight:900;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.statUpgradeControls button:disabled{opacity:.28}.statUpgradePending{min-width:42px;text-align:center;font-weight:900;color:#ffe19a}.statUpgradeTotal{margin-top:10px;padding:11px 12px;border-radius:12px;border:1px solid #ffffff20;background:#0c1019;line-height:1.6}.statUpgradeConfirm{width:100%;margin-top:10px;padding:12px;border:0;border-radius:11px;font-weight:900;background:#f0d88c;color:#17140b}.statUpgradeConfirm:disabled{opacity:.4}.statUpgradeBack{width:100%;margin-top:8px;padding:10px;border-radius:10px;border:1px solid #ffffff2b;background:#171b28;color:#fff;font-weight:900}.statUpgradeDone{margin:8px 0;padding:8px 10px;border-radius:10px;background:#24402c;border:1px solid #7fd79255;color:#caffe0;font-size:11px;font-weight:900;text-align:center}
 /* ver.333: HOME stat enhancement supports tap and long-press +/- input. */
 /* ver.330: AUTO shows 5F checkpoint result for 2 seconds, then advances automatically; manual keeps Next button. */
 /* ver.327: HOME skill descriptions live in the skill-book equipment screen. */
@@ -1942,7 +1945,7 @@ function openCharacter(c){
  const baseStats=battleRef||c,stats=getEnhancedStats(key,baseStats),up=getStatUpgrade(key),power=calcPower(stats);
  const art=standing?`<div class="playableDetailStanding"><div class="playableDetailZoom"><img src="${standing}" alt="${c.name}"></div></div>`:`<div class="playableDetailStanding playableDetailStandingFallback">${c.icon}</div>`;
  const upText=k=>up[k]>0?`<small>強化 +${up[k]}</small>`:'<small>未強化</small>';
- document.querySelector('#modalCard').innerHTML=`<div class="playableDetailCard${key==='baal'?' detailBaal':''}"><div class="cardHead"><h2>${c.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${c.sub}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F</div><div class="stats playableDetailStats"><div class="stat">HP<b>${stats.hp}</b>${upText('hp')}</div><div class="stat">ATK<b>${stats.atk}</b>${upText('atk')}</div><div class="stat">DEF<b>${stats.def}</b>${upText('def')}</div><div class="stat">SPD<b>${stats.spd}</b>${upText('spd')}</div></div></div></div><button class="charUpgradeBtn" onclick="openStatUpgrade('${key}')">💎 ステータス強化</button>${key==='mizuki'?`<button class="charUniqueTreeBtn" onclick="openUniqueSkillTree('mizuki')">🌟 固有スキルツリー</button>`:''}<button class="charEquipBtn" onclick="openSkillEquip('${key}')">📕 スキルブック装備</button></div>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="playableDetailCard${key==='baal'?' detailBaal':''}"><div class="cardHead"><h2>${c.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${c.sub}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F</div><div class="stats playableDetailStats"><div class="stat">HP<b>${stats.hp}</b>${upText('hp')}</div><div class="stat">ATK<b>${stats.atk}</b>${upText('atk')}</div><div class="stat">DEF<b>${stats.def}</b>${upText('def')}</div><div class="stat">SPD<b>${stats.spd}</b>${upText('spd')}</div></div></div></div><button class="charUpgradeBtn" onclick="openStatUpgrade('${key}')">💎 ステータス強化</button>${key==='mizuki'?`<button class="charUniqueTreeBtn" onclick="openUniqueSkillTree('mizuki')">🌟 固有スキルツリー</button>`:''}<button class="charEquipBtn" onclick="openSkillEquip('${key}')">📕 スキルブック</button></div>`;
  const modal=document.querySelector('#modal');modal.classList.add('playableDetailMode','show');initPlayableDetailZoom()
 }
 function initPlayableDetailZoom(){
@@ -2393,6 +2396,42 @@ function setFreeSkillBookStage(bookId,stage){
 function freeSkillBookStageLabel(bookId){
  const data=FREE_SKILL_TREE_DATA[bookId],stage=getFreeSkillBookStage(bookId);return data?.stages?.[stage]?.label||FREE_SKILL_STAGE_LABELS[stage]||'★1';
 }
+// ver.356 UI-only cumulative specs. Battle execution remains on the ver.355 combat values until ver.357.
+function freeSkillBookCurrentSpec(bookId,stage=getFreeSkillBookStage(bookId)){
+ stage=Math.max(0,Math.min(9,Math.floor(Number(stage)||0)));
+ if(bookId==='mikotoAbsoluteRelease'){
+  let ct=180,hits=5,silverRate=5;
+  if(stage>=1)ct=170;if(stage>=2)hits=6;if(stage>=3)silverRate=6;if(stage>=4)hits=7;if(stage>=5)ct=160;if(stage>=6){hits=8;silverRate=8}if(stage>=7)ct=150;if(stage>=8)hits=10;if(stage>=9)silverRate=10;
+  return{ct,copperCost:'ALL',hits,silverRate,powerPct:'消費した銅🪞数'};
+ }
+ if(bookId==='mikotoWarDeclaration'){
+  let ct=70,copperCost=20,power=70,hits=1,sword=3;
+  if(stage>=1)ct=65;if(stage>=2){power=80;sword=4}if(stage>=3)copperCost=15;if(stage>=4){hits=2;sword=5}if(stage>=5)ct=60;if(stage>=6){power=90;sword=7}if(stage>=7)copperCost=10;if(stage>=8){power=100;sword=10}if(stage>=9)ct=50;
+  return{ct,copperCost,power,hits,sword};
+ }
+ if(bookId==='mikotoMeikyoShisui'){
+  let ct=130,copperCost=30,heal=8,silver=5;
+  if(stage>=1)heal=10;if(stage>=2)silver=8;if(stage>=3)ct=120;if(stage>=4){copperCost=25;heal=12;silver=10}if(stage>=5)heal=15;if(stage>=6)silver=15;if(stage>=7)ct=110;if(stage>=8){copperCost=20;heal=20;silver=20}if(stage>=9)ct=100;
+  return{ct,copperCost,heal,silver};
+ }
+ return null;
+}
+function freeSkillBookCurrentText(bookId,stage=getFreeSkillBookStage(bookId)){
+ const x=freeSkillBookCurrentSpec(bookId,stage);
+ if(bookId==='mikotoAbsoluteRelease'&&x)return `CT${x.ct}｜銅🪞全消費｜消費数%ATK×${x.hits}Hit｜銀🪞還元${x.silverRate}%`;
+ if(bookId==='mikotoWarDeclaration'&&x)return `CT${x.ct}｜銅🪞${x.copperCost}消費｜ATK${x.power}%×${x.hits}Hit｜🗡️+${x.sword}`;
+ if(bookId==='mikotoMeikyoShisui'&&x)return `CT${x.ct}｜銅🪞${x.copperCost}消費｜最大HP${x.heal}%回復｜銀🪞+${x.silver}`;
+ const b=skillBooks[bookId];return b?.short||'性能未設定';
+}
+function freeSkillBookCurrentDetail(bookId,stage=getFreeSkillBookStage(bookId)){
+ const x=freeSkillBookCurrentSpec(bookId,stage);
+ if(bookId==='mikotoAbsoluteRelease'&&x)return `自身の銅🪞を全て消費。消費した銅🪞数%のATKダメージを敵前衛へ${x.hits}回与える。各Hitごとに生存前衛からランダム1体を選択。使用後、消費数の${x.silverRate}%分だけ銀🪞を得る（端数切り捨て）。`;
+ if(bookId==='mikotoWarDeclaration'&&x)return `自身の銅🪞を${x.copperCost}消費。敵前衛ランダム1体へATK${x.power}%ダメージ×${x.hits}。使用後、自身へ🗡️+${x.sword}。`;
+ if(bookId==='mikotoMeikyoShisui'&&x)return `自身の銅🪞を${x.copperCost}消費。自身の最大HPを${x.heal}%回復。使用後、自身へ銀🪞+${x.silver}。`;
+ return skillBooks[bookId]?.detail||'詳細未設定';
+}
+function skillBookUiStage(bookId){return FREE_SKILL_TREE_DATA[bookId]?freeSkillBookStageLabel(bookId):'育成未対応'}
+function skillBookUiCt(bookId){const x=freeSkillBookCurrentSpec(bookId);return x?.ct??skillBooks[bookId]?.ct??0}
 function hasPreV355SekasokoSave(){
  for(let i=0;i<localStorage.length;i++){
   const key=localStorage.key(i);
@@ -2448,19 +2487,58 @@ const freeSkillOrdinal=slot=>slot===2?'①':slot===3?'②':'③';
 const availableSkillSlots=u=>[1,...[2,3,4].filter(slot=>{const book=equippedSkillBook(u,slot);return !!book&&skillBookUsable(u,book)})];
 function setSkillBookEquip(rid,slot,id){const d=loadSkillEquip();d[rid]=d[rid]||{};if(!id)delete d[rid][slot];else{for(const slots of Object.values(d))for(const sl of ['2','3','4'])if(slots?.[sl]===id)delete slots[sl];d[rid][slot]=id}saveSkillEquip(d)}
 function skillBookOwner(id){const d=loadSkillEquip();for(const [rid,slots] of Object.entries(d))for(const sl of ['2','3','4'])if(slots?.[sl]===id)return{rid,slot:+sl};return null}
+function skillBookOwnerText(id){
+ const o=skillBookOwner(id);if(!o)return'未装備';const c=formationRosterData.find(x=>x.id===o.rid);return `${c?.name||o.rid}｜自由スキル${freeSkillOrdinal(o.slot)}`;
+}
+function skillBookCardHtml(id,rid=''){
+ const b=skillBooks[id];if(!b)return'';const hasTree=!!FREE_SKILL_TREE_DATA[id],stage=skillBookUiStage(id),owner=skillBookOwnerText(id),summary=hasTree?freeSkillBookCurrentText(id):b.short;
+ return `<button class="skillBookCard clickable" onclick="openSkillBookDetail('${id}','${rid}')"><span class="skillBookCardTop"><b>📕 ${hasTree?stage:`CT${b.ct}`}</b>${hasTree?`<i class="skillBookStageBadge">${stage}</i>`:''}</span><span>${b.name}</span><small>${summary}<br><span class="skillBookEquipOwner">装備：${owner}</span></small></button>`;
+}
 function openSkillEquip(rid){
  document.querySelector('#modal').classList.remove('playableDetailMode');
  const c=formationRosterData.find(x=>x.id===rid);if(!c)return;
  const homeC=[...(homeRoster.suppa||[]),...(homeRoster.cow||[])].find(x=>x.name===c.name);
  const uniqueTitle=rid==='mizuki'?`固有《絶対領域展開》 CT${mikotoUniqueBattleSpec().ct}｜${MIKOTO_UNIQUE_STAGES[mikotoUniqueStage()].label}`:(homeC?.skills?.[0]||'固有 未設定'),uniqueDetail=rid==='mizuki'?mikotoUniqueDetail():(homeC?.skills?.[1]||'詳細未設定');
  const uniqueSlots=`<div class="skillSlotEquip fixedSkill"><b>固有スキル</b><span>${uniqueTitle.replace(/^固有/,'').trim()}</span><small>${uniqueDetail}</small></div>`;
- const eq=loadSkillEquip()[rid]||{},freeSlots=[2,3,4].map(sl=>{const b=skillBooks[eq[sl]];return `<button class="skillSlotEquip" onclick="openSkillSlotPicker('${rid}',${sl})"><b>自由スキル${freeSkillOrdinal(sl)}</b><span>${b?b.name:'未設定'}</span><small>${b?b.short:'タップしてスキルブックを装備'}</small></button>`}).join('');
- document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキル装備</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>自由スキル</h3><div class="skillSlotsRow freeThree">${freeSlots}</div></div><div class="coming" style="padding:8px 0;color:#9ba3b7;font-size:10px">固有スキル1枠＋自由スキル3枠。自由スキルは1冊につき1枠へ装備。</div>`;
+ const eq=loadSkillEquip()[rid]||{},freeSlots=[2,3,4].map(sl=>{const id=eq[sl],b=skillBooks[id],stage=id&&FREE_SKILL_TREE_DATA[id]?`｜${freeSkillBookStageLabel(id)}`:'';return `<button class="skillSlotEquip" onclick="openSkillSlotPicker('${rid}',${sl})"><b>自由スキル${freeSkillOrdinal(sl)}${stage}</b><span>${b?b.name:'未設定'}</span><small>${b?(FREE_SKILL_TREE_DATA[id]?freeSkillBookCurrentText(id):b.short):'タップしてスキルブックを装備'}</small></button>`}).join('');
+ const books=ownedSkillBookIds.map(id=>skillBookCardHtml(id,rid)).join('');
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>装備中</h3><div class="skillSlotsRow freeThree">${freeSlots}</div></div><div class="skillBookHubHead"><h3>所持スキルブック</h3><small>本をタップ → 詳細／育成</small></div><div class="skillBookHubList">${books}</div><div class="skillBookUiNote">自由スキルの育成状態はキャラクターではなくスキルブック本体に保存される。同じ本を別キャラへ付け替えても育成段階は維持。ver.356では装備・育成UIまで実装し、ツリー性能の戦闘反映は次段階で接続する。</div>`;
  document.querySelector('#modal').classList.add('show')
 }
-function openSkillSlotPicker(rid,slot){document.querySelector('#modal').classList.remove('playableDetailMode');const c=formationRosterData.find(x=>x.id===rid),cur=loadSkillEquip()?.[rid]?.[slot]||null;const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),here=cur===id,who=o&&!here?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'';return `<button class="skillBookCard ${here?'equipped':''}" onclick="equipPickedBook('${rid}',${slot},'${id}')"><b>📕 CT${b.ct}</b><span>${b.name}${here?'　✓装備中':''}</span><small>${b.detail}${who?`<br>現在：${who}の自由スキル${freeSkillOrdinal(o.slot)}（選ぶと付け替え）`:''}</small></button>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c?.name||''}｜自由スキル${freeSkillOrdinal(slot)}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList"><button class="skillBookCard" onclick="equipPickedBook('${rid}',${slot},'')"><b>装備解除</b><span>未設定にする</span><small>この自由スキル枠を空にする。</small></button>${cards}</div><button class="skillEquipBack" onclick="openSkillEquip('${rid}')">← 装備画面へ戻る</button>`}
+function openSkillSlotPicker(rid,slot){
+ document.querySelector('#modal').classList.remove('playableDetailMode');const c=formationRosterData.find(x=>x.id===rid),cur=loadSkillEquip()?.[rid]?.[slot]||null;
+ const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),here=cur===id,who=o&&!here?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'',stage=FREE_SKILL_TREE_DATA[id]?`｜${freeSkillBookStageLabel(id)}`:'';return `<button class="skillBookCard ${here?'equipped':''}" onclick="equipPickedBook('${rid}',${slot},'${id}')"><b>📕 CT${skillBookUiCt(id)}${stage}</b><span>${b.name}${here?'　✓装備中':''}</span><small>${FREE_SKILL_TREE_DATA[id]?freeSkillBookCurrentText(id):b.detail}${who?`<br>現在：${who}の自由スキル${freeSkillOrdinal(o.slot)}（選ぶと付け替え）`:''}</small></button>`}).join('');
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c?.name||''}｜自由スキル${freeSkillOrdinal(slot)}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList"><button class="skillBookCard" onclick="equipPickedBook('${rid}',${slot},'')"><b>装備解除</b><span>未設定にする</span><small>この自由スキル枠を空にする。</small></button>${cards}</div><button class="skillEquipBack" onclick="openSkillEquip('${rid}')">← スキルブックへ戻る</button>`
+}
 function equipPickedBook(rid,slot,id){setSkillBookEquip(rid,slot,id);openSkillEquip(rid)}
-function openSkillBookInventory(){document.querySelector('#modal').classList.remove('playableDetailMode');const cards=ownedSkillBookIds.map(id=>{const b=skillBooks[id],o=skillBookOwner(id),who=o?(formationRosterData.find(x=>x.id===o.rid)?.name||o.rid):'未装備';return `<div class="skillBookCard"><b>📕 所持 ×1｜CT${b.ct}</b><span>${b.name}</span><small>${b.detail}<br>装備：${who}${o?` 自由スキル${freeSkillOrdinal(o.slot)}`:''}</small></div>`}).join('');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookList">${cards}</div><div class="coming" style="padding:10px 0;color:#9ba3b7;font-size:10px">キャラクター詳細の「📕 スキルブック装備」から付け替えできます。</div>`;document.querySelector('#modal').classList.add('show')}
+function equipBookFromDetail(rid,slot,id){if(!rid||!id)return;setSkillBookEquip(rid,slot,id);openSkillBookDetail(id,rid,false,true)}
+function openSkillBookDetail(bookId,rid='',done=false,equipDone=false){
+ document.querySelector('#modal').classList.remove('playableDetailMode');const b=skillBooks[bookId];if(!b)return;
+ const tree=FREE_SKILL_TREE_DATA[bookId],stage=tree?getFreeSkillBookStage(bookId):0,stageLabel=tree?freeSkillBookStageLabel(bookId):'',owner=skillBookOwner(bookId),ownerText=skillBookOwnerText(bookId);
+ let equipActions='';
+ if(rid){const eq=loadSkillEquip()[rid]||{};equipActions=`<div class="skillBookActionGrid">${[2,3,4].map(sl=>{const active=eq[sl]===bookId;return `<button class="${active?'active':''}" onclick="equipBookFromDetail('${rid}',${sl},'${bookId}')" ${active?'disabled':''}>${active?`自由${freeSkillOrdinal(sl)} 装備中`:`自由${freeSkillOrdinal(sl)}へ装備`}</button>`}).join('')}</div>`}
+ const treeBtn=tree?`<button class="skillBookTreeBtn" onclick="openFreeSkillTree('${bookId}','${rid}')">🌟 スキルツリー</button>`:'';
+ const back=rid?`openSkillEquip('${rid}')`:'openSkillBookInventory()';
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>📕 ${b.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div>${done?'<div class="statUpgradeDone">✨ スキルブックを強化した！</div>':''}${equipDone?'<div class="statUpgradeDone">📕 装備を変更した！</div>':''}<div class="skillBookDetailTop"><div class="skillBookDetailTitle"><h3>${tree?stageLabel:'自由スキルブック'}</h3>${tree?`<span class="skillBookStageBadge">${stageLabel}</span>`:''}</div>${tree?`<div class="skillBookRole">${tree.role}</div>`:''}<div class="skillBookCurrent"><b>現在性能${tree?'（ツリー上）':''}</b><p>${tree?freeSkillBookCurrentDetail(bookId,stage):b.detail}<br><strong>${tree?freeSkillBookCurrentText(bookId,stage):`CT${b.ct}`}</strong></p></div><div class="skillBookRole">装備：${ownerText}</div></div>${treeBtn}${equipActions}<div class="skillBookUiNote">${tree?'★1 → ★5+1の一本道。現在は全ノード仮コスト 💎100 WD。★解放の宝玉化は後続実装。ver.356ではツリーの表示・強化・保存までで、戦闘性能への反映は次verで接続する。':'このスキルブックの育成ツリーは未設計。装備・付け替えは現在利用可能。'}</div><button class="skillEquipBack" onclick="${back}">← ${rid?'スキルブック':'所持一覧'}へ戻る</button>`;
+ document.querySelector('#modal').classList.add('show')
+}
+function openFreeSkillTree(bookId,rid='',done=false){
+ document.querySelector('#modal').classList.remove('playableDetailMode');const data=FREE_SKILL_TREE_DATA[bookId],b=skillBooks[bookId];if(!data||!b){openSkillBookDetail(bookId,rid);return}
+ const cur=getFreeSkillBookStage(bookId),wd=getWaldonium(),nodes=data.stages.map((st,i)=>{const cls=i<cur?'done':i===cur?'current':i===cur+1?'next':'';const state=i<cur?'✓ 習得済':i===cur?'● 現在':i===cur+1?'次のノード':'未解放';return `<div class="uniqueTreeNode ${cls}"><div class="uniqueTreeNodeHead"><b>${st.label}</b><span class="uniqueTreeState">${state}</span></div><p>${st.delta}</p></div>`}).join(''),finished=cur>=data.stages.length-1,next=data.stages[cur+1];
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>📕 ${b.name}｜スキルツリー</h2><button class="close" onclick="closeModal()">閉じる</button></div>${done?'<div class="statUpgradeDone">✨ スキルブックを強化した！</div>':''}<div class="uniqueTreeTop"><span>現在 <b>${data.stages[cur].label}</b></span><span>💎${wd.toLocaleString()} WD</span></div><div class="uniqueTreeList">${nodes}</div>${finished?'<button class="uniqueTreeAction" disabled>★5+1｜スキル完成</button>':`<button class="uniqueTreeAction" onclick="upgradeFreeSkillTree('${bookId}','${rid}')" ${wd<FREE_SKILL_TREE_TEMP_COST?'disabled':''}>${next.label.includes('+')?`${next.label}へ強化`:`${next.label}を解放`}　💎${FREE_SKILL_TREE_TEMP_COST} WD</button>`}<div class="uniqueTreeNote">自由スキルツリーは本体に保存され、装備キャラを変更しても進行度を引き継ぐ。現在は枠組みテストのため全遷移 💎100 WD。将来は★解放を宝玉消費へ差し替える。</div><button class="statUpgradeBack" onclick="openSkillBookDetail('${bookId}','${rid}')">← ${b.name}へ戻る</button>`;
+ document.querySelector('#modal').classList.add('show')
+}
+function upgradeFreeSkillTree(bookId,rid=''){
+ const data=FREE_SKILL_TREE_DATA[bookId];if(!data)return;const cur=getFreeSkillBookStage(bookId);if(cur>=data.stages.length-1)return openFreeSkillTree(bookId,rid);
+ const next=data.stages[cur+1];if(getWaldonium()<FREE_SKILL_TREE_TEMP_COST){openInfo('WD不足','スキルブック強化に必要なWaldonium（WD）が足りません。','💎');return}
+ if(!confirm(`${data.name} ${data.stages[cur].label} → ${next.label}\n💎${FREE_SKILL_TREE_TEMP_COST} WDを消費します。`))return;
+ if(!spendWaldonium(FREE_SKILL_TREE_TEMP_COST)){openInfo('WD不足','スキルブック強化に必要なWaldonium（WD）が足りません。','💎');return}
+ setFreeSkillBookStage(bookId,cur+1);renderHome();openFreeSkillTree(bookId,rid,true)
+}
+function openSkillBookInventory(){
+ document.querySelector('#modal').classList.remove('playableDetailMode');const cards=ownedSkillBookIds.map(id=>skillBookCardHtml(id,'')).join('');
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookHubHead"><h3>所持スキルブック</h3><small>詳細／育成</small></div><div class="skillBookHubList" style="max-height:62vh">${cards}</div><div class="skillBookUiNote">本をタップすると現在性能とスキルツリーを確認できる。装備先の変更はキャラクター詳細 →「📕 スキルブック」から行う。</div>`;document.querySelector('#modal').classList.add('show')
+}
 const chosenSkillCt=(u,slot=1)=>{
  const book=equippedSkillBook(u,slot);if(book)return book.ct;
  if(slot!==1)return 0;
