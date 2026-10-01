@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.365: battle buff HUD layout improved. Tier resources stay on the top row, while combat buffs like 🛡️ / 🗡️ are grouped on the lower row to prevent overlap. */
 /* ver.364: Nagi command-kit rework. 《一世掃射》 now gives Nagi an extra copper-mirror grant on top of the all-ally grant. 《弾丸装填》 is replaced in-place by 《補給部隊出動》 while preserving the book id/save slot; it supplies all living allies with copper/silver/gold mirror and sword stacks. */
 /* ver.363: Nagi free-skill trilogy implemented and fully connected. 《弾丸装填》《殲滅命令》《待機命令》 each have ★1→★5+1 book-owned trees, dynamic CT/cost/effects, battle execution, usability checks, UI, AUTO rotation, save persistence, and default Nagi loadout migration. */
 /* ver.362: Nagi 《一世掃射》 unique-skill tree implemented and fully connected to battle. Random multi-hit damage, all-ally copper/silver mirror supply, sword supply, and CT now scale from ★1 to ★5+1. */
@@ -2981,15 +2982,23 @@ function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(n
 function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=assignEnemyBaseRewards(makeEnemies(floor));takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
 function slots(units,side){let html='',rows=side==='A'?['back','front']:['front','back'];for(const row of rows){html+='<div class="col">';for(let i=0;i<3;i++){let u;if(row==='front'){u=units.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===i)||units.find(x=>x.row==='front'&&x.formationSlot===i)}else{u=units.find(x=>x.hp>0&&x.row==='back'&&x.formationSlot===i+3)||units.find(x=>x.row==='back'&&x.formationSlot===i+3)}html+=`<div class="slot ${row} slot-${i}" data-row="${i}">${u?unitHTML(u):''}</div>`}html+='</div>'}return html}
 function battleBuffSummary(u){
- const items=[];
- for(const key of TIER_BUFF_ORDER){const token=tierBuffHudToken(u,key);if(token)items.push(token)}
- if((u.sword||0)>0)items.push(`🗡️${Math.floor(u.sword)}`);
- if((u.harden||0)>0)items.push(`💪${Math.floor(u.harden)}`);
- if((u.blood||0)>0)items.push(`🩸${Math.floor(u.blood)}`);
- const swift=swiftTotal(u);if(swift>0)items.push(`👞${Math.floor(swift)}`);
- if(!items.length)return '';
- const split=Math.ceil(items.length/2);
- return `<span>${items.slice(0,split).join(' ')}</span><span>${items.slice(split).join(' ')}</span>`;
+ const topItems=[];
+ const bottomItems=[];
+ for(const key of TIER_BUFF_ORDER){
+  const token=tierBuffHudToken(u,key);
+  if(token)topItems.push(token);
+ }
+ const shieldStacks=displayInt(u?.shield);
+ if(shieldStacks>0)bottomItems.push(`🛡️${shieldStacks}`);
+ if((u.sword||0)>0)bottomItems.push(`🗡️${Math.floor(u.sword)}`);
+ if((u.harden||0)>0)bottomItems.push(`💪${Math.floor(u.harden)}`);
+ if((u.blood||0)>0)bottomItems.push(`🩸${Math.floor(u.blood)}`);
+ const swift=swiftTotal(u);if(swift>0)bottomItems.push(`👞${Math.floor(swift)}`);
+ if(!topItems.length&&!bottomItems.length)return '';
+ const rows=[];
+ if(topItems.length)rows.push(`<span class="battleBuffTop">${topItems.join(' ')}</span>`);
+ if(bottomItems.length)rows.push(`<span class="battleBuffBottom">${bottomItems.join(' ')}</span>`);
+ return rows.join('');
 }
 function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" data-afterimage-rank="${u.afterimageRank||''}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img class="targetGlowClone" src="${u.sprite}" alt="" aria-hidden="true"><img class="unitSpriteMain" src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="footHpRow"><div class="footHpBar"><i style="width:${Math.min(100,Math.max(0,(u.hp+shieldValueDisplay(u))/u.max*100))}%"></i></div><b>${hpWithShieldDisplay(u)}/${maxHpDisplay(u)}</b></div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${hpWithShieldDisplay(u)} / ${maxHpDisplay(u)}</div></div></div>`}
 function forecast(n=10){
