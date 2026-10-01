@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.356</title>
+<title>セカソコ ver.357</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.357: free-skill tree stages are fully connected to battle CT, costs, hit counts, damage, healing, and resource gains. */
 /* ver.356: skill-book hub UI now combines equipment, book details, and free-skill tree growth. */
 /* ver.355: free-skill-book tree data/storage foundation + legacy/fresh-save migration. */
 /* ver.353: DEBUG save reset added. Deletes only sekasoko* localStorage keys, then reloads to fresh defaults. */
@@ -1414,7 +1415,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.356";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.357";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2311,9 +2312,9 @@ function tickSwiftAtTurnStart(u){
 const baseWait=u=>Math.max(20,Math.round(1000/Math.sqrt(Math.max(1,effectiveSpd(u)))));
 const actionCost=u=>baseWait(u)+(u.skill?.ct||0);
 const skillBooks={
- mikotoAbsoluteRelease:{id:'mikotoAbsoluteRelease',name:'絶対領域解放',ct:150,targetType:'randomFrontFive',short:'銅🪞全消費／消費数%ATK×5　CT150',detail:'《絶対領域解放》｜CT150｜自身の銅🪞を全て消費。消費したスタック数%のATK依存ダメージを、敵前衛ランダム単体へ5回与える。各Hitごとに生存前衛からランダム対象を選ぶ。'},
- mikotoWarDeclaration:{id:'mikotoWarDeclaration',name:'宣戦布告',ct:50,targetType:'randomFront',short:'銅🪞20消費／ATK50%／🗡️+10　CT50',detail:'《宣戦布告》｜CT50｜銅🪞20消費。敵前衛ランダム1体へATK50%ダメージ。使用後、自身へ🗡️+10。'},
- mikotoMeikyoShisui:{id:'mikotoMeikyoShisui',name:'明鏡止水',ct:100,targetType:'self',short:'銅🪞30消費／最大HP1%回復／🛡️+10　CT100',detail:'《明鏡止水》｜CT100｜銅🪞30消費。自身の最大HP1%を回復し、自身へ🛡️+10。'},
+ mikotoAbsoluteRelease:{id:'mikotoAbsoluteRelease',name:'絶対領域解放',ct:180,targetType:'randomFrontFive',short:'スキルツリー連動',detail:'《絶対領域解放》｜★段階に応じてCT・Hit数・銀🪞還元率が変化する。'},
+ mikotoWarDeclaration:{id:'mikotoWarDeclaration',name:'宣戦布告',ct:70,targetType:'randomFront',short:'スキルツリー連動',detail:'《宣戦布告》｜★段階に応じてCT・銅🪞消費・威力・Hit数・🗡️獲得量が変化する。'},
+ mikotoMeikyoShisui:{id:'mikotoMeikyoShisui',name:'明鏡止水',ct:130,targetType:'self',short:'スキルツリー連動',detail:'《明鏡止水》｜★段階に応じてCT・銅🪞消費・回復率・銀🪞獲得量が変化する。'},
  bloodSword:{id:'bloodSword',name:'ブラッドソード',ct:100,targetType:'selectFront',power:1.0,short:'敵前衛1体を選択 ATK100%／自身🩸+1 🗡️+1　CT100',detail:'《ブラッドソード》｜CT100｜選択した敵前衛1体へATK依存中（ATK100%）。攻撃後、自身に🩸吸血+1、🗡️剣+1。手動時は対象を選択。AUTO時は生存している敵前衛からランダム1体を選ぶ。'},
  heal:{id:'heal',name:'ヒール',ct:120,targetType:'selectAlly',power:.05,short:'味方単体を選択 HP5%回復　CT120',detail:'《ヒール》｜CT120｜生存している味方単体を選択し、その対象の最大HP5%を回復。AUTO時は生存している味方から自動選択。'},
  mirrorMastery:{id:'mirrorMastery',name:'明鏡止水の極み',ct:250,targetType:'randomAll',short:'銀🪞20消費／敵全体ランダムATK100%×30／🪞20 🗡️15 💪15／金🪞1　CT250',detail:'《明鏡止水の極み》｜CT250｜銀🪞20以上で使用可能。銀🪞20消費。生存している敵全体から毎Hitランダムに1体を選び、ATK依存小ダメージ（ATK100%）を30回与える。使用後、自身に銅🪞+20、🗡️+15、💪+15、金🪞+1。属性制限なし。｜【金🪞】最大100。反撃成功時、金🪞+1後の現在スタック数%で発動し、金🪞を全消費して消費数と同数の🛡️を得る。'},
@@ -2396,7 +2397,7 @@ function setFreeSkillBookStage(bookId,stage){
 function freeSkillBookStageLabel(bookId){
  const data=FREE_SKILL_TREE_DATA[bookId],stage=getFreeSkillBookStage(bookId);return data?.stages?.[stage]?.label||FREE_SKILL_STAGE_LABELS[stage]||'★1';
 }
-// ver.356 UI-only cumulative specs. Battle execution remains on the ver.355 combat values until ver.357.
+// ver.357 cumulative specs are the single source of truth for both UI and battle execution.
 function freeSkillBookCurrentSpec(bookId,stage=getFreeSkillBookStage(bookId)){
  stage=Math.max(0,Math.min(9,Math.floor(Number(stage)||0)));
  if(bookId==='mikotoAbsoluteRelease'){
@@ -2476,8 +2477,14 @@ function equippedSkillBook(u,slot){const k=unitRosterKey(u),id=k?loadSkillEquip(
 function skillBookBlockReason(u,book){
  if(!u||!book)return'';
  if(book.id==='mikotoAbsoluteRelease'&&getTierBuff(u,'mirror','copper')<1)return'《絶対領域解放》は銅🪞1以上で発動可能';
- if(book.id==='mikotoWarDeclaration'&&getTierBuff(u,'mirror','copper')<20)return'《宣戦布告》は銅🪞20以上で発動可能';
- if(book.id==='mikotoMeikyoShisui'&&getTierBuff(u,'mirror','copper')<30)return'《明鏡止水》は銅🪞30以上で発動可能';
+ if(book.id==='mikotoWarDeclaration'){
+  const spec=freeSkillBookCurrentSpec(book.id),cost=Math.max(0,Number(spec?.copperCost)||0);
+  if(getTierBuff(u,'mirror','copper')<cost)return`《宣戦布告》は銅🪞${cost}以上で発動可能`;
+ }
+ if(book.id==='mikotoMeikyoShisui'){
+  const spec=freeSkillBookCurrentSpec(book.id),cost=Math.max(0,Number(spec?.copperCost)||0);
+  if(getTierBuff(u,'mirror','copper')<cost)return`《明鏡止水》は銅🪞${cost}以上で発動可能`;
+ }
  if(book.id==='mirrorMastery'&&getTierBuff(u,'mirror','silver')<20)return'《明鏡止水の極み》は銀🪞20以上で発動可能';
  if(book.id==='milkingExperience'&&getTierBuff(u,'milk','silver')<20)return'《搾乳体験》は銀🥛20以上で発動可能';
  return'';
@@ -2502,7 +2509,7 @@ function openSkillEquip(rid){
  const uniqueSlots=`<div class="skillSlotEquip fixedSkill"><b>固有スキル</b><span>${uniqueTitle.replace(/^固有/,'').trim()}</span><small>${uniqueDetail}</small></div>`;
  const eq=loadSkillEquip()[rid]||{},freeSlots=[2,3,4].map(sl=>{const id=eq[sl],b=skillBooks[id],stage=id&&FREE_SKILL_TREE_DATA[id]?`｜${freeSkillBookStageLabel(id)}`:'';return `<button class="skillSlotEquip" onclick="openSkillSlotPicker('${rid}',${sl})"><b>自由スキル${freeSkillOrdinal(sl)}${stage}</b><span>${b?b.name:'未設定'}</span><small>${b?(FREE_SKILL_TREE_DATA[id]?freeSkillBookCurrentText(id):b.short):'タップしてスキルブックを装備'}</small></button>`}).join('');
  const books=ownedSkillBookIds.map(id=>skillBookCardHtml(id,rid)).join('');
- document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>装備中</h3><div class="skillSlotsRow freeThree">${freeSlots}</div></div><div class="skillBookHubHead"><h3>所持スキルブック</h3><small>本をタップ → 詳細／育成</small></div><div class="skillBookHubList">${books}</div><div class="skillBookUiNote">自由スキルの育成状態はキャラクターではなくスキルブック本体に保存される。同じ本を別キャラへ付け替えても育成段階は維持。ver.356では装備・育成UIまで実装し、ツリー性能の戦闘反映は次段階で接続する。</div>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>装備中</h3><div class="skillSlotsRow freeThree">${freeSlots}</div></div><div class="skillBookHubHead"><h3>所持スキルブック</h3><small>本をタップ → 詳細／育成</small></div><div class="skillBookHubList">${books}</div><div class="skillBookUiNote">自由スキルの育成状態はキャラクターではなくスキルブック本体に保存される。同じ本を別キャラへ付け替えても育成段階は維持。ver.357では現在の★段階が戦闘中のCT・消費量・Hit数・威力・回復・バフ獲得へそのまま反映される。</div>`;
  document.querySelector('#modal').classList.add('show')
 }
 function openSkillSlotPicker(rid,slot){
@@ -2519,7 +2526,7 @@ function openSkillBookDetail(bookId,rid='',done=false,equipDone=false){
  if(rid){const eq=loadSkillEquip()[rid]||{};equipActions=`<div class="skillBookActionGrid">${[2,3,4].map(sl=>{const active=eq[sl]===bookId;return `<button class="${active?'active':''}" onclick="equipBookFromDetail('${rid}',${sl},'${bookId}')" ${active?'disabled':''}>${active?`自由${freeSkillOrdinal(sl)} 装備中`:`自由${freeSkillOrdinal(sl)}へ装備`}</button>`}).join('')}</div>`}
  const treeBtn=tree?`<button class="skillBookTreeBtn" onclick="openFreeSkillTree('${bookId}','${rid}')">🌟 スキルツリー</button>`:'';
  const back=rid?`openSkillEquip('${rid}')`:'openSkillBookInventory()';
- document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>📕 ${b.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div>${done?'<div class="statUpgradeDone">✨ スキルブックを強化した！</div>':''}${equipDone?'<div class="statUpgradeDone">📕 装備を変更した！</div>':''}<div class="skillBookDetailTop"><div class="skillBookDetailTitle"><h3>${tree?stageLabel:'自由スキルブック'}</h3>${tree?`<span class="skillBookStageBadge">${stageLabel}</span>`:''}</div>${tree?`<div class="skillBookRole">${tree.role}</div>`:''}<div class="skillBookCurrent"><b>現在性能${tree?'（ツリー上）':''}</b><p>${tree?freeSkillBookCurrentDetail(bookId,stage):b.detail}<br><strong>${tree?freeSkillBookCurrentText(bookId,stage):`CT${b.ct}`}</strong></p></div><div class="skillBookRole">装備：${ownerText}</div></div>${treeBtn}${equipActions}<div class="skillBookUiNote">${tree?'★1 → ★5+1の一本道。現在は全ノード仮コスト 💎100 WD。★解放の宝玉化は後続実装。ver.356ではツリーの表示・強化・保存までで、戦闘性能への反映は次verで接続する。':'このスキルブックの育成ツリーは未設計。装備・付け替えは現在利用可能。'}</div><button class="skillEquipBack" onclick="${back}">← ${rid?'スキルブック':'所持一覧'}へ戻る</button>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>📕 ${b.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div>${done?'<div class="statUpgradeDone">✨ スキルブックを強化した！</div>':''}${equipDone?'<div class="statUpgradeDone">📕 装備を変更した！</div>':''}<div class="skillBookDetailTop"><div class="skillBookDetailTitle"><h3>${tree?stageLabel:'自由スキルブック'}</h3>${tree?`<span class="skillBookStageBadge">${stageLabel}</span>`:''}</div>${tree?`<div class="skillBookRole">${tree.role}</div>`:''}<div class="skillBookCurrent"><b>現在性能${tree?'（ツリー上）':''}</b><p>${tree?freeSkillBookCurrentDetail(bookId,stage):b.detail}<br><strong>${tree?freeSkillBookCurrentText(bookId,stage):`CT${b.ct}`}</strong></p></div><div class="skillBookRole">装備：${ownerText}</div></div>${treeBtn}${equipActions}<div class="skillBookUiNote">${tree?'★1 → ★5+1の一本道。現在は全ノード仮コスト 💎100 WD。★解放の宝玉化は後続実装。ver.357では表示されている現在性能がそのまま戦闘へ反映される。':'このスキルブックの育成ツリーは未設計。装備・付け替えは現在利用可能。'}</div><button class="skillEquipBack" onclick="${back}">← ${rid?'スキルブック':'所持一覧'}へ戻る</button>`;
  document.querySelector('#modal').classList.add('show')
 }
 function openFreeSkillTree(bookId,rid='',done=false){
@@ -2540,7 +2547,7 @@ function openSkillBookInventory(){
  document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillBookHubHead"><h3>所持スキルブック</h3><small>詳細／育成</small></div><div class="skillBookHubList" style="max-height:62vh">${cards}</div><div class="skillBookUiNote">本をタップすると現在性能とスキルツリーを確認できる。装備先の変更はキャラクター詳細 →「📕 スキルブック」から行う。</div>`;document.querySelector('#modal').classList.add('show')
 }
 const chosenSkillCt=(u,slot=1)=>{
- const book=equippedSkillBook(u,slot);if(book)return book.ct;
+ const book=equippedSkillBook(u,slot);if(book){const spec=freeSkillBookCurrentSpec(book.id);return spec?.ct??book.ct}
  if(slot!==1)return 0;
  if(u?.cid===101)return mikotoUniqueBattleSpec().ct;
  if(u?.cid===102)return 250;
@@ -3128,39 +3135,49 @@ function selectBattleTarget(candidates,label='対象を選択'){
 }
 async function skillBookMikotoAbsoluteRelease(att,defenders){
  if(!att||att.hp<=0)return;
+ const spec=freeSkillBookCurrentSpec('mikotoAbsoluteRelease');if(!spec)return;
  const spent=Math.floor(getTierBuff(att,'mirror','copper'));if(spent<1)return;
  consumeTierBuff(att,'mirror','copper',spent);
  const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
- const pct=spent,rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(pct/100)));
- document.querySelector('#status').textContent=`${att.name}「スキルブック《絶対領域解放》」｜銅🪞${spent}全消費｜ATK${pct}%×5`;renderBattle();await sleep(130);
+ const pct=spent,rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(pct/100))),plannedHits=Math.max(1,Math.floor(Number(spec.hits)||1));
+ document.querySelector('#status').textContent=`${att.name}「スキルブック《絶対領域解放》」 ${freeSkillBookStageLabel('mikotoAbsoluteRelease')}｜銅🪞${spent}全消費｜ATK${pct}%×${plannedHits}`;renderBattle();await sleep(130);
  let hits=0,total=0;
- for(let i=0;i<5;i++){
+ for(let i=0;i<plannedHits;i++){
   const pool=frontEnemies(defenders);if(!pool.length)break;
   const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);
   if(el)el.classList.add('hit');const hit=applyCombatDamage(t,rawPerHit);hits++;total+=hit.damage;damagePop(el,hit.damage);
   await sleep(75);if(el)el.classList.remove('hit');
   if(t.hp<=0){if(el)el.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
  }
+ const silverBefore=getTierBuff(att,'mirror','silver'),silverGain=Math.max(0,Math.floor(spent*(Number(spec.silverRate)||0)/100));
+ if(silverGain>0)addTierBuff(att,'mirror','silver',silverGain);
+ const silverActual=Math.max(0,getTierBuff(att,'mirror','silver')-silverBefore);
  if(attacker)attacker.classList.remove('attacking');
- document.querySelector('#status').textContent=`《絶対領域解放》 銅🪞${spent}消費｜ATK${pct}%×${hits}Hit／計${total}ダメージ`;renderBattle();await sleep(120);
+ document.querySelector('#status').textContent=`《絶対領域解放》 銅🪞${spent}消費｜ATK${pct}%×${hits}Hit／計${total}ダメージ｜銀🪞+${displayInt(silverActual)}`;renderBattle();await sleep(120);
 }
 async function skillBookMikotoWarDeclaration(att,defenders){
- if(!att||att.hp<=0||getTierBuff(att,'mirror','copper')<20)return;
+ const spec=freeSkillBookCurrentSpec('mikotoWarDeclaration');if(!att||att.hp<=0||!spec)return;
+ const copperCost=Math.max(0,Math.floor(Number(spec.copperCost)||0));if(getTierBuff(att,'mirror','copper')<copperCost)return;
  const pool=frontEnemies(defenders);if(!pool.length)return;
- consumeTierBuff(att,'mirror','copper',20);
- const t=pool[Math.floor(Math.random()*pool.length)],attacker=document.getElementById(att.id),el=document.getElementById(t.id);
- if(attacker)attacker.classList.add('attacking');document.querySelector('#status').textContent=`${att.name}「スキルブック《宣戦布告》」｜銅🪞20消費`;renderBattle();await sleep(110);
- if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.max(1,Math.floor(effectiveAtk(att)*.5)));damagePop(el,hit.damage);await sleep(100);if(el)el.classList.remove('hit');
- att.sword=(att.sword||0)+10;
+ consumeTierBuff(att,'mirror','copper',copperCost);
+ const t=pool[Math.floor(Math.random()*pool.length)],attacker=document.getElementById(att.id),el=document.getElementById(t.id),hitCount=Math.max(1,Math.floor(Number(spec.hits)||1)),rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(Math.max(0,Number(spec.power)||0)/100)));
+ if(attacker)attacker.classList.add('attacking');document.querySelector('#status').textContent=`${att.name}「スキルブック《宣戦布告》」 ${freeSkillBookStageLabel('mikotoWarDeclaration')}｜銅🪞${copperCost}消費｜ATK${spec.power}%×${hitCount}`;renderBattle();await sleep(110);
+ let total=0;
+ for(let i=0;i<hitCount;i++){
+  if(el)el.classList.add('hit');const hit=applyCombatDamage(t,rawPerHit);total+=hit.damage;damagePop(el,hit.damage);await sleep(90);if(el)el.classList.remove('hit')
+ }
+ att.sword=(att.sword||0)+Math.max(0,Math.floor(Number(spec.sword)||0));
  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
- if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《宣戦布告》 ${hit.damage}ダメージ｜銅🪞-20／🗡️+10`;renderBattle();await sleep(110);
+ if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《宣戦布告》 ${hitCount}Hit／計${total}ダメージ｜銅🪞-${copperCost}／🗡️+${displayInt(spec.sword)}`;renderBattle();await sleep(110);
 }
 async function skillBookMikotoMeikyoShisui(att){
- if(!att||att.hp<=0||getTierBuff(att,'mirror','copper')<30)return;
- consumeTierBuff(att,'mirror','copper',30);
- const amount=Math.max(1,Math.floor(Math.max(1,att.max)*.01)),actual=Math.min(amount,Math.max(0,att.max-att.hp));att.hp+=actual;att.shield=(att.shield||0)+10;
+ const spec=freeSkillBookCurrentSpec('mikotoMeikyoShisui');if(!att||att.hp<=0||!spec)return;
+ const copperCost=Math.max(0,Math.floor(Number(spec.copperCost)||0));if(getTierBuff(att,'mirror','copper')<copperCost)return;
+ consumeTierBuff(att,'mirror','copper',copperCost);
+ const amount=Math.max(1,Math.floor(Math.max(1,att.max)*(Math.max(0,Number(spec.heal)||0)/100))),actual=Math.min(amount,Math.max(0,att.max-att.hp));att.hp+=actual;
+ const silverBefore=getTierBuff(att,'mirror','silver');addTierBuff(att,'mirror','silver',Math.max(0,Math.floor(Number(spec.silver)||0)));const silverActual=Math.max(0,getTierBuff(att,'mirror','silver')-silverBefore);
  const el=document.getElementById(att.id);if(el&&actual>0)damagePop(el,`+${actual}`);
- document.querySelector('#status').textContent=`${att.name}《明鏡止水》｜銅🪞-30／HP+${actual}／🛡️+10`;renderBattle();await sleep(140);
+ document.querySelector('#status').textContent=`${att.name}《明鏡止水》 ${freeSkillBookStageLabel('mikotoMeikyoShisui')}｜銅🪞-${copperCost}／HP+${actual}／銀🪞+${displayInt(silverActual)}`;renderBattle();await sleep(140);
 }
 
 async function skillBookBloodSword(att,defenders){
@@ -3230,7 +3247,10 @@ function configureUniqueSkill(u){
  [2,3,4].forEach((slot,i)=>{
   const idx=i+1,fb=document.querySelector(`#freeSkill${idx}`),fn=document.querySelector(`#freeSkill${idx}Name`),fd=document.querySelector(`#freeSkill${idx}Desc`),book=equippedSkillBook(u,slot);
   if(!fb||!fn||!fd)return;
-  if(book){fb.classList.remove('placeholderSkill');fb.setAttribute('aria-disabled','false');fn.textContent=book.name;fd.textContent=book.short;fd.dataset.ct=String(book.ct);fb.dataset.skillDetail=book.detail}
+  if(book){
+   const hasTree=!!FREE_SKILL_TREE_DATA[book.id],stage=hasTree?freeSkillBookStageLabel(book.id):'',summary=hasTree?freeSkillBookCurrentText(book.id):book.short,detail=hasTree?freeSkillBookCurrentDetail(book.id):book.detail,ct=hasTree?skillBookUiCt(book.id):book.ct;
+   fb.classList.remove('placeholderSkill');fb.setAttribute('aria-disabled','false');fn.textContent=book.name;fd.textContent=hasTree?`${stage}｜${summary}`:summary;fd.dataset.ct=String(ct);fb.dataset.skillDetail=hasTree?`${book.name}｜${stage}｜${summary}｜${detail}`:detail
+  }
   else{fb.classList.add('placeholderSkill');fb.setAttribute('aria-disabled','true');fn.textContent='未設定';fd.textContent='装備スキル枠';delete fd.dataset.ct;fb.dataset.skillDetail='未設定｜装備スキル枠'}
  });
 }
