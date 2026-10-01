@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.364</title>
+<title>セカソコ ver.366</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.366: battle buff HUD dedupe. Generic 🛡️ is rendered only in the lower combat-buff row; it is excluded from the tier-resource row to prevent duplicate display. Current title/battle version labels are synchronized. */
 /* ver.365: battle buff HUD layout improved. Tier resources stay on the top row, while combat buffs like 🛡️ / 🗡️ are grouped on the lower row to prevent overlap. */
 /* ver.364: Nagi command-kit rework. 《一世掃射》 now gives Nagi an extra copper-mirror grant on top of the all-ally grant. 《弾丸装填》 is replaced in-place by 《補給部隊出動》 while preserving the book id/save slot; it supplies all living allies with copper/silver/gold mirror and sword stacks. */
 /* ver.363: Nagi free-skill trilogy implemented and fully connected. 《弾丸装填》《殲滅命令》《待機命令》 each have ★1→★5+1 book-owned trees, dynamic CT/cost/effects, battle execution, usability checks, UI, AUTO rotation, save persistence, and default Nagi loadout migration. */
@@ -1423,7 +1424,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.364";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.366";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2985,6 +2986,9 @@ function battleBuffSummary(u){
  const topItems=[];
  const bottomItems=[];
  for(const key of TIER_BUFF_ORDER){
+  // Generic 🛡️ uses u.shield as the live absorption stack and belongs only in the lower combat-buff row.
+  // Excluding the legacy tier-buff mirror here prevents the same shield value from rendering twice.
+  if(key==='shield')continue;
   const token=tierBuffHudToken(u,key);
   if(token)topItems.push(token);
  }
