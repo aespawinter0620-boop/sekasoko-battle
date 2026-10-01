@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.366</title>
+<title>セカソコ ver.367</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.367: shared afterimage foundation. Afterimages are now generated through a roster-id + rank registry while preserving Mikoto afterimage stats, skill behavior, spawn rules, rewards, and visuals exactly. */
 /* ver.366: battle buff HUD dedupe. Generic 🛡️ is rendered only in the lower combat-buff row; it is excluded from the tier-resource row to prevent duplicate display. Current title/battle version labels are synchronized. */
 /* ver.365: battle buff HUD layout improved. Tier resources stay on the top row, while combat buffs like 🛡️ / 🗡️ are grouped on the lower row to prevent overlap. */
 /* ver.364: Nagi command-kit rework. 《一世掃射》 now gives Nagi an extra copper-mirror grant on top of the all-ally grant. 《弾丸装填》 is replaced in-place by 《補給部隊出動》 while preserving the book id/save slot; it supplies all living allies with copper/silver/gold mirror and sword stacks. */
@@ -1424,7 +1425,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.366";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.367";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2162,21 +2163,50 @@ const MIKOTO_AFTERIMAGE_RANK_SPECS={
  4:{hp:250,atk:115,def:0,spd:140,hits:8},
  5:{hp:300,atk:120,def:0,spd:150,hits:10}
 };
-function mikotoAfterimageBase(rank){
- const r=Math.max(1,Math.min(5,Math.floor(Number(rank)||1)));
- const spec=MIKOTO_AFTERIMAGE_RANK_SPECS[r];
+/* ver.367: afterimage registry.
+   New afterimages are added here by roster id. The shared generator owns naming/art/reward-rank plumbing;
+   character definitions own rank stats and skill profile. Only Mikoto is active in ver.367 so gameplay stays identical. */
+const AFTERIMAGE_CHARACTER_DEFS={
+ mizuki:{
+  displayName:'命',icon:'🌙',cidBase:1100,row:'front',rankSpecs:MIKOTO_AFTERIMAGE_RANK_SPECS,
+  buildSkill(rank,spec){
+   return {
+    enemySkillType:'mikotoAfterimageMulti',
+    afterimageHitCount:spec.hits,
+    afterimageHitRate:0.10,
+    afterimageAttackProfile:{targetMode:'randomFrontPriority',hitCount:spec.hits,hitRate:0.10},
+    skill:{name:`残像連撃（ATK10%×${spec.hits}）`,ct:100}
+   };
+  }
+ }
+};
+function normalizeAfterimageRank(rank){return Math.max(1,Math.min(5,Math.floor(Number(rank)||1)))}
+function implementedAfterimageRosterIds(){return Object.keys(AFTERIMAGE_CHARACTER_DEFS)}
+function afterimageBase(rosterId,rank){
+ const def=AFTERIMAGE_CHARACTER_DEFS[rosterId];
+ if(!def)return null;
+ const r=normalizeAfterimageRank(rank),spec=def.rankSpecs?.[r];
+ if(!spec)return null;
+ const source=getAfterimageSource(rosterId),skillPart=def.buildSkill?def.buildSkill(r,spec):{};
  return {
-  name:`命残像★${r}`,
-  icon:'🌙',
-  sprite:mikotoAfterimageSource?.sprite||null,
-  afterimageFaceIcon:mikotoAfterimageSource?.faceIcon||mikotoAfterimageSource?.sprite||null,
-  hp:spec.hp,atk:spec.atk,def:spec.def,row:'front',cid:1100+r,spd:spec.spd,
+  name:`${def.displayName}残像★${r}`,
+  icon:def.icon||source?.base?.icon||'◉',
+  sprite:source?.sprite||null,
+  afterimageFaceIcon:source?.faceIcon||source?.sprite||null,
+  hp:spec.hp,atk:spec.atk,def:spec.def,row:def.row||'front',cid:(def.cidBase||1100)+r,spd:spec.spd,
+  afterimageCharacterId:rosterId,
   afterimageRank:r,
-  enemySkillType:'mikotoAfterimageMulti',
-  afterimageHitCount:spec.hits,
-  afterimageHitRate:0.10,
-  skill:{name:`残像連撃（ATK10%×${spec.hits}）`,ct:100}
+  ...skillPart
  };
+}
+// Compatibility wrapper: existing callers/saves can still refer to the Mikoto-specific helper.
+function mikotoAfterimageBase(rank){return afterimageBase('mizuki',rank)}
+function afterimageAttackProfile(att){
+ const profile=att?.afterimageAttackProfile;
+ if(profile&&typeof profile==='object')return profile;
+ // Legacy fallback for pre-ver.367 enemy objects/snapshots.
+ if(att?.enemySkillType==='mikotoAfterimageMulti')return {targetMode:'randomFrontPriority',hitCount:Math.max(1,Math.floor(Number(att.afterimageHitCount)||1)),hitRate:Math.max(0,Number(att.afterimageHitRate)||0.10)};
+ return null;
 }
 function mikotoNormalAfterimageRank(f){
  if(f>=60)return 3;
@@ -2906,14 +2936,14 @@ function makeEnemies(f){
   const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.max(0,Number(x.def)||0),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,finalBoss:isBoss&&f===100,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
  };
  // 10Fごと：★5 命残像単騎。ver.354で現行HPをさらに×3。ATKは据え置き。旧BOSS ATK×1.2 は使用しない。
- if(f%10===0)return [makeUnit(mikotoAfterimageBase(5),0,1,'front','boss')];
+ if(f%10===0)return [makeUnit(afterimageBase('mizuki',5),0,1,'front','boss')];
  // 5Fごと（10F倍数を除く）：★4 命残像単騎。旧MID HP×3 / ATK×1.1 は使用しない。
- if(f%5===0)return [makeUnit(mikotoAfterimageBase(4),0,1,'front','midboss')];
+ if(f%5===0)return [makeUnit(afterimageBase('mizuki',4),0,1,'front','midboss')];
 
  // 通常階：命残像1体＋通常雑魚3体。
  // ★1=1〜29F、★2=30〜59F、★3=60F以上。
  const rank=mikotoNormalAfterimageRank(f);
- const enemies=[makeUnit(mikotoAfterimageBase(rank),0,1,'front','normal')];
+ const enemies=[makeUnit(afterimageBase('mizuki',rank),0,1,'front','normal')];
 
  // 通常雑魚4種から毎階1種だけ外し、3体をローテーションさせる。
  const omitIndex=(Math.max(1,Math.floor(f))-1)%enemyBase.length;
@@ -3564,9 +3594,9 @@ async function attack(att,defenders){
  if(attacker)attacker.classList.add('attacking');
  await sleep(180);
  const enemyAttack=att.side==='E';
- const isMikotoAfterimage=enemyAttack&&att.enemySkillType==='mikotoAfterimageMulti';
- const hitCount=isMikotoAfterimage?Math.max(1,Math.floor(Number(att.afterimageHitCount)||1)):1;
- const hitRate=isMikotoAfterimage?Math.max(0,Number(att.afterimageHitRate)||0.10):1;
+ const enemyAfterimageProfile=enemyAttack?afterimageAttackProfile(att):null;
+ const hitCount=enemyAfterimageProfile?Math.max(1,Math.floor(Number(enemyAfterimageProfile.hitCount)||1)):1;
+ const hitRate=enemyAfterimageProfile?Math.max(0,Number(enemyAfterimageProfile.hitRate)||0.10):1;
  for(let i=0;i<hitCount;i++){
    const alive=living(defenders),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;
    if(!pool.length)break;
