@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.367</title>
+<title>セカソコ ver.369</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,8 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.369: afterimage spawn system expanded. Normal floors now spawn 2〜4 random implemented afterimages; 5F uses ★4 rear MID BOSS + three ★1 front guards; 10F uses ★5 rear-center BOSS + three ★2 front guards + two ★3 rear-side guards. Only the ★5 boss receives the ×3 boss HP multiplier; WARNING names the actual random ★5 boss. */
+/* ver.368: Nagi afterimage implemented on the shared afterimage foundation. ★1〜★5 use Mikoto-matched base stats, CT120 all-party multi-hit attacks, and post-attack sword support for all living enemies including Nagi. Spawn rules remain unchanged until the next spawn-system update. */
 /* ver.367: shared afterimage foundation. Afterimages are now generated through a roster-id + rank registry while preserving Mikoto afterimage stats, skill behavior, spawn rules, rewards, and visuals exactly. */
 /* ver.366: battle buff HUD dedupe. Generic 🛡️ is rendered only in the lower combat-buff row; it is excluded from the tier-resource row to prevent duplicate display. Current title/battle version labels are synchronized. */
 /* ver.365: battle buff HUD layout improved. Tier resources stay on the top row, while combat buffs like 🛡️ / 🗡️ are grouped on the lower row to prevent overlap. */
@@ -1425,7 +1427,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.367";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.369";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2163,9 +2165,16 @@ const MIKOTO_AFTERIMAGE_RANK_SPECS={
  4:{hp:250,atk:115,def:0,spd:140,hits:8},
  5:{hp:300,atk:120,def:0,spd:150,hits:10}
 };
-/* ver.367: afterimage registry.
+const NAGI_AFTERIMAGE_RANK_SPECS={
+ 1:{hp:100,atk:100,def:0,spd:110,hits:1,hitRate:0.05,swordGain:5},
+ 2:{hp:150,atk:105,def:0,spd:120,hits:2,hitRate:0.08,swordGain:6},
+ 3:{hp:200,atk:110,def:0,spd:130,hits:3,hitRate:0.10,swordGain:7},
+ 4:{hp:250,atk:115,def:0,spd:140,hits:4,hitRate:0.15,swordGain:8},
+ 5:{hp:300,atk:120,def:0,spd:150,hits:5,hitRate:0.20,swordGain:10}
+};
+/* ver.369: afterimage registry.
    New afterimages are added here by roster id. The shared generator owns naming/art/reward-rank plumbing;
-   character definitions own rank stats and skill profile. Only Mikoto is active in ver.367 so gameplay stays identical. */
+   character definitions own rank stats and skill profile. Implemented afterimages automatically enter the random spawn pool. */
 const AFTERIMAGE_CHARACTER_DEFS={
  mizuki:{
   displayName:'命',icon:'🌙',cidBase:1100,row:'front',rankSpecs:MIKOTO_AFTERIMAGE_RANK_SPECS,
@@ -2176,6 +2185,19 @@ const AFTERIMAGE_CHARACTER_DEFS={
     afterimageHitRate:0.10,
     afterimageAttackProfile:{targetMode:'randomFrontPriority',hitCount:spec.hits,hitRate:0.10},
     skill:{name:`残像連撃（ATK10%×${spec.hits}）`,ct:100}
+   };
+  }
+ },
+ nagi:{
+  displayName:'凪',icon:'🌪️',cidBase:1200,row:'back',rankSpecs:NAGI_AFTERIMAGE_RANK_SPECS,
+  buildSkill(rank,spec){
+   const pct=Math.round(spec.hitRate*100);
+   return {
+    enemySkillType:'nagiAfterimageCommand',
+    afterimageHitCount:spec.hits,
+    afterimageHitRate:spec.hitRate,
+    afterimageAttackProfile:{targetMode:'allLiving',hitCount:spec.hits,hitRate:spec.hitRate,postSwordAllies:spec.swordGain},
+    skill:{name:`指揮掃射（全体ATK${pct}%×${spec.hits}／🗡️+${spec.swordGain}）`,ct:120}
    };
   }
  }
@@ -2201,6 +2223,7 @@ function afterimageBase(rosterId,rank){
 }
 // Compatibility wrapper: existing callers/saves can still refer to the Mikoto-specific helper.
 function mikotoAfterimageBase(rank){return afterimageBase('mizuki',rank)}
+function nagiAfterimageBase(rank){return afterimageBase('nagi',rank)}
 function afterimageAttackProfile(att){
  const profile=att?.afterimageAttackProfile;
  if(profile&&typeof profile==='object')return profile;
@@ -2208,10 +2231,25 @@ function afterimageAttackProfile(att){
  if(att?.enemySkillType==='mikotoAfterimageMulti')return {targetMode:'randomFrontPriority',hitCount:Math.max(1,Math.floor(Number(att.afterimageHitCount)||1)),hitRate:Math.max(0,Number(att.afterimageHitRate)||0.10)};
  return null;
 }
-function mikotoNormalAfterimageRank(f){
+function normalAfterimageRank(f){
  if(f>=60)return 3;
  if(f>=30)return 2;
  return 1;
+}
+function mikotoNormalAfterimageRank(f){return normalAfterimageRank(f)}
+function randomAfterimageRosterId(){
+ const ids=implementedAfterimageRosterIds();
+ return ids.length?ids[Math.floor(Math.random()*ids.length)]:null;
+}
+function randomAfterimageBase(rank){
+ const rosterId=randomAfterimageRosterId();
+ return rosterId?afterimageBase(rosterId,rank):null;
+}
+function pickAfterimageSlot(base,usedSlots){
+ const used=usedSlots||new Set(),front=[0,1,2].filter(x=>!used.has(x)),back=[3,4,5].filter(x=>!used.has(x));
+ const preferred=base?.row==='back'?back:front,available=preferred.length?preferred:[...front,...back];
+ if(!available.length)return -1;
+ return available[Math.floor(Math.random()*available.length)];
 }
 let A=[],E=[],running=false,turnNo=0,debugSpeed=1,debugInvincible=false,currentActor=null,resolvePlayerAction=null,selectedSkillSlot=1,sortieQueue=[],activePartyIndex=0;
 let targetSelection=null;
@@ -2928,32 +2966,44 @@ function makePartyUnits(ids,partyIndex=0){return ids.map((id,i)=>{const base=for
 function makeEnemies(f){
  const hpMult=1+(f-1)*0.10;
  const atkMult=1+(f-1)*0.005;
- const makeUnit=(x,i,slot,row=x.row,rank='normal')=>{
+ const makeUnit=(x,i,slot,row=x?.row||'front',rank='normal')=>{
+  if(!x)return null;
   const isBoss=rank==='boss',isMidboss=rank==='midboss';
+  // ver.369: only the actual 10F ★5 boss receives the extra ×3 HP multiplier. Guards keep normal rank HP.
   const bossHpMult=isBoss?3:1;
   const hp=Math.round(x.hp*hpMult*bossHpMult);
   const atk=Math.round(x.atk*atkMult);
   const u={...clone(x),name:isBoss?'BOSS｜'+x.name:isMidboss?'MID BOSS｜'+x.name:x.name,row,hp,max:hp,baseMax:hp,atk,def:Math.max(0,Number(x.def)||0),id:'e'+i,formationSlot:slot,homeSlot:slot,pulledForward:false,pullVulnerableUntilTurn:0,side:'E',boss:isBoss,midboss:isMidboss,finalBoss:isBoss&&f===100,next:baseWait(x)};syncTierBuffsFromLegacy(u);return u
  };
- // 10Fごと：★5 命残像単騎。ver.354で現行HPをさらに×3。ATKは据え置き。旧BOSS ATK×1.2 は使用しない。
- if(f%10===0)return [makeUnit(afterimageBase('mizuki',5),0,1,'front','boss')];
- // 5Fごと（10F倍数を除く）：★4 命残像単騎。旧MID HP×3 / ATK×1.1 は使用しない。
- if(f%5===0)return [makeUnit(afterimageBase('mizuki',4),0,1,'front','midboss')];
+ const enemies=[];
+ const add=(base,slot,row,rank='normal')=>{const u=makeUnit(base,enemies.length,slot,row,rank);if(u)enemies.push(u);return u};
 
- // 通常階：命残像1体＋通常雑魚3体。
- // ★1=1〜29F、★2=30〜59F、★3=60F以上。
- const rank=mikotoNormalAfterimageRank(f);
- const enemies=[makeUnit(afterimageBase('mizuki',rank),0,1,'front','normal')];
+ // 10Fごと：前衛★2×3／後衛左右★3×2／後衛中央★5 BOSS。キャラ種は各枠ごとに実装済み残像からランダム。
+ if(f%10===0){
+  [0,1,2].forEach(slot=>add(randomAfterimageBase(2),slot,'front','normal'));
+  add(randomAfterimageBase(3),3,'back','normal');
+  add(randomAfterimageBase(5),4,'back','boss');
+  add(randomAfterimageBase(3),5,'back','normal');
+  return enemies;
+ }
 
- // 通常雑魚4種から毎階1種だけ外し、3体をローテーションさせる。
- const omitIndex=(Math.max(1,Math.floor(f))-1)%enemyBase.length;
- const mobs=enemyBase.filter((_,i)=>i!==omitIndex);
- const frontSlots=[0,2],backSlots=[3,4,5];
- let frontI=0,backI=0;
- mobs.forEach((x,j)=>{
-  const slot=x.row==='front'?frontSlots[frontI++]:backSlots[backI++];
-  enemies.push(makeUnit(x,j+1,slot,x.row,'normal'));
- });
+ // 5Fごと（10F倍数を除く）：前衛★1×3＋後衛中央★4 MID BOSS。キャラ種は各枠ごとにランダム。
+ if(f%5===0){
+  [0,1,2].forEach(slot=>add(randomAfterimageBase(1),slot,'front','normal'));
+  add(randomAfterimageBase(4),4,'back','midboss');
+  return enemies;
+ }
+
+ // 通常階：階層帯に応じた★残像を2〜4体ランダム出現。各個体のキャラ種も独立ランダム。
+ const rank=normalAfterimageRank(f),count=2+Math.floor(Math.random()*3),usedSlots=new Set();
+ for(let i=0;i<count;i++){
+  const base=randomAfterimageBase(rank);
+  if(!base)continue;
+  const slot=pickAfterimageSlot(base,usedSlots);
+  if(slot<0)break;
+  usedSlots.add(slot);
+  add(base,slot,slot<3?'front':'back','normal');
+ }
  return enemies;
 }
 function syncActiveParty(){syncAllTierBuffs(A);if(runPartyStates[activePartyIndex])runPartyStates[activePartyIndex]=clone(A)}
@@ -2991,7 +3041,11 @@ async function showBossWarningIfNeeded(){
  const el=document.querySelector('#bossWarning'),label=document.querySelector('#bossWarningFloor');
  if(!el)return;
  bossWarningShownFloor=floor;
- if(label)label.textContent=`${floor}F｜★5 命残像`;
+ if(label){
+  const boss=E.find(x=>x?.boss&&x.afterimageRank===5);
+  const def=boss?AFTERIMAGE_CHARACTER_DEFS[boss.afterimageCharacterId]:null;
+  label.textContent=`${floor}F｜★5 ${def?.displayName?def.displayName+'残像':'残像'}`;
+ }
  el.setAttribute('aria-hidden','false');
  el.classList.remove('show');
  void el.offsetWidth;
@@ -3597,34 +3651,56 @@ async function attack(att,defenders){
  const enemyAfterimageProfile=enemyAttack?afterimageAttackProfile(att):null;
  const hitCount=enemyAfterimageProfile?Math.max(1,Math.floor(Number(enemyAfterimageProfile.hitCount)||1)):1;
  const hitRate=enemyAfterimageProfile?Math.max(0,Number(enemyAfterimageProfile.hitRate)||0.10):1;
+ const targetMode=enemyAfterimageProfile?.targetMode||'randomFrontPriority';
  for(let i=0;i<hitCount;i++){
-   const alive=living(defenders),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;
-   if(!pool.length)break;
-   const t=enemyAttack?pool[Math.floor(Math.random()*pool.length)]:pool[0];
-   const targetEl=document.getElementById(t.id);
-   document.querySelector('#flash').classList.add('on');
-   if(targetEl)targetEl.classList.add('hit');
-   if(t.side==='A'&&!debugInvincible&&tryEvade(t)){
-     damagePop(targetEl,'MISS');
-     await resolveMirrorEvadeEffects(t,att);
-     await sleep(90);
-     document.querySelector('#flash').classList.remove('on');
-     if(targetEl)targetEl.classList.remove('hit');
-     if(att.hp<=0)break;
+   const alive=living(defenders);
+   if(!alive.length)break;
+   let hitTargets;
+   if(enemyAttack&&targetMode==='allLiving'){
+     hitTargets=[...alive];
    }else{
-     const rawDmg=(t.side==='A'&&debugInvincible)?0:Math.max(1,Math.floor(effectiveAtk(att)*hitRate));
-     const hit=rawDmg>0?applyCombatDamage(t,rawDmg):{damage:0,shieldUsed:0,afterDef:0};
-     damagePop(targetEl,hit.damage);
-     await sleep(150);
-     document.querySelector('#flash').classList.remove('on');
-     if(targetEl)targetEl.classList.remove('hit');
-     if(t.hp<=0){
-       if(targetEl)targetEl.classList.add('dying');
-       await sleep(120);
-       if(handleFrontlineDeath(t)){renderBattle();await sleep(140)}
-     }
+     const front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;
+     hitTargets=[enemyAttack?pool[Math.floor(Math.random()*pool.length)]:pool[0]];
    }
+   for(const t of hitTargets){
+     if(!t||t.hp<=0)continue;
+     const targetEl=document.getElementById(t.id);
+     document.querySelector('#flash').classList.add('on');
+     if(targetEl)targetEl.classList.add('hit');
+     if(t.side==='A'&&!debugInvincible&&tryEvade(t)){
+       damagePop(targetEl,'MISS');
+       await resolveMirrorEvadeEffects(t,att);
+       await sleep(90);
+       document.querySelector('#flash').classList.remove('on');
+       if(targetEl)targetEl.classList.remove('hit');
+       if(att.hp<=0)break;
+     }else{
+       const rawDmg=(t.side==='A'&&debugInvincible)?0:Math.max(1,Math.floor(effectiveAtk(att)*hitRate));
+       const hit=rawDmg>0?applyCombatDamage(t,rawDmg):{damage:0,shieldUsed:0,afterDef:0};
+       damagePop(targetEl,hit.damage);
+       await sleep(150);
+       document.querySelector('#flash').classList.remove('on');
+       if(targetEl)targetEl.classList.remove('hit');
+       if(t.hp<=0){
+         if(targetEl)targetEl.classList.add('dying');
+         await sleep(120);
+         if(handleFrontlineDeath(t)){renderBattle();await sleep(140)}
+       }
+     }
+     if(att.hp<=0)break;
+   }
+   if(att.hp<=0)break;
    if(enemyAttack&&i<hitCount-1)await sleep(80);
+ }
+ if(att.hp>0&&enemyAfterimageProfile){
+   const swordGain=Math.max(0,Math.floor(Number(enemyAfterimageProfile.postSwordAllies)||0));
+   if(swordGain>0){
+     const allies=living(att.side==='E'?E:A);
+     for(const ally of allies)ally.sword=(ally.sword||0)+swordGain;
+     document.querySelector('#status').textContent=`${att.name}「${att.skill.name}」｜生存敵全体 🗡️+${swordGain}`;
+     renderBattle();
+     await sleep(120);
+   }
  }
  if(attacker)attacker.classList.remove('attacking');
 }
