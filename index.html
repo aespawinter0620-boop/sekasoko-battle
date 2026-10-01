@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.359</title>
+<title>セカソコ ver.360</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.360: damage-pop anchoring fix. Detached/stale battle DOM nodes are re-resolved by unit id before popup positioning; invalid anchors are skipped. 《宣戦布告》 reacquires the live target element after renderBattle(). */
 /* ver.359: skill-book / skill-set UI cleanup. Skill screens use a full-height scroll shell with sticky back header; Unique/Free loadout cards are compact and tappable. */
 /* ver.358: DEBUG fresh-save reset now forces free-skill trees to ★1 instead of being misdetected as a legacy save after automatic party migration. */
 /* ver.357: free-skill tree stages are fully connected to battle CT, costs, hit counts, damage, healing, and resource gains. */
@@ -1417,7 +1418,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.359";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.360";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2946,9 +2947,22 @@ function renderBattle(){
  const now=allUnits().filter(x=>x.hp>0).sort(compareTurn).slice(0,5);
  document.querySelector('#order').innerHTML=now.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.side==='A'?'味':'敵'} ${u.name}</span>`).join('');renderOrder();renderActorStates();bindBattleUnitDetails();
 }
-function damagePop(el,n){if(!el)return;const r=el.getBoundingClientRect(),app=document.querySelector('.app').getBoundingClientRect(),d=document.createElement('div'),text=String(n),isHeal=text.startsWith('+');d.className='damagePop'+(isHeal?' healPop':'');d.textContent=text==='MISS'?'MISS':isHeal?text:'-'+text;d.style.left=(r.left-app.left+r.width/2)+'px';d.style.top=(r.top-app.top+Math.max(18,r.height*.28))+'px';document.querySelector('.app').appendChild(d);setTimeout(()=>d.remove(),700)}
-function counterDamagePop(el,n){if(!el)return;const r=el.getBoundingClientRect(),app=document.querySelector('.app').getBoundingClientRect(),d=document.createElement('div');d.className='damagePop counterDamagePop';d.textContent='-'+String(n);d.style.left=(r.left-app.left+r.width/2)+'px';d.style.top=(r.top-app.top+Math.max(18,r.height*.28))+'px';document.querySelector('.app').appendChild(d);setTimeout(()=>d.remove(),700)}
-function counterPop(el){if(!el)return;const r=el.getBoundingClientRect(),app=document.querySelector('.app').getBoundingClientRect(),d=document.createElement('div');d.className='counterPop';d.textContent='反撃！';d.style.left=(r.left-app.left+r.width/2)+'px';d.style.top=(r.top-app.top+Math.max(8,r.height*.18))+'px';document.querySelector('.app').appendChild(d);setTimeout(()=>d.remove(),760)}
+function liveBattleAnchor(el){
+ if(!el)return null;
+ if(typeof el==='string')return document.getElementById(el);
+ if(el.isConnected)return el;
+ return el.id?document.getElementById(el.id):null;
+}
+function battlePopPosition(el,yRate=.28,minY=18){
+ const live=liveBattleAnchor(el),app=document.querySelector('.app');
+ if(!live||!app||!live.isConnected||!app.isConnected)return null;
+ const r=live.getBoundingClientRect(),a=app.getBoundingClientRect();
+ if(!Number.isFinite(r.left)||!Number.isFinite(r.top)||r.width<=0||r.height<=0)return null;
+ return{app,left:r.left-a.left+r.width/2,top:r.top-a.top+Math.max(minY,r.height*yRate)};
+}
+function damagePop(el,n){const pos=battlePopPosition(el,.28,18);if(!pos)return;const d=document.createElement('div'),text=String(n),isHeal=text.startsWith('+');d.className='damagePop'+(isHeal?' healPop':'');d.textContent=text==='MISS'?'MISS':isHeal?text:'-'+text;d.style.left=pos.left+'px';d.style.top=pos.top+'px';pos.app.appendChild(d);setTimeout(()=>d.remove(),700)}
+function counterDamagePop(el,n){const pos=battlePopPosition(el,.28,18);if(!pos)return;const d=document.createElement('div');d.className='damagePop counterDamagePop';d.textContent='-'+String(n);d.style.left=pos.left+'px';d.style.top=pos.top+'px';pos.app.appendChild(d);setTimeout(()=>d.remove(),700)}
+function counterPop(el){const pos=battlePopPosition(el,.18,8);if(!pos)return;const d=document.createElement('div');d.className='counterPop';d.textContent='反撃！';d.style.left=pos.left+'px';d.style.top=pos.top+'px';pos.app.appendChild(d);setTimeout(()=>d.remove(),760)}
 function living(arr){return arr.filter(x=>x.hp>0)}
 function pullForwardForSlot(side,frontSlot){
  if(frontSlot<0||frontSlot>2)return null;
@@ -3220,15 +3234,24 @@ async function skillBookMikotoWarDeclaration(att,defenders){
  const copperCost=Math.max(0,Math.floor(Number(spec.copperCost)||0));if(getTierBuff(att,'mirror','copper')<copperCost)return;
  const pool=frontEnemies(defenders);if(!pool.length)return;
  consumeTierBuff(att,'mirror','copper',copperCost);
- const t=pool[Math.floor(Math.random()*pool.length)],attacker=document.getElementById(att.id),el=document.getElementById(t.id),hitCount=Math.max(1,Math.floor(Number(spec.hits)||1)),rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(Math.max(0,Number(spec.power)||0)/100)));
- if(attacker)attacker.classList.add('attacking');document.querySelector('#status').textContent=`${att.name}「スキルブック《宣戦布告》」 ${freeSkillBookStageLabel('mikotoWarDeclaration')}｜銅🪞${copperCost}消費｜ATK${spec.power}%×${hitCount}`;renderBattle();await sleep(110);
+ const t=pool[Math.floor(Math.random()*pool.length)],targetId=t.id,hitCount=Math.max(1,Math.floor(Number(spec.hits)||1)),rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(Math.max(0,Number(spec.power)||0)/100)));
+ let attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
+ document.querySelector('#status').textContent=`${att.name}「スキルブック《宣戦布告》」 ${freeSkillBookStageLabel('mikotoWarDeclaration')}｜銅🪞${copperCost}消費｜ATK${spec.power}%×${hitCount}`;
+ renderBattle();await sleep(110);
+ attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
  let total=0;
  for(let i=0;i<hitCount;i++){
-  if(el)el.classList.add('hit');const hit=applyCombatDamage(t,rawPerHit);total+=hit.damage;damagePop(el,hit.damage);await sleep(90);if(el)el.classList.remove('hit')
+  const el=document.getElementById(targetId);
+  if(el)el.classList.add('hit');
+  const hit=applyCombatDamage(t,rawPerHit);total+=hit.damage;damagePop(el||targetId,hit.damage);
+  await sleep(90);
+  const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
  }
  att.sword=(att.sword||0)+Math.max(0,Math.floor(Number(spec.sword)||0));
+ const el=document.getElementById(targetId);
  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
- if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《宣戦布告》 ${hitCount}Hit／計${total}ダメージ｜銅🪞-${copperCost}／🗡️+${displayInt(spec.sword)}`;renderBattle();await sleep(110);
+ attacker=document.getElementById(att.id);if(attacker)attacker.classList.remove('attacking');
+ document.querySelector('#status').textContent=`《宣戦布告》 ${hitCount}Hit／計${total}ダメージ｜銅🪞-${copperCost}／🗡️+${displayInt(spec.sword)}`;renderBattle();await sleep(110);
 }
 async function skillBookMikotoMeikyoShisui(att){
  const spec=freeSkillBookCurrentSpec('mikotoMeikyoShisui');if(!att||att.hp<=0||!spec)return;
