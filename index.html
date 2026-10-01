@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.370</title>
+<title>セカソコ ver.371</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.371: Yuzu free-skill trilogy implemented and fully connected. 《一撃必殺》 converts all personal copper/silver/gold mirror into a rear-priority finisher; 《自己犠牲》 spends HP and may kill the caster to shield other living Suppa; 《瞑想》 converts copper mirror into self-heal + shield. All three use book-owned ★1→★5+1 trees, dynamic CT/effects, usability checks, AUTO rotation, UI, save persistence, and default Yuzu loadout migration. */
 /* ver.370: Yuzu 《雲隠霧消》 unique-skill tree implemented and fully connected to battle. Rear-priority random retargeting per Hit, all-living-Suppa copper/silver/gold mirror supply, CT and power now scale from ★1 to ★5+1; manual ally target selection is removed. */
 /* ver.369: afterimage spawn system expanded. Normal floors now spawn 2〜4 random implemented afterimages; 5F uses ★4 rear MID BOSS + three ★1 front guards; 10F uses ★5 rear-center BOSS + three ★2 front guards + two ★3 rear-side guards. Only the ★5 boss receives the ×3 boss HP multiplier; WARNING names the actual random ★5 boss. */
 /* ver.368: Nagi afterimage implemented on the shared afterimage foundation. ★1〜★5 use Mikoto-matched base stats, CT120 all-party multi-hit attacks, and post-attack sword support for all living enemies including Nagi. Spawn rules remain unchanged until the next spawn-system update. */
@@ -1428,7 +1429,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.370";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.371";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2505,12 +2506,15 @@ const skillBooks={
  nagiBulletLoad:{id:'nagiBulletLoad',name:'補給部隊出動',ct:180,targetType:'allAllies',short:'スキルツリー連動',detail:'《補給部隊出動》｜生存味方全体へ銅🪞・銀🪞・金🪞・🗡️を補給する。★段階に応じてCTと補給量が成長する。'},
  nagiAnnihilationOrder:{id:'nagiAnnihilationOrder',name:'殲滅命令',ct:200,targetType:'randomAll',short:'スキルツリー連動',detail:'《殲滅命令》｜味方全体の銀🪞を全消費し、その合計数%ATKを基準にランダム多段攻撃。★段階でCT・Hit数が成長する。'},
  nagiWaitOrder:{id:'nagiWaitOrder',name:'待機命令',ct:350,targetType:'allAllies',short:'スキルツリー連動',detail:'《待機命令》｜味方全体の金・銀・銅🪞を全消費し、各自の消費量を🛡️へ変換する。★段階でCT・変換倍率が成長する。'},
+ yuzuOneHitKill:{id:'yuzuOneHitKill',name:'一撃必殺',ct:350,targetType:'randomRearPriority',short:'スキルツリー連動',detail:'《一撃必殺》｜自身の金・銀・銅🪞を全消費し、消費合計数に応じた高倍率ATKダメージを敵後衛ランダム1体へ与える。後衛不在時は前衛。★段階でCT・変換倍率が成長する。'},
+ yuzuSelfSacrifice:{id:'yuzuSelfSacrifice',name:'自己犠牲',ct:150,targetType:'otherSuppa',short:'スキルツリー連動',detail:'《自己犠牲》｜自身の最大HP基準でHPを消費し、本人以外の生存透波全員へ各自の最大HP基準の🛡️を付与する。HP消費で自身が戦闘不能になることを許可。本人以外の生存透波が1人以上いる時のみ使用可能。'},
+ yuzuMeditation:{id:'yuzuMeditation',name:'瞑想',ct:350,targetType:'self',short:'スキルツリー連動',detail:'《瞑想》｜自身の銅🪞を消費し、最大HP基準でHPを回復しつつ🛡️を得る。★段階でCT・銅消費・回復率・🛡️率が成長する。'},
  bloodSword:{id:'bloodSword',name:'ブラッドソード',ct:100,targetType:'selectFront',power:1.0,short:'敵前衛1体を選択 ATK100%／自身🩸+1 🗡️+1　CT100',detail:'《ブラッドソード》｜CT100｜選択した敵前衛1体へATK依存中（ATK100%）。攻撃後、自身に🩸吸血+1、🗡️剣+1。手動時は対象を選択。AUTO時は生存している敵前衛からランダム1体を選ぶ。'},
  heal:{id:'heal',name:'ヒール',ct:120,targetType:'selectAlly',power:.05,short:'味方単体を選択 HP5%回復　CT120',detail:'《ヒール》｜CT120｜生存している味方単体を選択し、その対象の最大HP5%を回復。AUTO時は生存している味方から自動選択。'},
  mirrorMastery:{id:'mirrorMastery',name:'明鏡止水の極み',ct:250,targetType:'randomAll',short:'銀🪞20消費／敵全体ランダムATK100%×30／🪞20 🗡️15 💪15／金🪞1　CT250',detail:'《明鏡止水の極み》｜CT250｜銀🪞20以上で使用可能。銀🪞20消費。生存している敵全体から毎Hitランダムに1体を選び、ATK依存小ダメージ（ATK100%）を30回与える。使用後、自身に銅🪞+20、🗡️+15、💪+15、金🪞+1。属性制限なし。｜【金🪞】最大100。反撃成功時、金🪞+1後の現在スタック数%で発動し、金🪞を全消費して消費数と同数の🛡️を得る。'},
  milkingExperience:{id:'milkingExperience',name:'搾乳体験',ct:250,targetType:'allAllies',short:'銀🥛20消費／味方全員🥛20／自身🗡️10 💪10／金🥛1　CT250',detail:'《搾乳体験》｜CT250｜銀🥛20以上で使用可能。銀🥛20消費。自身を含む生存味方全員へ銅🥛+20。使用後、自身に🗡️+10、💪+10、金🥛+1。属性制限なし。｜【🥛金】自身のターン開始時、1スタックにつき最大HP1%回復。発動時に消費しない。'}
 };
-const ownedSkillBookIds=['mikotoAbsoluteRelease','mikotoWarDeclaration','mikotoMeikyoShisui','nagiBulletLoad','nagiAnnihilationOrder','nagiWaitOrder','bloodSword','heal','mirrorMastery','milkingExperience'],skillEquipKey='sekasokoSkillBookEquip_v1',skillEquipLayoutKey='sekasokoSkillBookLayout_v341',mikotoFreeSkillMigrationKey='sekasokoMikotoFreeSkills_v347',nagiFreeSkillMigrationKey='sekasokoNagiFreeSkills_v363';
+const ownedSkillBookIds=['mikotoAbsoluteRelease','mikotoWarDeclaration','mikotoMeikyoShisui','nagiBulletLoad','nagiAnnihilationOrder','nagiWaitOrder','yuzuOneHitKill','yuzuSelfSacrifice','yuzuMeditation','bloodSword','heal','mirrorMastery','milkingExperience'],skillEquipKey='sekasokoSkillBookEquip_v1',skillEquipLayoutKey='sekasokoSkillBookLayout_v341',mikotoFreeSkillMigrationKey='sekasokoMikotoFreeSkills_v347',nagiFreeSkillMigrationKey='sekasokoNagiFreeSkills_v363',yuzuFreeSkillMigrationKey='sekasokoYuzuFreeSkills_v371';
 
 // =========================================================
 // ver.355 FREE SKILL BOOK TREE FOUNDATION
@@ -2621,6 +2625,54 @@ const FREE_SKILL_TREE_DATA={
    {label:'★5',delta:'金🪞倍率 ×2.5 → ×3。銀🪞倍率 ×0.8 → ×1。銅🪞倍率 ×0.15 → ×0.2。'},
    {label:'★5+1',delta:'CT270 → CT250。完成。'}
   ]
+ },
+ yuzuOneHitKill:{
+  name:'一撃必殺',
+  role:'自身の金・銀・銅🪞を全て単発火力へ変換し、敵後衛を優先して仕留めるフィニッシャー。',
+  stages:[
+   {label:'★1',delta:'CT350。自身の金🪞・銀🪞・銅🪞を全消費。消費合計数×2%ATKダメージを敵後衛ランダム1体へ与える。後衛不在時は前衛。'},
+   {label:'★1+1',delta:'CT350 → CT330。'},
+   {label:'★2',delta:'変換倍率 消費合計数×2% → ×2.5%ATK。'},
+   {label:'★2+1',delta:'CT330 → CT320。'},
+   {label:'★3',delta:'変換倍率 ×2.5% → ×3%ATK。'},
+   {label:'★3+1',delta:'CT320 → CT300。'},
+   {label:'★4',delta:'変換倍率 ×3% → ×4%ATK。'},
+   {label:'★4+1',delta:'CT300 → CT290。'},
+   {label:'★5',delta:'変換倍率 ×4% → ×5%ATK。'},
+   {label:'★5+1',delta:'CT290 → CT280。完成。'}
+  ]
+ },
+ yuzuSelfSacrifice:{
+  name:'自己犠牲',
+  role:'自身のHPを代償に、本人以外の生存透波全員へ強力な🛡️を配る防御支援。自身が戦闘不能になる発動も許可する。',
+  stages:[
+   {label:'★1',delta:'CT150。自身の最大HP50%分のHPを消費。本人以外の生存透波全員へ、それぞれ本人の最大HP30%分の🛡️を付与。'},
+   {label:'★1+1',delta:'CT150 → CT140。'},
+   {label:'★2',delta:'HP消費 最大HP50% → 45%。'},
+   {label:'★2+1',delta:'🛡️付与 最大HP30% → 35%。'},
+   {label:'★3',delta:'CT140 → CT130。'},
+   {label:'★3+1',delta:'HP消費 最大HP45% → 40%。'},
+   {label:'★4',delta:'🛡️付与 最大HP35% → 40%。'},
+   {label:'★4+1',delta:'CT130 → CT115。'},
+   {label:'★5',delta:'HP消費 最大HP40% → 35%。🛡️付与 最大HP40% → 45%。'},
+   {label:'★5+1',delta:'CT115 → CT100。HP消費 最大HP35% → 30%。🛡️付与 最大HP45% → 50%。完成。'}
+  ]
+ },
+ yuzuMeditation:{
+  name:'瞑想',
+  role:'銅🪞を自身の回復と🛡️へ同時変換する自己立て直しスキル。',
+  stages:[
+   {label:'★1',delta:'CT350。銅🪞30消費。最大HP5%回復し、最大HP5%分の🛡️を得る。'},
+   {label:'★1+1',delta:'CT350 → CT330。'},
+   {label:'★2',delta:'銅🪞消費 30 → 28。'},
+   {label:'★2+1',delta:'回復・🛡️ 最大HP5% → 6%。'},
+   {label:'★3',delta:'CT330 → CT310。'},
+   {label:'★3+1',delta:'銅🪞消費 28 → 25。'},
+   {label:'★4',delta:'回復・🛡️ 最大HP6% → 8%。'},
+   {label:'★4+1',delta:'CT310 → CT280。'},
+   {label:'★5',delta:'銅🪞消費 25 → 20。回復・🛡️ 最大HP8% → 10%。'},
+   {label:'★5+1',delta:'CT280 → CT250。完成。'}
+  ]
  }
 };
 function loadFreeSkillTree(){let d={};try{d=JSON.parse(localStorage.getItem(FREE_SKILL_TREE_KEY)||'{}')||{}}catch(e){}return d}
@@ -2677,6 +2729,21 @@ function freeSkillBookCurrentSpec(bookId,stage=getFreeSkillBookStage(bookId)){
   if(stage>=1)ct=330;if(stage>=2)goldRate=1.5;if(stage>=3)ct=310;if(stage>=4){goldRate=2;silverRate=.7}if(stage>=5)ct=290;if(stage>=6){goldRate=2.5;silverRate=.8;copperRate=.15}if(stage>=7)ct=270;if(stage>=8){goldRate=3;silverRate=1;copperRate=.2}if(stage>=9)ct=250;
   return{ct,goldRate,silverRate,copperRate};
  }
+ if(bookId==='yuzuOneHitKill'){
+  let ct=350,mirrorRate=2;
+  if(stage>=1)ct=330;if(stage>=2)mirrorRate=2.5;if(stage>=3)ct=320;if(stage>=4)mirrorRate=3;if(stage>=5)ct=300;if(stage>=6)mirrorRate=4;if(stage>=7)ct=290;if(stage>=8)mirrorRate=5;if(stage>=9)ct=280;
+  return{ct,mirrorRate};
+ }
+ if(bookId==='yuzuSelfSacrifice'){
+  let ct=150,hpCostRate=50,shieldRate=30;
+  if(stage>=1)ct=140;if(stage>=2)hpCostRate=45;if(stage>=3)shieldRate=35;if(stage>=4)ct=130;if(stage>=5)hpCostRate=40;if(stage>=6)shieldRate=40;if(stage>=7)ct=115;if(stage>=8){hpCostRate=35;shieldRate=45}if(stage>=9){ct=100;hpCostRate=30;shieldRate=50}
+  return{ct,hpCostRate,shieldRate};
+ }
+ if(bookId==='yuzuMeditation'){
+  let ct=350,copperCost=30,healRate=5,shieldRate=5;
+  if(stage>=1)ct=330;if(stage>=2)copperCost=28;if(stage>=3){healRate=6;shieldRate=6}if(stage>=4)ct=310;if(stage>=5)copperCost=25;if(stage>=6){healRate=8;shieldRate=8}if(stage>=7)ct=280;if(stage>=8){copperCost=20;healRate=10;shieldRate=10}if(stage>=9)ct=250;
+  return{ct,copperCost,healRate,shieldRate};
+ }
  return null;
 }
 function freeSkillBookCurrentText(bookId,stage=getFreeSkillBookStage(bookId)){
@@ -2687,6 +2754,9 @@ function freeSkillBookCurrentText(bookId,stage=getFreeSkillBookStage(bookId)){
  if(bookId==='nagiBulletLoad'&&x)return `CT${x.ct}｜味方全体 銅🪞+${x.copper}／銀🪞+${x.silver}／金🪞+${x.gold}／🗡️+${x.sword}`;
  if(bookId==='nagiAnnihilationOrder'&&x)return `CT${x.ct}｜味方全体 銀🪞全消費｜消費合計数%ATK×${x.hits}Hit`;
  if(bookId==='nagiWaitOrder'&&x)return `CT${x.ct}｜味方全体 全🪞消費｜🛡️変換 金×${x.goldRate}／銀×${x.silverRate}／銅×${x.copperRate}`;
+ if(bookId==='yuzuOneHitKill'&&x)return `CT${x.ct}｜自身の金銀銅🪞全消費｜消費合計数×${x.mirrorRate}%ATK｜後衛優先単体`;
+ if(bookId==='yuzuSelfSacrifice'&&x)return `CT${x.ct}｜最大HP${x.hpCostRate}%分HP消費｜他の透波全員へ🛡️${x.shieldRate}%`;
+ if(bookId==='yuzuMeditation'&&x)return `CT${x.ct}｜銅🪞${x.copperCost}消費｜最大HP${x.healRate}%回復＋🛡️${x.shieldRate}%`;
  const b=skillBooks[bookId];return b?.short||'性能未設定';
 }
 function freeSkillBookCurrentDetail(bookId,stage=getFreeSkillBookStage(bookId)){
@@ -2697,6 +2767,9 @@ function freeSkillBookCurrentDetail(bookId,stage=getFreeSkillBookStage(bookId)){
  if(bookId==='nagiBulletLoad'&&x)return `生存している味方全員へ銅🪞+${x.copper}、銀🪞+${x.silver}、金🪞+${x.gold}、🗡️+${x.sword}。`;
  if(bookId==='nagiAnnihilationOrder'&&x)return `生存味方全員の銀🪞を全消費し、その合計数をSとする。1HitあたりATK S%ダメージ。各Hitごとに生存敵全体からランダム1体を選択して${x.hits}回攻撃する。`;
  if(bookId==='nagiWaitOrder'&&x)return `生存味方全員が自身の金🪞・銀🪞・銅🪞を全消費。各味方ごとに「金×${x.goldRate} + 銀×${x.silverRate} + 銅×${x.copperRate}」を合計し、最後に端数を切り捨てた数だけその本人へ🛡️を付与する。`;
+ if(bookId==='yuzuOneHitKill'&&x)return `自身の金🪞・銀🪞・銅🪞を全消費し、消費合計数をSとする。敵後衛ランダム1体へATK「S×${x.mirrorRate}%」ダメージ。後衛に生存者がいなければ前衛ランダム1体を対象とする。`;
+ if(bookId==='yuzuSelfSacrifice'&&x)return `自身の最大HP${x.hpCostRate}%分のHPを消費する。現在HPが不足していても発動でき、0になれば自身は戦闘不能。その後、本人以外の生存透波全員へ、それぞれ受け手自身の最大HP${x.shieldRate}%分の🛡️を付与する。本人以外の生存透波が1人以上いる時のみ使用可能。`;
+ if(bookId==='yuzuMeditation'&&x)return `自身の銅🪞を${x.copperCost}消費。最大HP${x.healRate}%分を回復し、自身へ最大HP${x.shieldRate}%分の🛡️を付与する。回復量は最大HPを超えない。`;
  return skillBooks[bookId]?.detail||'詳細未設定';
 }
 function skillBookUiStage(bookId){return FREE_SKILL_TREE_DATA[bookId]?freeSkillBookStageLabel(bookId):'育成未対応'}
@@ -2720,8 +2793,8 @@ initializeFreeSkillTreeV355();
 function loadSkillEquip(){
  let d={};try{d=JSON.parse(localStorage.getItem(skillEquipKey)||'{}')||{}}catch(e){}
  if(!Object.keys(d).length){
-  d={mizuki:{2:'mikotoAbsoluteRelease',3:'mikotoWarDeclaration',4:'mikotoMeikyoShisui'},nagi:{2:'nagiBulletLoad',3:'nagiAnnihilationOrder',4:'nagiWaitOrder'}};
-  localStorage.setItem(skillEquipKey,JSON.stringify(d));localStorage.setItem(skillEquipLayoutKey,'1');localStorage.setItem(mikotoFreeSkillMigrationKey,'1');localStorage.setItem(nagiFreeSkillMigrationKey,'1');return d
+  d={mizuki:{2:'mikotoAbsoluteRelease',3:'mikotoWarDeclaration',4:'mikotoMeikyoShisui'},nagi:{2:'nagiBulletLoad',3:'nagiAnnihilationOrder',4:'nagiWaitOrder'},yuzu:{2:'yuzuOneHitKill',3:'yuzuSelfSacrifice',4:'yuzuMeditation'}};
+  localStorage.setItem(skillEquipKey,JSON.stringify(d));localStorage.setItem(skillEquipLayoutKey,'1');localStorage.setItem(mikotoFreeSkillMigrationKey,'1');localStorage.setItem(nagiFreeSkillMigrationKey,'1');localStorage.setItem(yuzuFreeSkillMigrationKey,'1');return d
  }
  if(localStorage.getItem(skillEquipLayoutKey)!=='1'){
   for(const slots of Object.values(d)){
@@ -2744,6 +2817,13 @@ function loadSkillEquip(){
   if(!d.nagi[3])d.nagi[3]='nagiAnnihilationOrder';
   if(!d.nagi[4])d.nagi[4]='nagiWaitOrder';
   localStorage.setItem(nagiFreeSkillMigrationKey,'1');
+ }
+ if(localStorage.getItem(yuzuFreeSkillMigrationKey)!=='1'){
+  d.yuzu=d.yuzu||{};
+  if(!d.yuzu[2])d.yuzu[2]='yuzuOneHitKill';
+  if(!d.yuzu[3])d.yuzu[3]='yuzuSelfSacrifice';
+  if(!d.yuzu[4])d.yuzu[4]='yuzuMeditation';
+  localStorage.setItem(yuzuFreeSkillMigrationKey,'1');
  }
  localStorage.setItem(skillEquipKey,JSON.stringify(d));
  return d
@@ -2769,6 +2849,18 @@ function skillBookBlockReason(u,book){
  if(book.id==='nagiWaitOrder'){
   const total=living(A).reduce((sum,a)=>sum+getTierBuff(a,'mirror','copper')+getTierBuff(a,'mirror','silver')+getTierBuff(a,'mirror','gold'),0);
   if(total<1)return'《待機命令》は味方全体の🪞が1以上で発動可能';
+ }
+ if(book.id==='yuzuOneHitKill'){
+  const total=getTierBuff(u,'mirror','copper')+getTierBuff(u,'mirror','silver')+getTierBuff(u,'mirror','gold');
+  if(total<1)return'《一撃必殺》は自身の金・銀・銅🪞合計1以上で発動可能';
+ }
+ if(book.id==='yuzuSelfSacrifice'){
+  const others=living(A).filter(a=>a!==u&&isSuppaUnit(a));
+  if(!others.length)return'《自己犠牲》は本人以外の生存透波が1人以上いる時のみ発動可能';
+ }
+ if(book.id==='yuzuMeditation'){
+  const spec=freeSkillBookCurrentSpec(book.id),cost=Math.max(0,Number(spec?.copperCost)||0);
+  if(getTierBuff(u,'mirror','copper')<cost)return`《瞑想》は銅🪞${cost}以上で発動可能`;
  }
  if(book.id==='mirrorMastery'&&getTierBuff(u,'mirror','silver')<20)return'《明鏡止水の極み》は銀🪞20以上で発動可能';
  if(book.id==='milkingExperience'&&getTierBuff(u,'milk','silver')<20)return'《搾乳体験》は銀🥛20以上で発動可能';
@@ -3621,6 +3713,36 @@ async function skillBookNagiWaitOrder(att){
  document.querySelector('#status').textContent=`${att.name}「スキルブック《待機命令》」 ${freeSkillBookStageLabel('nagiWaitOrder')}｜全軍🪞全消費→🛡️+${totalShield}（合計）`;renderBattle();await sleep(160);
 }
 
+async function skillBookYuzuOneHitKill(att,defenders){
+ const spec=freeSkillBookCurrentSpec('yuzuOneHitKill');if(!att||att.hp<=0||!spec)return;
+ const copper=Math.floor(getTierBuff(att,'mirror','copper')),silver=Math.floor(getTierBuff(att,'mirror','silver')),gold=Math.floor(getTierBuff(att,'mirror','gold')),spent=copper+silver+gold;if(spent<1)return;
+ const pool=yuzuUninMushoTargetPool(defenders);if(!pool.length)return;
+ if(copper>0)consumeTierBuff(att,'mirror','copper',copper);if(silver>0)consumeTierBuff(att,'mirror','silver',silver);if(gold>0)consumeTierBuff(att,'mirror','gold',gold);
+ const t=pool[Math.floor(Math.random()*pool.length)],targetId=t.id,pct=spent*Math.max(0,Number(spec.mirrorRate)||0),raw=Math.max(1,Math.floor(effectiveAtk(att)*(pct/100)));
+ let attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
+ document.querySelector('#status').textContent=`${att.name}「スキルブック《一撃必殺》」 ${freeSkillBookStageLabel('yuzuOneHitKill')}｜🪞${spent}全消費｜ATK${formatMultiplier(pct)}%`;renderBattle();await sleep(130);
+ attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');const el=document.getElementById(targetId);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,raw);damagePop(el||targetId,hit.damage);await sleep(150);const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
+ if(t.hp<=0){const deadEl=document.getElementById(targetId);if(deadEl)deadEl.classList.add('dying');await sleep(55);if(handleFrontlineDeath(t)){renderBattle();await sleep(60)}}
+ attacker=document.getElementById(att.id);if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《一撃必殺》 金${gold}＋銀${silver}＋銅${copper}＝${spent}消費｜ATK${formatMultiplier(pct)}%｜${hit.damage}ダメージ`;renderBattle();await sleep(130);
+}
+async function skillBookYuzuSelfSacrifice(att){
+ const spec=freeSkillBookCurrentSpec('yuzuSelfSacrifice');if(!att||att.hp<=0||!spec)return;
+ const recipients=living(A).filter(a=>a!==att&&isSuppaUnit(a));if(!recipients.length)return;
+ const hpCost=Math.max(0,Math.floor(Math.max(1,att.max)*(Math.max(0,Number(spec.hpCostRate)||0)/100))),beforeHp=Math.max(0,Number(att.hp)||0),actualLoss=Math.min(beforeHp,hpCost);att.hp=Math.max(0,beforeHp-hpCost);
+ const shieldGain=Math.max(0,Number(spec.shieldRate)||0);for(const ally of recipients)ally.shield=(ally.shield||0)+shieldGain;
+ document.querySelector('#status').textContent=`${att.name}「スキルブック《自己犠牲》」 ${freeSkillBookStageLabel('yuzuSelfSacrifice')}｜HP-${actualLoss}${att.hp<=0?'（戦闘不能）':''}｜他の透波${recipients.length}人へ🛡️+${formatMultiplier(shieldGain)}`;renderBattle();
+ const selfEl=document.getElementById(att.id);if(selfEl&&att.hp<=0)selfEl.classList.add('dying');await sleep(160);
+ if(att.hp<=0&&handleFrontlineDeath(att)){renderBattle();await sleep(80)}
+ document.querySelector('#status').textContent=`《自己犠牲》 最大HP${spec.hpCostRate}%分を代償｜本人以外の生存透波へ各自最大HP${spec.shieldRate}%分の🛡️`;renderBattle();await sleep(120);
+}
+async function skillBookYuzuMeditation(att){
+ const spec=freeSkillBookCurrentSpec('yuzuMeditation');if(!att||att.hp<=0||!spec)return;
+ const copperCost=Math.max(0,Math.floor(Number(spec.copperCost)||0));if(getTierBuff(att,'mirror','copper')<copperCost)return;consumeTierBuff(att,'mirror','copper',copperCost);
+ const plannedHeal=Math.max(0,Math.floor(Math.max(1,att.max)*(Math.max(0,Number(spec.healRate)||0)/100))),actualHeal=Math.min(plannedHeal,Math.max(0,att.max-att.hp));att.hp+=actualHeal;
+ const shieldGain=Math.max(0,Number(spec.shieldRate)||0);att.shield=(att.shield||0)+shieldGain;
+ const el=document.getElementById(att.id);if(el&&actualHeal>0)damagePop(el,`+${actualHeal}`);document.querySelector('#status').textContent=`${att.name}「スキルブック《瞑想》」 ${freeSkillBookStageLabel('yuzuMeditation')}｜銅🪞-${copperCost}／HP+${actualHeal}／🛡️+${formatMultiplier(shieldGain)}`;renderBattle();await sleep(150);
+}
+
 async function skillBookBloodSword(att,defenders){
  const pool=frontEnemies(defenders);if(!pool.length)return;
  const t=autoMode?pool[Math.floor(Math.random()*pool.length)]:await selectBattleTarget(pool,`${att.name}《ブラッドソード》｜攻撃する敵前衛を選択`);
@@ -3769,7 +3891,7 @@ async function battle(){
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
      await resolveMilkGoldTurnStart(u);
      tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
-     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=2){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='mikotoAbsoluteRelease')await skillBookMikotoAbsoluteRelease(u,E);else if(book?.id==='mikotoWarDeclaration')await skillBookMikotoWarDeclaration(u,E);else if(book?.id==='mikotoMeikyoShisui')await skillBookMikotoMeikyoShisui(u);else if(book?.id==='nagiBulletLoad')await skillBookNagiBulletLoad(u);else if(book?.id==='nagiAnnihilationOrder')await skillBookNagiAnnihilationOrder(u,E);else if(book?.id==='nagiWaitOrder')await skillBookNagiWaitOrder(u);else if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A);else if(book?.id==='mirrorMastery')await skillBookMirrorMastery(u,E);else if(book?.id==='milkingExperience')await skillBookMilkingExperience(u,A)}else if(u.cid===101){await absoluteDomainAttack(u,E)}else if(u.cid===102){await nagiIsseiSousha(u,E)}else if(u.cid===103){await yuzuUninMusho(u,E)}else if(u.cid===201){await hathorHolyDrop(u,E)}else if(u.cid===202){await baalFertileDrop(u,E)}else{await nandiMilkingGrace(u,E)};finalizeOverkillAction();currentActor=null;resolvePlayerAction=null}else{if(u.side==='A')beginOverkillAction(u);await attack(u,u.side==='A'?E:A);if(u.side==='A')finalizeOverkillAction()}
+     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=2){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='mikotoAbsoluteRelease')await skillBookMikotoAbsoluteRelease(u,E);else if(book?.id==='mikotoWarDeclaration')await skillBookMikotoWarDeclaration(u,E);else if(book?.id==='mikotoMeikyoShisui')await skillBookMikotoMeikyoShisui(u);else if(book?.id==='nagiBulletLoad')await skillBookNagiBulletLoad(u);else if(book?.id==='nagiAnnihilationOrder')await skillBookNagiAnnihilationOrder(u,E);else if(book?.id==='nagiWaitOrder')await skillBookNagiWaitOrder(u);else if(book?.id==='yuzuOneHitKill')await skillBookYuzuOneHitKill(u,E);else if(book?.id==='yuzuSelfSacrifice')await skillBookYuzuSelfSacrifice(u);else if(book?.id==='yuzuMeditation')await skillBookYuzuMeditation(u);else if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A);else if(book?.id==='mirrorMastery')await skillBookMirrorMastery(u,E);else if(book?.id==='milkingExperience')await skillBookMilkingExperience(u,A)}else if(u.cid===101){await absoluteDomainAttack(u,E)}else if(u.cid===102){await nagiIsseiSousha(u,E)}else if(u.cid===103){await yuzuUninMusho(u,E)}else if(u.cid===201){await hathorHolyDrop(u,E)}else if(u.cid===202){await baalFertileDrop(u,E)}else{await nandiMilkingGrace(u,E)};finalizeOverkillAction();currentActor=null;resolvePlayerAction=null}else{if(u.side==='A')beginOverkillAction(u);await attack(u,u.side==='A'?E:A);if(u.side==='A')finalizeOverkillAction()}
      u.next+=chosenActionCost(u,selectedSkillSlot);syncActiveParty();renderBattle();
    }
    if(!living(E).length){
