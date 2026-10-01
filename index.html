@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.357</title>
+<title>セカソコ ver.358</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.358: DEBUG fresh-save reset now forces free-skill trees to ★1 instead of being misdetected as a legacy save after automatic party migration. */
 /* ver.357: free-skill tree stages are fully connected to battle CT, costs, hit counts, damage, healing, and resource gains. */
 /* ver.356: skill-book hub UI now combines equipment, book details, and free-skill tree growth. */
 /* ver.355: free-skill-book tree data/storage foundation + legacy/fresh-save migration. */
@@ -1415,7 +1416,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.357";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.358";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2331,6 +2332,7 @@ const ownedSkillBookIds=['mikotoAbsoluteRelease','mikotoWarDeclaration','mikotoM
 // =========================================================
 const FREE_SKILL_TREE_KEY='sekasokoFreeSkillTree_v1';
 const FREE_SKILL_TREE_MIGRATION_KEY='sekasokoFreeSkillTreeMigration_v355';
+const FRESH_SAVE_RESET_KEY='sekasokoFreshSaveReset_v358';
 const FREE_SKILL_TREE_TEMP_COST=100;
 const FREE_SKILL_STAGE_LABELS=['★1','★1+1','★2','★2+1','★3','★3+1','★4','★4+1','★5','★5+1'];
 const MIKOTO_FREE_SKILL_BOOK_IDS=['mikotoAbsoluteRelease','mikotoWarDeclaration','mikotoMeikyoShisui'];
@@ -2436,15 +2438,17 @@ function skillBookUiCt(bookId){const x=freeSkillBookCurrentSpec(bookId);return x
 function hasPreV355SekasokoSave(){
  for(let i=0;i<localStorage.length;i++){
   const key=localStorage.key(i);
-  if(key&&key.startsWith('sekasoko')&&key!==FREE_SKILL_TREE_KEY&&key!==FREE_SKILL_TREE_MIGRATION_KEY)return true;
+  if(key&&key.startsWith('sekasoko')&&key!==FREE_SKILL_TREE_KEY&&key!==FREE_SKILL_TREE_MIGRATION_KEY&&key!==FRESH_SAVE_RESET_KEY)return true;
  }
  return false;
 }
 function initializeFreeSkillTreeV355(){
  if(localStorage.getItem(FREE_SKILL_TREE_MIGRATION_KEY)==='1')return;
- const legacySave=hasPreV355SekasokoSave(),stage=legacySave?FREE_SKILL_STAGE_LABELS.length-1:0,d=loadFreeSkillTree();
+ const freshReset=localStorage.getItem(FRESH_SAVE_RESET_KEY)==='1';
+ const legacySave=!freshReset&&hasPreV355SekasokoSave(),stage=legacySave?FREE_SKILL_STAGE_LABELS.length-1:0,d=loadFreeSkillTree();
  for(const id of MIKOTO_FREE_SKILL_BOOK_IDS){d[id]=d[id]||{};d[id].stage=stage}
  saveFreeSkillTree(d);localStorage.setItem(FREE_SKILL_TREE_MIGRATION_KEY,'1');
+ if(freshReset)localStorage.removeItem(FRESH_SAVE_RESET_KEY);
 }
 initializeFreeSkillTreeV355();
 function loadSkillEquip(){
@@ -2509,7 +2513,7 @@ function openSkillEquip(rid){
  const uniqueSlots=`<div class="skillSlotEquip fixedSkill"><b>固有スキル</b><span>${uniqueTitle.replace(/^固有/,'').trim()}</span><small>${uniqueDetail}</small></div>`;
  const eq=loadSkillEquip()[rid]||{},freeSlots=[2,3,4].map(sl=>{const id=eq[sl],b=skillBooks[id],stage=id&&FREE_SKILL_TREE_DATA[id]?`｜${freeSkillBookStageLabel(id)}`:'';return `<button class="skillSlotEquip" onclick="openSkillSlotPicker('${rid}',${sl})"><b>自由スキル${freeSkillOrdinal(sl)}${stage}</b><span>${b?b.name:'未設定'}</span><small>${b?(FREE_SKILL_TREE_DATA[id]?freeSkillBookCurrentText(id):b.short):'タップしてスキルブックを装備'}</small></button>`}).join('');
  const books=ownedSkillBookIds.map(id=>skillBookCardHtml(id,rid)).join('');
- document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>装備中</h3><div class="skillSlotsRow freeThree">${freeSlots}</div></div><div class="skillBookHubHead"><h3>所持スキルブック</h3><small>本をタップ → 詳細／育成</small></div><div class="skillBookHubList">${books}</div><div class="skillBookUiNote">自由スキルの育成状態はキャラクターではなくスキルブック本体に保存される。同じ本を別キャラへ付け替えても育成段階は維持。ver.357では現在の★段階が戦闘中のCT・消費量・Hit数・威力・回復・バフ獲得へそのまま反映される。</div>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${c.name}｜スキルブック</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="skillEquipSummary"><h3>固有スキル</h3><div class="skillSlotsRow">${uniqueSlots}</div></div><div class="skillEquipSummary"><h3>装備中</h3><div class="skillSlotsRow freeThree">${freeSlots}</div></div><div class="skillBookHubHead"><h3>所持スキルブック</h3><small>本をタップ → 詳細／育成</small></div><div class="skillBookHubList">${books}</div><div class="skillBookUiNote">自由スキルの育成状態はキャラクターではなくスキルブック本体に保存される。同じ本を別キャラへ付け替えても育成段階は維持。ver.357以降は現在の★段階が戦闘中のCT・消費量・Hit数・威力・回復・バフ獲得へそのまま反映される。</div>`;
  document.querySelector('#modal').classList.add('show')
 }
 function openSkillSlotPicker(rid,slot){
@@ -2526,7 +2530,7 @@ function openSkillBookDetail(bookId,rid='',done=false,equipDone=false){
  if(rid){const eq=loadSkillEquip()[rid]||{};equipActions=`<div class="skillBookActionGrid">${[2,3,4].map(sl=>{const active=eq[sl]===bookId;return `<button class="${active?'active':''}" onclick="equipBookFromDetail('${rid}',${sl},'${bookId}')" ${active?'disabled':''}>${active?`自由${freeSkillOrdinal(sl)} 装備中`:`自由${freeSkillOrdinal(sl)}へ装備`}</button>`}).join('')}</div>`}
  const treeBtn=tree?`<button class="skillBookTreeBtn" onclick="openFreeSkillTree('${bookId}','${rid}')">🌟 スキルツリー</button>`:'';
  const back=rid?`openSkillEquip('${rid}')`:'openSkillBookInventory()';
- document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>📕 ${b.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div>${done?'<div class="statUpgradeDone">✨ スキルブックを強化した！</div>':''}${equipDone?'<div class="statUpgradeDone">📕 装備を変更した！</div>':''}<div class="skillBookDetailTop"><div class="skillBookDetailTitle"><h3>${tree?stageLabel:'自由スキルブック'}</h3>${tree?`<span class="skillBookStageBadge">${stageLabel}</span>`:''}</div>${tree?`<div class="skillBookRole">${tree.role}</div>`:''}<div class="skillBookCurrent"><b>現在性能${tree?'（ツリー上）':''}</b><p>${tree?freeSkillBookCurrentDetail(bookId,stage):b.detail}<br><strong>${tree?freeSkillBookCurrentText(bookId,stage):`CT${b.ct}`}</strong></p></div><div class="skillBookRole">装備：${ownerText}</div></div>${treeBtn}${equipActions}<div class="skillBookUiNote">${tree?'★1 → ★5+1の一本道。現在は全ノード仮コスト 💎100 WD。★解放の宝玉化は後続実装。ver.357では表示されている現在性能がそのまま戦闘へ反映される。':'このスキルブックの育成ツリーは未設計。装備・付け替えは現在利用可能。'}</div><button class="skillEquipBack" onclick="${back}">← ${rid?'スキルブック':'所持一覧'}へ戻る</button>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>📕 ${b.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div>${done?'<div class="statUpgradeDone">✨ スキルブックを強化した！</div>':''}${equipDone?'<div class="statUpgradeDone">📕 装備を変更した！</div>':''}<div class="skillBookDetailTop"><div class="skillBookDetailTitle"><h3>${tree?stageLabel:'自由スキルブック'}</h3>${tree?`<span class="skillBookStageBadge">${stageLabel}</span>`:''}</div>${tree?`<div class="skillBookRole">${tree.role}</div>`:''}<div class="skillBookCurrent"><b>現在性能${tree?'（ツリー上）':''}</b><p>${tree?freeSkillBookCurrentDetail(bookId,stage):b.detail}<br><strong>${tree?freeSkillBookCurrentText(bookId,stage):`CT${b.ct}`}</strong></p></div><div class="skillBookRole">装備：${ownerText}</div></div>${treeBtn}${equipActions}<div class="skillBookUiNote">${tree?'★1 → ★5+1の一本道。現在は全ノード仮コスト 💎100 WD。★解放の宝玉化は後続実装。ver.357以降は表示されている現在性能がそのまま戦闘へ反映される。':'このスキルブックの育成ツリーは未設計。装備・付け替えは現在利用可能。'}</div><button class="skillEquipBack" onclick="${back}">← ${rid?'スキルブック':'所持一覧'}へ戻る</button>`;
  document.querySelector('#modal').classList.add('show')
 }
 function openFreeSkillTree(bookId,rid='',done=false){
@@ -3338,6 +3342,9 @@ function resetSekasokoSave(){
  const keys=[];
  for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key&&key.startsWith('sekasoko'))keys.push(key)}
  keys.forEach(key=>localStorage.removeItem(key));
+ // Auto-migrations recreate sekasokoParties before the free-skill tree initializer runs.
+ // Mark this reload explicitly as a fresh reset so the three Mikoto books start at ★1.
+ localStorage.setItem(FRESH_SAVE_RESET_KEY,'1');
  location.reload();
 }
 document.querySelector('#dbgResetSave').onclick=()=>{
