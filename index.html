@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.375</title>
+<title>セカソコ ver.376</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.376: mirror evade consumes up to 10 copper, then grants silver +1; counter chance uses updated silver, without consuming it. Counter power is ATK*(50+goldBefore)/100, then gold +1 capped at 100. No automatic gold conversion, shield grant or healing. Existing skill costs remain unchanged. */
 /* ver.375: generic 🛡️ reworked from max-HP absorption into an independent 0〜100 defensive stack. On each damaging hit, current 🛡️ stacks reduce post-DEF damage by the same percentage, then ceil(30% of the pre-trigger stacks) are consumed. HP displays no longer include shield value; all existing shield grants now feed the capped stack system without changing their numeric grant values. */
 /* ver.374: global damage floor rebalance. The post-DEF minimum damage floor is raised from 3% to 10% of raw damage for player attacks, normal attacks, and enemy attacks alike. Enemy DEF remains 0, so this primarily prevents high-DEF allies from reducing low-power multi-hit enemy attacks to near-zero. */
 /* ver.373: afterimage offense rebalance. Mikoto afterimage multi-hit power is raised from ATK10% to ATK25% per hit at every rank. Nagi afterimage skill rates remain unchanged. */
@@ -1433,7 +1434,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.375";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.376";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2353,7 +2354,7 @@ function mikotoUniqueSummary(stage=mikotoUniqueStage()){
 function mikotoUniqueDetail(stage=mikotoUniqueStage()){
  const x=mikotoUniqueBattleSpec(stage),parts=[`《絶対領域展開》 ${x.label}｜CT${x.ct}｜敵前衛ランダム1体へATK${Math.round(x.atkMultiplier*100)}%。`,`使用後、自身へ銅🪞+${x.copperGain}${x.silverGain?`、銀🪞+${x.silverGain}`:''}${x.goldGain?`、金🪞+${x.goldGain}`:''}。`];
  if(x.deepUnlocked)parts.push('★3到達：《深淵化》解放。');if(x.annihilationGuardUnlocked)parts.push('★4到達：《深淵化・滅》《深淵化・護》解放。');
- parts.push('【銅🪞】1スタックにつき回避率+1%、最大100。回避成功時に5消費して銀🪞+1。【銀🪞】最大100。回避成功時、銀🪞+1後の現在スタック数%でATK100%反撃。反撃成功時に5消費して金🪞+1。【金🪞】最大100。反撃成功時、金🪞+1後の現在スタック数%で発動し、金🪞を全消費して消費数と同数の🛡️を得る。');
+ parts.push('【銅🪞】1スタックにつき回避率+1%、最大100。回避成功時に10消費（10未満は残量全消費）して銀🪞+1。【銀🪞】最大100。回避成功時、銀🪞+1後の現在スタック数%で攻撃者へ反撃。威力はATK×（50＋加算前の金🪞スタック数）%。銀は反撃で消費せず、反撃後に金🪞+1。【金🪞】最大100。1スタックにつき反撃威力へATK+1%。反撃後に1獲得し、上限100。自動🛡️化・自動回復なし。対応スキルの消費資源として保持する。');
  return parts.join('｜')
 }
 function nagiUniqueBattleSpec(stage=nagiUniqueStage()){
@@ -2379,7 +2380,7 @@ function nagiUniqueSummary(stage=nagiUniqueStage()){
 function nagiUniqueDetail(stage=nagiUniqueStage()){
  const x=nagiUniqueBattleSpec(stage),parts=[`《一世掃射》 ${x.label}｜CT${x.ct}｜ATK${Math.round(x.atkMultiplier*100)}%×${x.hits}Hit。`,`各Hitごとに、生存している敵全体からランダム1体を選択して攻撃する。`,`使用後、自身へ追加で銅🪞+${x.selfCopperGain}。さらに自身を含む生存味方全体へ銅🪞+${x.copperGain}${x.silverGain?`、銀🪞+${x.silverGain}`:''}、🗡️+${x.swordGain}。`];
  if(x.deepUnlocked)parts.push('★3到達：《深淵化》解放。');if(x.annihilationGuardUnlocked)parts.push('★4到達：《深淵化・滅》《深淵化・護》解放。');
- parts.push('【銅🪞】1スタックにつき回避率+1%、最大100。回避成功時に5消費して銀🪞+1。【銀🪞】最大100。回避成功時、銀🪞+1後の現在スタック数%でATK100%反撃。反撃成功時に5消費して金🪞+1。');
+ parts.push('【銅🪞】1スタックにつき回避率+1%、最大100。回避成功時に10消費（10未満は残量全消費）して銀🪞+1。【銀🪞】最大100。回避成功時、銀🪞+1後の現在スタック数%で攻撃者へ反撃。威力はATK×（50＋加算前の金🪞スタック数）%。銀は反撃で消費せず、反撃後に金🪞+1。');
  return parts.join('｜')
 }
 function yuzuUniqueBattleSpec(stage=yuzuUniqueStage()){
@@ -2518,7 +2519,7 @@ const skillBooks={
  yuzuMeditation:{id:'yuzuMeditation',name:'瞑想',ct:350,targetType:'self',short:'スキルツリー連動',detail:'《瞑想》｜自身の銅🪞を消費し、最大HP基準でHPを回復しつつ🛡️スタックを得る。★段階でCT・銅消費・回復率・🛡️獲得量が成長する。'},
  bloodSword:{id:'bloodSword',name:'ブラッドソード',ct:100,targetType:'selectFront',power:1.0,short:'敵前衛1体を選択 ATK100%／自身🩸+1 🗡️+1　CT100',detail:'《ブラッドソード》｜CT100｜選択した敵前衛1体へATK依存中（ATK100%）。攻撃後、自身に🩸吸血+1、🗡️剣+1。手動時は対象を選択。AUTO時は生存している敵前衛からランダム1体を選ぶ。'},
  heal:{id:'heal',name:'ヒール',ct:120,targetType:'selectAlly',power:.05,short:'味方単体を選択 HP5%回復　CT120',detail:'《ヒール》｜CT120｜生存している味方単体を選択し、その対象の最大HP5%を回復。AUTO時は生存している味方から自動選択。'},
- mirrorMastery:{id:'mirrorMastery',name:'明鏡止水の極み',ct:250,targetType:'randomAll',short:'銀🪞20消費／敵全体ランダムATK100%×30／🪞20 🗡️15 💪15／金🪞1　CT250',detail:'《明鏡止水の極み》｜CT250｜銀🪞20以上で使用可能。銀🪞20消費。生存している敵全体から毎Hitランダムに1体を選び、ATK依存小ダメージ（ATK100%）を30回与える。使用後、自身に銅🪞+20、🗡️+15、💪+15、金🪞+1。属性制限なし。｜【金🪞】最大100。反撃成功時、金🪞+1後の現在スタック数%で発動し、金🪞を全消費して消費数と同数の🛡️を得る。'},
+ mirrorMastery:{id:'mirrorMastery',name:'明鏡止水の極み',ct:250,targetType:'randomAll',short:'銀🪞20消費／敵全体ランダムATK100%×30／🪞20 🗡️15 💪15／金🪞1　CT250',detail:'《明鏡止水の極み》｜CT250｜銀🪞20以上で使用可能。銀🪞20消費。生存している敵全体から毎Hitランダムに1体を選び、ATK依存小ダメージ（ATK100%）を30回与える。使用後、自身に銅🪞+20、🗡️+15、💪+15、金🪞+1。属性制限なし。｜【金🪞】最大100。1スタックにつき反撃威力へATK+1%。反撃後に1獲得し、上限100。自動🛡️化・自動回復なし。対応スキルの消費資源として保持する。'},
  milkingExperience:{id:'milkingExperience',name:'搾乳体験',ct:250,targetType:'allAllies',short:'銀🥛20消費／味方全員🥛20／自身🗡️10 💪10／金🥛1　CT250',detail:'《搾乳体験》｜CT250｜銀🥛20以上で使用可能。銀🥛20消費。自身を含む生存味方全員へ銅🥛+20。使用後、自身に🗡️+10、💪+10、金🥛+1。属性制限なし。｜【🥛金】自身のターン開始時、1スタックにつき最大HP1%回復。発動時に消費しない。'}
 };
 const ownedSkillBookIds=['mikotoAbsoluteRelease','mikotoWarDeclaration','mikotoMeikyoShisui','nagiBulletLoad','nagiAnnihilationOrder','nagiWaitOrder','yuzuOneHitKill','yuzuSelfSacrifice','yuzuMeditation','bloodSword','heal','mirrorMastery','milkingExperience'],skillEquipKey='sekasokoSkillBookEquip_v1',skillEquipLayoutKey='sekasokoSkillBookLayout_v341',mikotoFreeSkillMigrationKey='sekasokoMikotoFreeSkills_v347',nagiFreeSkillMigrationKey='sekasokoNagiFreeSkills_v363',yuzuFreeSkillMigrationKey='sekasokoYuzuFreeSkills_v371';
@@ -3425,37 +3426,28 @@ function tryEvade(t){
 }
 async function resolveMirrorEvadeEffects(evader,source){
  if(!evader)return{counterDamage:0,countered:false,goldTriggered:false,shieldGain:0};
- // ver.345 mirror loop:
- // evade success -> copper -5 -> silver +1 -> roll counter at current silver%
- // counter success -> ATK100% -> silver -5 -> gold +1 -> roll gold at current gold%
- // gold proc -> consume all gold -> gain equal 🛡️ stacks
- const copperSpent=consumeTierBuff(evader,'mirror','copper',5);
+ // ver.376: copper cost is capped by holdings; roll after silver +1.
+ // Counter damage uses gold BEFORE +1; silver is retained; no automatic gold effect.
+ const copperSpent=consumeTierBuff(evader,'mirror','copper',10);
  addTierBuff(evader,'mirror','silver',1);
  const silverForRoll=Math.min(100,Math.floor(getTierBuff(evader,'mirror','silver')));
- let counterDamage=0,countered=false,goldTriggered=false,shieldGain=0,silverSpent=0;
+ let counterDamage=0,countered=false;
+ const goldBefore=Math.min(100,getTierBuff(evader,'mirror','gold'));
  if(silverForRoll>0&&source&&source.hp>0&&Math.random()*100<silverForRoll){
   countered=true;
   const ownOverkillContext=evader.side==='A'&&source.side==='E'&&!overkillAction;if(ownOverkillContext)beginOverkillAction(evader);
-  const raw=Math.max(1,Math.floor(effectiveAtk(evader))),hit=applyCombatDamage(source,raw),sourceEl=document.getElementById(source.id),evaderEl=document.getElementById(evader.id);
+  const raw=Math.max(1,Math.floor(effectiveAtk(evader)*(50+goldBefore)/100)),hit=applyCombatDamage(source,raw),sourceEl=document.getElementById(source.id),evaderEl=document.getElementById(evader.id);
   if(evaderEl)counterPop(evaderEl);
   counterDamage=hit.damage;if(sourceEl){sourceEl.classList.add('hit');counterDamagePop(sourceEl,hit.damage)}
-  silverSpent=consumeTierBuff(evader,'mirror','silver',5);
   addTierBuff(evader,'mirror','gold',1);
-  const goldForRoll=Math.min(100,Math.floor(getTierBuff(evader,'mirror','gold')));
-  if(goldForRoll>0&&Math.random()*100<goldForRoll){
-   goldTriggered=true;
-   const requestedShield=consumeTierBuff(evader,'mirror','gold',goldForRoll);
-   shieldGain=addShield(evader,requestedShield);
-  }
   await sleep(100);if(sourceEl)sourceEl.classList.remove('hit');
   if(source.hp<=0){if(sourceEl)sourceEl.classList.add('dying');await sleep(100);if(handleFrontlineDeath(source)){renderBattle();await sleep(100)}}
   if(ownOverkillContext)finalizeOverkillAction();
  }
  const fx=[`銅🪞-${copperSpent}`,`銀🪞+1`];
- if(countered)fx.push(`反撃${counterDamage}`,`銀🪞-${silverSpent}`,`金🪞+1`);else fx.push(`反撃抽選${silverForRoll}%`);
- if(goldTriggered)fx.push(`金🪞全消費→🛡️+${shieldGain}`);
+ if(countered)fx.push(`反撃${counterDamage}`,`金🪞+${getTierBuff(evader,'mirror','gold')-goldBefore}`);else fx.push(`反撃抽選${silverForRoll}%`);
  document.querySelector('#status').textContent=`${evader.name} が回避！ MISS｜${fx.join(' / ')}`;
- renderBattle();return{counterDamage,countered,goldTriggered,shieldGain};
+ renderBattle();return{counterDamage,countered,goldTriggered:false,shieldGain:0};
 }
 
 // 🩸吸血：敵への攻撃成立後、全スタック消費。1stにつき対象の残存HP1%を自己回復。
