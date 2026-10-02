@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.374</title>
+<title>セカソコ ver.375</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.375: generic 🛡️ reworked from max-HP absorption into an independent 0〜100 defensive stack. On each damaging hit, current 🛡️ stacks reduce post-DEF damage by the same percentage, then ceil(30% of the pre-trigger stacks) are consumed. HP displays no longer include shield value; all existing shield grants now feed the capped stack system without changing their numeric grant values. */
 /* ver.374: global damage floor rebalance. The post-DEF minimum damage floor is raised from 3% to 10% of raw damage for player attacks, normal attacks, and enemy attacks alike. Enemy DEF remains 0, so this primarily prevents high-DEF allies from reducing low-power multi-hit enemy attacks to near-zero. */
 /* ver.373: afterimage offense rebalance. Mikoto afterimage multi-hit power is raised from ATK10% to ATK25% per hit at every rank. Nagi afterimage skill rates remain unchanged. */
 /* ver.372: Yuzu 《雲隠霧消》 resource supply rebalanced. Gold-mirror supply is removed; Yuzu keeps a constant total copper gain of 10 via self-extra + all-Suppa copper while ally copper catches up across the tree, and silver scales 5→15. */
@@ -1432,7 +1433,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.374";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.375";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2513,8 +2514,8 @@ const skillBooks={
  nagiAnnihilationOrder:{id:'nagiAnnihilationOrder',name:'殲滅命令',ct:200,targetType:'randomAll',short:'スキルツリー連動',detail:'《殲滅命令》｜味方全体の銀🪞を全消費し、その合計数%ATKを基準にランダム多段攻撃。★段階でCT・Hit数が成長する。'},
  nagiWaitOrder:{id:'nagiWaitOrder',name:'待機命令',ct:350,targetType:'allAllies',short:'スキルツリー連動',detail:'《待機命令》｜味方全体の金・銀・銅🪞を全消費し、各自の消費量を🛡️へ変換する。★段階でCT・変換倍率が成長する。'},
  yuzuOneHitKill:{id:'yuzuOneHitKill',name:'一撃必殺',ct:350,targetType:'randomRearPriority',short:'スキルツリー連動',detail:'《一撃必殺》｜自身の金・銀・銅🪞を全消費し、消費合計数に応じた高倍率ATKダメージを敵後衛ランダム1体へ与える。後衛不在時は前衛。★段階でCT・変換倍率が成長する。'},
- yuzuSelfSacrifice:{id:'yuzuSelfSacrifice',name:'自己犠牲',ct:150,targetType:'otherSuppa',short:'スキルツリー連動',detail:'《自己犠牲》｜自身の最大HP基準でHPを消費し、本人以外の生存透波全員へ各自の最大HP基準の🛡️を付与する。HP消費で自身が戦闘不能になることを許可。本人以外の生存透波が1人以上いる時のみ使用可能。'},
- yuzuMeditation:{id:'yuzuMeditation',name:'瞑想',ct:350,targetType:'self',short:'スキルツリー連動',detail:'《瞑想》｜自身の銅🪞を消費し、最大HP基準でHPを回復しつつ🛡️を得る。★段階でCT・銅消費・回復率・🛡️率が成長する。'},
+ yuzuSelfSacrifice:{id:'yuzuSelfSacrifice',name:'自己犠牲',ct:150,targetType:'otherSuppa',short:'スキルツリー連動',detail:'《自己犠牲》｜自身の最大HP基準でHPを消費し、本人以外の生存透波全員へ🛡️スタックを付与する。HP消費で自身が戦闘不能になることを許可。本人以外の生存透波が1人以上いる時のみ使用可能。'},
+ yuzuMeditation:{id:'yuzuMeditation',name:'瞑想',ct:350,targetType:'self',short:'スキルツリー連動',detail:'《瞑想》｜自身の銅🪞を消費し、最大HP基準でHPを回復しつつ🛡️スタックを得る。★段階でCT・銅消費・回復率・🛡️獲得量が成長する。'},
  bloodSword:{id:'bloodSword',name:'ブラッドソード',ct:100,targetType:'selectFront',power:1.0,short:'敵前衛1体を選択 ATK100%／自身🩸+1 🗡️+1　CT100',detail:'《ブラッドソード》｜CT100｜選択した敵前衛1体へATK依存中（ATK100%）。攻撃後、自身に🩸吸血+1、🗡️剣+1。手動時は対象を選択。AUTO時は生存している敵前衛からランダム1体を選ぶ。'},
  heal:{id:'heal',name:'ヒール',ct:120,targetType:'selectAlly',power:.05,short:'味方単体を選択 HP5%回復　CT120',detail:'《ヒール》｜CT120｜生存している味方単体を選択し、その対象の最大HP5%を回復。AUTO時は生存している味方から自動選択。'},
  mirrorMastery:{id:'mirrorMastery',name:'明鏡止水の極み',ct:250,targetType:'randomAll',short:'銀🪞20消費／敵全体ランダムATK100%×30／🪞20 🗡️15 💪15／金🪞1　CT250',detail:'《明鏡止水の極み》｜CT250｜銀🪞20以上で使用可能。銀🪞20消費。生存している敵全体から毎Hitランダムに1体を選び、ATK依存小ダメージ（ATK100%）を30回与える。使用後、自身に銅🪞+20、🗡️+15、💪+15、金🪞+1。属性制限なし。｜【金🪞】最大100。反撃成功時、金🪞+1後の現在スタック数%で発動し、金🪞を全消費して消費数と同数の🛡️を得る。'},
@@ -2652,31 +2653,31 @@ const FREE_SKILL_TREE_DATA={
   name:'自己犠牲',
   role:'自身のHPを代償に、本人以外の生存透波全員へ強力な🛡️を配る防御支援。自身が戦闘不能になる発動も許可する。',
   stages:[
-   {label:'★1',delta:'CT150。自身の最大HP50%分のHPを消費。本人以外の生存透波全員へ、それぞれ本人の最大HP30%分の🛡️を付与。'},
+   {label:'★1',delta:'CT150。自身の最大HP50%分のHPを消費。本人以外の生存透波全員へ🛡️+30。'},
    {label:'★1+1',delta:'CT150 → CT140。'},
    {label:'★2',delta:'HP消費 最大HP50% → 45%。'},
-   {label:'★2+1',delta:'🛡️付与 最大HP30% → 35%。'},
+   {label:'★2+1',delta:'🛡️付与 30 → 35。'},
    {label:'★3',delta:'CT140 → CT130。'},
    {label:'★3+1',delta:'HP消費 最大HP45% → 40%。'},
-   {label:'★4',delta:'🛡️付与 最大HP35% → 40%。'},
+   {label:'★4',delta:'🛡️付与 35 → 40。'},
    {label:'★4+1',delta:'CT130 → CT115。'},
-   {label:'★5',delta:'HP消費 最大HP40% → 35%。🛡️付与 最大HP40% → 45%。'},
-   {label:'★5+1',delta:'CT115 → CT100。HP消費 最大HP35% → 30%。🛡️付与 最大HP45% → 50%。完成。'}
+   {label:'★5',delta:'HP消費 最大HP40% → 35%。🛡️付与 40 → 45。'},
+   {label:'★5+1',delta:'CT115 → CT100。HP消費 最大HP35% → 30%。🛡️付与 45 → 50。完成。'}
   ]
  },
  yuzuMeditation:{
   name:'瞑想',
   role:'銅🪞を自身の回復と🛡️へ同時変換する自己立て直しスキル。',
   stages:[
-   {label:'★1',delta:'CT350。銅🪞30消費。最大HP5%回復し、最大HP5%分の🛡️を得る。'},
+   {label:'★1',delta:'CT350。銅🪞30消費。最大HP5%回復し、🛡️+5。'},
    {label:'★1+1',delta:'CT350 → CT330。'},
    {label:'★2',delta:'銅🪞消費 30 → 28。'},
-   {label:'★2+1',delta:'回復・🛡️ 最大HP5% → 6%。'},
+   {label:'★2+1',delta:'回復 最大HP5% → 6%。🛡️ 5 → 6。'},
    {label:'★3',delta:'CT330 → CT310。'},
    {label:'★3+1',delta:'銅🪞消費 28 → 25。'},
-   {label:'★4',delta:'回復・🛡️ 最大HP6% → 8%。'},
+   {label:'★4',delta:'回復 最大HP6% → 8%。🛡️ 6 → 8。'},
    {label:'★4+1',delta:'CT310 → CT280。'},
-   {label:'★5',delta:'銅🪞消費 25 → 20。回復・🛡️ 最大HP8% → 10%。'},
+   {label:'★5',delta:'銅🪞消費 25 → 20。回復 最大HP8% → 10%。🛡️ 8 → 10。'},
    {label:'★5+1',delta:'CT280 → CT250。完成。'}
   ]
  }
@@ -2761,8 +2762,8 @@ function freeSkillBookCurrentText(bookId,stage=getFreeSkillBookStage(bookId)){
  if(bookId==='nagiAnnihilationOrder'&&x)return `CT${x.ct}｜味方全体 銀🪞全消費｜消費合計数%ATK×${x.hits}Hit`;
  if(bookId==='nagiWaitOrder'&&x)return `CT${x.ct}｜味方全体 全🪞消費｜🛡️変換 金×${x.goldRate}／銀×${x.silverRate}／銅×${x.copperRate}`;
  if(bookId==='yuzuOneHitKill'&&x)return `CT${x.ct}｜自身の金銀銅🪞全消費｜消費合計数×${x.mirrorRate}%ATK｜後衛優先単体`;
- if(bookId==='yuzuSelfSacrifice'&&x)return `CT${x.ct}｜最大HP${x.hpCostRate}%分HP消費｜他の透波全員へ🛡️${x.shieldRate}%`;
- if(bookId==='yuzuMeditation'&&x)return `CT${x.ct}｜銅🪞${x.copperCost}消費｜最大HP${x.healRate}%回復＋🛡️${x.shieldRate}%`;
+ if(bookId==='yuzuSelfSacrifice'&&x)return `CT${x.ct}｜最大HP${x.hpCostRate}%分HP消費｜他の透波全員へ🛡️+${x.shieldRate}`;
+ if(bookId==='yuzuMeditation'&&x)return `CT${x.ct}｜銅🪞${x.copperCost}消費｜最大HP${x.healRate}%回復＋🛡️+${x.shieldRate}`;
  const b=skillBooks[bookId];return b?.short||'性能未設定';
 }
 function freeSkillBookCurrentDetail(bookId,stage=getFreeSkillBookStage(bookId)){
@@ -2774,8 +2775,8 @@ function freeSkillBookCurrentDetail(bookId,stage=getFreeSkillBookStage(bookId)){
  if(bookId==='nagiAnnihilationOrder'&&x)return `生存味方全員の銀🪞を全消費し、その合計数をSとする。1HitあたりATK S%ダメージ。各Hitごとに生存敵全体からランダム1体を選択して${x.hits}回攻撃する。`;
  if(bookId==='nagiWaitOrder'&&x)return `生存味方全員が自身の金🪞・銀🪞・銅🪞を全消費。各味方ごとに「金×${x.goldRate} + 銀×${x.silverRate} + 銅×${x.copperRate}」を合計し、最後に端数を切り捨てた数だけその本人へ🛡️を付与する。`;
  if(bookId==='yuzuOneHitKill'&&x)return `自身の金🪞・銀🪞・銅🪞を全消費し、消費合計数をSとする。敵後衛ランダム1体へATK「S×${x.mirrorRate}%」ダメージ。後衛に生存者がいなければ前衛ランダム1体を対象とする。`;
- if(bookId==='yuzuSelfSacrifice'&&x)return `自身の最大HP${x.hpCostRate}%分のHPを消費する。現在HPが不足していても発動でき、0になれば自身は戦闘不能。その後、本人以外の生存透波全員へ、それぞれ受け手自身の最大HP${x.shieldRate}%分の🛡️を付与する。本人以外の生存透波が1人以上いる時のみ使用可能。`;
- if(bookId==='yuzuMeditation'&&x)return `自身の銅🪞を${x.copperCost}消費。最大HP${x.healRate}%分を回復し、自身へ最大HP${x.shieldRate}%分の🛡️を付与する。回復量は最大HPを超えない。`;
+ if(bookId==='yuzuSelfSacrifice'&&x)return `自身の最大HP${x.hpCostRate}%分のHPを消費する。現在HPが不足していても発動でき、0になれば自身は戦闘不能。その後、本人以外の生存透波全員へ🛡️+${x.shieldRate}を付与する。本人以外の生存透波が1人以上いる時のみ使用可能。`;
+ if(bookId==='yuzuMeditation'&&x)return `自身の銅🪞を${x.copperCost}消費。最大HP${x.healRate}%分を回復し、自身へ🛡️+${x.shieldRate}を付与する。回復量は最大HPを超えない。`;
  return skillBooks[bookId]?.detail||'詳細未設定';
 }
 function skillBookUiStage(bookId){return FREE_SKILL_TREE_DATA[bookId]?freeSkillBookStageLabel(bookId):'育成未対応'}
@@ -3001,6 +3002,8 @@ const TIER_BUFF_NAMES={copper:'銅',silver:'銀',gold:'金'};
 const TIER_BUFF_MARKS={copper:'🥉',silver:'🥈',gold:'🥇'};
 const TIER_CONVERSION_COST=20;
 function cleanStackNumber(v){const n=Number(v);return Number.isFinite(n)?Math.max(0,n):0}
+function normalizeShieldStacks(v){return Math.min(100,Math.max(0,Math.floor(cleanStackNumber(v))))}
+function addShield(u,amount){if(!u)return 0;const before=normalizeShieldStacks(u.shield),gain=Math.max(0,Math.floor(cleanStackNumber(amount))),after=Math.min(100,before+gain);u.shield=after;return after-before}
 function createTierBuffState(){return Object.fromEntries(TIER_BUFF_ORDER.map(k=>[k,{copper:0,silver:0,gold:0}]))}
 function ensureTierBuffState(u){
  if(!u)return createTierBuffState();
@@ -3009,7 +3012,7 @@ function ensureTierBuffState(u){
   if(!u.tierBuffs[key]||typeof u.tierBuffs[key]!=='object')u.tierBuffs[key]={copper:0,silver:0,gold:0};
   const b=u.tierBuffs[key];
   b.copper=cleanStackNumber(b.copper);b.silver=cleanStackNumber(b.silver);b.gold=cleanStackNumber(b.gold);
-  if(key==='mirror'){b.copper=Math.min(100,b.copper);b.silver=Math.min(100,b.silver);b.gold=Math.min(100,b.gold)}
+  if(key==='mirror'){b.copper=Math.min(100,b.copper);b.silver=Math.min(100,b.silver);b.gold=Math.min(100,b.gold)}else if(key==='shield'){b.copper=normalizeShieldStacks(b.copper)}
  }
  return u.tierBuffs;
 }
@@ -3017,7 +3020,8 @@ function syncTierBuffsFromLegacy(u){
  if(!u)return createTierBuffState();
  const state=ensureTierBuffState(u);
  // ver.289 skills still write these legacy copper fields directly. Mirror them into the new foundation.
- for(const key of ['mirror','milk','shield'])state[key].copper=key==='mirror'?Math.min(100,cleanStackNumber(u[key])):cleanStackNumber(u[key]);
+ u.shield=normalizeShieldStacks(u.shield);
+ for(const key of ['mirror','milk','shield'])state[key].copper=key==='mirror'?Math.min(100,cleanStackNumber(u[key])):key==='shield'?normalizeShieldStacks(u[key]):cleanStackNumber(u[key]);
  if(Object.prototype.hasOwnProperty.call(u,'mirror'))u.mirror=state.mirror.copper;
  // Reserved compatibility for future units that already carry direct 🎲/🧸 values.
  if(Object.prototype.hasOwnProperty.call(u,'gamble'))state.gamble.copper=cleanStackNumber(u.gamble);
@@ -3034,7 +3038,7 @@ function getTierBuff(u,key,tier='copper'){
 }
 function setTierBuff(u,key,tier,value){
  if(!u||!TIER_BUFF_META[key]||!TIER_BUFF_NAMES[tier])return 0;
- const state=ensureTierBuffState(u);let next=cleanStackNumber(value);if(key==='mirror')next=Math.min(100,next);state[key][tier]=next;
+ const state=ensureTierBuffState(u);let next=cleanStackNumber(value);if(key==='mirror')next=Math.min(100,next);if(key==='shield'&&tier==='copper')next=normalizeShieldStacks(next);state[key][tier]=next;
  if(tier==='copper')syncLegacyCopperFromTier(u,key);
  if(key==='milk')recomputeMilkMaxHp(u);
  return state[key][tier];
@@ -3213,7 +3217,7 @@ function battleBuffSummary(u){
  const topItems=[];
  const bottomItems=[];
  for(const key of TIER_BUFF_ORDER){
-  // Generic 🛡️ uses u.shield as the live absorption stack and belongs only in the lower combat-buff row.
+  // Generic 🛡️ uses u.shield as the live defensive stack and belongs only in the lower combat-buff row.
   // Excluding the legacy tier-buff mirror here prevents the same shield value from rendering twice.
   if(key==='shield')continue;
   const token=tierBuffHudToken(u,key);
@@ -3231,7 +3235,7 @@ function battleBuffSummary(u){
  if(bottomItems.length)rows.push(`<span class="battleBuffBottom">${bottomItems.join(' ')}</span>`);
  return rows.join('');
 }
-function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" data-afterimage-rank="${u.afterimageRank||''}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img class="targetGlowClone" src="${u.sprite}" alt="" aria-hidden="true"><img class="unitSpriteMain" src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="footHpRow"><div class="footHpBar"><i style="width:${Math.min(100,Math.max(0,(u.hp+shieldValueDisplay(u))/u.max*100))}%"></i></div><b>${hpWithShieldDisplay(u)}/${maxHpDisplay(u)}</b></div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${hpWithShieldDisplay(u)} / ${maxHpDisplay(u)}</div></div></div>`}
+function unitHTML(u){return `<div class="unit ${u.hp<=0?'dead':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" data-afterimage-rank="${u.afterimageRank||''}" role="button" tabindex="0" aria-label="${u.name}の詳細を開く"><div class="sprite">${u.sprite?`<img class="targetGlowClone" src="${u.sprite}" alt="" aria-hidden="true"><img class="unitSpriteMain" src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="footHpRow"><div class="footHpBar"><i style="width:${Math.min(100,Math.max(0,u.hp/u.max*100))}%"></i></div><b>${hpDisplay(u)}/${maxHpDisplay(u)}</b></div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${hpDisplay(u)} / ${maxHpDisplay(u)}</div></div></div>`}
 function forecast(n=10){
  const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,swift:u.swift||0,swiftBatches:clone(u.swiftBatches||[]),cid:u.cid,ct:u.skill?.ct||0,cost:actionCost(u)}));
  const out=[];
@@ -3248,7 +3252,7 @@ function unitStateTags(u){
  if(u.poison)tags.push(`☠️ 毒 ${u.poison}`);
  if(u.paralysis)tags.push(`⚡ 麻痺 ${u.paralysis}`);
  if(u.healBlock)tags.push(`❤️‍🩹 回復阻害 ${u.healBlock}`);
- if(u.shield)tags.push(`🛡️ 現行吸収量 ${shieldValueDisplay(u)}`);
+ if(u.shield)tags.push(`🛡️ ${shieldStackDisplay(u)}st｜次回${shieldStackDisplay(u)}%軽減`);
  if(u.invincible)tags.push(`⭐️ 無敵 ${u.invincible}`);
  if(u.sword)tags.push(`🗡️ ${u.sword}`);if(u.harden)tags.push(`💪 ${u.harden}`);if(swiftTotal(u))tags.push(`👞 俊足 ${swiftTotal(u)}`);
  return tags;
@@ -3305,13 +3309,13 @@ function openBattleUnitDetail(u){
  if(playableDetail){
   document.querySelector('#skillPanel')?.classList.add('detailSuppressed');
   const art=`<div class="playableDetailStanding"><div class="playableDetailZoom"><img src="${u.sprite}" alt="${u.name}"></div></div>`;
-  document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard playableDetailCard battleFullscreenDetail${u.cid===202?' detailBaal':''}"><div class="playableDetailStage">${art}<div class="playableDetailNamePlate">${u.name}</div><button class="playableDetailViewToggle" type="button" aria-pressed="false" aria-label="ステータスを隠して鑑賞" title="ステータスを隠して鑑賞" onclick="togglePlayableDetailView(this)">👁️‍🗨️</button><button class="playableDetailCloseOverlay" onclick="closeModal()">戻る</button><div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${side}｜${row}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div><div class="stats playableDetailStats"><div class="stat">HP<b>${hpWithShieldDisplay(u)} / ${maxHpDisplay(u)}</b><small>HP ${hpDisplay(u)} + 🛡️${shieldValueDisplay(u)}（${shieldStackDisplay(u)}st）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="playableDetailStateBox"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div></div></div></div>`;
+  document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard playableDetailCard battleFullscreenDetail${u.cid===202?' detailBaal':''}"><div class="playableDetailStage">${art}<div class="playableDetailNamePlate">${u.name}</div><button class="playableDetailViewToggle" type="button" aria-pressed="false" aria-label="ステータスを隠して鑑賞" title="ステータスを隠して鑑賞" onclick="togglePlayableDetailView(this)">👁️‍🗨️</button><button class="playableDetailCloseOverlay" onclick="closeModal()">戻る</button><div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${side}｜${row}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div><div class="stats playableDetailStats"><div class="stat">HP<b>${hpDisplay(u)} / ${maxHpDisplay(u)}</b><small>🛡️ ${shieldStackDisplay(u)}st（次回${shieldStackDisplay(u)}%軽減）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="playableDetailStateBox"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div></div></div></div>`;
   document.querySelector('#modal').classList.add('playableDetailMode');
   requestAnimationFrame(initPlayableDetailZoom);
  }else{
   document.querySelector('#skillPanel')?.classList.remove('detailSuppressed');
   document.querySelector('#modal').classList.remove('playableDetailMode');
-  document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="battleDetailHero"><div class="battleDetailIcon ${u.sprite?'faceCrop':''}"${detailRankAttr}>${visual}</div><div class="battleDetailMeta">${side}｜${row}<br>総合戦力 ${power.toLocaleString()}<br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div></div><div class="stats"><div class="stat">HP<b>${hpWithShieldDisplay(u)} / ${maxHpDisplay(u)}</b><small>HP ${hpDisplay(u)} + 🛡️${shieldValueDisplay(u)}（${shieldStackDisplay(u)}st）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
+  document.querySelector('#modalCard').innerHTML=`<div class="battleDetailCard"><div class="cardHead"><h2>${u.name}</h2></div><div class="battleDetailHero"><div class="battleDetailIcon ${u.sprite?'faceCrop':''}"${detailRankAttr}>${visual}</div><div class="battleDetailMeta">${side}｜${row}<br>総合戦力 ${power.toLocaleString()}<br>総階層踏破 ${floors.toLocaleString()}F<br>現在ACTION ${Math.round(u.next||0)}</div></div><div class="stats"><div class="stat">HP<b>${hpDisplay(u)} / ${maxHpDisplay(u)}</b><small>🛡️ ${shieldStackDisplay(u)}st（次回${shieldStackDisplay(u)}%軽減）</small></div><div class="stat">ATK<b>${effectiveAtk(u)}</b><small>ATK ${u.atk??0} + 🗡️${u.sword||0}st</small></div><div class="stat">DEF<b>${effectiveDef(u)}</b><small>DEF ${u.def??0} + 💪${u.harden||0}st</small></div><div class="stat">SPD<b>${effectiveSpd(u)}</b><small>SPD ${u.spd??0} + 👞${swiftTotal(u)}</small></div></div><div class="skills"><b>バフ・デバフ・固有スタック</b><div class="battleStateList">${(tags.length?tags:['付与状態なし']).map(x=>`<span class="battleStateTag">${x}</span>`).join('')}</div></div><button class="battleBackBtn" onclick="closeModal()">戻る</button></div>`;
  }
  document.querySelector('#modal').classList.add('show');
 }
@@ -3322,7 +3326,7 @@ function renderHpOverview(){
   const make=(arr,side)=>arr.filter(u=>u.formationSlot>=0).sort((a,b)=>(a.homeSlot??a.formationSlot)-(b.homeSlot??b.formationSlot)).map(u=>{
     const pct=Math.max(0,Math.min(100,u.hp/u.max*100));
     const miniFace=u.afterimageFaceIcon||u.actionSprite||u.sprite;const visual=miniFace?`<img src="${miniFace}" alt="">`:`<span>${u.icon||'?'}</span>`;
-    return `<div class="hpMini ${u.hp<=0?'deadHp':''}" title="${u.name}">${visual}<div class="hpMiniBody"><div class="hpMiniBar"><i style="width:${pct}%"></i></div><b>${Math.max(0,u.hp)+shieldValueDisplay(u)}/${u.max}</b></div></div>`;
+    return `<div class="hpMini ${u.hp<=0?'deadHp':''}" title="${u.name}">${visual}<div class="hpMiniBody"><div class="hpMiniBar"><i style="width:${pct}%"></i></div><b>${Math.max(0,u.hp)}/${u.max}</b></div></div>`;
   }).join('');
   const ah=document.querySelector('#allyHpOverview'),eh=document.querySelector('#enemyHpOverview');
   if(ah)ah.innerHTML=make(A,'A'); if(eh)eh.innerHTML=make(E,'E');
@@ -3376,9 +3380,10 @@ function handleFrontlineDeath(u){
  return null;
 }
 function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
-// ver.267 ステータス系スタック共通ルール
-// 🗡️1 = 付与された本人の基礎ATK 1% / 💪1 = 本人の基礎DEF 1% / 🛡️1 = 本人の基礎最大HP 1%分を吸収。
-// 原則：一連の計算結果の最後に切り捨て。🛡️は吸収した実量に応じてスタックを消費する。
+// ver.375 ステータス系スタック共通ルール
+// 🗡️1 = 付与された本人の基礎ATK 1% / 💪1 = 本人の基礎DEF 1%。
+// 🛡️はHPと独立した0〜100スタック。被弾時、現在スタック数%だけDEF処理後ダメージを軽減し、発動前スタックの30%（切り上げ）を消費する。
+// 原則：一連の計算結果の最後に切り捨て。🛡️100ならその1Hitは0ダメージまで軽減できる。
 function baseMaxHp(u){return Math.max(1,Number(u?.baseMax)||Number(u?.max)||Number(u?.hp)||1)}
 function effectiveAtk(u){
  const base=Math.max(0,Number(u?.atk)||0),stacks=Math.max(0,Number(u?.sword)||0);
@@ -3388,35 +3393,30 @@ function effectiveDef(u){
  const base=Math.max(0,Number(u?.def)||0),stacks=Math.max(0,Number(u?.harden)||0);
  return Math.max(0,Math.floor(base*(1+stacks/100)));
 }
-function shieldValue(u){
- return Math.max(0,baseMaxHp(u)*(Math.max(0,Number(u?.shield)||0)/100));
-}
-function shieldValueDisplay(u){return displayInt(shieldValue(u))}
-function shieldStackDisplay(u){return String(displayInt(u?.shield))}
+function shieldStackDisplay(u){return String(normalizeShieldStacks(u?.shield))}
 function hpDisplay(u){return displayInt(u?.hp)}
 function maxHpDisplay(u){return displayInt(u?.max)}
-function hpWithShieldDisplay(u){return hpDisplay(u)+shieldValueDisplay(u)}
 
 function applyCombatDamage(t,rawDamage,{ignoreDef=false,ignoreShield=false,minDamageRate=0.10}={}){
  const beforeHp=Math.max(0,Number(t?.hp)||0);
  const raw=Math.max(0,Number(rawDamage)||0);
- if(raw<=0)return{raw:0,afterDef:0,shieldUsed:0,damage:0};
+ if(raw<=0)return{raw:0,afterDef:0,shieldBefore:normalizeShieldStacks(t?.shield),shieldConsumed:0,shieldReduction:0,damage:0};
  const def=effectiveDef(t);
  const floorRate=Math.max(0,Math.min(1,Number(minDamageRate)||0));
  const calculated=ignoreDef?raw:Math.max(raw*floorRate,raw-def);
  // 全攻撃共通で、生ダメージの最低10%はDEFを貫通する。🛡️のみ0ダメージ化できる。
  const afterDef=Math.max(1,Math.floor(calculated));
- const shieldAvailable=ignoreShield?0:shieldValue(t);
- const shieldUsed=Math.min(shieldAvailable,afterDef);
- if(shieldUsed>0){
-   const oneStack=baseMaxHp(t)/100;
-   t.shield=Math.max(0,(Number(t.shield)||0)-(shieldUsed/oneStack));
-   if(t.shield<0.000001)t.shield=0;
+ const shieldBefore=ignoreShield?0:normalizeShieldStacks(t?.shield);
+ const shieldReduction=shieldBefore>0?Math.min(afterDef,afterDef*(shieldBefore/100)):0;
+ const damage=Math.max(0,Math.floor(afterDef-shieldReduction));
+ let shieldConsumed=0;
+ if(shieldBefore>0){
+   shieldConsumed=Math.max(1,Math.ceil(shieldBefore*0.30));
+   t.shield=Math.max(0,shieldBefore-shieldConsumed);
  }
- const damage=Math.max(0,Math.floor(afterDef-shieldUsed));
  if(damage>0)t.hp=Math.max(0,t.hp-damage);
  if(damage>0)recordOverkillDamage(t,beforeHp,damage);
- return{raw:Math.floor(raw),afterDef,shieldUsed:Math.floor(shieldUsed),damage};
+ return{raw:Math.floor(raw),afterDef,shieldBefore,shieldConsumed,shieldReduction:Math.floor(shieldReduction),damage};
 }
 function tryEvade(t){
  if(!t)return false;
@@ -3444,8 +3444,8 @@ async function resolveMirrorEvadeEffects(evader,source){
   const goldForRoll=Math.min(100,Math.floor(getTierBuff(evader,'mirror','gold')));
   if(goldForRoll>0&&Math.random()*100<goldForRoll){
    goldTriggered=true;
-   shieldGain=consumeTierBuff(evader,'mirror','gold',goldForRoll);
-   evader.shield=(evader.shield||0)+shieldGain;
+   const requestedShield=consumeTierBuff(evader,'mirror','gold',goldForRoll);
+   shieldGain=addShield(evader,requestedShield);
   }
   await sleep(100);if(sourceEl)sourceEl.classList.remove('hit');
   if(source.hp<=0){if(sourceEl)sourceEl.classList.add('dying');await sleep(100);if(handleFrontlineDeath(source)){renderBattle();await sleep(100)}}
@@ -3715,7 +3715,7 @@ async function skillBookNagiWaitOrder(att){
  for(const r of records){
   if(r.copper>0)consumeTierBuff(r.ally,'mirror','copper',r.copper);if(r.silver>0)consumeTierBuff(r.ally,'mirror','silver',r.silver);if(r.gold>0)consumeTierBuff(r.ally,'mirror','gold',r.gold);
   const gain=Math.max(0,Math.floor(r.gold*Number(spec.goldRate||0)+r.silver*Number(spec.silverRate||0)+r.copper*Number(spec.copperRate||0)));
-  if(gain>0){r.ally.shield=(r.ally.shield||0)+gain;totalShield+=gain}
+  if(gain>0){const added=addShield(r.ally,gain);totalShield+=added}
  }
  document.querySelector('#status').textContent=`${att.name}「スキルブック《待機命令》」 ${freeSkillBookStageLabel('nagiWaitOrder')}｜全軍🪞全消費→🛡️+${totalShield}（合計）`;renderBattle();await sleep(160);
 }
@@ -3736,18 +3736,18 @@ async function skillBookYuzuSelfSacrifice(att){
  const spec=freeSkillBookCurrentSpec('yuzuSelfSacrifice');if(!att||att.hp<=0||!spec)return;
  const recipients=living(A).filter(a=>a!==att&&isSuppaUnit(a));if(!recipients.length)return;
  const hpCost=Math.max(0,Math.floor(Math.max(1,att.max)*(Math.max(0,Number(spec.hpCostRate)||0)/100))),beforeHp=Math.max(0,Number(att.hp)||0),actualLoss=Math.min(beforeHp,hpCost);att.hp=Math.max(0,beforeHp-hpCost);
- const shieldGain=Math.max(0,Number(spec.shieldRate)||0);for(const ally of recipients)ally.shield=(ally.shield||0)+shieldGain;
- document.querySelector('#status').textContent=`${att.name}「スキルブック《自己犠牲》」 ${freeSkillBookStageLabel('yuzuSelfSacrifice')}｜HP-${actualLoss}${att.hp<=0?'（戦闘不能）':''}｜他の透波${recipients.length}人へ🛡️+${formatMultiplier(shieldGain)}`;renderBattle();
+ const shieldGain=Math.max(0,Number(spec.shieldRate)||0);let totalShieldGain=0;for(const ally of recipients)totalShieldGain+=addShield(ally,shieldGain);
+ document.querySelector('#status').textContent=`${att.name}「スキルブック《自己犠牲》」 ${freeSkillBookStageLabel('yuzuSelfSacrifice')}｜HP-${actualLoss}${att.hp<=0?'（戦闘不能）':''}｜他の透波${recipients.length}人へ🛡️+${formatMultiplier(shieldGain)}（実加算${totalShieldGain}）`;renderBattle();
  const selfEl=document.getElementById(att.id);if(selfEl&&att.hp<=0)selfEl.classList.add('dying');await sleep(160);
  if(att.hp<=0&&handleFrontlineDeath(att)){renderBattle();await sleep(80)}
- document.querySelector('#status').textContent=`《自己犠牲》 最大HP${spec.hpCostRate}%分を代償｜本人以外の生存透波へ各自最大HP${spec.shieldRate}%分の🛡️`;renderBattle();await sleep(120);
+ document.querySelector('#status').textContent=`《自己犠牲》 最大HP${spec.hpCostRate}%分を代償｜本人以外の生存透波へ🛡️+${spec.shieldRate}`;renderBattle();await sleep(120);
 }
 async function skillBookYuzuMeditation(att){
  const spec=freeSkillBookCurrentSpec('yuzuMeditation');if(!att||att.hp<=0||!spec)return;
  const copperCost=Math.max(0,Math.floor(Number(spec.copperCost)||0));if(getTierBuff(att,'mirror','copper')<copperCost)return;consumeTierBuff(att,'mirror','copper',copperCost);
  const plannedHeal=Math.max(0,Math.floor(Math.max(1,att.max)*(Math.max(0,Number(spec.healRate)||0)/100))),actualHeal=Math.min(plannedHeal,Math.max(0,att.max-att.hp));att.hp+=actualHeal;
- const shieldGain=Math.max(0,Number(spec.shieldRate)||0);att.shield=(att.shield||0)+shieldGain;
- const el=document.getElementById(att.id);if(el&&actualHeal>0)damagePop(el,`+${actualHeal}`);document.querySelector('#status').textContent=`${att.name}「スキルブック《瞑想》」 ${freeSkillBookStageLabel('yuzuMeditation')}｜銅🪞-${copperCost}／HP+${actualHeal}／🛡️+${formatMultiplier(shieldGain)}`;renderBattle();await sleep(150);
+ const shieldGain=Math.max(0,Number(spec.shieldRate)||0),shieldAdded=addShield(att,shieldGain);
+ const el=document.getElementById(att.id);if(el&&actualHeal>0)damagePop(el,`+${actualHeal}`);document.querySelector('#status').textContent=`${att.name}「スキルブック《瞑想》」 ${freeSkillBookStageLabel('yuzuMeditation')}｜銅🪞-${copperCost}／HP+${actualHeal}／🛡️+${formatMultiplier(shieldAdded)}`;renderBattle();await sleep(150);
 }
 
 async function skillBookBloodSword(att,defenders){
