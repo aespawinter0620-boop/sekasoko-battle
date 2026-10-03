@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.404</title>
+<title>セカソコ ver.405</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.405: resource-shortage hints. Unusable resource-cost skills show a compact "あと○" value inside the existing small button line. This is display-only: skillBookBlockReason()/playerSkillBlockReason()/skillBookUsable(), AUTO, CT timeline rules and all combat values remain unchanged. */
 /* ver.404: battle skill UI clarity pass. Player-facing skill text is shortened; unusable skills are visually greyed without disabling touch/long-press events; tapping an unusable skill shows one short reason and consumes no action/resources. Skill performance, CT values, targeting, AUTO priorities and combat foundations are unchanged. */
 /* ver.403: Yuzu four-skill redesign + shared rear-target fallback policy. 《雲隠霧消》 supplies copper to all living Suppa; 《一撃必殺》 converts all living Suppa silver into one rear-priority finisher; 《自己犠牲》 spends gold + self HP to heal other living Suppa; renamed 《明鏡止水の極意》 spends gold for self rebuild. Rear-target skills fall back to living front enemies when no living rear enemy exists. Planned-hit OVERKILL continuation is documented as the default design for rapid/multi-hit barrage skills; the shared OVERKILL core itself is unchanged. */
 /* ver.402: Nagi four-skill redesign. Unique 《補給命令》 is an all-enemy ATK hit plus all-ally mirror supply; free 《一世掃射》 spends self silver 40 for rerolled-all-enemy planned-hit burst; 《弾薬装填》 spends self gold 3 for self resources + one next-turn-action ATK multiplier; 《待機命令》 spends self silver 10 + gold 30 for all-ally sword/shield/healing. Shared mirror/sword/shield/OVERKILL foundations remain unchanged. */
@@ -986,6 +987,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .skillBtn.skillUnavailable:not(.placeholderSkill) small,
 #battleScreen .skillBtn.skillUnavailable:not(.placeholderSkill) b{color:#b9bdc7!important}
 #battleScreen .skillBtn.skillUnavailable:active{transform:none!important}
+#battleScreen .skillBtn small.skillShortageHint{font-size:6.5px!important;letter-spacing:-.32px!important}
 
 
 /* v0.17.5 top command consolidation */
@@ -1449,7 +1451,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.404";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.405";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2899,6 +2901,12 @@ function skillBookBlockReason(u,book){
  return'';
 }
 function skillBookUsable(u,book){return !skillBookBlockReason(u,book)}
+function skillBookShortageHint(u,book){
+ const reason=skillBookBlockReason(u,book);if(!reason)return'';
+ const hints=[];const re=/([銅銀金](?:🪞|🥛))(?:不足：|\s+)(\d+)\s*\/\s*(\d+)/g;let m;
+ while((m=re.exec(reason))){const now=Math.max(0,Math.floor(Number(m[2])||0)),need=Math.max(0,Math.floor(Number(m[3])||0)),left=need-now;if(left>0)hints.push(`${m[1]}あと${left}`)}
+ return hints.join(' / ');
+}
 const freeSkillOrdinal=slot=>slot===2?'①':slot===3?'②':'③';
 const availableSkillSlots=u=>[1,...[2,3,4].filter(slot=>{const book=equippedSkillBook(u,slot);return !!book&&skillBookUsable(u,book)})];
 function skillCtBlockReason(u){
@@ -2932,9 +2940,10 @@ function refreshSkillAvailability(u=currentActor){
  const unique=document.querySelector('#uniqueSkill');if(!unique)return;
  setSkillButtonAvailability(unique,playerSkillBlockReason(u,1),false);
  [2,3,4].forEach((slot,i)=>{
-  const btn=document.querySelector(`#freeSkill${i+1}`),book=equippedSkillBook(u,slot);
-  if(!book){setSkillButtonAvailability(btn,'スキルが設定されていません',true);return}
+  const btn=document.querySelector(`#freeSkill${i+1}`),desc=document.querySelector(`#freeSkill${i+1}Desc`),book=equippedSkillBook(u,slot);
+  if(!book){setSkillButtonAvailability(btn,'スキルが設定されていません',true);if(desc){desc.classList.remove('skillShortageHint');desc.textContent=desc.dataset.normalText||'装備スキル枠'}return}
   btn.classList.remove('placeholderSkill');setSkillButtonAvailability(btn,playerSkillBlockReason(u,slot),false);
+  if(desc){const hint=skillBookShortageHint(u,book);desc.classList.toggle('skillShortageHint',!!hint);desc.textContent=hint||(desc.dataset.normalText||desc.textContent)}
  });
 }
 
@@ -3898,9 +3907,9 @@ function configureUniqueSkill(u){
   if(!fb||!fn||!fd)return;
   if(book){
    const hasTree=!!FREE_SKILL_TREE_DATA[book.id],stage=hasTree?freeSkillBookStageLabel(book.id):'',summary=hasTree?freeSkillBookCurrentText(book.id):book.short,detail=hasTree?freeSkillBookCurrentDetail(book.id):book.detail,ct=hasTree?skillBookUiCt(book.id):book.ct;
-   fb.classList.remove('placeholderSkill');fn.textContent=book.name;fd.textContent=hasTree?`${stage}｜CT${ct}｜${summary}`:`CT${ct}｜${summary}`;fd.dataset.ct=String(ct);fb.dataset.skillDetail=hasTree?`${book.name}｜${stage}｜CT${ct}｜${detail}`:`${book.name}｜CT${ct}｜${detail}`
+   fb.classList.remove('placeholderSkill');fn.textContent=book.name;const normalText=hasTree?`${stage}｜CT${ct}｜${summary}`:`CT${ct}｜${summary}`;fd.textContent=normalText;fd.dataset.normalText=normalText;fd.classList.remove('skillShortageHint');fd.dataset.ct=String(ct);fb.dataset.skillDetail=hasTree?`${book.name}｜${stage}｜CT${ct}｜${detail}`:`${book.name}｜CT${ct}｜${detail}`
   }
-  else{fb.classList.add('placeholderSkill');fn.textContent='未設定';fd.textContent='装備スキル枠';delete fd.dataset.ct;fb.dataset.skillDetail='未設定｜装備スキル枠'}
+  else{fb.classList.add('placeholderSkill');fn.textContent='未設定';fd.textContent='装備スキル枠';fd.dataset.normalText='装備スキル枠';fd.classList.remove('skillShortageHint');delete fd.dataset.ct;fb.dataset.skillDetail='未設定｜装備スキル枠'}
  });
  refreshSkillAvailability(u);
 }
