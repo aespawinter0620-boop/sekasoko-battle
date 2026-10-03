@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.400</title>
+<title>セカソコ ver.401</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.401: Mikoto free-skill trilogy redesigned. 《絶対領域解放》 spends silver 20 for rerolled-front multi-hit burst with adopted planned-hit OVERKILL continuation; 《宣戦布告》 spends silver 10 for fixed-target 2Hit + sword/gold growth; 《明鏡止水》 spends gold 30 for healing + one non-stacking next ATK-reference skill-action multiplier. Counter reactions never trigger or consume that pending ATK multiplier. */
 /* ver.400: Mikoto 《絶対領域展開》 redesigned around attack + copper mirror generation. ★3+ arms one non-stacking next-evade silver bonus; ★5+ also arms an independent non-stacking next-counter gold bonus. The ver.376 mirror core remains the baseline when these flags are absent. */
 /* ver.376: mirror evade consumes up to 10 copper, then grants silver +1; counter chance uses updated silver, without consuming it. Counter power is ATK*(50+goldBefore)/100, then gold +1 capped at 100. No automatic gold conversion, shield grant or healing. Existing skill costs remain unchanged. */
 /* ver.375: generic 🛡️ reworked from max-HP absorption into an independent 0〜100 defensive stack. On each damaging hit, current 🛡️ stacks reduce post-DEF damage by the same percentage, then ceil(30% of the pre-trigger stacks) are consumed. HP displays no longer include shield value; all existing shield grants now feed the capped stack system without changing their numeric grant values. */
@@ -1435,7 +1436,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.400";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.401";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2518,9 +2519,9 @@ function tickSwiftAtTurnStart(u){
 const baseWait=u=>Math.max(20,Math.round(1000/Math.sqrt(Math.max(1,effectiveSpd(u)))));
 const actionCost=u=>baseWait(u)+(u.skill?.ct||0);
 const skillBooks={
- mikotoAbsoluteRelease:{id:'mikotoAbsoluteRelease',name:'絶対領域解放',ct:180,targetType:'randomFrontFive',short:'スキルツリー連動',detail:'《絶対領域解放》｜★段階に応じてCT・Hit数・銀🪞還元率が変化する。'},
- mikotoWarDeclaration:{id:'mikotoWarDeclaration',name:'宣戦布告',ct:70,targetType:'randomFront',short:'スキルツリー連動',detail:'《宣戦布告》｜★段階に応じてCT・銅🪞消費・威力・Hit数・🗡️獲得量が変化する。'},
- mikotoMeikyoShisui:{id:'mikotoMeikyoShisui',name:'明鏡止水',ct:130,targetType:'self',short:'スキルツリー連動',detail:'《明鏡止水》｜★段階に応じてCT・銅🪞消費・回復率・銀🪞獲得量が変化する。'},
+ mikotoAbsoluteRelease:{id:'mikotoAbsoluteRelease',name:'絶対領域解放',ct:200,targetType:'randomFront',short:'スキルツリー連動',detail:'《絶対領域解放》｜銀🪞20消費。各Hitごとに生存敵前衛を再選択する多段フィニッシュ技。★段階でCT・1Hit倍率・Hit数が成長する。'},
+ mikotoWarDeclaration:{id:'mikotoWarDeclaration',name:'宣戦布告',ct:100,targetType:'randomFront',short:'スキルツリー連動',detail:'《宣戦布告》｜銀🪞10消費。敵前衛ランダム1体へ同一対象2Hit。攻撃後に🗡️と金🪞を獲得する。★段階でCT・威力・獲得量が成長する。'},
+ mikotoMeikyoShisui:{id:'mikotoMeikyoShisui',name:'明鏡止水',ct:240,targetType:'self',short:'スキルツリー連動',detail:'《明鏡止水》｜金🪞30消費。自身を回復し、次回の自身のATK参照攻撃スキル行動中だけATK倍率を強化する。★段階でCT・回復率・ATK倍率が成長する。'},
  nagiBulletLoad:{id:'nagiBulletLoad',name:'補給部隊出動',ct:180,targetType:'allAllies',short:'スキルツリー連動',detail:'《補給部隊出動》｜生存味方全体へ銅🪞・銀🪞・金🪞・🗡️を補給する。★段階に応じてCTと補給量が成長する。'},
  nagiAnnihilationOrder:{id:'nagiAnnihilationOrder',name:'殲滅命令',ct:200,targetType:'randomAll',short:'スキルツリー連動',detail:'《殲滅命令》｜味方全体の銀🪞を全消費し、その合計数%ATKを基準にランダム多段攻撃。★段階でCT・Hit数が成長する。'},
  nagiWaitOrder:{id:'nagiWaitOrder',name:'待機命令',ct:350,targetType:'allAllies',short:'スキルツリー連動',detail:'《待機命令》｜味方全体の金・銀・銅🪞を全消費し、各自の消費量を🛡️へ変換する。★段階でCT・変換倍率が成長する。'},
@@ -2550,50 +2551,50 @@ const MIKOTO_FREE_SKILL_BOOK_IDS=['mikotoAbsoluteRelease','mikotoWarDeclaration'
 const FREE_SKILL_TREE_DATA={
  mikotoAbsoluteRelease:{
   name:'絶対領域解放',
-  role:'銅🪞を全消費して瞬間火力へ変換し、一部を銀🪞へ還元する。',
+  role:'銀🪞20を瞬間高火力へ変換するフィニッシュ技。銀を保持して反撃率を維持するか、火力へ吐くかを選ぶ。',
   stages:[
-   {label:'★1',delta:'CT180。銅🪞全消費。消費数%ATK×5Hit。使用後、消費数の5%分だけ銀🪞を得る（端数切り捨て）。'},
-   {label:'★1+1',delta:'CT180 → CT170。'},
-   {label:'★2',delta:'攻撃回数 5Hit → 6Hit。'},
-   {label:'★2+1',delta:'銀🪞還元率 5% → 6%。'},
-   {label:'★3',delta:'攻撃回数 6Hit → 7Hit。'},
-   {label:'★3+1',delta:'CT170 → CT160。'},
-   {label:'★4',delta:'攻撃回数 7Hit → 8Hit。銀🪞還元率 6% → 8%。'},
-   {label:'★4+1',delta:'CT160 → CT150。'},
-   {label:'★5',delta:'攻撃回数 8Hit → 10Hit。'},
-   {label:'★5+1',delta:'銀🪞還元率 8% → 10%。完成。'}
+   {label:'★1',delta:'CT200。銀🪞20消費。敵前衛へATK20%×10Hit。各Hitごとに生存前衛を再選択。'},
+   {label:'★1+1',delta:'CT200 → CT190。'},
+   {label:'★2',delta:'攻撃回数 10Hit → 12Hit。'},
+   {label:'★2+1',delta:'CT190 → CT180。'},
+   {label:'★3',delta:'攻撃回数 12Hit → 15Hit。'},
+   {label:'★3+1',delta:'CT180 → CT170。'},
+   {label:'★4',delta:'1Hit倍率 ATK20% → ATK25%。攻撃回数 15Hit → 16Hit。'},
+   {label:'★4+1',delta:'CT170 → CT160。'},
+   {label:'★5',delta:'攻撃回数 16Hit → 20Hit。'},
+   {label:'★5+1',delta:'CT160 → CT150。完成。'}
   ]
  },
  mikotoWarDeclaration:{
   name:'宣戦布告',
-  role:'銅🪞を少量消費して攻撃し、🗡️へ変換する長期育成型スキル。',
+  role:'銀🪞10を🗡️と金🪞へ変換し、戦闘全体の継続火力とカウンター威力を育てる。',
   stages:[
-   {label:'★1',delta:'CT70。銅🪞20消費。敵前衛ランダム1体へATK70%。使用後🗡️+3。'},
-   {label:'★1+1',delta:'CT70 → CT65。'},
-   {label:'★2',delta:'ATK70% → ATK80%。🗡️+3 → +4。'},
-   {label:'★2+1',delta:'銅🪞消費 20 → 15。'},
-   {label:'★3',delta:'攻撃回数 1Hit → 2Hit。🗡️+4 → +5。'},
-   {label:'★3+1',delta:'CT65 → CT60。'},
-   {label:'★4',delta:'ATK80%×2 → ATK90%×2。🗡️+5 → +7。'},
-   {label:'★4+1',delta:'銅🪞消費 15 → 10。'},
-   {label:'★5',delta:'ATK90%×2 → ATK100%×2。🗡️+7 → +10。'},
+   {label:'★1',delta:'CT100。銀🪞10消費。敵前衛ランダム1体へATK60%×2Hit。攻撃後🗡️+2／金🪞+1。'},
+   {label:'★1+1',delta:'CT100 → CT90。'},
+   {label:'★2',delta:'ATK60%×2 → ATK70%×2。🗡️+2 → +4。金🪞+1 → +2。'},
+   {label:'★2+1',delta:'CT90 → CT80。'},
+   {label:'★3',delta:'ATK70%×2 → ATK80%×2。🗡️+4 → +6。金🪞+2 → +3。'},
+   {label:'★3+1',delta:'CT80 → CT70。'},
+   {label:'★4',delta:'ATK80%×2 → ATK90%×2。🗡️+6 → +8。金🪞+3 → +4。'},
+   {label:'★4+1',delta:'CT70 → CT60。'},
+   {label:'★5',delta:'ATK90%×2 → ATK100%×2。🗡️+8 → +10。金🪞+4 → +5。'},
    {label:'★5+1',delta:'CT60 → CT50。完成。'}
   ]
  },
  mikotoMeikyoShisui:{
   name:'明鏡止水',
-  role:'銅🪞を消費してHPを回復し、銀🪞へ変換する立て直しスキル。',
+  role:'金🪞30をHP回復と次回ATK参照攻撃スキルの火力準備へ変換する再出撃支援。',
   stages:[
-   {label:'★1',delta:'CT130。銅🪞30消費。最大HP8%回復。使用後、銀🪞+5。'},
-   {label:'★1+1',delta:'HP回復 8% → 10%。'},
-   {label:'★2',delta:'銀🪞獲得 +5 → +8。'},
-   {label:'★2+1',delta:'CT130 → CT120。'},
-   {label:'★3',delta:'銅🪞消費 30 → 25。HP回復10% → 12%。銀🪞+8 → +10。'},
-   {label:'★3+1',delta:'HP回復 12% → 15%。'},
-   {label:'★4',delta:'銀🪞獲得 +10 → +15。'},
-   {label:'★4+1',delta:'CT120 → CT110。'},
-   {label:'★5',delta:'銅🪞消費 25 → 20。HP回復15% → 20%。銀🪞+15 → +20。'},
-   {label:'★5+1',delta:'CT110 → CT100。完成。'}
+   {label:'★1',delta:'CT240。金🪞30消費。最大HP5%回復。次回ATK参照攻撃スキル行動中、自身ATK×1.4。'},
+   {label:'★1+1',delta:'CT240 → CT230。'},
+   {label:'★2',delta:'HP回復 5% → 6%。次回ATK倍率 ×1.4 → ×1.5。'},
+   {label:'★2+1',delta:'CT230 → CT220。'},
+   {label:'★3',delta:'HP回復 6% → 7%。次回ATK倍率 ×1.5 → ×1.6。'},
+   {label:'★3+1',delta:'CT220 → CT215。'},
+   {label:'★4',delta:'HP回復 7% → 8%。次回ATK倍率 ×1.6 → ×1.8。'},
+   {label:'★4+1',delta:'CT215 → CT210。'},
+   {label:'★5',delta:'HP回復 8% → 10%。次回ATK倍率 ×1.8 → ×2。'},
+   {label:'★5+1',delta:'CT210 → CT200。完成。'}
   ]
  },
  nagiBulletLoad:{
@@ -2710,19 +2711,23 @@ function freeSkillBookStageLabel(bookId){
 function freeSkillBookCurrentSpec(bookId,stage=getFreeSkillBookStage(bookId)){
  stage=Math.max(0,Math.min(9,Math.floor(Number(stage)||0)));
  if(bookId==='mikotoAbsoluteRelease'){
-  let ct=180,hits=5,silverRate=5;
-  if(stage>=1)ct=170;if(stage>=2)hits=6;if(stage>=3)silverRate=6;if(stage>=4)hits=7;if(stage>=5)ct=160;if(stage>=6){hits=8;silverRate=8}if(stage>=7)ct=150;if(stage>=8)hits=10;if(stage>=9)silverRate=10;
-  return{ct,copperCost:'ALL',hits,silverRate,powerPct:'消費した銅🪞数'};
+  const ct=[200,190,190,180,180,170,170,160,160,150][stage];
+  const power=[20,20,20,20,20,20,25,25,25,25][stage];
+  const hits=[10,10,12,12,15,15,16,16,20,20][stage];
+  return{ct,silverCost:20,power,hits};
  }
  if(bookId==='mikotoWarDeclaration'){
-  let ct=70,copperCost=20,power=70,hits=1,sword=3;
-  if(stage>=1)ct=65;if(stage>=2){power=80;sword=4}if(stage>=3)copperCost=15;if(stage>=4){hits=2;sword=5}if(stage>=5)ct=60;if(stage>=6){power=90;sword=7}if(stage>=7)copperCost=10;if(stage>=8){power=100;sword=10}if(stage>=9)ct=50;
-  return{ct,copperCost,power,hits,sword};
+  const ct=[100,90,90,80,80,70,70,60,60,50][stage];
+  const power=[60,60,70,70,80,80,90,90,100,100][stage];
+  const sword=[2,2,4,4,6,6,8,8,10,10][stage];
+  const gold=[1,1,2,2,3,3,4,4,5,5][stage];
+  return{ct,silverCost:10,power,hits:2,sword,gold};
  }
  if(bookId==='mikotoMeikyoShisui'){
-  let ct=130,copperCost=30,heal=8,silver=5;
-  if(stage>=1)heal=10;if(stage>=2)silver=8;if(stage>=3)ct=120;if(stage>=4){copperCost=25;heal=12;silver=10}if(stage>=5)heal=15;if(stage>=6)silver=15;if(stage>=7)ct=110;if(stage>=8){copperCost=20;heal=20;silver=20}if(stage>=9)ct=100;
-  return{ct,copperCost,heal,silver};
+  const ct=[240,230,230,220,220,215,215,210,210,200][stage];
+  const healRate=[5,5,6,6,7,7,8,8,10,10][stage];
+  const atkMultiplier=[1.4,1.4,1.5,1.5,1.6,1.6,1.8,1.8,2,2][stage];
+  return{ct,goldCost:30,healRate,atkMultiplier};
  }
  if(bookId==='nagiBulletLoad'){
   let ct=180,copper=5,silver=5,gold=1,sword=1;
@@ -2766,9 +2771,9 @@ function freeSkillBookCurrentSpec(bookId,stage=getFreeSkillBookStage(bookId)){
 }
 function freeSkillBookCurrentText(bookId,stage=getFreeSkillBookStage(bookId)){
  const x=freeSkillBookCurrentSpec(bookId,stage);
- if(bookId==='mikotoAbsoluteRelease'&&x)return `CT${x.ct}｜銅🪞全消費｜消費数%ATK×${x.hits}Hit｜銀🪞還元${x.silverRate}%`;
- if(bookId==='mikotoWarDeclaration'&&x)return `CT${x.ct}｜銅🪞${x.copperCost}消費｜ATK${x.power}%×${x.hits}Hit｜🗡️+${x.sword}`;
- if(bookId==='mikotoMeikyoShisui'&&x)return `CT${x.ct}｜銅🪞${x.copperCost}消費｜最大HP${x.heal}%回復｜銀🪞+${x.silver}`;
+ if(bookId==='mikotoAbsoluteRelease'&&x)return `CT${x.ct}｜銀🪞${x.silverCost}消費｜ATK${x.power}%×${x.hits}Hit｜各Hit前衛再選択`;
+ if(bookId==='mikotoWarDeclaration'&&x)return `CT${x.ct}｜銀🪞${x.silverCost}消費｜ATK${x.power}%×2Hit｜🗡️+${x.sword}／金🪞+${x.gold}`;
+ if(bookId==='mikotoMeikyoShisui'&&x)return `CT${x.ct}｜金🪞${x.goldCost}消費｜最大HP${x.healRate}%回復｜次回ATK参照スキル中 ATK×${formatMultiplier(x.atkMultiplier)}`;
  if(bookId==='nagiBulletLoad'&&x)return `CT${x.ct}｜味方全体 銅🪞+${x.copper}／銀🪞+${x.silver}／金🪞+${x.gold}／🗡️+${x.sword}`;
  if(bookId==='nagiAnnihilationOrder'&&x)return `CT${x.ct}｜味方全体 銀🪞全消費｜消費合計数%ATK×${x.hits}Hit`;
  if(bookId==='nagiWaitOrder'&&x)return `CT${x.ct}｜味方全体 全🪞消費｜🛡️変換 金×${x.goldRate}／銀×${x.silverRate}／銅×${x.copperRate}`;
@@ -2779,9 +2784,9 @@ function freeSkillBookCurrentText(bookId,stage=getFreeSkillBookStage(bookId)){
 }
 function freeSkillBookCurrentDetail(bookId,stage=getFreeSkillBookStage(bookId)){
  const x=freeSkillBookCurrentSpec(bookId,stage);
- if(bookId==='mikotoAbsoluteRelease'&&x)return `自身の銅🪞を全て消費。消費した銅🪞数%のATKダメージを敵前衛へ${x.hits}回与える。各Hitごとに生存前衛からランダム1体を選択。使用後、消費数の${x.silverRate}%分だけ銀🪞を得る（端数切り捨て）。`;
- if(bookId==='mikotoWarDeclaration'&&x)return `自身の銅🪞を${x.copperCost}消費。敵前衛ランダム1体へATK${x.power}%ダメージ×${x.hits}。使用後、自身へ🗡️+${x.sword}。`;
- if(bookId==='mikotoMeikyoShisui'&&x)return `自身の銅🪞を${x.copperCost}消費。自身の最大HPを${x.heal}%回復。使用後、自身へ銀🪞+${x.silver}。`;
+ if(bookId==='mikotoAbsoluteRelease'&&x)return `銀🪞20以上で使用可能。発動時に銀🪞20消費。敵前衛へATK${x.power}%×${x.hits}Hit。各Hit直前に生存している敵前衛からランダム1体を再選択する。途中撃破時は残りHitを別の生存前衛へ継続し、最後の敵撃破後の残予定Hitも撃破技OVERKILLへ加算する。`;
+ if(bookId==='mikotoWarDeclaration'&&x)return `銀🪞10以上で使用可能。発動時に銀🪞10消費。敵前衛ランダム1体を選択し、同じ対象へATK${x.power}%×2Hit。攻撃後、自身へ🗡️+${x.sword}、金🪞+${x.gold}。`;
+ if(bookId==='mikotoMeikyoShisui'&&x)return `金🪞30以上で使用可能。発動時に金🪞30消費。自身の最大HP${x.healRate}%を回復し、次回自身が使用するATK参照攻撃スキル行動中だけ自身ATKを×${formatMultiplier(x.atkMultiplier)}として扱う。多段は全Hitに適用し行動終了後に消費。交代・非攻撃行動・🪞カウンターでは消費せず、同効果は重複しない。`;
  if(bookId==='nagiBulletLoad'&&x)return `生存している味方全員へ銅🪞+${x.copper}、銀🪞+${x.silver}、金🪞+${x.gold}、🗡️+${x.sword}。`;
  if(bookId==='nagiAnnihilationOrder'&&x)return `生存味方全員の銀🪞を全消費し、その合計数をSとする。1HitあたりATK S%ダメージ。各Hitごとに生存敵全体からランダム1体を選択して${x.hits}回攻撃する。`;
  if(bookId==='nagiWaitOrder'&&x)return `生存味方全員が自身の金🪞・銀🪞・銅🪞を全消費。各味方ごとに「金×${x.goldRate} + 銀×${x.silverRate} + 銅×${x.copperRate}」を合計し、最後に端数を切り捨てた数だけその本人へ🛡️を付与する。`;
@@ -2851,14 +2856,14 @@ function unitRosterKey(u){return u?.rosterId||formationRosterData.find(c=>c.cid=
 function equippedSkillBook(u,slot){const k=unitRosterKey(u),id=k?loadSkillEquip()?.[k]?.[slot]:null;return id?skillBooks[id]||null:null}
 function skillBookBlockReason(u,book){
  if(!u||!book)return'';
- if(book.id==='mikotoAbsoluteRelease'&&getTierBuff(u,'mirror','copper')<1)return'《絶対領域解放》は銅🪞1以上で発動可能';
+ if(book.id==='mikotoAbsoluteRelease'){
+  const cost=20;if(getTierBuff(u,'mirror','silver')<cost)return`《絶対領域解放》は銀🪞${cost}以上で発動可能`;
+ }
  if(book.id==='mikotoWarDeclaration'){
-  const spec=freeSkillBookCurrentSpec(book.id),cost=Math.max(0,Number(spec?.copperCost)||0);
-  if(getTierBuff(u,'mirror','copper')<cost)return`《宣戦布告》は銅🪞${cost}以上で発動可能`;
+  const cost=10;if(getTierBuff(u,'mirror','silver')<cost)return`《宣戦布告》は銀🪞${cost}以上で発動可能`;
  }
  if(book.id==='mikotoMeikyoShisui'){
-  const spec=freeSkillBookCurrentSpec(book.id),cost=Math.max(0,Number(spec?.copperCost)||0);
-  if(getTierBuff(u,'mirror','copper')<cost)return`《明鏡止水》は銅🪞${cost}以上で発動可能`;
+  const cost=30;if(getTierBuff(u,'mirror','gold')<cost)return`《明鏡止水》は金🪞${cost}以上で発動可能`;
  }
  if(book.id==='nagiAnnihilationOrder'){
   const total=living(A).reduce((sum,a)=>sum+getTierBuff(a,'mirror','silver'),0);
@@ -2990,6 +2995,22 @@ const chosenSkillCt=(u,slot=1)=>{
  if(u?.cid===203)return 10;
  return u?.skill?.ct||0;
 };
+const MIKOTO_MEIKYO_ATK_BOOKS=new Set(['mikotoAbsoluteRelease','mikotoWarDeclaration','nagiAnnihilationOrder','yuzuOneHitKill','bloodSword','mirrorMastery']);
+function isAtkReferencedPlayerSkillAction(u,slot,book=null){
+ if(!u||slot===0)return false;
+ if(slot>=2)return !!book&&MIKOTO_MEIKYO_ATK_BOOKS.has(book.id);
+ return slot===1&&[101,102,103].includes(u.cid);
+}
+function beginMikotoMeikyoAtkSkillAction(u,slot,book=null){
+ const pending=Math.max(1,Number(u?.mikotoMeikyoAtkMultiplierPending)||1),use=pending>1&&isAtkReferencedPlayerSkillAction(u,slot,book);
+ if(use)u.mikotoMeikyoAtkActiveMultiplier=pending;else if(u)delete u.mikotoMeikyoAtkActiveMultiplier;
+ return use;
+}
+function endMikotoMeikyoAtkSkillAction(u,consume){
+ if(!u)return;
+ delete u.mikotoMeikyoAtkActiveMultiplier;
+ if(consume)u.mikotoMeikyoAtkMultiplierPending=0;
+}
 const chosenActionCost=(u,slot=1)=>baseWait(u)+(slot===0?0:(u?.side==='E'?(u?.skill?.ct||0):chosenSkillCt(u,slot)));
 function allUnits(){return [...A,...E]}
 function compareTurn(a,b){return (a.next-b.next)||(effectiveSpd(b)-effectiveSpd(a))||(a.cid-b.cid)}
@@ -3239,6 +3260,7 @@ function battleBuffSummary(u){
  if((u.sword||0)>0)bottomItems.push(`🗡️${Math.floor(u.sword)}`);
  if((u.harden||0)>0)bottomItems.push(`💪${Math.floor(u.harden)}`);
  if((u.blood||0)>0)bottomItems.push(`🩸${Math.floor(u.blood)}`);
+ if(Number(u?.mikotoMeikyoAtkMultiplierPending)>1)bottomItems.push(`ATK×${formatMultiplier(u.mikotoMeikyoAtkMultiplierPending)}`);
  const swift=swiftTotal(u);if(swift>0)bottomItems.push(`👞${Math.floor(swift)}`);
  if(!topItems.length&&!bottomItems.length)return '';
  const rows=[];
@@ -3265,7 +3287,7 @@ function unitStateTags(u){
  if(u.healBlock)tags.push(`❤️‍🩹 回復阻害 ${u.healBlock}`);
  if(u.shield)tags.push(`🛡️ ${shieldStackDisplay(u)}st｜次回${shieldStackDisplay(u)}%軽減`);
  if(u.invincible)tags.push(`⭐️ 無敵 ${u.invincible}`);
- if(u.sword)tags.push(`🗡️ ${u.sword}`);if(u.harden)tags.push(`💪 ${u.harden}`);if(swiftTotal(u))tags.push(`👞 俊足 ${swiftTotal(u)}`);
+ if(u.sword)tags.push(`🗡️ ${u.sword}`);if(u.harden)tags.push(`💪 ${u.harden}`);if(Number(u?.mikotoMeikyoAtkMultiplierPending)>1)tags.push(`明鏡止水 ATK準備 ×${formatMultiplier(u.mikotoMeikyoAtkMultiplierPending)}`);if(swiftTotal(u))tags.push(`👞 俊足 ${swiftTotal(u)}`);
  return tags;
 }
 function swapColumn(u){
@@ -3397,8 +3419,8 @@ function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.
 // 原則：一連の計算結果の最後に切り捨て。🛡️100ならその1Hitは0ダメージまで軽減できる。
 function baseMaxHp(u){return Math.max(1,Number(u?.baseMax)||Number(u?.max)||Number(u?.hp)||1)}
 function effectiveAtk(u){
- const base=Math.max(0,Number(u?.atk)||0),stacks=Math.max(0,Number(u?.sword)||0);
- return Math.max(0,Math.floor(base*(1+stacks/100)));
+ const base=Math.max(0,Number(u?.atk)||0),stacks=Math.max(0,Number(u?.sword)||0),skillMult=Math.max(1,Number(u?.mikotoMeikyoAtkActiveMultiplier)||1);
+ return Math.max(0,Math.floor(base*(1+stacks/100)*skillMult));
 }
 function effectiveDef(u){
  const base=Math.max(0,Number(u?.def)||0),stacks=Math.max(0,Number(u?.harden)||0);
@@ -3625,35 +3647,25 @@ function selectBattleTarget(candidates,label='対象を選択'){
  return new Promise(resolve=>targetSelection.resolve=resolve);
 }
 async function skillBookMikotoAbsoluteRelease(att,defenders){
- if(!att||att.hp<=0)return;
- const spec=freeSkillBookCurrentSpec('mikotoAbsoluteRelease');if(!spec)return;
- const spent=Math.floor(getTierBuff(att,'mirror','copper'));if(spent<1)return;
- consumeTierBuff(att,'mirror','copper',spent);
- const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
- const pct=spent,rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(pct/100))),plannedHits=Math.max(1,Math.floor(Number(spec.hits)||1));
- document.querySelector('#status').textContent=`${att.name}「スキルブック《絶対領域解放》」 ${freeSkillBookStageLabel('mikotoAbsoluteRelease')}｜銅🪞${spent}全消費｜ATK${pct}%×${plannedHits}`;renderBattle();await sleep(130);
- let hits=0,total=0;
- for(let i=0;i<plannedHits;i++){
-  const pool=frontEnemies(defenders);if(!pool.length)break;
-  const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);
-  if(el)el.classList.add('hit');const hit=applyCombatDamage(t,rawPerHit);hits++;total+=hit.damage;damagePop(el,hit.damage);
-  await sleep(75);if(el)el.classList.remove('hit');
-  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
- }
- const silverBefore=getTierBuff(att,'mirror','silver'),silverGain=Math.max(0,Math.floor(spent*(Number(spec.silverRate)||0)/100));
- if(silverGain>0)addTierBuff(att,'mirror','silver',silverGain);
- const silverActual=Math.max(0,getTierBuff(att,'mirror','silver')-silverBefore);
- if(attacker)attacker.classList.remove('attacking');
- document.querySelector('#status').textContent=`《絶対領域解放》 銅🪞${spent}消費｜ATK${pct}%×${hits}Hit／計${total}ダメージ｜銀🪞+${displayInt(silverActual)}`;renderBattle();await sleep(120);
+ const spec=freeSkillBookCurrentSpec('mikotoAbsoluteRelease');if(!att||att.hp<=0||!spec)return;
+ const silverCost=Math.max(0,Math.floor(Number(spec.silverCost)||20));if(getTierBuff(att,'mirror','silver')<silverCost)return;
+ if(!frontEnemies(defenders).length)return;
+ consumeTierBuff(att,'mirror','silver',silverCost);
+ let attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
+ const hitCount=Math.max(1,Math.floor(Number(spec.hits)||1)),multiplier=Math.max(0,Number(spec.power)||0)/100;
+ document.querySelector('#status').textContent=`${att.name}「スキルブック《絶対領域解放》」 ${freeSkillBookStageLabel('mikotoAbsoluteRelease')}｜銀🪞${silverCost}消費｜ATK${spec.power}%×${hitCount}`;renderBattle();await sleep(120);
+ const result=await mikotoPursuitHits(att,defenders,hitCount,multiplier,'');
+ attacker=document.getElementById(att.id);if(attacker)attacker.classList.remove('attacking');
+ document.querySelector('#status').textContent=`《絶対領域解放》 銀🪞-${silverCost}｜ATK${spec.power}%×${hitCount}Hit／計${result.total}ダメージ`;renderBattle();await sleep(120);
 }
 async function skillBookMikotoWarDeclaration(att,defenders){
  const spec=freeSkillBookCurrentSpec('mikotoWarDeclaration');if(!att||att.hp<=0||!spec)return;
- const copperCost=Math.max(0,Math.floor(Number(spec.copperCost)||0));if(getTierBuff(att,'mirror','copper')<copperCost)return;
+ const silverCost=Math.max(0,Math.floor(Number(spec.silverCost)||10));if(getTierBuff(att,'mirror','silver')<silverCost)return;
  const pool=frontEnemies(defenders);if(!pool.length)return;
- consumeTierBuff(att,'mirror','copper',copperCost);
- const t=pool[Math.floor(Math.random()*pool.length)],targetId=t.id,hitCount=Math.max(1,Math.floor(Number(spec.hits)||1)),rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(Math.max(0,Number(spec.power)||0)/100)));
+ consumeTierBuff(att,'mirror','silver',silverCost);
+ const t=pool[Math.floor(Math.random()*pool.length)],targetId=t.id,hitCount=2,rawPerHit=Math.max(1,Math.floor(effectiveAtk(att)*(Math.max(0,Number(spec.power)||0)/100)));
  let attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
- document.querySelector('#status').textContent=`${att.name}「スキルブック《宣戦布告》」 ${freeSkillBookStageLabel('mikotoWarDeclaration')}｜銅🪞${copperCost}消費｜ATK${spec.power}%×${hitCount}`;
+ document.querySelector('#status').textContent=`${att.name}「スキルブック《宣戦布告》」 ${freeSkillBookStageLabel('mikotoWarDeclaration')}｜銀🪞${silverCost}消費｜ATK${spec.power}%×2`;
  renderBattle();await sleep(110);
  attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
  let total=0;
@@ -3665,19 +3677,20 @@ async function skillBookMikotoWarDeclaration(att,defenders){
   const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
  }
  att.sword=(att.sword||0)+Math.max(0,Math.floor(Number(spec.sword)||0));
+ const goldBefore=getTierBuff(att,'mirror','gold');addTierBuff(att,'mirror','gold',Math.max(0,Math.floor(Number(spec.gold)||0)));const goldActual=Math.max(0,getTierBuff(att,'mirror','gold')-goldBefore);
  const el=document.getElementById(targetId);
  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
  attacker=document.getElementById(att.id);if(attacker)attacker.classList.remove('attacking');
- document.querySelector('#status').textContent=`《宣戦布告》 ${hitCount}Hit／計${total}ダメージ｜銅🪞-${copperCost}／🗡️+${displayInt(spec.sword)}`;renderBattle();await sleep(110);
+ document.querySelector('#status').textContent=`《宣戦布告》 2Hit／計${total}ダメージ｜銀🪞-${silverCost}／🗡️+${displayInt(spec.sword)}／金🪞+${displayInt(goldActual)}`;renderBattle();await sleep(110);
 }
 async function skillBookMikotoMeikyoShisui(att){
  const spec=freeSkillBookCurrentSpec('mikotoMeikyoShisui');if(!att||att.hp<=0||!spec)return;
- const copperCost=Math.max(0,Math.floor(Number(spec.copperCost)||0));if(getTierBuff(att,'mirror','copper')<copperCost)return;
- consumeTierBuff(att,'mirror','copper',copperCost);
- const amount=Math.max(1,Math.floor(Math.max(1,att.max)*(Math.max(0,Number(spec.heal)||0)/100))),actual=Math.min(amount,Math.max(0,att.max-att.hp));att.hp+=actual;
- const silverBefore=getTierBuff(att,'mirror','silver');addTierBuff(att,'mirror','silver',Math.max(0,Math.floor(Number(spec.silver)||0)));const silverActual=Math.max(0,getTierBuff(att,'mirror','silver')-silverBefore);
+ const goldCost=Math.max(0,Math.floor(Number(spec.goldCost)||30));if(getTierBuff(att,'mirror','gold')<goldCost)return;
+ consumeTierBuff(att,'mirror','gold',goldCost);
+ const amount=Math.max(1,Math.floor(Math.max(1,att.max)*(Math.max(0,Number(spec.healRate)||0)/100))),actual=Math.min(amount,Math.max(0,att.max-att.hp));att.hp+=actual;
+ att.mikotoMeikyoAtkMultiplierPending=Math.max(1,Number(spec.atkMultiplier)||1);
  const el=document.getElementById(att.id);if(el&&actual>0)damagePop(el,`+${actual}`);
- document.querySelector('#status').textContent=`${att.name}《明鏡止水》 ${freeSkillBookStageLabel('mikotoMeikyoShisui')}｜銅🪞-${copperCost}／HP+${actual}／銀🪞+${displayInt(silverActual)}`;renderBattle();await sleep(140);
+ document.querySelector('#status').textContent=`${att.name}《明鏡止水》 ${freeSkillBookStageLabel('mikotoMeikyoShisui')}｜金🪞-${goldCost}／HP+${actual}／次回ATK参照スキル ATK×${formatMultiplier(spec.atkMultiplier)}`;renderBattle();await sleep(140);
 }
 
 async function skillBookNagiBulletLoad(att){
@@ -3906,7 +3919,12 @@ async function battle(){
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
      await resolveMilkGoldTurnStart(u);
      tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
-     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=2){const book=equippedSkillBook(u,selectedSkillSlot);if(book?.id==='mikotoAbsoluteRelease')await skillBookMikotoAbsoluteRelease(u,E);else if(book?.id==='mikotoWarDeclaration')await skillBookMikotoWarDeclaration(u,E);else if(book?.id==='mikotoMeikyoShisui')await skillBookMikotoMeikyoShisui(u);else if(book?.id==='nagiBulletLoad')await skillBookNagiBulletLoad(u);else if(book?.id==='nagiAnnihilationOrder')await skillBookNagiAnnihilationOrder(u,E);else if(book?.id==='nagiWaitOrder')await skillBookNagiWaitOrder(u);else if(book?.id==='yuzuOneHitKill')await skillBookYuzuOneHitKill(u,E);else if(book?.id==='yuzuSelfSacrifice')await skillBookYuzuSelfSacrifice(u);else if(book?.id==='yuzuMeditation')await skillBookYuzuMeditation(u);else if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A);else if(book?.id==='mirrorMastery')await skillBookMirrorMastery(u,E);else if(book?.id==='milkingExperience')await skillBookMilkingExperience(u,A)}else if(u.cid===101){await absoluteDomainAttack(u,E)}else if(u.cid===102){await nagiIsseiSousha(u,E)}else if(u.cid===103){await yuzuUninMusho(u,E)}else if(u.cid===201){await hathorHolyDrop(u,E)}else if(u.cid===202){await baalFertileDrop(u,E)}else{await nandiMilkingGrace(u,E)};finalizeOverkillAction();currentActor=null;resolvePlayerAction=null}else{if(u.side==='A')beginOverkillAction(u);await attack(u,u.side==='A'?E:A);if(u.side==='A')finalizeOverkillAction()}
+     if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){
+     await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);
+     const selectedBook=selectedSkillSlot>=2?equippedSkillBook(u,selectedSkillSlot):null,consumeMeikyoAtkBoost=beginMikotoMeikyoAtkSkillAction(u,selectedSkillSlot,selectedBook);
+     if(selectedSkillSlot===0){await executeBattleSwap(u)}else if(selectedSkillSlot>=2){const book=selectedBook;if(book?.id==='mikotoAbsoluteRelease')await skillBookMikotoAbsoluteRelease(u,E);else if(book?.id==='mikotoWarDeclaration')await skillBookMikotoWarDeclaration(u,E);else if(book?.id==='mikotoMeikyoShisui')await skillBookMikotoMeikyoShisui(u);else if(book?.id==='nagiBulletLoad')await skillBookNagiBulletLoad(u);else if(book?.id==='nagiAnnihilationOrder')await skillBookNagiAnnihilationOrder(u,E);else if(book?.id==='nagiWaitOrder')await skillBookNagiWaitOrder(u);else if(book?.id==='yuzuOneHitKill')await skillBookYuzuOneHitKill(u,E);else if(book?.id==='yuzuSelfSacrifice')await skillBookYuzuSelfSacrifice(u);else if(book?.id==='yuzuMeditation')await skillBookYuzuMeditation(u);else if(book?.id==='bloodSword')await skillBookBloodSword(u,E);else if(book?.id==='heal')await skillBookHeal(u,A);else if(book?.id==='mirrorMastery')await skillBookMirrorMastery(u,E);else if(book?.id==='milkingExperience')await skillBookMilkingExperience(u,A)}else if(u.cid===101){await absoluteDomainAttack(u,E)}else if(u.cid===102){await nagiIsseiSousha(u,E)}else if(u.cid===103){await yuzuUninMusho(u,E)}else if(u.cid===201){await hathorHolyDrop(u,E)}else if(u.cid===202){await baalFertileDrop(u,E)}else{await nandiMilkingGrace(u,E)};
+     endMikotoMeikyoAtkSkillAction(u,consumeMeikyoAtkBoost);finalizeOverkillAction();currentActor=null;resolvePlayerAction=null
+    }else{if(u.side==='A')beginOverkillAction(u);await attack(u,u.side==='A'?E:A);if(u.side==='A')finalizeOverkillAction()}
      u.next+=chosenActionCost(u,selectedSkillSlot);syncActiveParty();renderBattle();
    }
    if(!living(E).length){
