@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.406</title>
+<title>セカソコ ver.407</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -23,6 +23,7 @@
 /* ver.339: OVERKILL visual tiers — 100% normal, 300% yellow, 500% red. */
 /* ver.341: retired all six Unique Skill ② battle slots; six characters now keep Unique Skill ① only and use three free skill-book slots. Existing free-skill equips migrate forward. */
 /* ver.349: battle buff row shield visibility improved + battle stack / HP displays are integerized. */
+/* ver.407: 🥛 foundation redesign. Copper reacts per surviving damaging hit, Silver boosts final dealt damage and rolls into Gold at turn start, Gold raises base max HP. Cow skill values themselves are unchanged. */
 /* ver.406: unavailable skill buttons keep their dark background/frame and dimmed labels, while .skillShortageHint is excluded from opacity/filter desaturation so "あと○" resource progress stays normally visible. Logic, AUTO, CT and combat values are unchanged. */
 /* ver.405: resource-shortage hints. Unusable resource-cost skills show a compact "あと○" value inside the existing small button line. This is display-only: skillBookBlockReason()/playerSkillBlockReason()/skillBookUsable(), AUTO, CT timeline rules and all combat values remain unchanged. */
 /* ver.404: battle skill UI clarity pass. Player-facing skill text is shortened; unusable skills are visually greyed without disabling touch/long-press events; tapping an unusable skill shows one short reason and consumes no action/resources. Skill performance, CT values, targeting, AUTO priorities and combat foundations are unchanged. */
@@ -1461,7 +1462,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.406";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.407";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -3116,7 +3117,9 @@ function ensureTierBuffState(u){
   if(!u.tierBuffs[key]||typeof u.tierBuffs[key]!=='object')u.tierBuffs[key]={copper:0,silver:0,gold:0};
   const b=u.tierBuffs[key];
   b.copper=cleanStackNumber(b.copper);b.silver=cleanStackNumber(b.silver);b.gold=cleanStackNumber(b.gold);
-  if(key==='mirror'){b.copper=Math.min(100,b.copper);b.silver=Math.min(100,b.silver);b.gold=Math.min(100,b.gold)}else if(key==='shield'){b.copper=normalizeShieldStacks(b.copper)}
+  if(key==='mirror'){b.copper=Math.min(100,b.copper);b.silver=Math.min(100,b.silver);b.gold=Math.min(100,b.gold)}
+  else if(key==='milk'){b.copper=Math.min(100,b.copper);b.silver=Math.min(100,b.silver)}
+  else if(key==='shield'){b.copper=normalizeShieldStacks(b.copper)}
  }
  return u.tierBuffs;
 }
@@ -3125,7 +3128,7 @@ function syncTierBuffsFromLegacy(u){
  const state=ensureTierBuffState(u);
  // ver.289 skills still write these legacy copper fields directly. Mirror them into the new foundation.
  u.shield=normalizeShieldStacks(u.shield);
- for(const key of ['mirror','milk','shield'])state[key].copper=key==='mirror'?Math.min(100,cleanStackNumber(u[key])):key==='shield'?normalizeShieldStacks(u[key]):cleanStackNumber(u[key]);
+ for(const key of ['mirror','milk','shield'])state[key].copper=key==='mirror'||key==='milk'?Math.min(100,cleanStackNumber(u[key])):normalizeShieldStacks(u[key]);
  if(Object.prototype.hasOwnProperty.call(u,'mirror'))u.mirror=state.mirror.copper;
  // Reserved compatibility for future units that already carry direct 🎲/🧸 values.
  if(Object.prototype.hasOwnProperty.call(u,'gamble'))state.gamble.copper=cleanStackNumber(u.gamble);
@@ -3142,22 +3145,18 @@ function getTierBuff(u,key,tier='copper'){
 }
 function setTierBuff(u,key,tier,value){
  if(!u||!TIER_BUFF_META[key]||!TIER_BUFF_NAMES[tier])return 0;
- const state=ensureTierBuffState(u);let next=cleanStackNumber(value);if(key==='mirror')next=Math.min(100,next);if(key==='shield'&&tier==='copper')next=normalizeShieldStacks(next);state[key][tier]=next;
+ const state=ensureTierBuffState(u);let next=cleanStackNumber(value);
+ if(key==='mirror')next=Math.min(100,next);
+ if(key==='milk'&&(tier==='copper'||tier==='silver'))next=Math.min(100,next);
+ if(key==='shield'&&tier==='copper')next=normalizeShieldStacks(next);
+ state[key][tier]=next;
  if(tier==='copper')syncLegacyCopperFromTier(u,key);
  if(key==='milk')recomputeMilkMaxHp(u);
  return state[key][tier];
 }
 function addTierBuff(u,key,tier,amount){
  const gain=cleanStackNumber(amount);
- const milkSilverGain=!!u&&key==='milk'&&tier==='silver'&&gain>0;
- const beforeMax=milkSilverGain?Math.max(1,Number(u.max)||milkAdjustedMaxHp(u)):0;
- const result=setTierBuff(u,key,tier,getTierBuff(u,key,tier)+gain);
- // 銀🥛取得時は、増えた最大HPと同量だけ現在HPも増加する。
- if(milkSilverGain){
-  const afterMax=Math.max(1,Number(u.max)||beforeMax),hpGain=Math.max(0,afterMax-beforeMax);
-  if(hpGain>0)u.hp=Math.min(afterMax,Math.max(0,Number(u.hp)||0)+hpGain);
- }
- return result;
+ return setTierBuff(u,key,tier,getTierBuff(u,key,tier)+gain);
 }
 function consumeTierBuff(u,key,tier,amount){
  const have=getTierBuff(u,key,tier),spent=Math.min(have,cleanStackNumber(amount));setTierBuff(u,key,tier,have-spent);return spent;
@@ -3210,7 +3209,15 @@ function tierBuffHudToken(u,key){
 }
 function tierBuffDetailTags(u){
  const state=syncTierBuffsFromLegacy(u),tags=[];
- for(const key of TIER_BUFF_ORDER){const meta=TIER_BUFF_META[key],b=state[key];for(const tier of ['copper','silver','gold'])if(b[tier]>0)tags.push(`${TIER_BUFF_MARKS[tier]}${meta.icon} ${TIER_BUFF_NAMES[tier]} ${formatStackNumber(b[tier])}`)}
+ for(const key of TIER_BUFF_ORDER){
+  const meta=TIER_BUFF_META[key],b=state[key];
+  for(const tier of ['copper','silver','gold'])if(b[tier]>0){
+   if(key==='milk'&&tier==='copper')tags.push(`🥉🥛 銅 ${formatStackNumber(b.copper)}｜生存被ダメ${formatStackNumber(b.copper)}%銀抽選／銅5→HP1%`);
+   else if(key==='milk'&&tier==='silver')tags.push(`🥈🥛 銀 ${formatStackNumber(b.silver)}｜最終与ダメ+${formatStackNumber(b.silver)}%／自ターン${formatStackNumber(b.silver)}%金抽選→銀-1`);
+   else if(key==='milk'&&tier==='gold')tags.push(`🥇🥛 金 ${formatStackNumber(b.gold)}｜最大HP+${formatMultiplier(b.gold*.5)}%`);
+   else tags.push(`${TIER_BUFF_MARKS[tier]}${meta.icon} ${TIER_BUFF_NAMES[tier]} ${formatStackNumber(b[tier])}`);
+  }
+ }
  return tags;
 }
 function makePartyUnits(ids,partyIndex=0){return ids.map((id,i)=>{const base=formationRosterData.find(c=>c.id===id);if(!base)return null;let x=getEnhancedStats(id,base);const homeChar=Object.values(homeRoster).flat().find(c=>c.name===x.name);const u={...clone(x),def:x.def??homeChar?.def??0,max:x.hp,baseMax:x.hp,rosterId:id,id:'a'+partyIndex+'_'+i,formationSlot:i,homeSlot:i,row:i<3?'front':'back',pulledForward:false,pullVulnerableUntilTurn:0,side:'A',next:baseWait(x)};syncTierBuffsFromLegacy(u);return u}).filter(Boolean)}
@@ -3502,10 +3509,31 @@ function shieldStackDisplay(u){return String(normalizeShieldStacks(u?.shield))}
 function hpDisplay(u){return displayInt(u?.hp)}
 function maxHpDisplay(u){return displayInt(u?.max)}
 
-function applyCombatDamage(t,rawDamage,{ignoreDef=false,ignoreShield=false,minDamageRate=0.10}={}){
+function milkFinalDamage(att,damage){
+ const base=Math.max(0,Math.floor(Number(damage)||0));if(base<=0||!att)return base;
+ const silver=Math.min(100,Math.max(0,Math.floor(getTierBuff(att,'milk','silver'))));
+ return Math.max(0,Math.floor(base*(1+silver/100)));
+}
+function resolveMilkDamageTaken(u,damage){
+ const dealt=Math.max(0,Math.floor(Number(damage)||0));
+ if(!u||dealt<=0||Number(u.hp)<=0)return{copperBefore:0,silverChance:0,silverRolled:false,silverGained:0,copperSpent:0,healed:0};
+ const copperBefore=Math.min(100,Math.max(0,Math.floor(getTierBuff(u,'milk','copper'))));
+ let silverRolled=false,silverGained=0;
+ if(copperBefore>0&&Math.random()*100<copperBefore){
+  silverRolled=true;const before=getTierBuff(u,'milk','silver');addTierBuff(u,'milk','silver',1);silverGained=Math.max(0,getTierBuff(u,'milk','silver')-before);
+ }
+ let copperSpent=0,healed=0;
+ if(copperBefore>=5){
+  copperSpent=consumeTierBuff(u,'milk','copper',5);
+  const max=Math.max(1,Number(u.max)||1),planned=Math.max(0,Math.floor(max*.01)),missing=Math.max(0,max-(Number(u.hp)||0));
+  healed=Math.min(planned,missing);if(healed>0)u.hp+=healed;
+ }
+ return{copperBefore,silverChance:copperBefore,silverRolled,silverGained,copperSpent,healed};
+}
+function applyCombatDamage(t,rawDamage,{ignoreDef=false,ignoreShield=false,minDamageRate=0.10,attacker=null}={}){
  const beforeHp=Math.max(0,Number(t?.hp)||0);
  const raw=Math.max(0,Number(rawDamage)||0);
- if(raw<=0)return{raw:0,afterDef:0,shieldBefore:normalizeShieldStacks(t?.shield),shieldConsumed:0,shieldReduction:0,damage:0};
+ if(raw<=0)return{raw:0,afterDef:0,shieldBefore:normalizeShieldStacks(t?.shield),shieldConsumed:0,shieldReduction:0,afterShield:0,damage:0,milkReaction:null};
  const def=effectiveDef(t);
  const floorRate=Math.max(0,Math.min(1,Number(minDamageRate)||0));
  const calculated=ignoreDef?raw:Math.max(raw*floorRate,raw-def);
@@ -3513,7 +3541,9 @@ function applyCombatDamage(t,rawDamage,{ignoreDef=false,ignoreShield=false,minDa
  const afterDef=Math.max(1,Math.floor(calculated));
  const shieldBefore=ignoreShield?0:normalizeShieldStacks(t?.shield);
  const shieldReduction=shieldBefore>0?Math.min(afterDef,afterDef*(shieldBefore/100)):0;
- const damage=Math.max(0,Math.floor(afterDef-shieldReduction));
+ const afterShield=Math.max(0,Math.floor(afterDef-shieldReduction));
+ // ver.407 銀🥛は既存ダメージ処理の最後に乗る最終与ダメ倍率。0ダメージは0のまま。
+ const damage=milkFinalDamage(attacker,afterShield);
  let shieldConsumed=0;
  if(shieldBefore>0){
    shieldConsumed=Math.max(1,Math.ceil(shieldBefore*0.30));
@@ -3521,7 +3551,9 @@ function applyCombatDamage(t,rawDamage,{ignoreDef=false,ignoreShield=false,minDa
  }
  if(damage>0)t.hp=Math.max(0,t.hp-damage);
  if(damage>0)recordOverkillDamage(t,beforeHp,damage);
- return{raw:Math.floor(raw),afterDef,shieldBefore,shieldConsumed,shieldReduction:Math.floor(shieldReduction),damage};
+ // ver.407 銅🥛は「実HPダメージ1以上」かつ生存Hitだけ反応。回避・0ダメージ・致死Hit・HP消費は対象外。
+ const milkReaction=damage>0&&t.hp>0?resolveMilkDamageTaken(t,damage):null;
+ return{raw:Math.floor(raw),afterDef,shieldBefore,shieldConsumed,shieldReduction:Math.floor(shieldReduction),afterShield,damage,milkReaction};
 }
 function tryEvade(t){
  if(!t)return false;
@@ -3542,7 +3574,7 @@ async function resolveMirrorEvadeEffects(evader,source){
  if(silverForRoll>0&&source&&source.hp>0&&Math.random()*100<silverForRoll){
   countered=true;
   const ownOverkillContext=evader.side==='A'&&source.side==='E'&&!overkillAction;if(ownOverkillContext)beginOverkillAction(evader);
-  const raw=Math.max(1,Math.floor(effectiveAtk(evader)*(50+goldBefore)/100)),hit=applyCombatDamage(source,raw),sourceEl=document.getElementById(source.id),evaderEl=document.getElementById(evader.id);
+  const raw=Math.max(1,Math.floor(effectiveAtk(evader)*(50+goldBefore)/100)),hit=applyCombatDamage(source,raw,{attacker:evader}),sourceEl=document.getElementById(source.id),evaderEl=document.getElementById(evader.id);
   if(evaderEl)counterPop(evaderEl);
   counterDamage=hit.damage;if(sourceEl){sourceEl.classList.add('hit');counterDamagePop(sourceEl,hit.damage)}
   extraGold=evader.mikotoNextCounterGoldBonusPending?1:0;
@@ -3572,57 +3604,51 @@ function consumeBloodOnEnemyAttack(att,target){
 
 function milkAdjustedMaxHp(u){
  if(!u)return 1;
- const base=baseMaxHp(u),state=syncTierBuffsFromLegacy(u).milk;
- const copper=Math.max(0,cleanStackNumber(state.copper)),silver=Math.max(0,cleanStackNumber(state.silver));
- // 銅は最大HPへ固定値加算。銀は「銀適用前の最大HP」に対して1st=+1%を加算する。
- return Math.max(1,Math.floor((base+copper)*(1+silver/100)));
+ const base=baseMaxHp(u),gold=Math.max(0,Math.floor(getTierBuff(u,'milk','gold')));
+ // ver.407 金🥛のみが基準最大HPへ加算。1st=+0.5%、非複利。銅・銀は最大HPへ影響しない。
+ return Math.max(1,Math.floor((base*(200+gold))/200));
 }
 function recomputeMilkMaxHp(u){
  if(!u)return 1;
  const nextMax=milkAdjustedMaxHp(u);
  u.max=nextMax;
+ // 金🥛増加は回復ではない。減少等で新最大HPを超えた場合だけクランプする。
  if(Number(u.hp)>nextMax)u.hp=nextMax;
  return nextMax;
 }
 function addMilk(u,n){
  if(!u||u.hp<=0||n<=0)return 0;
- const gain=cleanStackNumber(n);
- const result=addTierBuff(u,'milk','copper',gain);
- // 銅🥛1stにつき最大HP+1、現在HPも+1。
- u.hp=Math.min(Math.max(1,Number(u.max)||1),Math.max(0,Number(u.hp)||0)+gain);
- return result;
+ // ver.407 銅🥛付与はスタック増加のみ。最大HP・現在HPは増加しない。
+ return addTierBuff(u,'milk','copper',cleanStackNumber(n));
 }
 function consumeMilk(u,n){
  if(!u||n<=0)return 0;
  return consumeTierBuff(u,'milk','copper',Math.floor(n));
 }
-async function resolveMilkGoldTurnStart(u){
- if(!u||u.hp<=0)return{gold:0,healed:0};
+async function resolveMilkTurnStart(u){
+ if(!u||u.hp<=0)return{silverBefore:0,goldRolled:false,goldGained:0,silverSpent:0};
  recomputeMilkMaxHp(u);
- const gold=Math.max(0,Math.floor(getTierBuff(u,'milk','gold')));
- if(gold<=0)return{gold:0,healed:0};
- const max=Math.max(1,Number(u.max)||1),planned=Math.floor(max*gold/100),missing=Math.max(0,max-(Number(u.hp)||0));
- const healed=Math.min(planned,missing);
- if(healed>0){
-  u.hp+=healed;
-  const el=document.getElementById(u.id);if(el)damagePop(el,`+${healed}`);
-  document.querySelector('#status').textContent=`${u.name}｜金🥛${gold} ターン開始回復 HP+${healed}`;
-  renderBattle();await sleep(100);
- }
- return{gold,healed};
+ const silverBefore=Math.min(100,Math.max(0,Math.floor(getTierBuff(u,'milk','silver'))));
+ if(silverBefore<=0)return{silverBefore:0,goldRolled:false,goldGained:0,silverSpent:0};
+ const goldRolled=Math.random()*100<silverBefore,goldBefore=getTierBuff(u,'milk','gold');
+ if(goldRolled)addTierBuff(u,'milk','gold',1);
+ const goldGained=Math.max(0,getTierBuff(u,'milk','gold')-goldBefore),silverSpent=consumeTierBuff(u,'milk','silver',1);
+ // コマンド入力より先に銀-1を反映し、既存の発動可否／「あと○」表示へそのまま渡す。
+ renderBattle();
+ return{silverBefore,goldRolled,goldGained,silverSpent};
 }
 function milkAllies(){return living(A).filter(u=>String(u.attr||'').includes('乳牛'))}
 function frontEnemies(defenders){const f=living(defenders).filter(x=>x.row==='front');return f.length?f:living(defenders)}
 async function hathorHolyDrop(att,defenders){
  const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');const pool=frontEnemies(defenders);if(!pool.length){if(attacker)attacker.classList.remove('attacking');return}
  const t=pool[Math.floor(Math.random()*pool.length)],dmg=Math.max(1,Math.floor(att.hp/4)),el=document.getElementById(t.id);document.querySelector('#status').textContent=`${att.name}「固有《聖なる雫》」`;
- const hit=applyCombatDamage(t,dmg,{ignoreDef:true});damagePop(el,hit.damage);if(el)el.classList.add('hit');await sleep(220);if(el)el.classList.remove('hit');addMilk(att,3);if(attacker)attacker.classList.remove('attacking');
+ const hit=applyCombatDamage(t,dmg,{ignoreDef:true,attacker:att});damagePop(el,hit.damage);if(el)el.classList.add('hit');await sleep(220);if(el)el.classList.remove('hit');addMilk(att,3);if(attacker)attacker.classList.remove('attacking');
  document.querySelector('#status').textContent=`《聖なる雫》 ${hit.damage}ダメージ／自身🥛+3`;if(t.hp<=0){if(el)el.classList.add('dying');await sleep(220);if(handleFrontlineDeath(t)){renderBattle();await sleep(260)}}
 }
 async function baalFertileDrop(att,defenders){
  const attacker=document.getElementById(att.id),pool=frontEnemies(defenders);if(!pool.length)return;
  const dmg=Math.max(1,Math.floor(att.max/5));document.querySelector('#status').textContent=`${att.name}「固有《豊穣の雫》」`;if(attacker)attacker.classList.add('attacking');
- for(const t of pool){const el=document.getElementById(t.id),hit=applyCombatDamage(t,dmg,{ignoreDef:true});damagePop(el,hit.damage);if(el)el.classList.add('hit')}
+ for(const t of pool){const el=document.getElementById(t.id),hit=applyCombatDamage(t,dmg,{ignoreDef:true,attacker:att});damagePop(el,hit.damage);if(el)el.classList.add('hit')}
  await sleep(220);pool.forEach(t=>{const el=document.getElementById(t.id);if(el)el.classList.remove('hit')});
  const allies=living(A),recipient=autoMode?autoRandomTarget(allies):await selectBattleTarget(allies,`${att.name}《豊穣の雫》｜🥛+5する味方を選択`);if(recipient)addMilk(recipient,5);
  if(attacker)attacker.classList.remove('attacking');let pulled=false;for(const t of pool.filter(x=>x.hp<=0)){const el=document.getElementById(t.id);if(el)el.classList.add('dying');if(handleFrontlineDeath(t))pulled=true}if(pulled){renderBattle();await sleep(220)}
@@ -3631,7 +3657,7 @@ async function baalFertileDrop(att,defenders){
 async function nandiMilkingGrace(att,defenders){
  const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');const pool=frontEnemies(defenders);if(!pool.length){if(attacker)attacker.classList.remove('attacking');return}
  const t=pool[Math.floor(Math.random()*pool.length)],dmg=Math.max(1,Math.floor(att.max/10)),el=document.getElementById(t.id);document.querySelector('#status').textContent=`${att.name}「固有《搾乳の恵み》」`;
- const hit=applyCombatDamage(t,dmg,{ignoreDef:true});damagePop(el,hit.damage);if(el)el.classList.add('hit');await sleep(200);if(el)el.classList.remove('hit');addMilk(att,3);
+ const hit=applyCombatDamage(t,dmg,{ignoreDef:true,attacker:att});damagePop(el,hit.damage);if(el)el.classList.add('hit');await sleep(200);if(el)el.classList.remove('hit');addMilk(att,3);
  if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《搾乳の恵み》 ${hit.damage}ダメージ／自身🥛+3`;if(t.hp<=0){if(el)el.classList.add('dying');await sleep(220);if(handleFrontlineDeath(t)){renderBattle();await sleep(260)}}
 }
 // ver.403 shared target rule: rear-target skills use living rear enemies; if none exist, they fall back to living front enemies.
@@ -3645,7 +3671,7 @@ async function yuzuUninMusho(att,defenders){
  let attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
  document.querySelector('#status').textContent=`${att.name}「固有《雲隠霧消》」 ${spec.label}｜CT${spec.ct}｜後衛優先 ATK${Math.round(spec.atkMultiplier*100)}%`;await sleep(130);
  if(el)el.classList.add('hit');
- const raw=Math.max(1,Math.floor(effectiveAtk(att)*spec.atkMultiplier)),hit=applyCombatDamage(t,raw);damagePop(el||targetId,hit.damage);
+ const raw=Math.max(1,Math.floor(effectiveAtk(att)*spec.atkMultiplier)),hit=applyCombatDamage(t,raw,{attacker:att});damagePop(el||targetId,hit.damage);
  await sleep(100);const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
  if(t.hp<=0){const deadEl=document.getElementById(targetId);if(deadEl)deadEl.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
  const suppa=livingSuppa();for(const ally of suppa)addMirrorCopper(ally,spec.copperGain);
@@ -3659,7 +3685,7 @@ async function nagiSupplyOrder(att,defenders){
  let hits=0,total=0;
  for(const t of targets){
   if(t.hp<=0)continue;const targetId=t.id,el=document.getElementById(targetId);if(el)el.classList.add('hit');
-  const raw=Math.max(1,Math.floor(effectiveAtk(att)*spec.atkMultiplier)),hit=applyCombatDamage(t,raw);hits++;total+=hit.damage;damagePop(el||targetId,hit.damage);
+  const raw=Math.max(1,Math.floor(effectiveAtk(att)*spec.atkMultiplier)),hit=applyCombatDamage(t,raw,{attacker:att});hits++;total+=hit.damage;damagePop(el||targetId,hit.damage);
   await sleep(55);const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
   if(t.hp<=0){const deadEl=document.getElementById(targetId);if(deadEl)deadEl.classList.add('dying');await sleep(35);if(handleFrontlineDeath(t)){renderBattle();await sleep(45)}}
  }
@@ -3677,13 +3703,13 @@ async function mikotoPursuitHits(u,enemies,count,multiplier,label,lastTarget=nul
    // Keep the adopted OVERKILL behavior of the former pursuit skill:
    // planned remaining hits after the final enemy falls still belong to this killing action.
    if(last&&last.hp<=0&&overkillAction){
-    const raw=Math.max(1,Math.floor(effectiveAtk(u)*multiplier)),calc=Math.max(raw*.03,raw-effectiveDef(last)),planned=Math.max(1,Math.floor(calc));
+    const raw=Math.max(1,Math.floor(effectiveAtk(u)*multiplier)),calc=Math.max(raw*.03,raw-effectiveDef(last)),planned=milkFinalDamage(u,Math.max(1,Math.floor(calc)));
     recordOverkillDamage(last,0,planned);hits++;total+=planned;
    }
    continue;
   }
   const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);last=t;
-  if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.max(1,Math.floor(effectiveAtk(u)*multiplier)));hits++;total+=hit.damage;damagePop(el,hit.damage);
+  if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.max(1,Math.floor(effectiveAtk(u)*multiplier)),{attacker:u});hits++;total+=hit.damage;damagePop(el,hit.damage);
   await sleep(45);if(el)el.classList.remove('hit');
   if(t.hp<=0){if(el)el.classList.add('dying');await sleep(35);if(handleFrontlineDeath(t)){renderBattle();await sleep(45)}}
  }
@@ -3697,13 +3723,13 @@ async function nagiRandomAllPlannedHits(u,enemies,count,multiplier,label=''){
   const pool=living(enemies);
   if(!pool.length){
    if(last&&last.hp<=0&&overkillAction){
-    const raw=Math.max(1,Math.floor(effectiveAtk(u)*multiplier)),calc=Math.max(raw*.10,raw-effectiveDef(last)),planned=Math.max(1,Math.floor(calc));
+    const raw=Math.max(1,Math.floor(effectiveAtk(u)*multiplier)),calc=Math.max(raw*.10,raw-effectiveDef(last)),planned=milkFinalDamage(u,Math.max(1,Math.floor(calc)));
     recordOverkillDamage(last,0,planned);hits++;total+=planned;
    }
    continue;
   }
   const t=pool[Math.floor(Math.random()*pool.length)],targetId=t.id,el=document.getElementById(targetId);last=t;
-  if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.max(1,Math.floor(effectiveAtk(u)*multiplier)));hits++;total+=hit.damage;damagePop(el||targetId,hit.damage);
+  if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.max(1,Math.floor(effectiveAtk(u)*multiplier)),{attacker:u});hits++;total+=hit.damage;damagePop(el||targetId,hit.damage);
   await sleep(45);const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
   if(t.hp<=0){const deadEl=document.getElementById(targetId);if(deadEl)deadEl.classList.add('dying');await sleep(35);if(handleFrontlineDeath(t)){renderBattle();await sleep(45)}}
  }
@@ -3714,7 +3740,7 @@ async function absoluteDomainAttack(u,enemies){
  const initial=frontEnemies(enemies);if(!initial.length)return;
  const spec=mikotoUniqueBattleSpec(),t=initial[Math.floor(Math.random()*initial.length)],attacker=document.getElementById(u.id),el=document.getElementById(t.id);
  document.querySelector('#status').textContent=`名切 命《絶対領域展開》 ${spec.label}`;if(attacker)attacker.classList.add('attacking');await sleep(140);
- if(el)el.classList.add('hit');const raw=Math.max(1,Math.floor(effectiveAtk(u)*spec.atkMultiplier)),hit=applyCombatDamage(t,raw);damagePop(el,hit.damage);await sleep(100);if(el)el.classList.remove('hit');
+ if(el)el.classList.add('hit');const raw=Math.max(1,Math.floor(effectiveAtk(u)*spec.atkMultiplier)),hit=applyCombatDamage(t,raw,{attacker:u});damagePop(el,hit.damage);await sleep(100);if(el)el.classList.remove('hit');
  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(40);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
  addMirrorCopper(u,spec.copperGain);
  if(spec.nextEvadeSilverBonus)u.mikotoNextEvadeSilverBonusPending=true;
@@ -3758,7 +3784,7 @@ async function skillBookMikotoWarDeclaration(att,defenders){
  for(let i=0;i<hitCount;i++){
   const el=document.getElementById(targetId);
   if(el)el.classList.add('hit');
-  const hit=applyCombatDamage(t,rawPerHit);total+=hit.damage;damagePop(el||targetId,hit.damage);
+  const hit=applyCombatDamage(t,rawPerHit,{attacker:att});total+=hit.damage;damagePop(el||targetId,hit.damage);
   await sleep(90);
   const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
  }
@@ -3822,7 +3848,7 @@ async function skillBookYuzuOneHitKill(att,defenders){
  const t=pool[Math.floor(Math.random()*pool.length)],targetId=t.id,pct=spent*Math.max(0,Number(spec.silverRate)||0),raw=Math.max(0,Math.floor(effectiveAtk(att)*(pct/100)));
  let attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
  document.querySelector('#status').textContent=`${att.name}「スキルブック《一撃必殺》」 ${freeSkillBookStageLabel('yuzuOneHitKill')}｜生存透波 銀🪞${spent}全消費｜ATK${formatMultiplier(pct)}%`;renderBattle();await sleep(130);
- const el=document.getElementById(targetId);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,raw);if(hit.damage>0)damagePop(el||targetId,hit.damage);await sleep(150);const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
+ const el=document.getElementById(targetId);if(el)el.classList.add('hit');const hit=applyCombatDamage(t,raw,{attacker:att});if(hit.damage>0)damagePop(el||targetId,hit.damage);await sleep(150);const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');
  if(t.hp<=0){const deadEl=document.getElementById(targetId);if(deadEl)deadEl.classList.add('dying');await sleep(55);if(handleFrontlineDeath(t)){renderBattle();await sleep(60)}}
  attacker=document.getElementById(att.id);if(attacker)attacker.classList.remove('attacking');document.querySelector('#status').textContent=`《一撃必殺》 生存透波${suppa.length}人から銀🪞${spent}消費｜銀1につきATK${spec.silverRate}% → ATK${formatMultiplier(pct)}%｜${hit.damage}ダメージ`;renderBattle();await sleep(130);
 }
@@ -3854,7 +3880,7 @@ async function skillBookBloodSword(att,defenders){
  if(!t||att.hp<=0)return;
  const attacker=document.getElementById(att.id),el=document.getElementById(t.id);if(attacker)attacker.classList.add('attacking');
  document.querySelector('#status').textContent=`${att.name}「スキルブック《ブラッドソード》」`;await sleep(120);
- if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)));damagePop(el,hit.damage);await sleep(160);if(el)el.classList.remove('hit');
+ if(el)el.classList.add('hit');const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)),{attacker:att});damagePop(el,hit.damage);await sleep(160);if(el)el.classList.remove('hit');
  const blood=consumeBloodOnEnemyAttack(att,t);
  att.blood=(att.blood||0)+1;att.sword=(att.sword||0)+1;
  if(t.hp<=0){if(el)el.classList.add('dying');await sleep(160);if(handleFrontlineDeath(t)){renderBattle();await sleep(220)}}
@@ -3882,7 +3908,7 @@ async function skillBookMirrorMastery(att,defenders){
   const pool=living(defenders);if(!pool.length)break;
   const t=pool[Math.floor(Math.random()*pool.length)],el=document.getElementById(t.id);
   if(el)el.classList.add('hit');
-  const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)));hits++;total+=hit.damage;damagePop(el,hit.damage);
+  const hit=applyCombatDamage(t,Math.floor(effectiveAtk(att)),{attacker:att});hits++;total+=hit.damage;damagePop(el,hit.damage);
   await sleep(55);if(el)el.classList.remove('hit');
   if(t.hp<=0){if(el)el.classList.add('dying');await sleep(45);if(handleFrontlineDeath(t)){renderBattle();await sleep(55)}}
  }
@@ -3960,7 +3986,7 @@ async function attack(att,defenders){
        if(att.hp<=0)break;
      }else{
        const rawDmg=(t.side==='A'&&debugInvincible)?0:Math.max(1,Math.floor(effectiveAtk(att)*hitRate));
-       const hit=rawDmg>0?applyCombatDamage(t,rawDmg,{minDamageRate:enemyAfterimageProfile?.minDamageRate??0.10}):{damage:0,shieldUsed:0,afterDef:0};
+       const hit=rawDmg>0?applyCombatDamage(t,rawDmg,{minDamageRate:enemyAfterimageProfile?.minDamageRate??0.10,attacker:att}):{damage:0,shieldUsed:0,afterDef:0};
        damagePop(targetEl,hit.damage);
        await sleep(150);
        document.querySelector('#flash').classList.remove('on');
@@ -3995,7 +4021,7 @@ async function battle(){
    while(living(E).length&&turnNo<600){
      if(!living(A).length){syncActiveParty();document.querySelector('#status').textContent='部隊'+(sortieQueue[activePartyIndex].slot+1)+' 壊滅';await sleep(450);if(!deployNextParty())break;await sleep(350)}
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
-     await resolveMilkGoldTurnStart(u);
+     await resolveMilkTurnStart(u);
      tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
      if(u.side==='A'&&[101,102,103,201,202,203].includes(u.cid)){
      await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);
