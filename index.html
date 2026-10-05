@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.500</title>
+<title>セカソコ ver.500.1</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.500";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.500.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1623,6 +1623,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* =========================================================
    ver.500 Phase1 — TARGET LOCK + normal attack + CHAIN
    Branched from stable ver.406. Old skill/buff/save code remains in place.
+   ver.500.1 — emergency formation integrity fix only:
+   rear slots require their paired front on spawn; front death / restore paths repair 0↔3, 1↔4, 2↔5 only.
    ========================================================= */
 #battleScreen .battleLog{padding-right:78px!important}
 #battleScreen .battleLog::after{content:attr(data-chain);position:absolute;right:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:1000;letter-spacing:.02em;color:#ffd76a;text-shadow:0 1px 4px #000;pointer-events:none}
@@ -2290,7 +2292,9 @@ function randomAfterimageBase(rank){
  return rosterId?afterimageBase(rosterId,rank):null;
 }
 function pickAfterimageSlot(base,usedSlots){
- const used=usedSlots||new Set(),front=[0,1,2].filter(x=>!used.has(x)),back=[3,4,5].filter(x=>!used.has(x));
+ const used=usedSlots||new Set(),front=[0,1,2].filter(x=>!used.has(x));
+ // ver.500.1: a rear slot is legal only when its fixed paired frontline slot already exists.
+ const back=[3,4,5].filter(x=>!used.has(x)&&used.has(x-3));
  const preferred=base?.row==='back'?back:front,available=preferred.length?preferred:[...front,...back];
  if(!available.length)return -1;
  return available[Math.floor(Math.random()*available.length)];
@@ -3323,12 +3327,12 @@ function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.text
  const td=document.querySelector('#topDamage');if(td)td.textContent=`損壊 ${formatDamageRateLabel(damageRate())}%`;
  const tr=document.querySelector('#topReward');if(tr)tr.textContent=`報酬×${formatMultiplier(damageRewardMultiplier(damageRate()))}`;
 }
-function takeFloorSnapshot(){syncActiveParty();floorSnapshot={floor,activePartyIndex,runPartyStates:clone(runPartyStates),enemies:clone(E),turnNo,runLoot,runCheckpointStartLoot,runCheckpointStartOverkillBonusWD,runOverkillBonusWD,runStrongRouteBonusWD,runStartMaxHP}}
-function restoreFloorSnapshot(){if(!floorSnapshot)return;clearTargetSelection();floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);syncAllTierBuffs(A);syncAllTierBuffs(E);turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;runCheckpointStartLoot=floorSnapshot.runCheckpointStartLoot||0;runCheckpointStartOverkillBonusWD=floorSnapshot.runCheckpointStartOverkillBonusWD||0;runOverkillBonusWD=floorSnapshot.runOverkillBonusWD||0;runStrongRouteBonusWD=floorSnapshot.runStrongRouteBonusWD||0;runStartMaxHP=floorSnapshot.runStartMaxHP;currentActor=null;resolvePlayerAction=null;overlayMode='';phase1ResetBattleState();if(floor%10===0)bossWarningShownFloor=0;document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
-function prepareSortie(){if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}if(!validateFormationForSave()){showScreen('formation');return false}saveParties();sortieQueue=parties.map((p,i)=>({slot:i,ids:[...p]})).filter(x=>x.ids.some(Boolean));if(!sortieQueue.length)sortieQueue=[{slot:0,ids:['mizuki']}];runPartyStates=sortieQueue.map((x,i)=>makePartyUnits(x.ids,i));runStartMaxHP=runPartyStates.flat().reduce((sum,u)=>sum+u.max,0);floor=1;runLoot=0;runCheckpointStartLoot=0;runCheckpointStartOverkillBonusWD=0;runOverkillBonusWD=0;runStrongRouteBonusWD=0;runRewardClaimed=false;overlayMode='';bossWarningShownFloor=0;turnNo=0;setActiveParty(0);E=assignEnemyBaseRewards(makeEnemies(floor));phase1ResetBattleState();running=false;document.querySelector('#overlay').classList.remove('show');document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#status').textContent='1F｜部隊'+(sortieQueue[0].slot+1)+' 出撃準備';takeFloorSnapshot();updateFloorUI();renderBattle()}
+function takeFloorSnapshot(){syncActiveParty();ensureBattleFormationIntegrity();syncActiveParty();floorSnapshot={floor,activePartyIndex,runPartyStates:clone(runPartyStates),enemies:clone(E),turnNo,runLoot,runCheckpointStartLoot,runCheckpointStartOverkillBonusWD,runOverkillBonusWD,runStrongRouteBonusWD,runStartMaxHP}}
+function restoreFloorSnapshot(){if(!floorSnapshot)return;clearTargetSelection();floor=floorSnapshot.floor;activePartyIndex=floorSnapshot.activePartyIndex;runPartyStates=clone(floorSnapshot.runPartyStates);A=runPartyStates[activePartyIndex];E=clone(floorSnapshot.enemies);syncAllTierBuffs(A);syncAllTierBuffs(E);ensureBattleFormationIntegrity();turnNo=floorSnapshot.turnNo;runLoot=floorSnapshot.runLoot;runCheckpointStartLoot=floorSnapshot.runCheckpointStartLoot||0;runCheckpointStartOverkillBonusWD=floorSnapshot.runCheckpointStartOverkillBonusWD||0;runOverkillBonusWD=floorSnapshot.runOverkillBonusWD||0;runStrongRouteBonusWD=floorSnapshot.runStrongRouteBonusWD||0;runStartMaxHP=floorSnapshot.runStartMaxHP;currentActor=null;resolvePlayerAction=null;overlayMode='';phase1ResetBattleState();if(floor%10===0)bossWarningShownFloor=0;document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');updateFloorUI();renderBattle()}
+function prepareSortie(){if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}if(!validateFormationForSave()){showScreen('formation');return false}saveParties();sortieQueue=parties.map((p,i)=>({slot:i,ids:[...p]})).filter(x=>x.ids.some(Boolean));if(!sortieQueue.length)sortieQueue=[{slot:0,ids:['mizuki']}];runPartyStates=sortieQueue.map((x,i)=>makePartyUnits(x.ids,i));runStartMaxHP=runPartyStates.flat().reduce((sum,u)=>sum+u.max,0);floor=1;runLoot=0;runCheckpointStartLoot=0;runCheckpointStartOverkillBonusWD=0;runOverkillBonusWD=0;runStrongRouteBonusWD=0;runRewardClaimed=false;overlayMode='';bossWarningShownFloor=0;turnNo=0;setActiveParty(0);E=assignEnemyBaseRewards(makeEnemies(floor));ensureBattleFormationIntegrity();phase1ResetBattleState();running=false;document.querySelector('#overlay').classList.remove('show');document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#status').textContent='1F｜部隊'+(sortieQueue[0].slot+1)+' 出撃準備';takeFloorSnapshot();updateFloorUI();renderBattle()}
 function initBattle(){prepareSortie()}
-function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
-function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=assignEnemyBaseRewards(makeEnemies(floor));phase1ResetBattleState();takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
+function deployNextParty(){syncActiveParty();let next=activePartyIndex+1;while(next<runPartyStates.length&&!runPartyStates[next].some(u=>u.hp>0))next++;if(next>=runPartyStates.length)return false;let alive=E.filter(x=>x.hp>0),now=alive.length?Math.min(...alive.map(x=>x.next)):0;setActiveParty(next);ensureFormationIntegrity('A',{announce:false});A.filter(u=>u.hp>0).forEach(u=>u.next=Math.max(u.next||0,now+baseWait(u)));document.querySelector('#status').textContent='部隊'+(sortieQueue[next].slot+1)+' 投入！';renderBattle();return true}
+function nextFloor(){syncActiveParty();floor++;turnNo=0;let first=firstLivingParty();if(first<0)return false;setActiveParty(first);resetTimelineForFloor();E=assignEnemyBaseRewards(makeEnemies(floor));ensureBattleFormationIntegrity();phase1ResetBattleState();takeFloorSnapshot();updateFloorUI();document.querySelector('#status').textContent=floor+'Fへ進行｜HP・固有状態を持ち越し';renderBattle();return true}
 // =========================================================
 // ver.500 Phase1 TARGET LOCK / CHAIN core
 // Target eligibility is intentionally centralized here so a future
@@ -3574,10 +3578,10 @@ function damagePop(el,n){const pos=battlePopPosition(el,.28,18);if(!pos)return;c
 function counterDamagePop(el,n){const pos=battlePopPosition(el,.28,18);if(!pos)return;const d=document.createElement('div');d.className='damagePop counterDamagePop';d.textContent='-'+String(n);d.style.left=pos.left+'px';d.style.top=pos.top+'px';pos.app.appendChild(d);setTimeout(()=>d.remove(),700)}
 function counterPop(el){const pos=battlePopPosition(el,.18,8);if(!pos)return;const d=document.createElement('div');d.className='counterPop';d.textContent='反撃！';d.style.left=pos.left+'px';d.style.top=pos.top+'px';pos.app.appendChild(d);setTimeout(()=>d.remove(),760)}
 function living(arr){return arr.filter(x=>x.hp>0)}
-function pullForwardForSlot(side,frontSlot){
+function pullForwardForSlot(side,frontSlot,{announce=true}={}){
  if(frontSlot<0||frontSlot>2)return null;
  const army=side==='A'?A:E;
- const front=army.find(x=>x.formationSlot===frontSlot&&x.hp>0);
+ const front=army.find(x=>x.row==='front'&&x.formationSlot===frontSlot&&x.hp>0);
  if(front)return null;
  const back=army.find(x=>x.row==='back'&&x.formationSlot===frontSlot+3&&x.hp>0);
  if(!back)return null;
@@ -3589,14 +3593,32 @@ function pullForwardForSlot(side,frontSlot){
  back.pulledForward=true;
  back.pullVulnerableUntilTurn=turnNo+1;
  back.hp=hpBefore;back.max=maxBefore;back.next=nextBefore;
- document.querySelector('#status').textContent=`${back.name} が後衛から前衛へ引きずり出された！ HP ${Math.max(0,back.hp)}/${back.max}`;
+ if(announce){const st=document.querySelector('#status');if(st)st.textContent=`${back.name} が後衛から前衛へ引きずり出された！ HP ${Math.max(0,back.hp)}/${back.max}`}
  return back;
+}
+function ensureFormationIntegrity(side,{announce=false}={}){
+ const army=side==='A'?A:E,pulled=[];
+ for(let frontSlot=0;frontSlot<3;frontSlot++){
+  const liveFront=army.find(x=>x.hp>0&&x.row==='front'&&x.formationSlot===frontSlot);
+  if(liveFront)continue;
+  const liveBack=army.find(x=>x.hp>0&&x.row==='back'&&x.formationSlot===frontSlot+3);
+  if(!liveBack)continue;
+  const moved=pullForwardForSlot(side,frontSlot,{announce});
+  if(moved)pulled.push(moved);
+ }
+ return pulled;
+}
+function ensureBattleFormationIntegrity(){
+ const a=ensureFormationIntegrity('A',{announce:false}),e=ensureFormationIntegrity('E',{announce:false});
+ return{allies:a,enemies:e};
 }
 function handleFrontlineDeath(u){
  if(!u||u.hp>0)return null;
- const slot=(u.formationSlot??u.homeSlot);
- if(slot>=0&&slot<3)return pullForwardForSlot(u.side,slot);
- return null;
+ const currentSlot=Number(u.formationSlot),homeSlot=Number(u.homeSlot);
+ const slot=currentSlot>=0&&currentSlot<3?currentSlot:(homeSlot>=0&&homeSlot<3?homeSlot:-1);
+ const primary=slot>=0?pullForwardForSlot(u.side,slot):null;
+ const repaired=ensureFormationIntegrity(u.side,{announce:false});
+ return primary||repaired[0]||null;
 }
 function target(arr,random=false){let alive=living(arr),front=alive.filter(x=>x.row==='front'),pool=front.length?front:alive;return random?pool[Math.floor(Math.random()*pool.length)]:pool[0]}
 // ver.375 ステータス系スタック共通ルール
@@ -4120,11 +4142,12 @@ async function attack(att,defenders){
  if(attacker)attacker.classList.remove('attacking');
 }
 async function battle(){
- if(running)return;running=true;phase1EnsureValidLock({resetChainOnChange:true});document.querySelector('#status').textContent=floor+'F｜VER.500 Phase1｜TARGET LOCK＋CHAIN';phase1UpdateChainHud();updateFloorUI();renderBattle();
+ if(running)return;running=true;ensureBattleFormationIntegrity();phase1EnsureValidLock({resetChainOnChange:true});document.querySelector('#status').textContent=floor+'F｜VER.500.1 Phase1｜TARGET LOCK＋CHAIN';phase1UpdateChainHud();updateFloorUI();renderBattle();
  while(running){
    await showBossWarningIfNeeded();
    while(living(E).length&&turnNo<600){
      if(!living(A).length){syncActiveParty();document.querySelector('#status').textContent='部隊'+(sortieQueue[activePartyIndex].slot+1)+' 壊滅';await sleep(450);if(!deployNextParty())break;await sleep(350)}
+     ensureBattleFormationIntegrity();phase1EnsureValidLock({resetChainOnChange:true});
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
      await resolveMilkGoldTurnStart(u);
      tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
