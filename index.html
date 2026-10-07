@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.501.1</title>
+<title>セカソコ ver.501.2</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.501.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.501.2";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1627,15 +1627,30 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
    rear slots require their paired front on spawn; front death / restore paths repair 0↔3, 1↔4, 2↔5 only.
    ver.501 Phase2 — shared BREAK SYSTEM layered onto the verified ver.500.1 formation core.
    ver.501.1 — UI-only BREAK pending / TARGET LOCK visibility pass; combat logic unchanged.
+   ver.501.2 — TARGET LOCK visual-only HUD reticle refinement; combat logic unchanged.
    ========================================================= */
 #battleScreen .battleLog{padding-right:78px!important}
 #battleScreen .battleLog::after{content:attr(data-chain);position:absolute;right:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:1000;letter-spacing:.02em;color:#ffd76a;text-shadow:0 1px 4px #000;pointer-events:none}
 #battleScreen .unit.phase1Locked{position:relative}
-/* ver.501.1: TARGET LOCK is a sprite-centered circular reticle, never a card/slot frame. */
+/* ver.501.2: TARGET LOCK visual only — sprite-centered HUD reticle. Combat / lock logic is unchanged. */
 #battleScreen .unit.phase1Locked::after{content:none!important;display:none!important}
 #battleScreen .unit.phase1Locked .sprite{position:absolute!important}
-#battleScreen .unit.phase1Locked .sprite::after{content:"";position:absolute;left:50%;top:50%;width:min(84%,92px);aspect-ratio:1/1;transform:translate(-50%,-53%);border:1.5px solid rgba(255,220,86,.96);border-radius:50%;box-shadow:0 0 7px rgba(255,220,86,.58),inset 0 0 7px rgba(255,220,86,.10);pointer-events:none;z-index:4}
-#battleScreen .phase1LockMark{position:absolute;right:4%;top:6%;z-index:7;font-size:13px;line-height:1;filter:drop-shadow(0 1px 2px #000);pointer-events:none}
+#battleScreen .targetReticle{
+  position:absolute;left:50%;top:50%;width:min(88%,96px);aspect-ratio:1/1;
+  transform:translate(-50%,-53%);z-index:6;pointer-events:none!important;
+  color:#ffdc56;filter:drop-shadow(0 0 2px rgba(255,218,82,.88)) drop-shadow(0 0 6px rgba(236,170,38,.42));
+}
+#battleScreen .targetReticle svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none!important}
+#battleScreen .reticleOuterRing,#battleScreen .reticleInnerRing,#battleScreen .reticleMarker,#battleScreen .reticleCross{
+  fill:none;stroke:currentColor;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round;
+}
+#battleScreen .reticleOuterRing{stroke-width:1.45;stroke-dasharray:12 5 7 5;opacity:.96;transform-origin:50% 50%;animation:phase1ReticleRotate 9s linear infinite}
+#battleScreen .reticleInnerRing{stroke-width:.8;stroke-dasharray:2.5 5;opacity:.52}
+#battleScreen .reticleMarker{stroke-width:1.7;opacity:.94}
+#battleScreen .reticleCross{stroke-width:1.1;opacity:.86}
+#battleScreen .reticleCenter{fill:rgba(255,224,104,.92);stroke:rgba(79,50,5,.78);stroke-width:.5;vector-effect:non-scaling-stroke}
+@keyframes phase1ReticleRotate{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#battleScreen .reticleOuterRing{animation:none!important}}
 /* ver.501.1: normal Break HUD is bar + value only; BREAK text is pending-state overlay inside the bar. */
 #battleScreen .footBreakRow{position:absolute!important;left:4px!important;right:4px!important;bottom:calc(var(--foot-hp-bottom,22px) - 11px)!important;z-index:42!important;height:9px!important;display:grid!important;grid-template-columns:minmax(28px,1fr) auto!important;align-items:center!important;gap:3px!important;pointer-events:none!important;color:#ffd9a0!important;text-shadow:0 1px 2px #000!important}
 #battleScreen .footBreakRow>b{font-size:7px!important;line-height:8px!important;font-weight:1000!important;white-space:nowrap!important}
@@ -2031,7 +2046,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <div class="bossWarning" id="bossWarning" aria-hidden="true"><div class="bossWarningInner"><b class="bossWarningMain">WARNING!!</b><span class="bossWarningSub">BOSS ENCOUNTER</span><span class="bossWarningFloor" id="bossWarningFloor">10F</span></div></div>
 <button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button><button class="debugAction danger" id="dbgResetSave">⚠️ セーブデータ初期化</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。<br>「セーブデータ初期化」はWD・ステ強化・踏破数・固有ツリー・自由スキルツリー・スキル装備・編成など、本ゲームの保存データを初期状態へ戻します。</div></div></div>
-<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜行動を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="《通常攻撃》｜現在の🎯LOCK対象へATK100%×CHAIN倍率。CT0。"><b id="uniqueSkillKind">通常</b><span id="uniqueSkillName">通常攻撃</span><small id="uniqueSkillDesc">ATK100%＋CHAIN</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="《必殺技》｜Phase1では未実装。"><b>必殺</b><span id="freeSkill1Name">必殺技</span><small id="freeSkill1Desc">Phase1未実装</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="《スキップ》｜Phase1では未実装。"><b>SKIP</b><span id="freeSkill2Name">スキップ</span><small id="freeSkill2Desc">Phase1未実装</small></button><button class="skillBtn placeholderSkill" id="freeSkill3" aria-disabled="true" data-skill-detail="《アイテム》｜Phase1では未実装。"><b>ITEM</b><span id="freeSkill3Name">アイテム</span><small id="freeSkill3Desc">Phase1未実装</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
+<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜行動を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="《通常攻撃》｜現在のTARGET LOCK対象へATK100%×CHAIN倍率。CT0。"><b id="uniqueSkillKind">通常</b><span id="uniqueSkillName">通常攻撃</span><small id="uniqueSkillDesc">ATK100%＋CHAIN</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="《必殺技》｜Phase1では未実装。"><b>必殺</b><span id="freeSkill1Name">必殺技</span><small id="freeSkill1Desc">Phase1未実装</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="《スキップ》｜Phase1では未実装。"><b>SKIP</b><span id="freeSkill2Name">スキップ</span><small id="freeSkill2Desc">Phase1未実装</small></button><button class="skillBtn placeholderSkill" id="freeSkill3" aria-disabled="true" data-skill-detail="《アイテム》｜Phase1では未実装。"><b>ITEM</b><span id="freeSkill3Name">アイテム</span><small id="freeSkill3Desc">Phase1未実装</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
@@ -3378,7 +3393,7 @@ function phase1SetLock(u,{silent=false}={}){
  if(!phase1CanLockEnemy(u))return false;
  const changed=phase1LockedTargetId!==u.id;
  if(changed){phase1LockedTargetId=u.id;phase1ResetChain()}
- if(!silent){const st=document.querySelector('#status');if(st)st.textContent=`🎯TARGET LOCK｜${u.name}`}
+ if(!silent){const st=document.querySelector('#status');if(st)st.textContent=`TARGET LOCK｜${u.name}`}
  return true;
 }
 function phase1EnsureValidLock({resetChainOnChange=true}={}){
@@ -3459,7 +3474,7 @@ function battleBuffSummary(u){
  if(bottomItems.length)rows.push(`<span class="battleBuffBottom">${bottomItems.join(' ')}</span>`);
  return rows.join('');
 }
-function unitHTML(u){syncBreakState(u);const locked=u.side==='E'&&u.hp>0&&u.id===phase1LockedTargetId,aria=u.side==='E'?`${u.name}。短押しでターゲットロック、長押しで詳細`:`${u.name}の詳細を開く`,breakPct=u.breakMax>0?Math.min(100,Math.max(0,u.breakValue/u.breakMax*100)):0;return `<div class="unit ${u.hp<=0?'dead':''} ${locked?'phase1Locked':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" data-afterimage-rank="${u.afterimageRank||''}" role="button" tabindex="0" aria-label="${aria}"><div class="sprite">${locked?'<span class="phase1LockMark" aria-hidden="true">🎯</span>':''}${u.sprite?`<img class="targetGlowClone" src="${u.sprite}" alt="" aria-hidden="true"><img class="unitSpriteMain" src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="footHpRow"><div class="footHpBar"><i style="width:${Math.min(100,Math.max(0,u.hp/u.max*100))}%"></i></div><b>${hpDisplay(u)}/${maxHpDisplay(u)}</b></div><div class="footBreakRow ${u.breakPending?'breakPending':''}"><div class="footBreakBar">${u.breakPending?'<em class="footBreakPendingLabel">BREAK</em>':''}<i style="width:${breakPct}%"></i></div><b>${u.breakValue}/${u.breakMax}</b></div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${hpDisplay(u)} / ${maxHpDisplay(u)}</div></div></div>`}
+function unitHTML(u){syncBreakState(u);const locked=u.side==='E'&&u.hp>0&&u.id===phase1LockedTargetId,aria=u.side==='E'?`${u.name}。短押しでターゲットロック、長押しで詳細`:`${u.name}の詳細を開く`,breakPct=u.breakMax>0?Math.min(100,Math.max(0,u.breakValue/u.breakMax*100)):0;return `<div class="unit ${u.hp<=0?'dead':''} ${locked?'phase1Locked':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" data-afterimage-rank="${u.afterimageRank||''}" role="button" tabindex="0" aria-label="${aria}"><div class="sprite">${locked?'<span class="targetReticle" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><circle class="reticleOuterRing" cx="50" cy="50" r="42" pathLength="100"/><g class="reticleCardinals"><path class="reticleMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="reticleMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="reticleInnerRing" cx="50" cy="50" r="29"/><path class="reticleCross" d="M50 39v7 M50 54v7 M39 50h7 M54 50h7"/><circle class="reticleCenter" cx="50" cy="50" r="2.2"/></svg></span>':''}${u.sprite?`<img class="targetGlowClone" src="${u.sprite}" alt="" aria-hidden="true"><img class="unitSpriteMain" src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="footHpRow"><div class="footHpBar"><i style="width:${Math.min(100,Math.max(0,u.hp/u.max*100))}%"></i></div><b>${hpDisplay(u)}/${maxHpDisplay(u)}</b></div><div class="footBreakRow ${u.breakPending?'breakPending':''}"><div class="footBreakBar">${u.breakPending?'<em class="footBreakPendingLabel">BREAK</em>':''}<i style="width:${breakPct}%"></i></div><b>${u.breakValue}/${u.breakMax}</b></div><div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${hpDisplay(u)} / ${maxHpDisplay(u)}</div></div></div>`}
 function forecast(n=10){
  const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,swift:u.swift||0,swiftBatches:clone(u.swiftBatches||[]),cid:u.cid,ct:u.skill?.ct||0,cost:u.side==='A'?baseWait(u):actionCost(u)}));
  const out=[];
@@ -4121,12 +4136,12 @@ async function phase1NormalAttack(att){
  if(!t){const st=document.querySelector('#status');if(st)st.textContent='攻撃可能な敵前衛がいない';phase1UpdateChainHud();return false}
  const mult=phase1ChainMultiplier(),raw=Math.max(1,Math.floor(effectiveAtk(att)*mult));
  const attacker=document.getElementById(att.id),targetEl=document.getElementById(t.id);
- document.querySelector('#status').textContent=`${att.name}《通常攻撃》｜🎯${t.name}｜CHAIN ×${mult.toFixed(1)}`;phase1UpdateChainHud();
+ document.querySelector('#status').textContent=`${att.name}《通常攻撃》｜${t.name}｜CHAIN ×${mult.toFixed(1)}`;phase1UpdateChainHud();
  if(attacker)attacker.classList.add('attacking');await sleep(120);
  document.querySelector('#flash').classList.add('on');if(targetEl)targetEl.classList.add('hit');
  const hit=applyCombatDamage(t,raw,{minDamageRate:0.10});damagePop(targetEl,hit.damage);phase1AdvanceChain(t.id);await sleep(150);
  document.querySelector('#flash').classList.remove('on');if(targetEl)targetEl.classList.remove('hit');
- document.querySelector('#status').textContent=`${att.name}《通常攻撃》｜🎯${t.name}｜CHAIN ×${mult.toFixed(1)}｜${hit.damage} DAMAGE`;
+ document.querySelector('#status').textContent=`${att.name}《通常攻撃》｜${t.name}｜CHAIN ×${mult.toFixed(1)}｜${hit.damage} DAMAGE`;
  if(t.hp<=0){
   if(targetEl)targetEl.classList.add('dying');await sleep(120);handleFrontlineDeath(t);phase1LockedTargetId=null;phase1ResetChain();phase1EnsureValidLock({resetChainOnChange:true});renderBattle();await sleep(140);
  }
@@ -4196,7 +4211,7 @@ async function attack(att,defenders){
  if(attacker)attacker.classList.remove('attacking');
 }
 async function battle(){
- if(running)return;running=true;ensureBattleFormationIntegrity();syncBreakStates(A);syncBreakStates(E);phase1EnsureValidLock({resetChainOnChange:true});document.querySelector('#status').textContent=floor+'F｜VER.501.1｜TARGET LOCK＋CHAIN＋BREAK';phase1UpdateChainHud();updateFloorUI();renderBattle();
+ if(running)return;running=true;ensureBattleFormationIntegrity();syncBreakStates(A);syncBreakStates(E);phase1EnsureValidLock({resetChainOnChange:true});document.querySelector('#status').textContent=floor+'F｜VER.501.2｜TARGET LOCK＋CHAIN＋BREAK';phase1UpdateChainHud();updateFloorUI();renderBattle();
  while(running){
    await showBossWarningIfNeeded();
    while(living(E).length&&turnNo<600){
