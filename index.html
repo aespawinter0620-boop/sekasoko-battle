@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.501.2</title>
+<title>セカソコ ver.502</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.501.2";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.502";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1628,11 +1628,13 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
    ver.501 Phase2 — shared BREAK SYSTEM layered onto the verified ver.500.1 formation core.
    ver.501.1 — UI-only BREAK pending / TARGET LOCK visibility pass; combat logic unchanged.
    ver.501.2 — TARGET LOCK visual-only HUD reticle refinement; combat logic unchanged.
+   ver.502 — TARGET LOCK animation-only refinement: outer ring unchanged; inner ring counter-rotates slightly faster.
    ========================================================= */
 #battleScreen .battleLog{padding-right:78px!important}
 #battleScreen .battleLog::after{content:attr(data-chain);position:absolute;right:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:1000;letter-spacing:.02em;color:#ffd76a;text-shadow:0 1px 4px #000;pointer-events:none}
 #battleScreen .unit.phase1Locked{position:relative}
-/* ver.501.2: TARGET LOCK visual only — sprite-centered HUD reticle. Combat / lock logic is unchanged. */
+/* ver.501.2: TARGET LOCK visual only — sprite-centered HUD reticle. Combat / lock logic is unchanged.
+   ver.502: animation-only pass — outer ring keeps the adopted 9s direction/speed; inner ring counter-rotates at 7s. */
 #battleScreen .unit.phase1Locked::after{content:none!important;display:none!important}
 #battleScreen .unit.phase1Locked .sprite{position:absolute!important}
 #battleScreen .targetReticle{
@@ -1645,12 +1647,13 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   fill:none;stroke:currentColor;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round;
 }
 #battleScreen .reticleOuterRing{stroke-width:1.45;stroke-dasharray:12 5 7 5;opacity:.96;transform-origin:50% 50%;animation:phase1ReticleRotate 9s linear infinite}
-#battleScreen .reticleInnerRing{stroke-width:.8;stroke-dasharray:2.5 5;opacity:.52}
+#battleScreen .reticleInnerRing{stroke-width:.8;stroke-dasharray:2.5 5;opacity:.52;transform-origin:50% 50%;animation:phase1ReticleRotateReverse 7s linear infinite}
 #battleScreen .reticleMarker{stroke-width:1.7;opacity:.94}
 #battleScreen .reticleCross{stroke-width:1.1;opacity:.86}
 #battleScreen .reticleCenter{fill:rgba(255,224,104,.92);stroke:rgba(79,50,5,.78);stroke-width:.5;vector-effect:non-scaling-stroke}
 @keyframes phase1ReticleRotate{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){#battleScreen .reticleOuterRing{animation:none!important}}
+@keyframes phase1ReticleRotateReverse{to{transform:rotate(-360deg)}}
+@media (prefers-reduced-motion:reduce){#battleScreen .reticleOuterRing,#battleScreen .reticleInnerRing{animation:none!important}}
 /* ver.501.1: normal Break HUD is bar + value only; BREAK text is pending-state overlay inside the bar. */
 #battleScreen .footBreakRow{position:absolute!important;left:4px!important;right:4px!important;bottom:calc(var(--foot-hp-bottom,22px) - 11px)!important;z-index:42!important;height:9px!important;display:grid!important;grid-template-columns:minmax(28px,1fr) auto!important;align-items:center!important;gap:3px!important;pointer-events:none!important;color:#ffd9a0!important;text-shadow:0 1px 2px #000!important}
 #battleScreen .footBreakRow>b{font-size:7px!important;line-height:8px!important;font-weight:1000!important;white-space:nowrap!important}
@@ -4211,7 +4214,7 @@ async function attack(att,defenders){
  if(attacker)attacker.classList.remove('attacking');
 }
 async function battle(){
- if(running)return;running=true;ensureBattleFormationIntegrity();syncBreakStates(A);syncBreakStates(E);phase1EnsureValidLock({resetChainOnChange:true});document.querySelector('#status').textContent=floor+'F｜VER.501.2｜TARGET LOCK＋CHAIN＋BREAK';phase1UpdateChainHud();updateFloorUI();renderBattle();
+ if(running)return;running=true;ensureBattleFormationIntegrity();syncBreakStates(A);syncBreakStates(E);phase1EnsureValidLock({resetChainOnChange:true});document.querySelector('#status').textContent=floor+'F｜VER.502｜TARGET LOCK＋CHAIN＋BREAK';phase1UpdateChainHud();updateFloorUI();renderBattle();
  while(running){
    await showBossWarningIfNeeded();
    while(living(E).length&&turnNo<600){
