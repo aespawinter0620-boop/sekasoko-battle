@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.503</title>
+<title>セカソコ ver.504</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.503";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.504";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1631,6 +1631,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
    ver.501.3 — TARGET LOCK animation-only refinement: outer ring unchanged; inner ring counter-rotates slightly faster.
    ver.502 Phase3 — ally-only BURST GAUGE FOUNDATION: normal attack ACTION +10, max100, floor carry, snapshot restore.
    ver.503 Phase4 — shared ally/enemy BURST, BREAK -50 BURST, HUD block foot anchor, new single 🪞 stack, Mikoto unique BURST.
+   ver.504 Phase5 — BURST CHAIN, Nagi unique BURST, shared new-🪞 evade effect, AUTO burst modes.
    ========================================================= */
 #battleScreen .battleLog{padding-right:78px!important}
 #battleScreen .battleLog::after{content:attr(data-chain);position:absolute;right:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:1000;letter-spacing:.02em;color:#ffd76a;text-shadow:0 1px 4px #000;pointer-events:none}
@@ -2055,6 +2056,20 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* Mikoto BURST command is usable only at 100; styling remains compact and non-flashing. */
 #battleScreen #freeSkill1.phase3BurstReady{border-color:rgba(128,218,255,.58)!important;box-shadow:inset 0 0 12px rgba(72,174,255,.10),0 0 7px rgba(92,194,255,.12)!important}
 </style>
+<style id="ver504-burst-chain-ui">
+/* ver.504: BURST CHAIN UI only. No battlefield geometry changes. */
+#battleScreen .burstChainHud{position:absolute;left:50%;top:122px;transform:translateX(-50%);z-index:70;display:none;align-items:center;gap:7px;max-width:calc(100% - 20px);padding:5px 7px;border:1px solid rgba(132,220,255,.48);border-radius:10px;background:rgba(7,13,24,.86);box-shadow:0 0 14px rgba(62,177,255,.18);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);white-space:nowrap;pointer-events:auto}
+#battleScreen .burstChainHud.show{display:flex}
+#battleScreen .burstChainHud strong{font-size:10px;color:#e9fbff;text-shadow:0 0 5px rgba(95,208,255,.55)}
+#battleScreen .burstChainHud span{font-size:8px;color:#bcd8e9}
+#battleScreen .burstChainEnd{border:1px solid rgba(255,255,255,.25);border-radius:8px;background:#252c3a;color:#fff;padding:5px 8px;font-size:8px;font-weight:1000;touch-action:manipulation}
+#battleScreen .unit.burstChainEligible .sprite img.targetGlowClone{visibility:visible!important;opacity:.43!important;filter:brightness(1.45) saturate(.82) drop-shadow(0 0 2px rgba(193,240,255,.96)) drop-shadow(0 0 7px rgba(76,194,255,.88)) drop-shadow(0 0 14px rgba(52,137,255,.55))!important;animation:burstChainEligiblePulse .9s ease-in-out infinite alternate!important}
+@keyframes burstChainEligiblePulse{from{opacity:.28}to{opacity:.50}}
+.burstChainPop{position:absolute;z-index:96;left:50%;top:42%;transform:translate(-50%,-50%);pointer-events:none;font-size:22px;font-weight:1000;letter-spacing:.08em;color:#c8f2ff;text-shadow:0 0 6px #4fc7ff,0 0 18px rgba(68,160,255,.72),0 2px 2px #000;white-space:nowrap;animation:burstChainPop .72s ease-out forwards}
+.burstChainPop.end{font-size:17px;color:#f2f4f8;text-shadow:0 0 8px rgba(130,180,255,.62),0 2px 2px #000}
+@keyframes burstChainPop{0%{opacity:0;transform:translate(-50%,-42%) scale(.72)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}72%{opacity:1}100%{opacity:0;transform:translate(-50%,-62%) scale(.98)}}
+@media (prefers-reduced-motion:reduce){#battleScreen .unit.burstChainEligible .sprite img.targetGlowClone{animation:none!important}}
+</style>
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -2071,13 +2086,13 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <section class="screen" id="battleScreen">
 <div class="top battleSummary"><div class="battleSummaryLine"><span id="worldFloor">世界深度 1 / 1F/10F</span><span id="turn">部隊1</span><span id="topDamage">損壊 0%</span><span id="topReward">報酬×1.5</span><button class="topBattleBtn autoBtn" id="autoToggle">AUTO OFF</button><button class="topBattleBtn retreatBtn" id="homeBack">撤退</button></div></div>
 <div class="planBox battlePlan"><div class="planTitle">ACTION｜行動予測</div><div class="orderBar" id="orderBar"></div></div>
-<div class="status battleLog" id="status">SPDから初期行動順を自動計算</div><div class="battleHpOverview" id="battleHpOverview"><div class="hpTeam allyHp" id="allyHpOverview"></div><div class="hpTeam enemyHp" id="enemyHpOverview"></div></div>
+<div class="status battleLog" id="status">SPDから初期行動順を自動計算</div><div class="burstChainHud" id="burstChainHud" aria-hidden="true"><strong id="burstChainTitle">BURST CHAIN</strong><span id="burstChainInfo">0人｜×1.0</span><button class="burstChainEnd" id="burstChainEnd" type="button">終了</button></div><div class="battleHpOverview" id="battleHpOverview"><div class="hpTeam allyHp" id="allyHpOverview"></div><div class="hpTeam enemyHp" id="enemyHpOverview"></div></div>
 <div class="battleViewport" id="battleViewport"><section class="battle" id="battleZoomLayer"><div><div class="laneLabel">味方　後衛　｜　前衛</div><div class="army ally" id="allyArmy"></div></div><div class="middle" aria-hidden="true"></div><div><div class="laneLabel">前衛　｜　後衛　敵</div><div class="army enemy" id="enemyArmy"></div></div></section></div>
 <div class="attackFlash" id="flash"></div>
 <div class="bossWarning" id="bossWarning" aria-hidden="true"><div class="bossWarningInner"><b class="bossWarningMain">WARNING!!</b><span class="bossWarningSub">BOSS ENCOUNTER</span><span class="bossWarningFloor" id="bossWarningFloor">10F</span></div></div>
 <button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
 <div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button><button class="debugAction danger" id="dbgResetSave">⚠️ セーブデータ初期化</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。<br>「セーブデータ初期化」はWD・ステ強化・踏破数・固有ツリー・自由スキルツリー・スキル装備・編成など、本ゲームの保存データを初期状態へ戻します。</div></div></div>
-<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜行動を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="《通常攻撃》｜現在のTARGET LOCK対象へATK100%×CHAIN倍率。CT0。"><b id="uniqueSkillKind">通常</b><span id="uniqueSkillName">通常攻撃</span><small id="uniqueSkillDesc">ATK100%＋CHAIN</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="《必殺技》｜名切 命はBURST100で《絶対領域解放》。その他は未実装。"><b>必殺</b><span id="freeSkill1Name">必殺技</span><small id="freeSkill1Desc">命：BURST100で解放</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="《スキップ》｜Phase1では未実装。"><b>SKIP</b><span id="freeSkill2Name">スキップ</span><small id="freeSkill2Desc">Phase1未実装</small></button><button class="skillBtn placeholderSkill" id="freeSkill3" aria-disabled="true" data-skill-detail="《アイテム》｜Phase1では未実装。"><b>ITEM</b><span id="freeSkill3Name">アイテム</span><small id="freeSkill3Desc">Phase1未実装</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
+<div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜行動を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="《通常攻撃》｜現在のTARGET LOCK対象へATK100%×CHAIN倍率。CT0。"><b id="uniqueSkillKind">通常</b><span id="uniqueSkillName">通常攻撃</span><small id="uniqueSkillDesc">ATK100%＋CHAIN</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="《必殺技》｜BURST100で固有必殺。命《絶対領域解放》／凪《一世掃射》。"><b>必殺</b><span id="freeSkill1Name">必殺技</span><small id="freeSkill1Desc">BURST100で固有必殺</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="《スキップ》｜Phase1では未実装。"><b>SKIP</b><span id="freeSkill2Name">スキップ</span><small id="freeSkill2Desc">Phase1未実装</small></button><button class="skillBtn placeholderSkill" id="freeSkill3" aria-disabled="true" data-skill-detail="《アイテム》｜Phase1では未実装。"><b>ITEM</b><span id="freeSkill3Name">アイテム</span><small id="freeSkill3Desc">Phase1未実装</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">拠点へ戻る</button></div></div></div>
 </section>
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
@@ -2367,7 +2382,9 @@ let targetSelection=null;
 // ver.500 Phase1 transient combat state (not saved)
 let phase1LockedTargetId=null,phase1ChainHits=0,phase1ChainTargetId=null;
 let phase1EnemyPressState=null,phase1EnemyTapSuppressUntil=0;
-let floor=1,worldDepth=1,maxFloor=100,autoMode=false,runPartyStates=[],floorSnapshot=null,runLoot=0,runCheckpointStartLoot=0,runCheckpointStartOverkillBonusWD=0,runStartMaxHP=0,checkpointAutoTimer=null;
+// ver.504 BURST CHAIN is transient within the current battle/floor and is never persisted.
+let burstChainState=null,burstChainSelectResolve=null,burstChainAllyPressState=null,burstChainAllyTapSuppressUntil=0;
+let floor=1,worldDepth=1,maxFloor=100,autoMode=false,autoBurstMode='instant',runPartyStates=[],floorSnapshot=null,runLoot=0,runCheckpointStartLoot=0,runCheckpointStartOverkillBonusWD=0,runStartMaxHP=0,checkpointAutoTimer=null;
 let runOverkillBonusWD=0,runStrongRouteBonusWD=0,runRewardClaimed=false,overlayMode='',overkillAction=null,bossWarningShownFloor=0;
 const WD_STORAGE_KEY='sekasokoWaldonium';
 const ENEMY_BASE_REWARD_WD={normal:2,midboss:20,boss:40,finalBoss:100};
@@ -3387,7 +3404,7 @@ async function showBossWarningIfNeeded(){
  el.classList.remove('show');
  el.setAttribute('aria-hidden','true');
 }
-function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent='AUTO '+(autoMode?'ON':'OFF');a.classList.toggle('on',autoMode)}updateDamageUI()
+function updateFloorUI(){let b=document.querySelector('#floorBadge');if(b)b.textContent=floor+'F / '+maxFloor+'F';let a=document.querySelector('#autoToggle');if(a){a.textContent=autoMode?(autoBurstMode==='all'?'AUTO 一斉':'AUTO 即時'):'AUTO OFF';a.classList.toggle('on',autoMode)}updateDamageUI()
  const wf=document.querySelector('#worldFloor');if(wf)wf.textContent=`世界深度 ${worldDepth} / ${floor}F/${maxFloor}F`;
  const td=document.querySelector('#topDamage');if(td)td.textContent=`損壊 ${formatDamageRateLabel(damageRate())}%`;
  const tr=document.querySelector('#topReward');if(tr)tr.textContent=`報酬×${formatMultiplier(damageRewardMultiplier(damageRate()))}`;
@@ -3437,7 +3454,7 @@ function phase1EnsureValidLock({resetChainOnChange=true}={}){
  else phase1UpdateChainHud();
  return next;
 }
-function phase1ResetBattleState(){phase1LockedTargetId=null;phase1ChainHits=0;phase1ChainTargetId=null;phase1EnsureValidLock({resetChainOnChange:true});phase1UpdateChainHud()}
+function phase1ResetBattleState(){cancelBurstChainTransient();phase1LockedTargetId=null;phase1ChainHits=0;phase1ChainTargetId=null;phase1EnsureValidLock({resetChainOnChange:true});phase1UpdateChainHud()}
 function phase1TryLockEnemy(u){
  if(!u||u.side!=='E')return false;
  if(!phase1CanLockEnemy(u)){
@@ -3448,6 +3465,7 @@ function phase1TryLockEnemy(u){
 }
 function phase1OnEnemyActionStart(u){if(u?.side==='E')phase1ResetChain()}
 function phase1MarkBattleGesture(){
+ burstChainCancelAllyPress(true);
  phase1EnemyTapSuppressUntil=Math.max(phase1EnemyTapSuppressUntil,Date.now()+550);
  if(phase1EnemyPressState?.timer)clearTimeout(phase1EnemyPressState.timer);
  phase1EnemyPressState=null;
@@ -3483,9 +3501,11 @@ function phase1ConfigureActionPanel(u){
  const title=document.querySelector('#skillActor');if(title)title.textContent=(u?.name||'味方')+'｜行動を選択';
  const btn=document.querySelector('#freeSkill1'),name=document.querySelector('#freeSkill1Name'),desc=document.querySelector('#freeSkill1Desc');
  if(btn&&name&&desc){
-  syncBurstState(u);const mikoto=isMikotoUnit(u),ready=mikoto&&u.burstGauge>=BURST_MAX;
-  if(mikoto){name.textContent='絶対領域解放';desc.textContent=`BURST ${u.burstGauge}/${BURST_MAX}｜ATK150%×5`;btn.dataset.skillDetail=`《絶対領域解放》｜BURST100全消費｜LOCK対象へATK150%×5Hit｜発動後 新🪞+1`;btn.classList.toggle('placeholderSkill',!ready);btn.classList.toggle('phase3BurstReady',ready);btn.setAttribute('aria-disabled',ready?'false':'true')}
-  else{name.textContent='必殺技';desc.textContent='未実装';btn.dataset.skillDetail='《必殺技》｜このキャラクターは未実装。';btn.classList.add('placeholderSkill');btn.classList.remove('phase3BurstReady');btn.setAttribute('aria-disabled','true')}
+  syncBurstState(u);const mikoto=isMikotoUnit(u),nagi=isPlayableNagi(u),implemented=mikoto||nagi,ready=implemented&&u.burstGauge>=BURST_MAX;
+  if(mikoto){name.textContent='絶対領域解放';desc.textContent=`BURST ${u.burstGauge}/${BURST_MAX}｜ATK150%×5`;btn.dataset.skillDetail=`《絶対領域解放》｜BURST100全消費｜LOCK対象へATK150%×5Hit｜発動後 新🪞+1`}
+  else if(nagi){name.textContent='一世掃射';desc.textContent=`BURST ${u.burstGauge}/${BURST_MAX}｜敵全体100%×3`;btn.dataset.skillDetail=`《一世掃射》｜BURST100全消費｜敵全体へATK100%×3Hit｜発動後 新🪞+1`}
+  else{name.textContent='必殺技';desc.textContent='未実装';btn.dataset.skillDetail='《必殺技》｜このキャラクターは未実装。'}
+  btn.classList.toggle('placeholderSkill',!ready);btn.classList.toggle('phase3BurstReady',ready);btn.setAttribute('aria-disabled',ready?'false':'true');
  }
  phase1UpdateChainHud();
 }
@@ -3515,7 +3535,7 @@ function battleBuffSummary(u){
  if(bottomItems.length)rows.push(`<span class="battleBuffBottom">${bottomItems.join(' ')}</span>`);
  return rows.join('');
 }
-function unitHTML(u){syncBreakState(u);syncBurstState(u);syncSpeciesMirrorState(u);const locked=u.side==='E'&&u.hp>0&&u.id===phase1LockedTargetId,aria=u.side==='E'?`${u.name}。短押しでターゲットロック、長押しで詳細`:`${u.name}の詳細を開く`,breakPct=u.breakMax>0?Math.min(100,Math.max(0,u.breakValue/u.breakMax*100)):0,burst=u.burstGauge,burstPct=Math.min(100,Math.max(0,burst)),burstHud=`<div class="footBurstRow ${burst>=BURST_MAX?'burstMax':''}"><div class="footBurstBar"><em>${burst>=BURST_MAX?'MAX':'BURST'}</em><i style="width:${burstPct}%"></i></div><b>${burst}/${BURST_MAX}</b></div>`;return `<div class="unit ${u.hp<=0?'dead':''} ${locked?'phase1Locked':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" data-afterimage-rank="${u.afterimageRank||''}" role="button" tabindex="0" aria-label="${aria}"><div class="sprite">${locked?'<span class="targetReticle" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><circle class="reticleOuterRing" cx="50" cy="50" r="42" pathLength="100"/><g class="reticleCardinals"><path class="reticleMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="reticleMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="reticleInnerRing" cx="50" cy="50" r="29"/><path class="reticleCross" d="M50 39v7 M50 54v7 M39 50h7 M54 50h7"/><circle class="reticleCenter" cx="50" cy="50" r="2.2"/></svg></span>':''}${u.sprite?`<img class="targetGlowClone" src="${u.sprite}" alt="" aria-hidden="true"><img class="unitSpriteMain" src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="footHpRow"><div class="footHpBar"><i style="width:${Math.min(100,Math.max(0,u.hp/u.max*100))}%"></i></div><b>${hpDisplay(u)}/${maxHpDisplay(u)}</b></div><div class="footBreakRow ${u.breakPending?'breakPending':''}"><div class="footBreakBar">${u.breakPending?'<em class="footBreakPendingLabel">BREAK</em>':''}<i style="width:${breakPct}%"></i></div><b>${u.breakValue}/${u.breakMax}</b></div>${burstHud}<div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${hpDisplay(u)} / ${maxHpDisplay(u)}</div></div></div>`}
+function unitHTML(u){syncBreakState(u);syncBurstState(u);syncSpeciesMirrorState(u);const locked=u.side==='E'&&u.hp>0&&u.id===phase1LockedTargetId,chainEligible=!!(burstChainState?.active&&burstChainState.awaitingSelection&&burstChainCanJoin(u)),aria=u.side==='E'?`${u.name}。短押しでターゲットロック、長押しで詳細`:`${u.name}の詳細を開く`,breakPct=u.breakMax>0?Math.min(100,Math.max(0,u.breakValue/u.breakMax*100)):0,burst=u.burstGauge,burstPct=Math.min(100,Math.max(0,burst)),burstHud=`<div class="footBurstRow ${burst>=BURST_MAX?'burstMax':''}"><div class="footBurstBar"><em>${burst>=BURST_MAX?'MAX':'BURST'}</em><i style="width:${burstPct}%"></i></div><b>${burst}/${BURST_MAX}</b></div>`;return `<div class="unit ${u.hp<=0?'dead':''} ${locked?'phase1Locked':''} ${chainEligible?'burstChainEligible':''}" id="${u.id}" data-unit="${u.id}" data-cid="${u.cid}" data-afterimage-rank="${u.afterimageRank||''}" role="button" tabindex="0" aria-label="${aria}"><div class="sprite">${locked?'<span class="targetReticle" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><circle class="reticleOuterRing" cx="50" cy="50" r="42" pathLength="100"/><g class="reticleCardinals"><path class="reticleMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="reticleMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="reticleInnerRing" cx="50" cy="50" r="29"/><path class="reticleCross" d="M50 39v7 M50 54v7 M39 50h7 M54 50h7"/><circle class="reticleCenter" cx="50" cy="50" r="2.2"/></svg></span>':''}${u.sprite?`<img class="targetGlowClone" src="${u.sprite}" alt="" aria-hidden="true"><img class="unitSpriteMain" src="${u.sprite}" alt="${u.name}">`:u.icon}</div><div class="name">${u.name}</div><div class="battleBuffRow">${battleBuffSummary(u)}</div><div class="footHpRow"><div class="footHpBar"><i style="width:${Math.min(100,Math.max(0,u.hp/u.max*100))}%"></i></div><b>${hpDisplay(u)}/${maxHpDisplay(u)}</b></div><div class="footBreakRow ${u.breakPending?'breakPending':''}"><div class="footBreakBar">${u.breakPending?'<em class="footBreakPendingLabel">BREAK</em>':''}<i style="width:${breakPct}%"></i></div><b>${u.breakValue}/${u.breakMax}</b></div>${burstHud}<div class="unitBottom"><div class="hpbar"><div class="hp" style="width:${Math.max(0,u.hp/u.max*100)}%"></div></div><div class="hpText">HP ${hpDisplay(u)} / ${maxHpDisplay(u)}</div></div></div>`}
 function forecast(n=10){
  const sim=allUnits().filter(u=>u.hp>0).map(u=>({id:u.id,name:u.name,side:u.side,next:u.next,spd:u.spd,swift:u.swift||0,swiftBatches:clone(u.swiftBatches||[]),cid:u.cid,ct:u.skill?.ct||0,cost:phase3ActionWait(u)}));
  const out=[];
@@ -3599,6 +3619,17 @@ function openBattleUnitDetail(u){
  }
  document.querySelector('#modal').classList.add('show');
 }
+function burstChainCancelAllyPress(suppressTap=false){
+ if(burstChainAllyPressState?.timer)clearTimeout(burstChainAllyPressState.timer);
+ burstChainAllyPressState=null;if(suppressTap)burstChainAllyTapSuppressUntil=Math.max(burstChainAllyTapSuppressUntil,Date.now()+550);
+}
+function burstChainAllyPressStart(ev,el){
+ if(!burstChainState?.active||ev.touches?.length!==1||Date.now()<burstChainAllyTapSuppressUntil)return;
+ burstChainCancelAllyPress(false);const t=ev.touches[0],state={id:el.dataset.unit,x:t.clientX,y:t.clientY,long:false,timer:null};
+ state.timer=setTimeout(()=>{if(burstChainAllyPressState!==state)return;const u=A.find(x=>x.id===state.id);if(!u)return;state.long=true;burstChainAllyTapSuppressUntil=Date.now()+800;openBattleUnitDetail(u)},450);burstChainAllyPressState=state;
+}
+function burstChainAllyPressMove(ev){const st=burstChainAllyPressState;if(!st)return;if(ev.touches?.length!==1){burstChainCancelAllyPress(true);return}const t=ev.touches[0];if(Math.hypot(t.clientX-st.x,t.clientY-st.y)>10)burstChainCancelAllyPress(true)}
+function burstChainAllyPressEnd(){const st=burstChainAllyPressState;if(!st)return;if(st.timer)clearTimeout(st.timer);if(st.long)burstChainAllyTapSuppressUntil=Math.max(burstChainAllyTapSuppressUntil,Date.now()+800);burstChainAllyPressState=null}
 function bindBattleUnitDetails(){
  document.querySelectorAll('#battleScreen [data-unit]').forEach(el=>{
   const get=()=>allUnits().find(u=>u.id===el.dataset.unit),open=()=>openBattleUnitDetail(get());
@@ -3608,13 +3639,11 @@ function bindBattleUnitDetails(){
    el.onclick=()=>{if(Date.now()<phase1EnemyTapSuppressUntil)return;if(choose())return;phase1TryLockEnemy(get())};
    el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!choose())phase1TryLockEnemy(get())}};
    el.oncontextmenu=e=>{e.preventDefault();phase1CancelEnemyPress(true);open()};
-   el.addEventListener('touchstart',e=>phase1EnemyPressStart(e,el),{passive:true});
-   el.addEventListener('touchmove',phase1EnemyPressMove,{passive:true});
-   el.addEventListener('touchend',phase1EnemyPressEnd,{passive:true});
-   el.addEventListener('touchcancel',()=>phase1CancelEnemyPress(true),{passive:true});
+   el.addEventListener('touchstart',e=>phase1EnemyPressStart(e,el),{passive:true});el.addEventListener('touchmove',phase1EnemyPressMove,{passive:true});el.addEventListener('touchend',phase1EnemyPressEnd,{passive:true});el.addEventListener('touchcancel',()=>phase1CancelEnemyPress(true),{passive:true});
   }else{
-   el.onclick=()=>{if(!choose())open()};
-   el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!choose())open()}};
+   el.onclick=()=>{if(Date.now()<burstChainAllyTapSuppressUntil)return;if(choose())return;if(burstChainState?.active&&burstChainState.awaitingSelection){burstChainTrySelect(get());return}open()};
+   el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(choose())return;if(burstChainState?.active&&burstChainState.awaitingSelection){burstChainTrySelect(get());return}open()}};
+   if(burstChainState?.active){el.addEventListener('touchstart',e=>burstChainAllyPressStart(e,el),{passive:true});el.addEventListener('touchmove',burstChainAllyPressMove,{passive:true});el.addEventListener('touchend',burstChainAllyPressEnd,{passive:true});el.addEventListener('touchcancel',()=>burstChainCancelAllyPress(true),{passive:true})}
   }
  });
 }
@@ -3632,7 +3661,7 @@ function renderBattle(){
  document.querySelector('#allyArmy').innerHTML=slots(A,'A');document.querySelector('#enemyArmy').innerHTML=slots(E,'E');renderHpOverview();
  document.querySelector('#turn').textContent=running?`部隊${(sortieQueue[activePartyIndex]?.slot??activePartyIndex)+1}`:'部隊-';updateFloorUI();
  const now=allUnits().filter(x=>x.hp>0).sort(compareTurn).slice(0,5);
- document.querySelector('#order').innerHTML=now.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.side==='A'?'味':'敵'} ${u.name}</span>`).join('');renderOrder();renderActorStates();bindBattleUnitDetails();if(currentActor&&resolvePlayerAction)phase1ConfigureActionPanel(currentActor);
+ document.querySelector('#order').innerHTML=now.map((u,i)=>`<span class="chip ${i===0?'active':''}">${u.side==='A'?'味':'敵'} ${u.name}</span>`).join('');renderOrder();renderActorStates();updateBurstChainHud();bindBattleUnitDetails();if(currentActor&&resolvePlayerAction)phase1ConfigureActionPanel(currentActor);
 }
 function liveBattleAnchor(el){
  if(!el)return null;
@@ -3762,12 +3791,15 @@ function reduceBurst(u,amount){
  if(!u)return 0;syncBurstState(u);const before=u.burstGauge,loss=Math.max(0,Math.floor(Number(amount)||0));u.burstGauge=Math.max(0,before-loss);return before-u.burstGauge;
 }
 function isMikotoUnit(u){return !!u&&(u.cid===101||u.rosterId==='mizuki'||u.afterimageCharacterId==='mizuki')}
+function isNagiUnit(u){return !!u&&(u.cid===102||u.rosterId==='nagi'||u.afterimageCharacterId==='nagi')}
+function isPlayableNagi(u){return !!u&&u.side==='A'&&isNagiUnit(u)}
+function hasImplementedPlayerBurst(u){return !!u&&u.side==='A'&&(isMikotoUnit(u)||isPlayableNagi(u))}
 function syncSpeciesMirrorState(u){if(!u)return u;u.speciesMirror=Math.max(0,Math.min(NEW_MIRROR_MAX,Math.floor(Number(u.speciesMirror)||0)));return u}
 function syncSpeciesMirrorStates(units){(units||[]).forEach(syncSpeciesMirrorState)}
 function resetSpeciesMirrorState(u){if(!u)return;u.speciesMirror=0}
 function resetSpeciesMirrorStates(units){(units||[]).forEach(resetSpeciesMirrorState)}
 function addSpeciesMirror(u,amount){if(!u)return 0;syncSpeciesMirrorState(u);const before=u.speciesMirror,gain=Math.max(0,Math.floor(Number(amount)||0));u.speciesMirror=Math.min(NEW_MIRROR_MAX,before+gain);return u.speciesMirror-before}
-function speciesMirrorEvadeBonus(u){return isMikotoUnit(u)?Math.min(30,(syncSpeciesMirrorState(u).speciesMirror||0)*0.3):0}
+function speciesMirrorEvadeBonus(u){return !u?0:Math.min(30,(syncSpeciesMirrorState(u).speciesMirror||0)*0.3)}
 
 function applyCombatDamage(t,rawDamage,{ignoreDef=false,ignoreShield=false,minDamageRate=0.10}={}){
  const beforeHp=Math.max(0,Number(t?.hp)||0);
@@ -4239,25 +4271,100 @@ async function phase3EnemyNormalAttack(att,defenders){
  if(t.hp<=0){if(targetEl)targetEl.classList.add('dying');await sleep(120);if(handleFrontlineDeath(t)){renderBattle();await sleep(140)}}
  if(attacker)attacker.classList.remove('attacking');return true;
 }
-async function phase3MikotoBurstAttack(att,defenders,forcedTarget=null){
- if(!att||att.hp<=0||!isMikotoUnit(att)){return false}syncBurstState(att);if(att.burstGauge<BURST_MAX)return false;
- const t=forcedTarget||(att.side==='A'?phase1EnsureValidLock({resetChainOnChange:true}):phase3FixedTargetForEnemy(defenders));if(!t||t.hp<=0)return false;
+async function phase3MikotoBurstAttack(att,defenders,forcedTarget=null,opts={}){
+ if(!att||att.hp<=0||!isMikotoUnit(att))return false;syncBurstState(att);if(att.burstGauge<BURST_MAX)return false;
+ const damageMultiplier=Math.max(0,Number(opts.damageMultiplier)||1),allowDead=!!opts.allowDeadTarget,suppressChainReset=!!opts.suppressChainReset,suppressLockUpdate=!!opts.suppressLockUpdate;
+ const t=forcedTarget||(att.side==='A'?phase1EnsureValidLock({resetChainOnChange:true}):phase3FixedTargetForEnemy(defenders));if(!t||(!allowDead&&t.hp<=0))return false;
  const targetId=t.id;att.burstGauge=0;const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
- document.querySelector('#status').textContent=`${att.name}《絶対領域解放》｜${t.name}｜ATK150%×5Hit`;renderBattle();await sleep(110);
+ document.querySelector('#status').textContent=`${att.name}《絶対領域解放》｜${t.name}｜ATK150%×5Hit${damageMultiplier!==1?`｜×${damageMultiplier.toFixed(1)}`:''}`;renderBattle();await sleep(110);
  let total=0,hits=0,misses=0;
  for(let i=0;i<5;i++){
   const targetEl=document.getElementById(targetId);if(targetEl)targetEl.classList.add('hit');document.querySelector('#flash').classList.add('on');
   let hit={damage:0,actualHpDamage:0},evade={evaded:false};
   if(t.hp>0&&!(t.side==='A'&&debugInvincible))evade=rollEvade(t);
   if(evade.evaded){misses++;await resolveCombatEvade(t,att,evade,targetEl)}
-  else{const raw=(t.side==='A'&&debugInvincible)?0:Math.max(1,Math.floor(effectiveAtk(att)*1.5));hit=raw>0?applyCombatDamage(t,raw,{minDamageRate:0.10}):{damage:0,actualHpDamage:0};total+=hit.damage;damagePop(targetEl,hit.damage)}
+  else{const raw=(t.side==='A'&&debugInvincible)?0:Math.max(1,Math.floor(effectiveAtk(att)*1.5*damageMultiplier));hit=raw>0?applyCombatDamage(t,raw,{minDamageRate:0.10}):{damage:0,actualHpDamage:0};total+=hit.damage;damagePop(targetEl,hit.damage)}
   hits++;await sleep(85);document.querySelector('#flash').classList.remove('on');const liveEl=document.getElementById(targetId);if(liveEl)liveEl.classList.remove('hit');if(att.hp<=0)break;
  }
- addSpeciesMirror(att,1);phase1ResetChain();
- if(t.hp<=0){const deadEl=document.getElementById(targetId);if(deadEl)deadEl.classList.add('dying');await sleep(80);handleFrontlineDeath(t);if(t.side==='E'){phase1LockedTargetId=null;phase1EnsureValidLock({resetChainOnChange:true})}renderBattle();await sleep(80)}
+ addSpeciesMirror(att,1);if(!suppressChainReset)phase1ResetChain();
+ if(t.hp<=0){const deadEl=document.getElementById(targetId);if(deadEl)deadEl.classList.add('dying');await sleep(80);handleFrontlineDeath(t);if(t.side==='E'&&!suppressLockUpdate){phase1LockedTargetId=null;phase1EnsureValidLock({resetChainOnChange:true})}renderBattle();await sleep(80)}
  const attackerNow=document.getElementById(att.id);if(attackerNow)attackerNow.classList.remove('attacking');
  document.querySelector('#status').textContent=`${att.name}《絶対領域解放》｜${hits}Hit${misses?`（MISS ${misses}）`:''}｜計${total} DAMAGE｜BURST 0｜新🪞${att.speciesMirror}`;phase1UpdateChainHud();renderBattle();await sleep(100);return true;
 }
+async function phase4NagiBurstAttack(att,defenders,forcedTargets=null,opts={}){
+ if(!att||att.hp<=0||!isPlayableNagi(att))return false;syncBurstState(att);if(att.burstGauge<BURST_MAX)return false;
+ const damageMultiplier=Math.max(0,Number(opts.damageMultiplier)||1),suppressChainReset=!!opts.suppressChainReset,suppressLockUpdate=!!opts.suppressLockUpdate;
+ const targets=(forcedTargets?.length?forcedTargets:living(defenders)).filter(Boolean);if(!targets.length)return false;
+ att.burstGauge=0;const attacker=document.getElementById(att.id);if(attacker)attacker.classList.add('attacking');
+ document.querySelector('#status').textContent=`${att.name}《一世掃射》｜敵全体 ATK100%×3Hit${damageMultiplier!==1?`｜×${damageMultiplier.toFixed(1)}`:''}`;renderBattle();await sleep(110);
+ let total=0,hits=0,misses=0;
+ for(let round=0;round<3;round++){
+  for(const t of targets){
+   const targetEl=document.getElementById(t.id);if(targetEl)targetEl.classList.add('hit');document.querySelector('#flash').classList.add('on');let hit={damage:0,actualHpDamage:0},evade={evaded:false};
+   if(t.hp>0)evade=rollEvade(t);
+   if(evade.evaded){misses++;await resolveCombatEvade(t,att,evade,targetEl)}else{const raw=Math.max(1,Math.floor(effectiveAtk(att)*damageMultiplier));hit=applyCombatDamage(t,raw,{minDamageRate:0.10});total+=hit.damage;damagePop(targetEl,hit.damage)}
+   hits++;await sleep(55);document.querySelector('#flash').classList.remove('on');const liveEl=document.getElementById(t.id);if(liveEl)liveEl.classList.remove('hit');if(att.hp<=0)break;
+  }
+  if(att.hp<=0)break;
+ }
+ addSpeciesMirror(att,1);if(!suppressChainReset)phase1ResetChain();
+ let lockDied=false;for(const t of targets){if(t.hp<=0){const deadEl=document.getElementById(t.id);if(deadEl)deadEl.classList.add('dying');if(t.id===phase1LockedTargetId)lockDied=true;handleFrontlineDeath(t)}}
+ if(lockDied&&!suppressLockUpdate){phase1LockedTargetId=null;phase1EnsureValidLock({resetChainOnChange:true})}
+ renderBattle();await sleep(80);const attackerNow=document.getElementById(att.id);if(attackerNow)attackerNow.classList.remove('attacking');
+ document.querySelector('#status').textContent=`${att.name}《一世掃射》｜敵全体3Hit｜計${total} DAMAGE${misses?`｜MISS ${misses}`:''}｜BURST 0｜新🪞${att.speciesMirror}`;phase1UpdateChainHud();renderBattle();await sleep(100);return true;
+}
+function playerBurstReady(u){if(!hasImplementedPlayerBurst(u)||u.hp<=0||u.breakPending)return false;syncBurstState(u);return u.burstGauge>=BURST_MAX}
+function burstChainCanJoin(u){return !!burstChainState?.active&&playerBurstReady(u)&&!burstChainState.participants.has(u.id)}
+function burstChainCandidates(){return living(A).filter(burstChainCanJoin).sort(compareTurn)}
+function burstChainPotentialOthers(initiator){return living(A).filter(u=>u!==initiator&&playerBurstReady(u)).sort(compareTurn)}
+function burstChainMultiplierFor(index){return (burstChainState?.startChainMultiplier||1)+.2*index}
+function burstChainPop(text,end=false){const app=document.querySelector('.app');if(!app)return;const d=document.createElement('div');d.className='burstChainPop'+(end?' end':'');d.textContent=text;app.appendChild(d);setTimeout(()=>d.remove(),800)}
+function updateBurstChainHud(){
+ const hud=document.querySelector('#burstChainHud'),info=document.querySelector('#burstChainInfo');if(!hud)return;
+ const active=!!burstChainState?.active;hud.classList.toggle('show',active);hud.setAttribute('aria-hidden',active?'false':'true');if(!active)return;
+ const count=burstChainState.participants.size,nextIndex=count+1,nextMult=burstChainMultiplierFor(nextIndex);if(info)info.textContent=burstChainState.executing?`${nextIndex}人目｜×${burstChainState.currentMultiplier.toFixed(1)}`:`${count}/6人｜次 ×${nextMult.toFixed(1)}`;
+}
+function cancelBurstChainTransient(){
+ if(burstChainSelectResolve){const r=burstChainSelectResolve;burstChainSelectResolve=null;r(null)}
+ burstChainCancelAllyPress(false);burstChainState=null;updateBurstChainHud();
+}
+function burstChainTrySelect(u){
+ if(!burstChainState?.active||!burstChainState.awaitingSelection)return false;
+ if(!burstChainCanJoin(u)){const st=document.querySelector('#status');if(st)st.textContent=`${u?.name||'対象'}｜BURST CHAIN参加不可`;phase1UpdateChainHud();return false}
+ const r=burstChainSelectResolve;burstChainSelectResolve=null;burstChainState.awaitingSelection=false;if(r)r(u);return true;
+}
+function waitForBurstChainParticipant(){
+ if(!burstChainState?.active)return Promise.resolve(null);const candidates=burstChainCandidates();if(!candidates.length)return Promise.resolve(null);
+ burstChainState.awaitingSelection=true;document.querySelector('#status').textContent='BURST CHAIN｜参加する味方を短押し／終了で温存';renderBattle();return new Promise(r=>burstChainSelectResolve=r);
+}
+function endBurstChainSelection(){if(!burstChainState?.active)return;if(burstChainSelectResolve){const r=burstChainSelectResolve;burstChainSelectResolve=null;burstChainState.awaitingSelection=false;r(null)}else burstChainState.requestEnd=true}
+async function executeBurstChainParticipant(u,index){
+ if(!burstChainState?.active||!playerBurstReady(u)||burstChainState.participants.has(u.id))return false;
+ const mult=burstChainMultiplierFor(index);burstChainState.currentMultiplier=mult;burstChainState.executing=true;updateBurstChainHud();document.querySelector('#status').textContent=`BURST CHAIN ${index}｜${u.name}｜×${mult.toFixed(1)}`;burstChainPop(`BURST CHAIN ${index}  ×${mult.toFixed(1)}`);renderBattle();await sleep(80);
+ beginOverkillAction(u);let ok=false;
+ if(isMikotoUnit(u))ok=await phase3MikotoBurstAttack(u,E,burstChainState.fixedTarget,{damageMultiplier:mult,allowDeadTarget:true,suppressChainReset:true,suppressLockUpdate:true});
+ else if(isPlayableNagi(u))ok=await phase4NagiBurstAttack(u,E,burstChainState.enemyRoster,{damageMultiplier:mult,suppressChainReset:true,suppressLockUpdate:true});
+ finalizeOverkillAction();if(!ok){burstChainState.executing=false;return false}burstChainState.participants.add(u.id);burstChainState.executing=false;u.next+=baseWait(u);syncActiveParty();renderBattle();return true;
+}
+async function finishBurstChain(){
+ if(!burstChainState?.active)return;burstChainState.active=false;burstChainState.awaitingSelection=false;burstChainSelectResolve=null;burstChainPop('BURST CHAIN END',true);document.querySelector('#status').textContent=`BURST CHAIN END｜${burstChainState.participants.size}人連携`;phase1LockedTargetId=phase1CanLockEnemy(burstChainState.fixedTarget)?burstChainState.fixedTarget.id:null;phase1EnsureValidLock({resetChainOnChange:false});phase1ResetChain();updateBurstChainHud();renderBattle();await sleep(180);burstChainState=null;updateBurstChainHud();
+}
+async function startBurstChain(initiator,{auto=false}={}){
+ if(!playerBurstReady(initiator)||!burstChainPotentialOthers(initiator).length)return{started:false,participantIds:new Set()};
+ const fixed=phase1LockedTarget()||phase1EnsureValidLock({resetChainOnChange:false});if(!fixed)return{started:false,participantIds:new Set()};
+ burstChainState={active:true,auto:!!auto,awaitingSelection:false,requestEnd:false,startChainMultiplier:phase1ChainMultiplier(),fixedTarget:fixed,enemyRoster:[...living(E)],participants:new Set(),currentMultiplier:0};
+ burstChainPop('BURST CHAIN START');updateBurstChainHud();renderBattle();await sleep(100);
+ let index=1;await executeBurstChainParticipant(initiator,index++);
+ while(burstChainState?.active&&!burstChainState.requestEnd){
+  const candidates=burstChainCandidates();if(!candidates.length)break;
+  let next=burstChainState.auto?candidates[0]:await waitForBurstChainParticipant();if(!next)break;
+  if(!burstChainCanJoin(next))continue;await executeBurstChainParticipant(next,index++);if(index>6)break;
+ }
+ const ids=new Set(burstChainState?.participants||[]);await finishBurstChain();return{started:true,participantIds:ids};
+}
+function allLivingAlliesBurstMax(){const allies=living(A);return !!allies.length&&allies.every(u=>{syncBurstState(u);return u.burstGauge>=BURST_MAX})}
+async function executeSinglePlayerBurst(u){beginOverkillAction(u);let ok=false;if(isMikotoUnit(u))ok=await phase3MikotoBurstAttack(u,E);else if(isPlayableNagi(u))ok=await phase4NagiBurstAttack(u,E);finalizeOverkillAction();return ok}
+
 async function attack(att,defenders){
  if(att.hp<=0)return;
  const attacker=document.getElementById(att.id);
@@ -4322,7 +4429,7 @@ async function attack(att,defenders){
  if(attacker)attacker.classList.remove('attacking');
 }
 async function battle(){
- if(running)return;running=true;ensureBattleFormationIntegrity();syncBreakStates(A);syncBreakStates(E);syncBurstStates(A);syncBurstStates(E);syncSpeciesMirrorStates(A);syncSpeciesMirrorStates(E);phase1EnsureValidLock({resetChainOnChange:true});document.querySelector('#status').textContent=floor+'F｜VER.503｜TARGET LOCK＋CHAIN＋BREAK＋BURST';phase1UpdateChainHud();updateFloorUI();renderBattle();
+ if(running)return;running=true;ensureBattleFormationIntegrity();syncBreakStates(A);syncBreakStates(E);syncBurstStates(A);syncBurstStates(E);syncSpeciesMirrorStates(A);syncSpeciesMirrorStates(E);phase1EnsureValidLock({resetChainOnChange:true});document.querySelector('#status').textContent=floor+'F｜VER.504｜TARGET LOCK＋CHAIN＋BREAK＋BURST CHAIN';phase1UpdateChainHud();updateFloorUI();renderBattle();
  while(running){
    await showBossWarningIfNeeded();
    while(living(E).length&&turnNo<600){
@@ -4330,31 +4437,40 @@ async function battle(){
      ensureBattleFormationIntegrity();phase1EnsureValidLock({resetChainOnChange:true});
      const candidates=allUnits().filter(u=>u.hp>0).sort(compareTurn),u=candidates[0];if(!u)break;
      const actionWait=phase3ActionWait(u);syncBreakState(u);const breakPendingAtTurnStart=!!u.breakPending;if(!breakPendingAtTurnStart)recoverBreakAtTurnStart(u);
-     await resolveMilkGoldTurnStart(u);
-     tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
+     await resolveMilkGoldTurnStart(u);tickSwiftAtTurnStart(u);if(u.cid===101&&u.absoluteDomain){u.absoluteDomain=false;}turnNo++;
      if(breakPendingAtTurnStart){
-      const wait=actionWait;
-      document.querySelector('#status').textContent=`${u.name} BREAK｜行動不能`;phase1UpdateChainHud();breakPop(u,'BREAK SKIP',true);renderBattle();await sleep(180);
-      u.next+=wait;finishBreakSkip(u);currentActor=null;resolvePlayerAction=null;syncActiveParty();renderBattle();await sleep(80);continue;
+      document.querySelector('#status').textContent=`${u.name} BREAK｜行動不能`;phase1UpdateChainHud();breakPop(u,'BREAK SKIP',true);renderBattle();await sleep(180);u.next+=actionWait;finishBreakSkip(u);currentActor=null;resolvePlayerAction=null;syncActiveParty();renderBattle();await sleep(80);continue;
      }
+     let actionAdvancedInside=false;
      if(u.side==='A'){
-      await waitForPlayerSkill(u);if(!running)return;beginOverkillAction(u);
-      if(selectedSkillSlot===0)await executeBattleSwap(u);else if(selectedSkillSlot===2&&isMikotoUnit(u))await phase3MikotoBurstAttack(u,E);else await phase1NormalAttack(u);
-      finalizeOverkillAction();currentActor=null;resolvePlayerAction=null;
+      // AUTO一斉: only at an ally turn start, and only when every living ally is BURST100.
+      if(autoMode&&autoBurstMode==='all'&&allLivingAlliesBurstMax()){
+       const eligible=living(A).filter(playerBurstReady).sort(compareTurn);
+       if(eligible.length>=2){const result=await startBurstChain(eligible[0],{auto:true});actionAdvancedInside=result.participantIds.has(u.id)}
+      }
+      if(!actionAdvancedInside){
+       if(autoMode){
+        if(autoBurstMode==='instant'&&playerBurstReady(u)){
+         if(burstChainPotentialOthers(u).length){await startBurstChain(u,{auto:true});actionAdvancedInside=true}else await executeSinglePlayerBurst(u);
+        }else{beginOverkillAction(u);await phase1NormalAttack(u);finalizeOverkillAction()}
+       }else{
+        await waitForPlayerSkill(u);if(!running)return;
+        if(selectedSkillSlot===0){await executeBattleSwap(u)}
+        else if(selectedSkillSlot===2&&playerBurstReady(u)){
+         if(burstChainPotentialOthers(u).length){await startBurstChain(u,{auto:false});actionAdvancedInside=true}else await executeSinglePlayerBurst(u)
+        }else{beginOverkillAction(u);await phase1NormalAttack(u);finalizeOverkillAction()}
+        currentActor=null;resolvePlayerAction=null;
+       }
+      }
      }else{
-      // Only a real enemy action ends the player CHAIN; BREAK SKIP never reaches this line.
+      // Only a real enemy action ends the player normal CHAIN; BREAK SKIP never reaches this line.
       phase1OnEnemyActionStart(u);syncBurstState(u);if(isMikotoUnit(u)&&u.burstGauge>=BURST_MAX)await phase3MikotoBurstAttack(u,A);else await phase3EnemyNormalAttack(u,A);
      }
-     u.next+=actionWait;syncActiveParty();renderBattle();
+     if(!actionAdvancedInside)u.next+=actionWait;syncActiveParty();renderBattle();
    }
    if(!living(E).length){
-     addFloorClearForRun();
-     const floorReward=currentFloorBaseReward();runLoot+=floorReward;
-     document.querySelector('#status').textContent=floor+'F CLEAR｜💎'+floorReward.toLocaleString()+' WD 獲得｜損壊率 '+formatDamageRateLabel(damageRate())+'%';phase1UpdateChainHud();
-     await sleep(500);
-     if(floor>=maxFloor){running=false;showRunResult(true);return}
-     if(floor%5===0){running=false;showCheckpointResult();return}
-     await sleep(250);if(!nextFloor()){running=false;showRunResult(false);return}continue
+     addFloorClearForRun();const floorReward=currentFloorBaseReward();runLoot+=floorReward;document.querySelector('#status').textContent=floor+'F CLEAR｜💎'+floorReward.toLocaleString()+' WD 獲得｜損壊率 '+formatDamageRateLabel(damageRate())+'%';phase1UpdateChainHud();await sleep(500);
+     if(floor>=maxFloor){running=false;showRunResult(true);return}if(floor%5===0){running=false;showCheckpointResult();return}await sleep(250);if(!nextFloor()){running=false;showRunResult(false);return}continue
    }
    running=false;showRunResult(false);return
  }
@@ -4364,7 +4480,7 @@ function expeditionResultHTML(sectionBaseGain,sectionOverkillGain=0){const r=cur
 function advanceCheckpoint(){if(overlayMode!=='checkpoint')return;if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}document.querySelector('#overlay').classList.remove('show');document.querySelector('#overlay .result')?.classList.remove('checkpointResult');runCheckpointStartLoot=runLoot;runCheckpointStartOverkillBonusWD=runOverkillBonusWD;overlayMode='';if(!nextFloor()){showRunResult(false);return}updateFloorUI();setTimeout(()=>battle(),80)}
 function showCheckpointResult(){overlayMode='checkpoint';const box=document.querySelector('#overlay .result');box?.classList.add('checkpointResult');document.querySelector('#resultText').textContent=`${floor}F RESULT`;document.querySelector('#resultDetail').innerHTML=expeditionResultHTML(runLoot-runCheckpointStartLoot,runOverkillBonusWD-runCheckpointStartOverkillBonusWD);const next=document.querySelector('#continueFloor'),home=document.querySelector('#again');next.style.display='block';next.textContent=autoMode?'AUTO｜次の階層へ…':'次の階層へ';home.style.display='none';document.querySelector('#overlay').classList.add('show');if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}if(autoMode)checkpointAutoTimer=setTimeout(()=>advanceCheckpoint(),2000)}
 function showRunResult(win){overlayMode=win?'complete':'gameover';document.querySelector('#overlay .result')?.classList.remove('checkpointResult');const r=currentRunReward();document.querySelector('#resultText').textContent=win?`${maxFloor}F 踏破！`:'GAME OVER';document.querySelector('#resultDetail').innerHTML=expeditionResultHTML(runLoot-runCheckpointStartLoot,runOverkillBonusWD-runCheckpointStartOverkillBonusWD);const next=document.querySelector('#continueFloor'),home=document.querySelector('#again');if(win){next.style.display='none';home.style.display='block';home.textContent='拠点へ戻る'}else{next.style.display='block';next.textContent='この階層からコンティニュー';home.style.display='block';home.textContent='拠点へ戻る'}document.querySelector('#overlay').classList.add('show')}
-function retreatHome(){if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}clearTargetSelection();running=false;if(resolvePlayerAction){let r=resolvePlayerAction;resolvePlayerAction=null;r()}document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');const gained=claimRunReward();overlayMode='';renderHome();showScreen('home');openInfo('攻略終了','💎'+gained.toLocaleString()+' WD を持ち帰りました。次回の世界深度攻略は1Fから開始します。','💎')}
+function retreatHome(){if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}cancelBurstChainTransient();clearTargetSelection();running=false;if(resolvePlayerAction){let r=resolvePlayerAction;resolvePlayerAction=null;r()}document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');const gained=claimRunReward();overlayMode='';renderHome();showScreen('home');openInfo('攻略終了','💎'+gained.toLocaleString()+' WD を持ち帰りました。次回の世界深度攻略は1Fから開始します。','💎')}
 document.querySelector('#swapBtn').onclick=()=>{if(resolvePlayerAction&&currentActor&&findSwapPartner(currentActor)){selectedSkillSlot=0;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};
 let skillHoldSuppressClickUntil=0;
 function skillTapSuppressedByHold(){if(Date.now()>=skillHoldSuppressClickUntil)return false;skillHoldSuppressClickUntil=0;return true}
@@ -4374,8 +4490,10 @@ function chooseFreeSkill(slot){if(skillTapSuppressedByHold()||!resolvePlayerActi
 document.querySelector('#freeSkill1').onclick=()=>chooseFreeSkill(2);document.querySelector('#freeSkill2').onclick=()=>chooseFreeSkill(3);document.querySelector('#freeSkill3').onclick=()=>chooseFreeSkill(4);function choosePhase1NormalAttack(){if(skillTapSuppressedByHold()||!resolvePlayerAction)return;const t=phase1EnsureValidLock({resetChainOnChange:true});if(!t){document.querySelector('#status').textContent='攻撃可能な敵前衛がいない';phase1UpdateChainHud();return}selectedSkillSlot=1;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
 function phase1UnimplementedAction(name){if(skillTapSuppressedByHold())return;document.querySelector('#status').textContent=`${name}｜Phase1では未実装`;phase1UpdateChainHud()}
 document.querySelector('#uniqueSkill').onclick=choosePhase1NormalAttack;
-function choosePhase3Burst(){if(skillTapSuppressedByHold()||!resolvePlayerAction)return;const u=currentActor;syncBurstState(u);if(!isMikotoUnit(u)){phase1UnimplementedAction('必殺技');return}if(u.burstGauge<BURST_MAX){document.querySelector('#status').textContent=`《絶対領域解放》｜BURST ${u.burstGauge}/${BURST_MAX}｜使用不可`;phase1ConfigureActionPanel(u);return}const t=phase1EnsureValidLock({resetChainOnChange:true});if(!t){document.querySelector('#status').textContent='攻撃可能な敵前衛がいない';phase1UpdateChainHud();return}selectedSkillSlot=2;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
-document.querySelector('#freeSkill1').onclick=choosePhase3Burst;document.querySelector('#freeSkill2').onclick=()=>phase1UnimplementedAction('スキップ');document.querySelector('#freeSkill3').onclick=()=>phase1UnimplementedAction('アイテム');document.querySelector('#autoToggle').onclick=()=>{autoMode=!autoMode;if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、獲得WDを持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{if(overlayMode==='checkpoint'){advanceCheckpoint();return}restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
+function choosePhase3Burst(){if(skillTapSuppressedByHold()||!resolvePlayerAction)return;const u=currentActor;syncBurstState(u);if(!hasImplementedPlayerBurst(u)){phase1UnimplementedAction('必殺技');return}if(u.burstGauge<BURST_MAX){const skill=isMikotoUnit(u)?'《絶対領域解放》':'《一世掃射》';document.querySelector('#status').textContent=`${skill}｜BURST ${u.burstGauge}/${BURST_MAX}｜使用不可`;phase1ConfigureActionPanel(u);return}const t=phase1EnsureValidLock({resetChainOnChange:true});if(!t){document.querySelector('#status').textContent='攻撃可能な敵前衛がいない';phase1UpdateChainHud();return}selectedSkillSlot=2;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
+document.querySelector('#freeSkill1').onclick=choosePhase3Burst;document.querySelector('#freeSkill2').onclick=()=>phase1UnimplementedAction('スキップ');document.querySelector('#freeSkill3').onclick=()=>phase1UnimplementedAction('アイテム');
+document.querySelector('#burstChainEnd').onclick=endBurstChainSelection;
+document.querySelector('#autoToggle').onclick=()=>{if(!autoMode){autoMode=true;autoBurstMode='instant'}else if(autoBurstMode==='instant'){autoBurstMode='all'}else{autoMode=false;autoBurstMode='instant'}if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、獲得WDを持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{if(overlayMode==='checkpoint'){advanceCheckpoint();return}restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
 const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpen').onclick=()=>dp.classList.add('show');document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
 function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;renderBattle()}
 document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');dbgStatus('敵を即時撃破')};document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
