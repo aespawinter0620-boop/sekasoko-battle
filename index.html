@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.505</title>
+<title>セカソコ ver.506</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.505";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.506";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1632,7 +1632,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
    ver.502 Phase3 — ally-only BURST GAUGE FOUNDATION: normal attack ACTION +10, max100, floor carry, snapshot restore.
    ver.503 Phase4 — shared ally/enemy BURST, BREAK -50 BURST, HUD block foot anchor, new single 🪞 stack, Mikoto unique BURST.
    ver.504 Phase5 — BURST CHAIN, Nagi unique BURST, shared new-🪞 evade effect, AUTO burst modes.
-   ver.505 — card-foundation-only branch: shared team deck / hand / discard / exhausted / retain / DEBUG overflow selection. Existing battle flow remains ver.504.
+   ver.506 — DEBUG-only team phase / shared-cost foundation on top of ver.505 card foundation. Existing battle flow remains ver.504.
    ========================================================= */
 #battleScreen .battleLog{padding-right:78px!important}
 #battleScreen .battleLog::after{content:attr(data-chain);position:absolute;right:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:1000;letter-spacing:.02em;color:#ffd76a;text-shadow:0 1px 4px #000;pointer-events:none}
@@ -2098,6 +2098,23 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #battleScreen .cardDebugCardActions{display:flex;gap:3px}
 #battleScreen .cardDebugCardActions button{border:1px solid #ffffff20;border-radius:6px;background:#252c3c;color:#fff;padding:4px;font-size:6px;font-weight:900}
 </style>
+<style id="ver506-phase-foundation-debug-ui">
+/* ver.506: DEBUG-only team phase / shared-cost foundation. Existing battle loop is not connected. */
+#battleScreen .phaseDebug{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.16)}
+#battleScreen .phaseDebug h3{margin:0 0 7px;font-size:13px}
+#battleScreen .phaseDebugLead{font-size:9px;line-height:1.55;color:#aeb7ca;margin-bottom:8px}
+#battleScreen .phaseDebugControls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:8px}
+#battleScreen .phaseDebugControls button{border:1px solid #ffffff25;background:#202536;border-radius:9px;padding:8px 5px;color:#fff;font-size:9px;font-weight:900}
+#battleScreen .phaseDebugControls button:disabled{opacity:.35}
+#battleScreen .phaseDebugControls .danger{border-color:#8f4545;background:#361b22;color:#ffd9d9}
+#battleScreen .phaseAliveGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:7px 0 8px}
+#battleScreen .phaseAliveGrid button{border:1px solid #ffffff20;background:#171c28;color:#fff;border-radius:7px;padding:6px 2px;font-size:8px;font-weight:900}
+#battleScreen .phaseAliveGrid button.on{background:#eef4ff;color:#121722}
+#battleScreen .phaseDebugStatus{padding:8px;border:1px solid #ffffff1b;border-radius:9px;background:#0c1018;font-size:9px;line-height:1.5;color:#dfe6f4;margin-bottom:8px}
+#battleScreen .phaseDebugStatus.warn{border-color:#e4b85a88;background:#2a2111;color:#ffe3a0}
+#battleScreen .phaseLog{max-height:150px;overflow:auto;padding:7px;border:1px solid #ffffff14;border-radius:9px;background:#090c12;font-size:8px;line-height:1.5;color:#aeb7ca}
+#battleScreen .phaseLog b{color:#e8eefb}
+</style>
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -2119,7 +2136,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <div class="attackFlash" id="flash"></div>
 <div class="bossWarning" id="bossWarning" aria-hidden="true"><div class="bossWarningInner"><b class="bossWarningMain">WARNING!!</b><span class="bossWarningSub">BOSS ENCOUNTER</span><span class="bossWarningFloor" id="bossWarningFloor">10F</span></div></div>
 <button class="debugBtn" id="debugOpen">🛠 DEBUG</button>
-<div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button><button class="debugAction danger" id="dbgResetSave">⚠️ セーブデータ初期化</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。<br>「セーブデータ初期化」はWD・ステ強化・踏破数・固有ツリー・自由スキルツリー・スキル装備・編成など、本ゲームの保存データを初期状態へ戻します。</div><section class="cardDebug" id="cardDebug"><h3>🃏 VER.505 カード基盤</h3><div class="cardDebugLead">実戦未接続。選択中の出撃部隊最大6人から、攻撃2＋防御2＋DEBUG仮SP①1を生成して独立検証します。</div><div class="cardDebugControls"><button id="dbgCardBuild" type="button">デッキ再生成</button><button id="dbgCardStartTurn" type="button">ターン開始｜5枚ドロー</button><button id="dbgCardFill20" type="button">手札を20枚へ</button><button id="dbgCardEndTurn" type="button">ターン終了</button><button id="dbgCardRecycle" type="button">山札枯渇→再利用テスト</button><button id="dbgCardClear" type="button">カード状態クリア</button></div><div class="cardDebugStatus" id="cardDebugStatus">未生成</div><div class="cardZoneGrid"><div class="cardZone"><b id="cardDrawTitle">山札 0</b><div class="cardZoneList" id="cardDrawList"></div></div><div class="cardZone"><b id="cardDiscardTitle">捨て札 0</b><div class="cardZoneList" id="cardDiscardList"></div></div><div class="cardZone"><b id="cardExhaustTitle">消滅済み 0</b><div class="cardZoneList" id="cardExhaustList"></div></div><div class="cardZone"><b id="cardFusionTitle">合成素材情報 0</b><div class="cardZoneList" id="cardFusionList"></div></div><div class="cardZone handZone"><b id="cardHandTitle">手札 0 / 20</b><div class="cardZoneList" id="cardHandList"></div></div></div></section></div></div>
+<div class="debugPanel" id="debugPanel"><div class="debugCard"><div class="debugHead"><b>DEBUG MODE</b><button class="debugClose" id="debugClose">閉じる</button></div><div class="debugGrid"><button class="debugAction" id="dbgEnemy1">敵HPを1</button><button class="debugAction" id="dbgHealA">味方全回復</button><button class="debugAction" id="dbgHealE">敵全回復</button><button class="debugAction" id="dbgAtkA">味方ATK +100</button><button class="debugAction" id="dbgAtkE">敵ATK +100</button><button class="debugAction" id="dbgWin">即勝利</button><button class="debugAction" id="dbgInv">味方無敵 OFF</button><button class="debugAction" id="dbgSpeed">速度 ×1</button><button class="debugAction danger" id="dbgResetSave">⚠️ セーブデータ初期化</button></div><div class="debugInfo">開発者用。販売版では通常プレイヤーから隠す想定。<br>「セーブデータ初期化」はWD・ステ強化・踏破数・固有ツリー・自由スキルツリー・スキル装備・編成など、本ゲームの保存データを初期状態へ戻します。</div><section class="cardDebug" id="cardDebug"><h3>🃏 VER.505 カード基盤（継承）</h3><div class="cardDebugLead">実戦未接続。選択中の出撃部隊最大6人から、攻撃2＋防御2＋DEBUG仮SP①1を生成して独立検証します。</div><div class="cardDebugControls"><button id="dbgCardBuild" type="button">デッキ再生成</button><button id="dbgCardStartTurn" type="button">ターン開始｜5枚ドロー</button><button id="dbgCardFill20" type="button">手札を20枚へ</button><button id="dbgCardEndTurn" type="button">ターン終了</button><button id="dbgCardRecycle" type="button">山札枯渇→再利用テスト</button><button id="dbgCardClear" type="button">カード状態クリア</button></div><div class="cardDebugStatus" id="cardDebugStatus">未生成</div><div class="cardZoneGrid"><div class="cardZone"><b id="cardDrawTitle">山札 0</b><div class="cardZoneList" id="cardDrawList"></div></div><div class="cardZone"><b id="cardDiscardTitle">捨て札 0</b><div class="cardZoneList" id="cardDiscardList"></div></div><div class="cardZone"><b id="cardExhaustTitle">消滅済み 0</b><div class="cardZoneList" id="cardExhaustList"></div></div><div class="cardZone"><b id="cardFusionTitle">合成素材情報 0</b><div class="cardZoneList" id="cardFusionList"></div></div><div class="cardZone handZone"><b id="cardHandTitle">手札 0 / 20</b><div class="cardZoneList" id="cardHandList"></div></div></div></section><section class="phaseDebug" id="phaseDebug"><h3>⏱ VER.506 共通フェーズ／共通コスト</h3><div class="phaseDebugLead">実戦未接続。味方先攻の共通フェーズ、5枚ドロー、チーム共通コスト、敵行動枠をDEBUGだけで独立検証します。</div><div class="phaseDebugControls"><button id="dbgPhaseStart" type="button">新フェーズテスト開始</button><button id="dbgPhaseSpend" type="button">共通コスト1仮消費</button><button id="dbgPhaseEndAlly" type="button">味方フェーズ終了</button><button id="dbgPhaseEnemy" type="button">敵フェーズ模擬進行</button><button class="danger" id="dbgPhaseStop" type="button">停止／初期化</button></div><div class="phaseDebugLead">生存味方人数（DEBUG模擬・実HP非変更）</div><div class="phaseAliveGrid" id="phaseAliveGrid"><button data-phase-alive="0" type="button">0</button><button data-phase-alive="1" type="button">1</button><button data-phase-alive="2" type="button">2</button><button data-phase-alive="3" type="button">3</button><button data-phase-alive="4" type="button">4</button><button data-phase-alive="5" type="button">5</button><button data-phase-alive="6" type="button">6</button></div><div class="phaseDebugStatus" id="phaseDebugStatus">停止中</div><div class="phaseLog" id="phaseDebugLog">ログなし</div></section></div></div>
 <div class="skillHoldTip" id="skillHoldTip" aria-hidden="true"></div><div class="skillPanel" id="skillPanel"><div class="skillTitle"><span class="skillActor" id="skillActor">名切 命｜行動を選択</span><button class="swapBtn" id="swapBtn" type="button" disabled>↕ 交代</button></div><div class="skillGrid"><button class="skillBtn" id="uniqueSkill" data-skill-detail="《通常攻撃》｜現在のTARGET LOCK対象へATK100%×CHAIN倍率。CT0。"><b id="uniqueSkillKind">通常</b><span id="uniqueSkillName">通常攻撃</span><small id="uniqueSkillDesc">ATK100%＋CHAIN</small></button><button class="skillBtn placeholderSkill" id="freeSkill1" aria-disabled="true" data-skill-detail="《必殺技》｜BURST100で固有必殺。命《絶対領域解放》／凪《一世掃射》。"><b>必殺</b><span id="freeSkill1Name">必殺技</span><small id="freeSkill1Desc">BURST100で固有必殺</small></button><button class="skillBtn placeholderSkill" id="freeSkill2" aria-disabled="true" data-skill-detail="《スキップ》｜Phase1では未実装。"><b>SKIP</b><span id="freeSkill2Name">スキップ</span><small id="freeSkill2Desc">Phase1未実装</small></button><button class="skillBtn placeholderSkill" id="freeSkill3" aria-disabled="true" data-skill-detail="《アイテム》｜Phase1では未実装。"><b>ITEM</b><span id="freeSkill3Name">アイテム</span><small id="freeSkill3Desc">Phase1未実装</small></button></div></div><section class="panel"><div class="order" id="order" hidden></div><div class="damageMeterHidden" aria-hidden="true"><strong id="damageRate">損壊 0%</strong><span id="damageReward">報酬 ×1.50</span></div></section>
 <div class="overlay" id="overlay"><div class="result"><h1 id="resultText">WIN</h1><div id="resultDetail"></div><div class="resultActions"><button class="primary" id="continueFloor">この階層からコンティニュー</button><button id="again">拠点へ戻る</button></div></div></div>
 </section>
@@ -2309,9 +2326,9 @@ function cardContinuePendingDraw(){
  while(cardFoundation.pendingDraw>0){
   const card=cardDrawOne();if(!card){cardFoundation.pendingDraw=0;cardFoundation.message='山札・捨て札ともに空｜ドロー終了';break}
   cardFoundation.hand.push(card);cardFoundation.pendingDraw--;
-  if(cardFoundation.hand.length>CARD_HAND_LIMIT){cardFoundation.overflowPending=true;cardFoundation.message=`手札${cardFoundation.hand.length}枚｜1枚選択して破棄後、残り${cardFoundation.pendingDraw}枚のドローを再開`;cardDebugRender();return false}
+  if(cardFoundation.hand.length>CARD_HAND_LIMIT){cardFoundation.overflowPending=true;cardFoundation.message=`手札${cardFoundation.hand.length}枚｜1枚選択して破棄後、残り${cardFoundation.pendingDraw}枚のドローを再開`;phaseFoundationOnCardProgress();cardDebugRender();return false}
  }
- cardDebugRender();return true;
+ phaseFoundationOnCardProgress();cardDebugRender();return true;
 }
 function cardDrawCards(amount){
  const n=Math.max(0,Math.floor(Number(amount)||0));if(!n)return true;
@@ -2361,7 +2378,79 @@ function cardDebugRender(){
  for(const [tid,lid,label,cards,zone] of map){const t=document.querySelector('#'+tid),l=document.querySelector('#'+lid);if(t)t.textContent=`${label} ${cards.length}`;if(l)l.innerHTML=cardDebugMiniList(cards,zone)}
  const ht=document.querySelector('#cardHandTitle'),hl=document.querySelector('#cardHandList');if(ht)ht.textContent=`手札 ${cardFoundation.hand.length} / ${CARD_HAND_LIMIT}${cardFoundation.overflowPending?'｜選択破棄待ち':''}`;if(hl)hl.innerHTML=cardDebugMiniList(cardFoundation.hand,'hand',24);
  const ft=document.querySelector('#cardFusionTitle'),fl=document.querySelector('#cardFusionList'),ledger=Object.entries(cardFoundation.fusionSourceLedger);if(ft)ft.textContent=`合成素材情報 ${ledger.length}`;if(fl)fl.innerHTML=ledger.slice(0,12).map(([id,src])=>`<div class="cardDebugCard"><span>${cardDebugEsc(id)}<small>source: ${src.map(cardDebugEsc).join(', ')}</small></span></div>`).join('')+(ledger.length>12?`<div class="cardDebugLead">…ほか${ledger.length-12}件</div>`:'');
- const controls=['dbgCardStartTurn','dbgCardFill20','dbgCardEndTurn','dbgCardRecycle'];for(const id of controls){const b=document.querySelector('#'+id);if(b)b.disabled=cardFoundation.overflowPending}
+ const controls=['dbgCardStartTurn','dbgCardFill20','dbgCardEndTurn','dbgCardRecycle'];for(const id of controls){const b=document.querySelector('#'+id);if(b)b.disabled=cardFoundation.overflowPending||phaseFoundation.active}
+ for(const id of ['dbgCardBuild','dbgCardClear']){const b=document.querySelector('#'+id);if(b)b.disabled=phaseFoundation.active}
+ phaseDebugRender();
+}
+
+
+// =========================================================
+// ver.506 TEAM PHASE / SHARED COST FOUNDATION — DEBUG only.
+// This state is deliberately isolated from the existing SPD/ACTION battle loop.
+// =========================================================
+const PHASE_SIDE_ALLY='ally',PHASE_SIDE_ENEMY='enemy';
+function freshPhaseFoundation(){return{active:false,phase:'stopped',allyPhaseCount:0,simulatedAliveAllies:0,simulatedEnemyRoster:[],costMax:0,costRemaining:0,allyDrawIssued:false,allyReady:false,enemySlots:[],enemyLog:[],log:[],message:'停止中'}}
+let phaseFoundation=freshPhaseFoundation();
+function phaseCostForAlive(n){const x=Math.max(0,Math.min(6,Math.floor(Number(n)||0)));if(x===0)return 0;if(x<=2)return 3;if(x<=4)return 4;return 5}
+function phaseLogPush(msg){phaseFoundation.log.push(String(msg));if(phaseFoundation.log.length>80)phaseFoundation.log.splice(0,phaseFoundation.log.length-80)}
+function phaseActualAliveAllyCount(){if(Array.isArray(A)&&A.length)return Math.max(0,Math.min(6,A.filter(u=>u&&u.hp>0).length));return Math.max(0,Math.min(6,cardFoundation.partyRosterIds.length||partyCount(parties[selectedParty]||[])))}
+function phaseCurrentEnemySlots(){return (phaseFoundation.simulatedEnemyRoster||[]).map((u,i)=>({key:u.key||String(i),name:u.name||('敵'+(i+1)),processed:false}))}
+function phaseFoundationOnCardProgress(){
+ if(!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ALLY||!phaseFoundation.allyDrawIssued)return;
+ if(cardFoundation.overflowPending||cardFoundation.pendingDraw>0){phaseFoundation.allyReady=false;phaseFoundation.message='選択破棄待ち｜完了までフェーズ進行停止'}
+ else if(!phaseFoundation.allyReady){phaseFoundation.allyReady=true;phaseFoundation.message=`味方フェーズ${phaseFoundation.allyPhaseCount}｜操作可能`;phaseLogPush(`味方フェーズ${phaseFoundation.allyPhaseCount}｜5枚ドロー完了｜共通コスト ${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`)}
+}
+function phaseBeginAlly(){
+ if(!phaseFoundation.active)return false;
+ const alive=Math.max(0,Math.min(6,Math.floor(Number(phaseFoundation.simulatedAliveAllies)||0)));
+ if(alive<=0){phaseLogPush('生存味方0｜フェーズテスト停止');phaseFoundation=freshPhaseFoundation();phaseFoundation.message='生存味方0｜停止';phaseDebugRender();return false}
+ if(phaseFoundation.phase===PHASE_SIDE_ALLY&&phaseFoundation.allyDrawIssued)return false;
+ phaseFoundation.phase=PHASE_SIDE_ALLY;phaseFoundation.allyPhaseCount++;phaseFoundation.costMax=phaseCostForAlive(alive);phaseFoundation.costRemaining=phaseFoundation.costMax;phaseFoundation.allyDrawIssued=true;phaseFoundation.allyReady=false;phaseFoundation.enemySlots=[];phaseFoundation.message=`味方フェーズ${phaseFoundation.allyPhaseCount}開始｜5枚ドロー中`;
+ phaseLogPush(`味方フェーズ${phaseFoundation.allyPhaseCount}開始｜生存${alive}人｜共通コスト ${phaseFoundation.costMax}`);
+ cardFoundation.message=`VER.506 味方フェーズ${phaseFoundation.allyPhaseCount}｜5枚ドロー`;cardDrawCards(CARD_DRAW_PER_TURN);phaseFoundationOnCardProgress();cardDebugRender();phaseDebugRender();return true;
+}
+function phaseDebugStart(){
+ cardFoundationCreateForPartyIndex(selectedParty);
+ const alive=phaseActualAliveAllyCount(),enemyRoster=(Array.isArray(E)?E:[]).filter(u=>u&&u.hp>0).map((u,i)=>({key:String(u.id??u.cid??u.name??i)+'@'+String(u.formationSlot??i),name:u.name||('敵'+(i+1))}));phaseFoundation=freshPhaseFoundation();phaseFoundation.active=true;phaseFoundation.simulatedAliveAllies=alive;phaseFoundation.simulatedEnemyRoster=enemyRoster;phaseFoundation.phase='starting';phaseFoundation.message='新フェーズテスト開始';phaseLogPush(`DEBUGテスト開始｜部隊${selectedParty+1}｜生存味方${alive}人｜敵模擬${enemyRoster.length}体`);
+ if(alive<=0){phaseFoundation.active=false;phaseFoundation.phase='stopped';phaseFoundation.message='生存味方0｜開始不可';phaseDebugRender();return false}
+ return phaseBeginAlly();
+}
+function phaseDebugSpendCost(){
+ if(!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ALLY||!phaseFoundation.allyReady||cardFoundation.overflowPending){phaseFoundation.message='共通コストを消費できる味方フェーズではありません';phaseDebugRender();return false}
+ if(phaseFoundation.costRemaining<=0){phaseFoundation.message='共通コスト残量0';phaseDebugRender();return false}
+ phaseFoundation.costRemaining--;phaseFoundation.message=`共通コスト1消費｜${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`;phaseLogPush(phaseFoundation.message);phaseDebugRender();return true;
+}
+function phaseBeginEnemy(){
+ phaseFoundation.phase=PHASE_SIDE_ENEMY;phaseFoundation.allyReady=false;phaseFoundation.allyDrawIssued=false;phaseFoundation.costRemaining=0;phaseFoundation.enemySlots=phaseCurrentEnemySlots();phaseFoundation.message=`敵フェーズ｜行動枠 ${phaseFoundation.enemySlots.length}`;phaseLogPush(`敵フェーズ開始｜生存敵${phaseFoundation.enemySlots.length}体`);phaseDebugRender();return true;
+}
+function phaseDebugEndAlly(){
+ if(!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ALLY){phaseFoundation.message='現在は味方フェーズではありません';phaseDebugRender();return false}
+ if(cardFoundation.overflowPending||cardFoundation.pendingDraw>0){phaseFoundation.message='21枚超過の選択破棄完了まで味方フェーズ終了不可';phaseDebugRender();return false}
+ if(!phaseFoundation.allyReady){phaseFoundation.message='味方フェーズ開始処理が完了していません';phaseDebugRender();return false}
+ if(!cardEndTurn()){phaseFoundation.message='カードターン終了処理を完了できません';phaseDebugRender();return false}
+ phaseLogPush(`味方フェーズ${phaseFoundation.allyPhaseCount}終了｜未使用コスト${phaseFoundation.costRemaining}破棄`);phaseFoundation.costRemaining=0;return phaseBeginEnemy();
+}
+function phaseDebugAdvanceEnemy(){
+ if(!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ENEMY){phaseFoundation.message='現在は敵フェーズではありません';phaseDebugRender();return false}
+ const pending=phaseFoundation.enemySlots.filter(x=>!x.processed);
+ if(!pending.length){phaseLogPush('敵行動枠なし／処理済み｜次の味方フェーズへ');phaseFoundation.phase='between';phaseDebugRender();return phaseBeginAlly()}
+ for(const slot of pending){slot.processed=true;const line=`${slot.name}：行動枠を1回処理`;phaseFoundation.enemyLog.push(line);phaseLogPush(line)}
+ phaseFoundation.message=`敵フェーズ完了｜${pending.length}枠処理`;phaseLogPush('敵フェーズ終了｜次の味方フェーズへ');phaseFoundation.phase='between';phaseDebugRender();return phaseBeginAlly();
+}
+function phaseDebugSetAlive(n){
+ const x=Math.max(0,Math.min(6,Math.floor(Number(n)||0)));const actualBefore=Array.isArray(A)?A.map(u=>u?.hp):[];phaseFoundation.simulatedAliveAllies=x;
+ if(x===0&&phaseFoundation.active){phaseLogPush('DEBUG生存味方0へ変更｜実HPは変更せずテスト停止');const logs=[...phaseFoundation.log];phaseFoundation=freshPhaseFoundation();phaseFoundation.log=logs;phaseFoundation.simulatedAliveAllies=0;phaseFoundation.message='生存味方0｜停止'}else{phaseFoundation.message=`DEBUG生存味方${x}人へ変更｜次の味方フェーズ開始時にコスト反映`;phaseLogPush(phaseFoundation.message)}
+ const actualAfter=Array.isArray(A)?A.map(u=>u?.hp):[];if(JSON.stringify(actualBefore)!==JSON.stringify(actualAfter))phaseLogPush('警告：実HP変更を検出');phaseDebugRender();return x;
+}
+function phaseDebugStop(){const keptAlive=phaseFoundation.simulatedAliveAllies;phaseFoundation=freshPhaseFoundation();phaseFoundation.simulatedAliveAllies=keptAlive;phaseFoundation.message='停止／初期化済み（カード領域は保持）';phaseDebugRender();cardDebugRender();return true}
+function phaseDebugRender(){
+ const root=document.querySelector('#phaseDebug');if(!root)return;
+ const status=document.querySelector('#phaseDebugStatus'),log=document.querySelector('#phaseDebugLog');const phaseLabel=phaseFoundation.phase===PHASE_SIDE_ALLY?'味方':phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵':'停止';
+ const enemyDone=phaseFoundation.enemySlots.filter(x=>x.processed).length,enemyTotal=phaseFoundation.enemySlots.length;
+ if(status){const blocked=cardFoundation.overflowPending||cardFoundation.pendingDraw>0;status.classList.toggle('warn',blocked);status.innerHTML=`状態：${phaseFoundation.active?'進行中':'停止'}｜現在：${phaseLabel}フェーズ｜味方フェーズ回数 ${phaseFoundation.allyPhaseCount}<br>生存味方 ${phaseFoundation.simulatedAliveAllies}人｜共通コスト ${phaseFoundation.costRemaining}/${phaseFoundation.costMax}<br>山札 ${cardFoundation.drawPile.length}｜手札 ${cardFoundation.hand.length}｜捨て札 ${cardFoundation.discardPile.length}｜敵行動枠 ${enemyDone}/${enemyTotal}<br>${cardDebugEsc(phaseFoundation.message)}`}
+ if(log)log.innerHTML=phaseFoundation.log.length?phaseFoundation.log.slice(-18).map(x=>`<div>${cardDebugEsc(x)}</div>`).join(''):'ログなし';
+ document.querySelectorAll('[data-phase-alive]').forEach(b=>b.classList.toggle('on',Number(b.dataset.phaseAlive)===phaseFoundation.simulatedAliveAllies));
+ const btn=(id,disabled)=>{const b=document.querySelector('#'+id);if(b)b.disabled=!!disabled};btn('dbgPhaseStart',phaseFoundation.active);btn('dbgPhaseSpend',!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ALLY||!phaseFoundation.allyReady||cardFoundation.overflowPending||phaseFoundation.costRemaining<=0);btn('dbgPhaseEndAlly',!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ALLY||!phaseFoundation.allyReady||cardFoundation.overflowPending);btn('dbgPhaseEnemy',!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ENEMY);btn('dbgPhaseStop',!phaseFoundation.active&&phaseFoundation.phase==='stopped');
 }
 
 const isBackSlot=slot=>slot>=3;const frontPairSlot=slot=>isBackSlot(slot)?slot-3:slot;const backPairSlot=slot=>slot<3?slot+3:slot;
@@ -4632,6 +4721,7 @@ const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpe
 function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;renderBattle()}
 document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');dbgStatus('敵を即時撃破')};document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
 document.querySelector('#dbgCardBuild').onclick=()=>cardFoundationCreateForPartyIndex(selectedParty);document.querySelector('#dbgCardStartTurn').onclick=()=>cardStartTurn();document.querySelector('#dbgCardFill20').onclick=()=>cardDebugFillHand20();document.querySelector('#dbgCardEndTurn').onclick=()=>cardEndTurn();document.querySelector('#dbgCardRecycle').onclick=()=>cardDebugRecycleTest();document.querySelector('#dbgCardClear').onclick=()=>cardDebugClear();
+document.querySelector('#dbgPhaseStart').onclick=()=>phaseDebugStart();document.querySelector('#dbgPhaseSpend').onclick=()=>phaseDebugSpendCost();document.querySelector('#dbgPhaseEndAlly').onclick=()=>phaseDebugEndAlly();document.querySelector('#dbgPhaseEnemy').onclick=()=>phaseDebugAdvanceEnemy();document.querySelector('#dbgPhaseStop').onclick=()=>phaseDebugStop();document.querySelectorAll('[data-phase-alive]').forEach(b=>b.onclick=()=>phaseDebugSetAlive(b.dataset.phaseAlive));
 function resetSekasokoSave(){
  const keys=[];
  for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key&&key.startsWith('sekasoko'))keys.push(key)}
