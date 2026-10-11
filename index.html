@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.511</title>
+<title>セカソコ ver.513</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.511";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.513";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2196,9 +2196,9 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 <section class="screen" id="formationScreen"><div class="formationTop"><button class="miniBtn" id="formationBack">← 拠点</button><h2>部隊編成<small>最大12部隊 ／ 1部隊最大6マス</small></h2><button class="miniBtn" id="clearParty">この部隊を空に</button><button class="miniBtn" id="clearAllParties">全12部隊を空に</button></div><div class="formationBody"><div class="partyTabs" id="partyTabs"></div><div class="partyArea"><div class="partyMeta"><b id="partyName">部隊1</b><span id="partyCount">0 / 6マス</span></div><div class="partyGrid" id="partyGrid"></div></div><div class="partyNote">1〜3＝前衛 ／ 4〜6＝後衛。同じ番号で前後1列。後衛4〜6は、対応する前衛1〜3がいる時だけ配置可能。空きマスをタップして配置先を選択 → キャラをタップ。</div><div class="roster" id="formationRoster"></div></div><div class="formationBottom"><button id="formationHome">キャンセル</button><button class="saveFormation" id="saveFormation">編成を保存</button></div></section>
 
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.511 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.513 新カード戦闘試験モード">
   <div class="ctTop">
-    <div class="ctTopLine"><strong>🃏 新カード戦闘</strong><span class="ctTrialBadge">VER.511 試験UI</span><button class="ctExit" id="cardTestExit" type="button">終了</button></div>
+    <div class="ctTopLine"><strong>🃏 新カード戦闘</strong><span class="ctTrialBadge">VER.513 試験UI</span><button class="ctExit" id="cardTestExit" type="button">終了</button></div>
     <div class="ctStats"><div class="ctStat">フェーズ<b id="ctPhase">停止</b></div><div class="ctStat">COST<b id="ctCost">0 / 0</b></div><div class="ctStat">CHAIN<b id="ctChain">×1.0</b></div><div class="ctStat">山/手/捨<b id="ctZones">0/0/0</b></div></div>
   </div>
   <div class="ctBoard" id="ctBoard">
@@ -2711,7 +2711,7 @@ function cardBattleTestCardTap(id){
  if(!attackExerciseCanOperate())return false;const card=cardFoundation.hand.find(c=>c.instanceId===id);if(!card)return false;
  if(attackCardTier(card)){attackExercise.defenseSelected=[];const ok=attackExerciseSelect(id);cardBattleTestMode.message='攻撃カード選択';cardBattleTestRender();return ok}
  if(defenseCardTier(card)){attackExercise.selected=[];const ok=defenseExerciseSelect(id);cardBattleTestMode.message='防御カード選択';cardBattleTestRender();return ok}
- attackExercise.message='SPカード実発動はVER.511対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
+ attackExercise.message='SPカード実発動はVER.513対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
 }
 function cardBattleTestFuse(){
  if(!cardBattleTestCanInput())return false;let result=false;
@@ -5049,7 +5049,7 @@ document.querySelector('#dbgResetSave').onclick=()=>{
  if(!confirm('セカソコのセーブデータをすべて初期化します。\n\nWD・ステータス強化・踏破数・固有スキルツリー・自由スキルツリー・スキル装備・編成などが初期状態に戻ります。\nこの操作は元に戻せません。\n\n本当に初期化しますか？'))return;
  resetSekasokoSave();
 };
-renderHome();initBattle();
+renderHome();
 
 /* v0.17.1 戦闘中ピンチズーム：背景・味方・敵を同一レイヤーで変形 */
 (function(){
