@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.510</title>
+<title>セカソコ ver.511</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.510";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.511";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2196,9 +2196,9 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 <section class="screen" id="formationScreen"><div class="formationTop"><button class="miniBtn" id="formationBack">← 拠点</button><h2>部隊編成<small>最大12部隊 ／ 1部隊最大6マス</small></h2><button class="miniBtn" id="clearParty">この部隊を空に</button><button class="miniBtn" id="clearAllParties">全12部隊を空に</button></div><div class="formationBody"><div class="partyTabs" id="partyTabs"></div><div class="partyArea"><div class="partyMeta"><b id="partyName">部隊1</b><span id="partyCount">0 / 6マス</span></div><div class="partyGrid" id="partyGrid"></div></div><div class="partyNote">1〜3＝前衛 ／ 4〜6＝後衛。同じ番号で前後1列。後衛4〜6は、対応する前衛1〜3がいる時だけ配置可能。空きマスをタップして配置先を選択 → キャラをタップ。</div><div class="roster" id="formationRoster"></div></div><div class="formationBottom"><button id="formationHome">キャンセル</button><button class="saveFormation" id="saveFormation">編成を保存</button></div></section>
 
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.510 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.511 新カード戦闘試験モード">
   <div class="ctTop">
-    <div class="ctTopLine"><strong>🃏 新カード戦闘</strong><span class="ctTrialBadge">VER.510 試験UI</span><button class="ctExit" id="cardTestExit" type="button">終了</button></div>
+    <div class="ctTopLine"><strong>🃏 新カード戦闘</strong><span class="ctTrialBadge">VER.511 試験UI</span><button class="ctExit" id="cardTestExit" type="button">終了</button></div>
     <div class="ctStats"><div class="ctStat">フェーズ<b id="ctPhase">停止</b></div><div class="ctStat">COST<b id="ctCost">0 / 0</b></div><div class="ctStat">CHAIN<b id="ctChain">×1.0</b></div><div class="ctStat">山/手/捨<b id="ctZones">0/0/0</b></div></div>
   </div>
   <div class="ctBoard" id="ctBoard">
@@ -2318,7 +2318,7 @@ function closeModal(){document.querySelector('#skillPanel')?.classList.remove('d
 document.querySelector('#book').onclick=()=>openSkillBookInventory();document.querySelector('#shop').onclick=()=>openInfo('ショップ','Waldonium（WD）でアイテムを購入する場所。ショップ本体は次段階で実装。','🎁');document.querySelector('#descend').onclick=()=>{cardFoundationStartRun();prepareSortie();showScreen('battleScreen');setTimeout(()=>battle(),80)};document.querySelector('#formation').onclick=()=>{renderFormation();showScreen('formationScreen')};document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
 
 const formationRosterData=[
-{id:'mizuki',name:'名切 命',icon:'🌙',faceIcon:'assets/icons/mikoto.png',sprite:'assets/characters/mikoto_standing_ver509.png',actionSprite:'assets/characters/mikoto_action_ver509.webp',attr:'透波',hp:110,atk:100,def:100,row:'front',cid:101,spd:100,mirror:0,skill:{name:'固有技《絶対領域展開》',ct:90},cost:1},
+{id:'mizuki',name:'名切 命',icon:'🌙',faceIcon:'assets/icons/mikoto.png',sprite:'assets/characters/mikoto_standing_ver509.png',actionSprite:'assets/characters/mikoto_standing_ver509.png',attr:'透波',hp:110,atk:100,def:100,row:'front',cid:101,spd:100,mirror:0,skill:{name:'固有技《絶対領域展開》',ct:90},cost:1},
 {id:'nagi',name:'月城 凪',icon:'🌪️',sprite:'assets/characters/nagi.PNG',actionSprite:'assets/characters/nagi.PNG',faceIcon:'assets/icons/nagi.png',attr:'透波・天',hp:104,atk:100,def:100,row:'back',cid:102,spd:100,mirror:0,sword:0,shield:0,skill:{name:'固有《補給命令》',ct:120},cost:1},
 {id:'yuzu',name:'緋村 柚',icon:'🥷',sprite:'assets/characters/yuzu.PNG',actionSprite:'assets/characters/yuzu.PNG',faceIcon:'assets/icons/yuzu.png',attr:'透波・地',hp:92,atk:100,def:100,row:'front',cid:103,spd:100,mirror:0,sword:0,shield:0,skill:{name:'固有《雲隠霧消》',ct:110},cost:1},
 {id:'hathor',name:'聖なる乳牛ハトホル',icon:'🥛',sprite:'assets/characters/hathor.PNG',actionSprite:'assets/characters/hathor.PNG',faceIcon:'assets/icons/hathor.png',attr:'乳牛・天',hp:145,atk:100,def:100,row:'front',cid:201,spd:100,milk:0,skill:{name:'固有《聖なる雫》',ct:50},cost:1},
@@ -2711,7 +2711,7 @@ function cardBattleTestCardTap(id){
  if(!attackExerciseCanOperate())return false;const card=cardFoundation.hand.find(c=>c.instanceId===id);if(!card)return false;
  if(attackCardTier(card)){attackExercise.defenseSelected=[];const ok=attackExerciseSelect(id);cardBattleTestMode.message='攻撃カード選択';cardBattleTestRender();return ok}
  if(defenseCardTier(card)){attackExercise.selected=[];const ok=defenseExerciseSelect(id);cardBattleTestMode.message='防御カード選択';cardBattleTestRender();return ok}
- attackExercise.message='SPカード実発動はVER.510対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
+ attackExercise.message='SPカード実発動はVER.511対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
 }
 function cardBattleTestFuse(){
  if(!cardBattleTestCanInput())return false;let result=false;
@@ -2787,7 +2787,7 @@ function toggleChar(id){let old=usedPartyOf(id);if(old===selectedParty){let slot
 function validateFormationForSave(){const invalidFront=parties.findIndex(p=>p.some(Boolean)&&!partyHasFront(p));if(invalidFront>=0){openInfo('前衛が必要です','部隊'+(invalidFront+1)+'は後衛のみです。出撃する部隊には前衛を1人以上配置してください。','⚠️');selectedParty=invalidFront;selectedFormationSlot=null;renderFormation();return false}const invalidColumn=parties.findIndex(p=>partyHasBrokenColumns(p));if(invalidColumn>=0){openInfo('編成エラー','部隊'+(invalidColumn+1)+'に、前衛のいない列の後衛がいます。後衛は同じ列の前衛がいる場合のみ配置できます。','⚠️');selectedParty=invalidColumn;selectedFormationSlot=null;renderFormation();return false}return true}
 document.querySelector('#formationBack').onclick=()=>showScreen('home');document.querySelector('#formationHome').onclick=()=>showScreen('home');document.querySelector('#saveFormation').onclick=()=>{if(!validateFormationForSave())return;saveParties();showScreen('home')};document.querySelector('#clearParty').onclick=()=>{parties[selectedParty]=emptyParty();selectedFormationSlot=null;renderFormation()};document.querySelector('#clearAllParties').onclick=()=>{if(confirm('すべての編成を解除しますか？')){parties=Array.from({length:12},emptyParty);saveParties();renderFormation()}};
 const allies=[
-{name:'名切 命',icon:'🌙',sprite:'assets/characters/mikoto_legacy_battle_ver509.webp',actionSprite:'assets/characters/mikoto_action_ver509.webp',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《絶対領域展開》',ct:75}},
+{name:'名切 命',icon:'🌙',sprite:'assets/characters/mikoto_standing_ver509.png',actionSprite:'assets/characters/mikoto_standing_ver509.png',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《絶対領域展開》',ct:75}},
 {name:'聖なる乳牛ハトホル',icon:'🥛',sprite:'assets/characters/hathor.PNG',hp:145,atk:18,row:'front',cid:201,spd:55,milk:0,skill:{name:'固有《聖なる雫》',ct:0}},
 {name:'白盾姫',icon:'♜',hp:132,atk:16,row:'front',cid:301,spd:90,skill:{name:'盾撃（仮）',ct:3}},
 {name:'人形王女',icon:'✦',hp:78,atk:20,row:'back',cid:302,spd:70,skill:{name:'操糸（仮）',ct:2}},
