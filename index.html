@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.514.1</title>
+<title>セカソコ ver.515</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.514.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.515";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2197,6 +2197,38 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 @media(max-width:360px){.ctEnemyGrid{gap:3px;inset:19% 1% 13% 1%}.ctEnemyCell .ctEnemyIcon{font-size:19px}.ctEnemyCell .ctEnemyName{font-size:7px}}
 
 </style>
+
+<style id="ver515-card-drag-ui">
+/* VER.515: independent card-battle trial gesture layer. Existing trial buttons remain. */
+#cardBattleTestScreen .ctHandWrap{flex-basis:191px;padding-top:3px;position:relative;overflow:hidden}
+#cardBattleTestScreen .ctHandHead{padding-bottom:0;height:17px}
+#cardBattleTestScreen .ctHand{height:151px;display:block;position:relative;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;overscroll-behavior-x:contain;scroll-snap-type:none;padding:0;scrollbar-width:none}
+#cardBattleTestScreen .ctFanRail{height:150px;position:relative;min-width:100%;pointer-events:none}
+#cardBattleTestScreen .ctCard{position:absolute;top:9px;left:0;width:108px;height:128px;flex:none;scroll-snap-align:none;touch-action:none;user-select:none;-webkit-user-select:none;pointer-events:auto;transform-origin:50% 95%;transform:translateY(var(--fan-y,0px)) rotate(var(--fan-angle,0deg));transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;will-change:transform;white-space:normal}
+#cardBattleTestScreen .ctCard.selected{transform:translateY(calc(var(--fan-y,0px) - 8px)) rotate(var(--fan-angle,0deg)) scale(1.045)}
+#cardBattleTestScreen .ctCard.ctTouching{transform:translateY(calc(var(--fan-y,0px) - 15px)) rotate(0deg) scale(1.075);border-color:#ffe9a3;box-shadow:0 0 0 2px #e2c46c99,0 11px 24px #000c}
+#cardBattleTestScreen .ctCard.ctDragSource{opacity:.32;transform:translateY(var(--fan-y,0px)) rotate(var(--fan-angle,0deg))}
+#cardBattleTestScreen .ctCard.ctFuseReady{border-color:#ffe667!important;box-shadow:0 0 0 2px #ffdc55bb,0 0 20px #ffc83fa8!important;transform:translateY(calc(var(--fan-y,0px) - 13px)) rotate(0deg) scale(1.05)}
+#cardBattleTestScreen .ctCard.ctFuseReady::after{content:'合成 OK';position:absolute;left:0;right:0;bottom:-2px;font-size:9px;text-align:center;padding:2px;color:#211702;background:#ffde67;font-weight:1000}
+#cardBattleTestScreen .ctDragGuide{font-size:7px;color:#9dc9df;text-align:center;height:11px;margin-top:0;letter-spacing:.03em}
+#cardBattleTestScreen .ctUnit.ctDropReady{border-color:#9aeaff!important;box-shadow:0 0 0 3px #8ce9ffb5,0 0 20px #67cfff9b!important;filter:brightness(1.3)}
+#cardBattleTestScreen .ctBoard.ctAttackReady{outline:2px solid #ffd26c77;outline-offset:-2px}
+#cardBattleTestScreen .ctDragGhost{position:fixed!important;left:0;top:0;pointer-events:none!important;margin:0!important;z-index:12000!important;transform-origin:center center!important;transform:translate3d(var(--drag-dx,0px),var(--drag-dy,0px),0) rotate(0deg) scale(1.07)!important;transition:none!important;opacity:.98;box-shadow:0 13px 32px #000d,0 0 0 2px #ffe9a38a!important;will-change:transform}
+#cardBattleTestScreen .ctDragGhost.ctFuseReady{box-shadow:0 12px 30px #000d,0 0 19px #ffcf43!important}
+#cardBattleTestScreen .ctDragGhost.ctReturning{transition:transform .15s cubic-bezier(.18,.72,.38,1),opacity .15s ease!important;opacity:0}
+@media(max-width:360px){#cardBattleTestScreen .ctCard{width:99px;height:123px}#cardBattleTestScreen .ctHandWrap{flex-basis:185px}#cardBattleTestScreen .ctHand{height:147px}}
+</style>
+
+<style id="ver515-card-board-tuning">
+/* Allow precise per-character drop targets without changing adopted sprite resources. */
+#cardBattleTestScreen .ctUnit{width:47%;height:26%;min-height:0}
+#cardBattleTestScreen .ctSlot0{left:2%;top:7%}#cardBattleTestScreen .ctSlot1{left:2%;top:35%}#cardBattleTestScreen .ctSlot2{left:2%;top:63%}
+#cardBattleTestScreen .ctSlot3{left:51%;top:7%}#cardBattleTestScreen .ctSlot4{left:51%;top:35%}#cardBattleTestScreen .ctSlot5{left:51%;top:63%}
+#cardBattleTestScreen .ctUnit .ctUnitMeta{font-size:6px;padding:2px 1px;letter-spacing:-.02em}
+#cardBattleTestScreen .ctUnit .ctUnitMeta b{font-size:7px}
+#cardBattleTestScreen .ctEnemyGrid{inset:16% 2% 11% 2%}
+</style>
+
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
@@ -2212,9 +2244,9 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 <section class="screen" id="formationScreen"><div class="formationTop"><button class="miniBtn" id="formationBack">← 拠点</button><h2>部隊編成<small>最大12部隊 ／ 1部隊最大6マス</small></h2><button class="miniBtn" id="clearParty">この部隊を空に</button><button class="miniBtn" id="clearAllParties">全12部隊を空に</button></div><div class="formationBody"><div class="partyTabs" id="partyTabs"></div><div class="partyArea"><div class="partyMeta"><b id="partyName">部隊1</b><span id="partyCount">0 / 6マス</span></div><div class="partyGrid" id="partyGrid"></div></div><div class="partyNote">1〜3＝前衛 ／ 4〜6＝後衛。同じ番号で前後1列。後衛4〜6は、対応する前衛1〜3がいる時だけ配置可能。空きマスをタップして配置先を選択 → キャラをタップ。</div><div class="roster" id="formationRoster"></div></div><div class="formationBottom"><button id="formationHome">キャンセル</button><button class="saveFormation" id="saveFormation">編成を保存</button></div></section>
 
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.514.1 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.515 新カード戦闘試験モード">
   <div class="ctTop">
-    <div class="ctTopLine"><strong>🃏 新カード戦闘</strong><span class="ctTrialBadge">VER.514.1 試験UI</span><button class="ctExit" id="cardTestExit" type="button">終了</button></div>
+    <div class="ctTopLine"><strong>🃏 新カード戦闘</strong><span class="ctTrialBadge">VER.515 試験UI</span><button class="ctExit" id="cardTestExit" type="button">終了</button></div>
     <div class="ctStats"><div class="ctStat">フェーズ<b id="ctPhase">停止</b></div><div class="ctStat">COST<b id="ctCost">0 / 0</b></div><div class="ctStat">CHAIN<b id="ctChain">×1.0</b></div><div class="ctStat">山/手/捨<b id="ctZones">0/0/0</b></div></div>
   </div>
   <div class="ctBoard" id="ctBoard">
@@ -2227,7 +2259,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
     <div class="ctActionRow"><button class="ctAction" id="ctFuse" type="button">合成</button><button class="ctAction attack" id="ctAttack" type="button">攻撃</button><button class="ctAction defense" id="ctDefense" type="button">防御</button><button class="ctAction end" id="ctPhaseAction" type="button">フェーズ終了</button></div>
     <div class="ctAssistRow"><button class="ctAssist" id="ctPrepAttack" type="button">演習補助｜攻撃札</button><button class="ctAssist" id="ctPrepDefense" type="button">演習補助｜防御札</button><button class="ctAssist" id="ctMockHit" type="button">演習被弾 20</button><button class="ctAssist" id="ctMockEnemyBlock" type="button">敵BLOCK +20</button></div>
   </div>
-  <div class="ctHandWrap"><div class="ctHandHead"><b>手札</b><span id="ctSelection">未選択</span><span class="ctOverflow" id="ctOverflow"></span></div><div class="ctHand" id="ctHand"></div></div>
+  <div class="ctHandWrap"><div class="ctHandHead"><b>手札</b><span id="ctSelection">未選択</span><span class="ctOverflow" id="ctOverflow"></span></div><div class="ctHand" id="ctHand"><div class="ctFanRail" id="ctFanRail"></div></div><div class="ctDragGuide">↔ 重ねて合成　↑ 攻撃　⇧ 味方へ運んで防御</div></div>
 </section>
 
 <section class="screen" id="battleScreen">
@@ -2770,11 +2802,11 @@ function attackExerciseRender(){
 // It never calls battle(), renderBattle(), legacy AUTO or legacy enemy AI.
 // =========================================================
 function cardBattleTestBase(rid){return formationRosterData.find(c=>c.id===rid)||null}
-function cardBattleTestCanInput(){return cardBattleTestMode.active&&!cardBattleTestMode.busy&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw}
+function cardBattleTestCanInput(){return cardBattleTestMode.active&&!cardBattleTestMode.busy&&!cardBattleTestMode.dragging&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw}
 function cardBattleTestSetMessage(msg){cardBattleTestMode.message=String(msg||'');const el=document.querySelector('#ctMessage');if(el)el.textContent=cardBattleTestMode.message}
 function cardBattleTestLock(ms=160){cardBattleTestMode.busy=true;cardBattleTestRender();setTimeout(()=>{if(!cardBattleTestMode.active)return;cardBattleTestMode.busy=false;cardBattleTestRender()},ms)}
 function cardBattleTestStart(){
- const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
+ ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
  cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
@@ -2783,18 +2815,18 @@ function cardBattleTestStart(){
  showScreen('cardBattleTestScreen');cardBattleTestRender();return true
 }
 function cardBattleTestExit(){
- if(!cardBattleTestMode.active){showScreen('home');return true}if(cardBattleTestMode.busy)return false
+ ctGestureReset();if(!cardBattleTestMode.active){showScreen('home');return true}if(cardBattleTestMode.busy)return false
  cardBattleTestMode.busy=true;if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
  cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();cardDebugRender();renderHome();showScreen('home');return true
 }
-function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
+function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
 function cardBattleTestCardTap(id){
- if(!cardBattleTestMode.active||cardBattleTestMode.busy)return false;
+ if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;
  if(cardFoundation.overflowPending){const ok=cardResolveOverflowDiscard(id);cardBattleTestMode.message=ok===false&&cardFoundation.overflowPending?'選択破棄を続けてください':'選択破棄処理';cardBattleTestRender();return ok}
  if(!attackExerciseCanOperate())return false;const card=cardFoundation.hand.find(c=>c.instanceId===id);if(!card)return false;
  if(attackCardTier(card)){attackExercise.defenseSelected=[];const ok=attackExerciseSelect(id);cardBattleTestMode.message='攻撃カード選択';cardBattleTestRender();return ok}
  if(defenseCardTier(card)){attackExercise.selected=[];const ok=defenseExerciseSelect(id);cardBattleTestMode.message='防御カード選択';cardBattleTestRender();return ok}
- attackExercise.message='SPカード実発動はVER.514.1対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
+ attackExercise.message='SPカード実発動はVER.515対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
 }
 function cardBattleTestFuse(){
  if(!cardBattleTestCanInput())return false;let result=false;
@@ -2863,7 +2895,7 @@ function cardBattleTestCardHtml(c){
  const atk=attackCardTier(c),def=defenseCardTier(c),fusion=cardIsFusion(c),atkSel=attackExercise.selected.indexOf(c.instanceId),defSel=attackExercise.defenseSelected.indexOf(c.instanceId),order=atkSel>=0?atkSel+1:defSel>=0?defSel+1:0,selected=order>0,overflow=cardFoundation.overflowPending,owners=(atk?attackCardSources(c):def?defenseCardSources(c):[c]).map(x=>x.ownerName).join('→');let type='SP',effect='未実装';
  if(atk){const s=ATTACK_EXERCISE_SPEC[atk];type=s.label;effect=`ATK ${Math.round(s.rate*100)}% × ${atk}Hit`}
  else if(def){const s=DEFENSE_EXERCISE_SPEC[def];type=s.label;effect=`対象DEF × ${Math.round(s.rate*100)}%`}
- const cls=atk?'attackCard':def?'defenseCard':'spCard';return `<button class="ctCard ${cls} ${selected?'selected':''} ${overflow?'overflowChoice':''}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div><div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div><div class="ctCardEffect">${cardDebugEsc(effect)}</div><div class="ctCardTags">${fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
+ const cls=atk?'attackCard':def?'defenseCard':'spCard';return `<button class="ctCard ${cls} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div><div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div><div class="ctCardEffect">${cardDebugEsc(effect)}</div><div class="ctCardTags">${fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
 }
 function cardBattleTestRender(){
  if(!cardBattleTestMode.active)return;const phase=phaseFoundation.phase===PHASE_SIDE_ALLY?'味方':phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵':'停止',blocked=cardFoundation.overflowPending||cardFoundation.pendingDraw>0,alive=attackExerciseAliveCount();
@@ -2875,11 +2907,104 @@ function cardBattleTestRender(){
  const defeat=document.querySelector('#ctEnemyDefeatStatus');if(defeat)defeat.hidden=enemies.some(e=>e.alive&&e.hp>0)||enemies.some(e=>e.hp<=0&&!e.graphicGone);
 
  const army=document.querySelector('#ctAllyArmy');if(army)army.innerHTML=Object.values(attackExercise.actors).sort((a,b)=>(a.formationSlot??0)-(b.formationSlot??0)).map(cardBattleTestActorHtml).join('');
- const hand=document.querySelector('#ctHand');if(hand)hand.innerHTML=cardFoundation.hand.length?cardFoundation.hand.map(cardBattleTestCardHtml).join(''):'<div style="padding:18px 10px;color:#8792a6;font-size:9px">手札なし</div>';
+ const rail=document.querySelector('#ctFanRail');if(rail){rail.innerHTML=cardFoundation.hand.length?cardFoundation.hand.map(cardBattleTestCardHtml).join(''):'<div style="padding:18px 10px;color:#8792a6;font-size:9px">手札なし</div>';cardBattleTestFanLayout();}
  const sel=[];for(const id of attackExercise.selected){const c=cardFoundation.hand.find(x=>x.instanceId===id);if(c)sel.push(`攻撃${sel.length+1}:${c.name}`)}for(const id of attackExercise.defenseSelected){const c=cardFoundation.hand.find(x=>x.instanceId===id);if(c)sel.push(`防御${sel.length+1}:${c.name}`)}set('ctSelection',sel.length?sel.join('｜'):(attackExercise.defenseTargetRosterId?`防御対象：${attackExercise.actors[attackExercise.defenseTargetRosterId]?.ownerName||'-'}`:'未選択'));set('ctOverflow',cardFoundation.overflowPending?'21枚｜1枚タップして破棄':'');
  const msg=document.querySelector('#ctMessage');if(msg){msg.classList.toggle('warn',blocked||!attackExercise.active||alive<=0);msg.textContent=blocked?'選択破棄／残りドロー完了まで他操作停止':alive<=0?'味方全滅｜試験停止。状態確認後「終了」してください。':(cardBattleTestMode.message||attackExercise.message||phaseFoundation.message)}
  const can=cardBattleTestCanInput(),attackOne=attackExercise.selected.length===1,defOne=attackExercise.defenseSelected.length===1,target=attackExercise.actors[attackExercise.defenseTargetRosterId],validTarget=!!(target&&target.alive&&target.hp>0),fusionReady=(attackExercise.selected.length===2||attackExercise.defenseSelected.length===2)&&can;
  const btn=(id,disabled,label)=>{const b=document.querySelector('#'+id);if(!b)return;b.disabled=!!disabled;if(label)b.textContent=label};btn('ctFuse',!fusionReady);btn('ctAttack',!can||!attackOne||!attackExerciseLockedEnemy()||phaseFoundation.costRemaining<=0);btn('ctDefense',!can||!defOne||!validTarget||phaseFoundation.costRemaining<=0);btn('ctPhaseAction',cardBattleTestMode.busy||blocked||!phaseFoundation.active||(phaseFoundation.phase!==PHASE_SIDE_ALLY&&phaseFoundation.phase!==PHASE_SIDE_ENEMY),phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵フェーズ進行':'フェーズ終了');btn('ctPrepAttack',!can);btn('ctPrepDefense',!can);btn('ctMockHit',cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY||!validTarget);btn('ctMockEnemyBlock',cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY||!attackExerciseLockedEnemy())
+}
+
+
+// VER.515 Gesture UI: feed the established selection/fusion/attack/defense functions.
+// Drag source is tap-order #1; drop target is tap-order #2 (preserves Hit order).
+let ctGesture=null,ctSuppressClickUntil=0;
+function cardBattleTestFanLayout(){
+ const lane=document.querySelector('#ctHand'),rail=document.querySelector('#ctFanRail');if(!lane||!rail)return;
+ const cards=[...rail.querySelectorAll('.ctCard')],n=cards.length;if(!n){rail.style.width='100%';return}
+ const width=window.innerWidth<=360?99:108,available=Math.max(220,lane.clientWidth),step=n<=5?Math.min(56,Math.max(36,(available-width-20)/Math.max(1,n-1))):n<=10?46:45;
+ const extent=width+(n-1)*step,offset=n>10?25:Math.max(15,(available-extent)/2),trailing=n>10?56:15,length=Math.max(available,extent+offset+trailing);
+ rail.style.width=Math.ceil(length)+'px';
+ cards.forEach((el,i)=>{const norm=n===1?0:(i-(n-1)/2)/((n-1)/2),ang=norm*10,y=10*Math.abs(norm)-8*(1-Math.abs(norm));el.style.left=(offset+i*step)+'px';el.style.setProperty('--fan-y',y.toFixed(1)+'px');el.style.setProperty('--fan-angle',ang.toFixed(1)+'deg');el.style.zIndex=String(i+1)});
+}
+function ctGestureClearMarks(){
+ document.querySelectorAll('#ctHand .ctFuseReady,#ctAllyArmy .ctDropReady').forEach(el=>el.classList.remove('ctFuseReady','ctDropReady'));
+ document.querySelector('#ctBoard')?.classList.remove('ctAttackReady');
+}
+function ctGestureReset(returning=false){
+ const g=ctGesture;if(!g)return;ctGesture=null;cardBattleTestMode.dragging=false;ctGestureClearMarks();g.element?.classList.remove('ctTouching','ctDragSource');if(g.element)g.element.style.zIndex='';
+ if(g.frame)cancelAnimationFrame(g.frame);
+ if(g.ghost){if(returning){g.ghost.style.setProperty('--drag-dx','0px');g.ghost.style.setProperty('--drag-dy','0px');g.ghost.classList.add('ctReturning');setTimeout(()=>g.ghost.remove(),180)}else g.ghost.remove()}
+}
+function ctGestureCanFuse(a,b){if(!a||!b||a.instanceId===b.instanceId)return false;const atk=attackCardTier(a),def=defenseCardTier(a);return (atk&&[1,2].includes(atk)&&attackCardTier(b)===atk)||(def&&[1,2].includes(def)&&defenseCardTier(b)===def)}
+function ctGestureDropTarget(g){
+ ctGestureClearMarks();const node=document.elementFromPoint(g.x,g.y),hand=document.querySelector('#ctHand'),onHand=hand?.contains(node),card=onHand?node?.closest('[data-ct-card-id]'):null;
+ const a=cardFoundation.hand.find(c=>c.instanceId===g.id),b=cardFoundation.hand.find(c=>c.instanceId===card?.dataset.ctCardId);const dropAllowed=cardBattleTestMode.active&&!cardBattleTestMode.busy&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw;
+ if(dropAllowed&&ctGestureCanFuse(a,b)){g.target={type:'fuse',id:b.instanceId};card.classList.add('ctFuseReady');g.ghost?.classList.add('ctFuseReady');return}
+ g.ghost?.classList.remove('ctFuseReady');
+ const unit=node?.closest('[data-ct-rid]'),rid=unit?.dataset.ctRid,actor=attackExercise.actors[rid];
+ if(defenseCardTier(a)&&actor?.alive&&actor.hp>0&&dropAllowed&&phaseFoundation.phase===PHASE_SIDE_ALLY&&phaseFoundation.costRemaining>0){
+  g.target={type:'defense',rid};unit.classList.add('ctDropReady');return
+ }
+ const beyondHand=g.y<(hand?.getBoundingClientRect().top??0)-20;
+ if(attackCardTier(a)&&beyondHand&&g.startY-g.y>=58&&Math.abs(g.startY-g.y)>Math.abs(g.x-g.startX)*.65&&dropAllowed&&phaseFoundation.phase===PHASE_SIDE_ALLY&&phaseFoundation.costRemaining>0&&attackExerciseLockedEnemy()){
+  g.target={type:'attack'};document.querySelector('#ctBoard')?.classList.add('ctAttackReady');return
+ }
+ g.target=null;
+}
+function ctGestureTick(){
+ const g=ctGesture;if(!g||!g.moved||!cardBattleTestMode.active)return;
+ const lane=document.querySelector('#ctHand'),r=lane.getBoundingClientRect(),edge=48;
+ if(g.y>r.top-35&&g.y<r.bottom+40){
+  let velocity=0;if(g.x>r.right-edge)velocity=2+7*Math.max(0,Math.min(1,(g.x-(r.right-edge))/edge));
+  else if(g.x<r.left+edge)velocity=-(2+7*Math.max(0,Math.min(1,(r.left+edge-g.x)/edge)));
+  if(velocity)lane.scrollLeft+=velocity;
+ }
+ g.ghost?.style.setProperty('--drag-dx',(g.x-g.startX)+'px');g.ghost?.style.setProperty('--drag-dy',(g.y-g.startY)+'px');
+ ctGestureDropTarget(g);g.frame=requestAnimationFrame(ctGestureTick);
+}
+function ctGestureStart(e){
+ const card=e.target.closest('#ctHand .ctCard');if(!card||!cardBattleTestMode.active||cardBattleTestMode.busy||cardFoundation.overflowPending||cardFoundation.pendingDraw||ctGesture||e.isPrimary===false)return;
+ if(e.pointerType==='mouse'&&e.button!==0)return;
+ const id=card.dataset.ctCardId,c=cardFoundation.hand.find(v=>v.instanceId===id);if(!c)return;
+ const r=card.getBoundingClientRect();ctGesture={id,element:card,pointer:e.pointerId,startX:e.clientX,startY:e.clientY,x:e.clientX,y:e.clientY,rect:r,moved:false,target:null,ghost:null,frame:0};
+ card.classList.add('ctTouching');card.style.zIndex='900';e.currentTarget.setPointerCapture?.(e.pointerId);
+}
+function ctGestureMove(e){
+ const g=ctGesture;if(!g||g.pointer!==e.pointerId)return;g.x=e.clientX;g.y=e.clientY;
+ if(!g.moved&&Math.hypot(g.x-g.startX,g.y-g.startY)>=7){
+  if(!cardBattleTestCanInput()){ctGestureReset();return}
+  g.moved=true;cardBattleTestMode.dragging=true;g.element.classList.remove('ctTouching');g.element.classList.add('ctDragSource');
+  const ghost=g.element.cloneNode(true);ghost.removeAttribute('id');ghost.removeAttribute('onclick');ghost.classList.add('ctDragGhost');ghost.style.left=g.rect.left+'px';ghost.style.top=g.rect.top+'px';ghost.style.width=g.rect.width+'px';ghost.style.height=g.rect.height+'px';ghost.style.zIndex='12000';
+  document.querySelector('#cardBattleTestScreen').appendChild(ghost);g.ghost=ghost;g.frame=requestAnimationFrame(ctGestureTick);
+ }
+ if(g.moved)e.preventDefault();
+}
+function ctGestureEnd(e,cancelled=false){
+ const g=ctGesture;if(!g||g.pointer!==e.pointerId)return;
+ const dragged=g.moved,target=g.target,source=g.id;ctSuppressClickUntil=Date.now()+125;
+ // Capturing the pointer on the hand lane reroutes its synthetic click to the lane.
+ // Call the original tap action once here, and suppress that follow-up synthetic click.
+ ctGestureReset(dragged&&!target);
+ if(!dragged){if(!cancelled)cardBattleTestCardTap(source);return}
+ if(cancelled||!target||!cardBattleTestCanInput())return;
+ const c=cardFoundation.hand.find(v=>v.instanceId===source);if(!c)return;
+ if(target.type==='fuse'){
+  const other=cardFoundation.hand.find(v=>v.instanceId===target.id);if(!ctGestureCanFuse(c,other))return;
+  attackExercise.selected=attackCardTier(c)?[source,target.id]:[];attackExercise.defenseSelected=defenseCardTier(c)?[source,target.id]:[];
+  cardBattleTestFuse();return;
+ }
+ if(target.type==='attack'&&attackCardTier(c)&&attackExerciseLockedEnemy()&&phaseFoundation.costRemaining>0){attackExercise.selected=[source];attackExercise.defenseSelected=[];cardBattleTestAttack();return}
+ if(target.type==='defense'&&defenseCardTier(c)&&attackExercise.actors[target.rid]?.alive&&phaseFoundation.costRemaining>0){
+  attackExercise.selected=[];attackExercise.defenseSelected=[source];defenseExerciseTarget(target.rid);cardBattleTestDefense();return
+ }
+}
+function cardBattleTestGestureInit(){
+ const hand=document.querySelector('#ctHand');if(!hand)return;
+ hand.addEventListener('pointerdown',ctGestureStart);hand.addEventListener('pointermove',ctGestureMove);
+ hand.addEventListener('pointerup',e=>ctGestureEnd(e));hand.addEventListener('pointercancel',e=>ctGestureEnd(e,true));
+ hand.addEventListener('lostpointercapture',e=>{if(ctGesture?.pointer===e.pointerId)ctGestureEnd(e,true)});
+ hand.addEventListener('click',e=>{if(Date.now()<ctSuppressClickUntil){e.preventDefault();e.stopImmediatePropagation()}},true);
+ window.addEventListener('resize',()=>{if(cardBattleTestMode.active&&!ctGesture)cardBattleTestFanLayout()});
 }
 
 const isBackSlot=slot=>slot>=3;const frontPairSlot=slot=>isBackSlot(slot)?slot-3:slot;const backPairSlot=slot=>slot<3?slot+3:slot;
@@ -5146,7 +5271,7 @@ function choosePhase3Burst(){if(skillTapSuppressedByHold()||!resolvePlayerAction
 document.querySelector('#freeSkill1').onclick=choosePhase3Burst;document.querySelector('#freeSkill2').onclick=()=>phase1UnimplementedAction('スキップ');document.querySelector('#freeSkill3').onclick=()=>phase1UnimplementedAction('アイテム');
 document.querySelector('#burstChainEnd').onclick=endBurstChainSelection;
 document.querySelector('#autoToggle').onclick=()=>{if(!autoMode){autoMode=true;autoBurstMode='instant'}else if(autoBurstMode==='instant'){autoBurstMode='all'}else{autoMode=false;autoBurstMode='instant'}if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、獲得WDを持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{if(overlayMode==='checkpoint'){advanceCheckpoint();return}restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
-document.querySelector('#cardBattleTestEntry').onclick=()=>cardBattleTestStart();document.querySelector('#cardTestExit').onclick=()=>cardBattleTestExit();document.querySelector('#ctFuse').onclick=()=>cardBattleTestFuse();document.querySelector('#ctAttack').onclick=()=>cardBattleTestAttack();document.querySelector('#ctDefense').onclick=()=>cardBattleTestDefense();document.querySelector('#ctPhaseAction').onclick=()=>cardBattleTestEndOrAdvance();document.querySelector('#ctPrepAttack').onclick=()=>cardBattleTestPrep('attack');document.querySelector('#ctPrepDefense').onclick=()=>cardBattleTestPrep('defense');document.querySelector('#ctMockHit').onclick=()=>cardBattleTestMockHit();document.querySelector('#ctMockEnemyBlock').onclick=()=>cardBattleTestEnemyBlock();
+cardBattleTestGestureInit();document.querySelector('#cardBattleTestEntry').onclick=()=>cardBattleTestStart();document.querySelector('#cardTestExit').onclick=()=>cardBattleTestExit();document.querySelector('#ctFuse').onclick=()=>cardBattleTestFuse();document.querySelector('#ctAttack').onclick=()=>cardBattleTestAttack();document.querySelector('#ctDefense').onclick=()=>cardBattleTestDefense();document.querySelector('#ctPhaseAction').onclick=()=>cardBattleTestEndOrAdvance();document.querySelector('#ctPrepAttack').onclick=()=>cardBattleTestPrep('attack');document.querySelector('#ctPrepDefense').onclick=()=>cardBattleTestPrep('defense');document.querySelector('#ctMockHit').onclick=()=>cardBattleTestMockHit();document.querySelector('#ctMockEnemyBlock').onclick=()=>cardBattleTestEnemyBlock();
 const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpen').onclick=()=>{dp.classList.add('show');cardDebugRender();attackExerciseRender()};document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
 function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;renderBattle()}
 document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');dbgStatus('敵を即時撃破')};document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
