@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.518</title>
+<title>セカソコ ver.518.1</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.518";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.518.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2257,10 +2257,44 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 @media(max-width:360px){#cardBattleTestScreen .ctHudPrimary{font-size:9px;gap:3px;letter-spacing:-.035em}#cardBattleTestScreen .ctHudAuto{flex-basis:65px;width:65px}#cardBattleTestScreen #cardTestExit{flex-basis:40px;width:40px}}
 </style>
 
+
+<style id="ver518-1-hud-foot-ticker">
+/* VER.518.1: trial-only single-line HUD; keep 4 data fields and 2 operative buttons. */
+#cardBattleTestScreen .ctTop{padding:calc(4px + env(safe-area-inset-top)) 5px 4px;flex:0 0 auto}
+#cardBattleTestScreen .ctHudOneLine{display:flex;align-items:center;gap:4px;width:100%;min-width:0;height:29px}
+#cardBattleTestScreen .ctHudPrimary{flex:1 1 auto;width:auto;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:2px;font-size:clamp(8px,2.28vw,10px);line-height:15px;letter-spacing:-.03em}
+#cardBattleTestScreen .ctHudPrimary span{flex:0 0 auto}
+#cardBattleTestScreen .ctHudSecondary{flex:0 0 auto;width:auto;min-width:0;margin:0;height:29px;gap:4px;align-items:stretch}
+#cardBattleTestScreen .ctHudDebug{flex:0 0 49px;width:49px;min-width:49px;font-size:9px;padding:0 2px}
+#cardBattleTestScreen #cardTestExit{flex:0 0 39px;width:39px;min-width:39px;padding:0 2px;font-size:9px;line-height:18px}
+@media(max-width:360px){
+ #cardBattleTestScreen .ctTop{padding-inline:4px}
+ #cardBattleTestScreen .ctHudOneLine{gap:3px}
+ #cardBattleTestScreen .ctHudPrimary{font-size:8px;gap:1px;letter-spacing:-.045em}
+ #cardBattleTestScreen .ctHudSecondary{gap:3px}
+ #cardBattleTestScreen .ctHudDebug{flex-basis:44px;width:44px;min-width:44px;font-size:8px}
+ #cardBattleTestScreen #cardTestExit{flex-basis:36px;width:36px;min-width:36px;font-size:8px}
+}
+/* Release the former bottom-bar safe-area padding for a compact readable ticker below the actions. */
+#cardBattleTestScreen .ctBottomBar{padding-bottom:5px}
+#cardBattleTestScreen .ctTickerSafeArea{flex:0 0 max(20px,env(safe-area-inset-bottom));height:max(20px,env(safe-area-inset-bottom));min-height:20px;position:relative;background:#070b12;border-top:1px solid #ffffff14;z-index:25;overflow:hidden}
+#cardBattleTestScreen .ctTickerButton{position:relative;display:block;width:100%;height:20px;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#c0cad9;text-align:left;overflow:hidden;cursor:pointer;touch-action:manipulation}
+#cardBattleTestScreen .ctTickerText{position:absolute;top:2px;left:100%;display:inline-block;white-space:nowrap;width:max-content;font-size:10px;line-height:15px;letter-spacing:0;will-change:transform;animation:ctTickerScroll 14s linear infinite;pointer-events:none}
+@keyframes ctTickerScroll{from{transform:translateX(0)}to{transform:translateX(calc(-100% - var(--ctTickerView, 390px)))}}
+#cardBattleTestScreen .ctDebugLogOpen{display:block;margin-top:9px;width:100%;padding:9px;border:1px solid #779ac066;border-radius:8px;background:#192c40;color:#eef6ff;font-size:11px;font-weight:900}
+/* VER.518.1 additional adopted instruction (Creator): the character lower HUD
+   container must be FULLY TRANSPARENT, not semi-transparent or gradient.
+   No replacement shade, panel or backdrop is added. Keep existing individual
+   HP/BREAK bars, BLOCK shield and legible name text unmodified. */
+#cardBattleTestScreen .ctSharedFrame .ctUnitOverlay{background:transparent!important;background-image:none!important;box-shadow:none!important;z-index:8}
+#cardBattleTestScreen .ctSharedFrame .ctUnitName{text-shadow:0 1px 2px #000,1px 0 2px #000,-1px 0 2px #000,0 0 5px #000,0 0 8px #000}
+#cardBattleTestScreen .ctSharedFrame .ctBreakLabel{text-shadow:0 1px 2px #000,0 0 4px #000}
+/* Keep current art dimensions, geometry, overflow and target/HP/BLOCK layers unchanged. */
+</style>
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.518</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.518.1</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2311,7 +2345,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctSharedFrame .ctUnitOverlay{
  position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;gap:1px;
  pointer-events:none;padding:2px 3px 3px;border-radius:0 0 7px 7px;
- background:linear-gradient(0deg,rgba(3,7,13,.96) 0%,rgba(4,8,14,.80) 62%,rgba(4,8,14,.08) 100%);
+ background:transparent;
 }
 #cardBattleTestScreen .ctSharedFrame .ctBuffTop[hidden]{display:none!important}
 #cardBattleTestScreen .ctSharedFrame .ctBuffLower{display:flex;height:19px;min-height:19px;align-items:center;gap:2px;min-width:0;max-width:100%;white-space:nowrap}
@@ -2377,15 +2411,16 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctDebugActions .ctAssist:disabled{opacity:.30}
 #cardBattleTestScreen .ctDebugStatus{font-size:10px;line-height:1.55;color:#d1deeb;margin:14px 0 0;min-height:30px}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.518 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.518.1 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
-    <div class="ctHudPrimary" aria-label="探索・報酬情報">
-      <span id="ctHudDepth">世界深度— / —F</span><span id="ctHudRemaining">残存率—%</span><span id="ctHudOverkill">overkill×—</span><span id="ctHudReward">💎×—</span>
-    </div>
-    <div class="ctHudSecondary">
-      <button id="ctHudLatestLog" class="ctHudLatestLog" type="button" aria-label="戦闘ログ履歴を開く" aria-haspopup="dialog">演習ログを表示</button>
-      <button id="ctHudDebug" class="ctHudDebug" type="button" aria-haspopup="dialog" aria-controls="ctDebugOverlay">DEBUG</button>
-      <button class="ctExit" id="cardTestExit" type="button">撤退</button>
+    <div class="ctHudOneLine">
+      <div class="ctHudPrimary" aria-label="探索・報酬情報">
+        <span id="ctHudDepth">世界深度— / —F</span><span id="ctHudRemaining">残存率—%</span><span id="ctHudOverkill">overkill×—</span><span id="ctHudReward">💎×—</span>
+      </div>
+      <div class="ctHudSecondary">
+        <button id="ctHudDebug" class="ctHudDebug" type="button" aria-haspopup="dialog" aria-controls="ctDebugOverlay">DEBUG</button>
+        <button class="ctExit" id="cardTestExit" type="button">撤退</button>
+      </div>
     </div>
   </div>
   <div class="ctBoard" id="ctBoard">
@@ -2400,11 +2435,15 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
     <button class="ctBottomAction" id="ctSwapAction" type="button" disabled aria-disabled="true" title="交代機能は未実装">交代</button>
     <button class="ctBottomAction ctBottomEnd" id="ctPhaseAction" type="button">フェーズ終了</button>
   </div>
+  <div class="ctTickerSafeArea" aria-label="最新戦闘ログ。タップで履歴を表示">
+    <button id="ctHudLatestLog" class="ctTickerButton" type="button" aria-label="戦闘ログ履歴を開く" aria-haspopup="dialog" title="タップしてログ履歴を開く"><span id="ctTickerText" class="ctTickerText" aria-hidden="true">演習ログを表示</span></button>
+  </div>
   <span class="ctVisuallyHidden" id="ctMessage" role="status" aria-live="polite">ホームから開始した独立試験。旧battle()は起動していません。</span>
   <div class="ctDebugOverlay" id="ctDebugOverlay" hidden>
     <div class="ctDebugPanel" role="dialog" aria-modal="true" aria-labelledby="ctDebugTitle">
       <div class="ctDebugHead"><strong id="ctDebugTitle">新カード戦闘｜DEBUG</strong><button id="ctDebugClose" type="button">閉じる</button></div>
       <p class="ctDebugHelp">演習補助｜既存の試験機能を使用</p>
+      <button id="ctDebugLogOpen" class="ctDebugLogOpen" type="button">📜 戦闘ログ履歴を開く</button>
       <div class="ctDebugActions">
         <button class="ctAssist" id="ctPrepAttack" type="button">演習補助｜攻撃札</button>
         <button class="ctAssist" id="ctPrepDefense" type="button">演習補助｜防御札</button>
@@ -2966,8 +3005,8 @@ function cardBattleTestCanInput(){return cardBattleTestMode.active&&!cardBattleT
 function cardBattleTestSetMessage(msg){
  cardBattleTestMode.message=String(msg||'');
  const el=document.querySelector('#ctMessage');if(el)el.textContent=cardBattleTestMode.message;
- // A refused direct TARGET action does not call render; surface its reason in the existing HUD log slot.
- if(cardBattleTestMode.active&&cardBattleTestMode.message){const latest=document.querySelector('#ctHudLatestLog');if(latest){latest.textContent=cardBattleTestMode.message;latest.title=cardBattleTestMode.message}}
+ // Direct-target refusals may not redraw; surface them in the moved ticker without touching the log history.
+ if(cardBattleTestMode.active&&cardBattleTestMode.message)cardBattleTestTickerSet(cardBattleTestMode.message);
 }
 function cardBattleTestLock(ms=160){cardBattleTestMode.busy=true;cardBattleTestRender();setTimeout(()=>{if(!cardBattleTestMode.active)return;cardBattleTestMode.busy=false;cardBattleTestRender()},ms)}
 function cardBattleTestStart(){
@@ -3078,9 +3117,22 @@ function cardBattleTestCardHtml(c){
  else if(def){const s=DEFENSE_EXERCISE_SPEC[def];type=s.label;effect=`対象DEF × ${Math.round(s.rate*100)}%`}
  const cls=atk?'attackCard':def?'defenseCard':'spCard';return `<button class="ctCard ${cls} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div><div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div><div class="ctCardEffect">${cardDebugEsc(effect)}</div><div class="ctCardTags">${fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
 }
+function cardBattleTestTickerSet(message){
+ const button=document.querySelector('#ctHudLatestLog'),text=document.querySelector('#ctTickerText');
+ if(!button||!text)return;
+ const value=String(message||'演習ログなし｜タップして履歴');
+ button.title=value;
+ if(text.textContent===value)return; // Re-renders must not restart the marquee.
+ text.textContent=value;
+ // Only when the message actually changes: CSS does all subsequent animation frames.
+ const view=button.clientWidth||360,travel=Math.max(1,text.scrollWidth)+view;
+ text.style.setProperty('--ctTickerView',view+'px');
+ text.style.animationDuration=Math.max(7,Math.min(44,travel/32)).toFixed(2)+'s';
+ text.style.animation='none';void text.offsetWidth;text.style.animation='';
+}
 function cardBattleTestHudLogRefresh(){
- const latest=document.querySelector('#ctHudLatestLog');
- if(latest){const items=attackExercise.log||[];latest.textContent=items.length?items[items.length-1]:'演習ログなし｜タップして履歴';latest.title=latest.textContent}
+ const items=attackExercise.log||[];
+ cardBattleTestTickerSet(items.length?items[items.length-1]:'演習ログなし｜タップして履歴');
  const overlay=document.querySelector('#ctLogOverlay');if(!overlay||overlay.hidden)return;
  const list=document.querySelector('#ctLogEntries');if(!list)return;
  const keepBottom=list.scrollHeight-list.scrollTop-list.clientHeight<28;
@@ -3113,8 +3165,8 @@ function cardBattleTestRender(){
  const sel=[];for(const id of attackExercise.selected){const c=cardFoundation.hand.find(x=>x.instanceId===id);if(c)sel.push(`攻撃${sel.length+1}:${c.name}`)}for(const id of attackExercise.defenseSelected){const c=cardFoundation.hand.find(x=>x.instanceId===id);if(c)sel.push(`防御${sel.length+1}:${c.name}`)}set('ctSelection',sel.length?sel.join('｜'):(attackExercise.defenseTargetRosterId?`防御対象：${attackExercise.actors[attackExercise.defenseTargetRosterId]?.ownerName||'-'}`:'未選択'));set('ctOverflow',cardFoundation.overflowPending?'21枚｜1枚タップして破棄':'');
  const msg=document.querySelector('#ctMessage');if(msg){msg.textContent=blocked?'選択破棄／残りドロー完了まで他操作停止':alive<=0?'味方全滅｜試験停止。状態確認後「撤退」してください。':(cardBattleTestMode.message||attackExercise.message||phaseFoundation.message)}
  const debugStatus=document.querySelector('#ctDebugStatus');if(debugStatus)debugStatus.textContent=msg?.textContent||'';
- // Show important invalid/blocked notices via the existing top HUD, without adding a permanent message bar.
- const latestHud=document.querySelector('#ctHudLatestLog');if(latestHud&&msg&&(blocked||alive<=0||/不可|できません|不足|無効|未実装|停止|破棄|使えません|選択してください/.test(msg.textContent))){latestHud.textContent=msg.textContent;latestHud.title=msg.textContent;}
+ // Keep important invalid/blocked notices accessible in the relocated ticker.
+ if(msg&&(blocked||alive<=0||/不可|できません|不足|無効|未実装|停止|破棄|使えません|選択してください/.test(msg.textContent)))cardBattleTestTickerSet(msg.textContent);
  const can=cardBattleTestCanInput(),target=attackExercise.actors[attackExercise.defenseTargetRosterId],validTarget=!!(target&&target.alive&&target.hp>0);
  const btn=(id,disabled,label)=>{const b=document.querySelector('#'+id);if(!b)return;b.disabled=!!disabled;if(label)b.textContent=label};btn('ctPhaseAction',cardBattleTestMode.busy||blocked||!phaseFoundation.active||(phaseFoundation.phase!==PHASE_SIDE_ALLY&&phaseFoundation.phase!==PHASE_SIDE_ENEMY),phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵フェーズ進行':'フェーズ終了');btn('ctPrepAttack',!can);btn('ctPrepDefense',!can);btn('ctMockHit',cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY||!validTarget);btn('ctMockEnemyBlock',cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY||!attackExerciseLockedEnemy())
 }
@@ -5525,7 +5577,7 @@ function choosePhase3Burst(){if(skillTapSuppressedByHold()||!resolvePlayerAction
 document.querySelector('#freeSkill1').onclick=choosePhase3Burst;document.querySelector('#freeSkill2').onclick=()=>phase1UnimplementedAction('スキップ');document.querySelector('#freeSkill3').onclick=()=>phase1UnimplementedAction('アイテム');
 document.querySelector('#burstChainEnd').onclick=endBurstChainSelection;
 document.querySelector('#autoToggle').onclick=()=>{if(!autoMode){autoMode=true;autoBurstMode='instant'}else if(autoBurstMode==='instant'){autoBurstMode='all'}else{autoMode=false;autoBurstMode='instant'}if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、獲得WDを持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{if(overlayMode==='checkpoint'){advanceCheckpoint();return}restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
-cardBattleTestGestureInit();document.querySelector('#cardBattleTestEntry').onclick=()=>cardBattleTestStart();document.querySelector('#cardTestExit').onclick=()=>cardBattleTestExit();document.querySelector('#ctHudLatestLog').onclick=()=>cardBattleTestLogOpen();document.querySelector('#ctHudDebug').onclick=()=>cardBattleTestDebugOpen();document.querySelector('#ctDebugClose').onclick=()=>cardBattleTestDebugClose();document.querySelector('#ctLogClose').onclick=()=>cardBattleTestLogClose();document.querySelector('#ctPhaseAction').onclick=()=>cardBattleTestEndOrAdvance();document.querySelector('#ctPrepAttack').onclick=()=>cardBattleTestPrep('attack');document.querySelector('#ctPrepDefense').onclick=()=>cardBattleTestPrep('defense');document.querySelector('#ctMockHit').onclick=()=>cardBattleTestMockHit();document.querySelector('#ctMockEnemyBlock').onclick=()=>cardBattleTestEnemyBlock();
+cardBattleTestGestureInit();document.querySelector('#cardBattleTestEntry').onclick=()=>cardBattleTestStart();document.querySelector('#cardTestExit').onclick=()=>cardBattleTestExit();document.querySelector('#ctHudLatestLog').onclick=()=>cardBattleTestLogOpen();document.querySelector('#ctHudDebug').onclick=()=>cardBattleTestDebugOpen();document.querySelector('#ctDebugLogOpen').onclick=()=>{cardBattleTestDebugClose();cardBattleTestLogOpen()};document.querySelector('#ctDebugClose').onclick=()=>cardBattleTestDebugClose();document.querySelector('#ctLogClose').onclick=()=>cardBattleTestLogClose();document.querySelector('#ctPhaseAction').onclick=()=>cardBattleTestEndOrAdvance();document.querySelector('#ctPrepAttack').onclick=()=>cardBattleTestPrep('attack');document.querySelector('#ctPrepDefense').onclick=()=>cardBattleTestPrep('defense');document.querySelector('#ctMockHit').onclick=()=>cardBattleTestMockHit();document.querySelector('#ctMockEnemyBlock').onclick=()=>cardBattleTestEnemyBlock();
 const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpen').onclick=()=>{dp.classList.add('show');cardDebugRender();attackExerciseRender()};document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
 function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;renderBattle()}
 document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');dbgStatus('敵を即時撃破')};document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
