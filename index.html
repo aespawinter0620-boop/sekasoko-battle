@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.518.2</title>
+<title>セカソコ ver.518.3</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.518.2";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.518.3";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2300,7 +2300,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.518.2</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.518.3</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2388,8 +2388,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 @media(max-width:360px){#cardBattleTestScreen .ctHudDebug{flex-basis:65px;width:65px}}
 /* Preserve 4x3 structural grid while reclaiming old log/commands and board gutters. */
 #cardBattleTestScreen .ctBoard{flex:1 1 0;min-height:0;overflow:hidden}
-#cardBattleTestScreen #ctAllyArmy{top:5%;bottom:1%;row-gap:7px}
-#cardBattleTestScreen #ctEnemyGrid{inset:5% 2px 1% 1px;row-gap:7px}
+#cardBattleTestScreen #ctAllyArmy{top:1.6666667%;bottom:1%;row-gap:7px}
+#cardBattleTestScreen #ctEnemyGrid{inset:1.6666667% 2px 1% 1px;row-gap:7px}
 /* A single 5%-larger art-height rule for ALL adopted PNGs, no individual scale or crop. */
 #cardBattleTestScreen .ctSharedFrame .ctArt{inset:auto 0 0!important;height:100%;overflow:visible;pointer-events:none}
 #cardBattleTestScreen .ctSharedFrame .ctArt img{height:105%!important;width:auto!important;max-width:none!important;max-height:none!important;object-fit:contain;object-position:center bottom;pointer-events:none}
@@ -2417,7 +2417,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctDebugActions .ctAssist:disabled{opacity:.30}
 #cardBattleTestScreen .ctDebugStatus{font-size:10px;line-height:1.55;color:#d1deeb;margin:14px 0 0;min-height:30px}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.518.2 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.518.3 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3033,7 +3033,7 @@ function cardBattleTestCardTap(id){
  if(!attackExerciseCanOperate())return false;const card=cardFoundation.hand.find(c=>c.instanceId===id);if(!card)return false;
  if(attackCardTier(card)){attackExercise.defenseSelected=[];const ok=attackExerciseSelect(id);cardBattleTestMode.message='攻撃カード選択';cardBattleTestRender();return ok}
  if(defenseCardTier(card)){attackExercise.selected=[];const ok=defenseExerciseSelect(id);cardBattleTestMode.message='防御カード選択';cardBattleTestRender();return ok}
- attackExercise.message='SPカード実発動はVER.518.2対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
+ attackExercise.message='SPカード実発動はVER.518.3対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
 }
 function cardBattleTestFuse(){
  if(!cardBattleTestCanInput())return false;let result=false;
