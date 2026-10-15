@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.518.3</title>
+<title>セカソコ ver.519</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.518.3";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.519";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2286,6 +2286,48 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* Keep current art dimensions, geometry, overflow and target/HP/BLOCK layers unchanged. */
 </style>
 
+
+<style id="ver519-card-afterimage-art">
+/* VER.519 UI-only: duplicate VER.304/326 adopted afterimage filters inside the new card trial.
+   Same exact character PNG and same common height as ally; no new rank stats or enemy AI. */
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage .ctArt{align-items:flex-end;justify-content:center;filter:none!important}
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage .ctArt img{image-rendering:auto!important}
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage[data-ct-afterimage-rank="1"] .ctArt img{
+  filter:grayscale(1) brightness(.27) contrast(1.08) drop-shadow(0 7px 6px rgba(0,0,0,.72))!important;
+}
+/* ★2: same dark body + white aura. */
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage[data-ct-afterimage-rank="2"] .ctArt img{
+  filter:grayscale(1) brightness(.27) contrast(1.08)
+         drop-shadow(0 0 1px rgba(255,255,255,.98))
+         drop-shadow(0 0 5px rgba(245,248,255,.92))
+         drop-shadow(0 0 11px rgba(225,232,245,.62))!important;
+}
+/* ★3〜★5: body stays dark like lower ranks; danger is communicated by aura only. */
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage[data-ct-afterimage-rank="3"] .ctArt img{
+  filter:grayscale(.92) brightness(.24) contrast(1.10)
+         drop-shadow(0 0 1px rgba(96,132,255,1))
+         drop-shadow(0 0 5px rgba(72,110,255,.94))
+         drop-shadow(0 0 12px rgba(55,86,235,.68))!important;
+}
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage[data-ct-afterimage-rank="4"] .ctArt img{
+  filter:grayscale(.92) brightness(.24) contrast(1.10)
+         drop-shadow(0 0 1px rgba(255,220,92,1))
+         drop-shadow(0 0 5px rgba(255,200,60,.95))
+         drop-shadow(0 0 12px rgba(236,175,42,.68))!important;
+}
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage[data-ct-afterimage-rank="5"] .ctArt img{
+  filter:grayscale(.92) brightness(.24) contrast(1.10)
+         drop-shadow(0 0 1px rgba(255,72,72,1))
+         drop-shadow(0 0 5px rgba(255,45,45,.96))
+         drop-shadow(0 0 13px rgba(220,22,30,.72))!important;
+}
+
+/* iPhone/Safari: do not brightness-filter the composite parent (rank aura already filters img). */
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage.flash,
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage.pendingDeath,
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage.locked{filter:none!important}
+</style>
+
 <style id="ver518-2-handlog">
 /* VER.518.2: static latest log inside the existing 17px hand heading. */
 #cardBattleTestScreen .ctHandHead{height:17px;min-height:17px;display:flex;align-items:center;gap:4px}
@@ -2300,7 +2342,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.518.3</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.519</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2417,7 +2459,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctDebugActions .ctAssist:disabled{opacity:.30}
 #cardBattleTestScreen .ctDebugStatus{font-size:10px;line-height:1.55;color:#d1deeb;margin:14px 0 0;min-height:30px}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.518.3 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.519 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3033,7 +3075,7 @@ function cardBattleTestCardTap(id){
  if(!attackExerciseCanOperate())return false;const card=cardFoundation.hand.find(c=>c.instanceId===id);if(!card)return false;
  if(attackCardTier(card)){attackExercise.defenseSelected=[];const ok=attackExerciseSelect(id);cardBattleTestMode.message='攻撃カード選択';cardBattleTestRender();return ok}
  if(defenseCardTier(card)){attackExercise.selected=[];const ok=defenseExerciseSelect(id);cardBattleTestMode.message='防御カード選択';cardBattleTestRender();return ok}
- attackExercise.message='SPカード実発動はVER.518.3対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
+ attackExercise.message='SPカード実発動はVER.519対象外';cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return false
 }
 function cardBattleTestFuse(){
  if(!cardBattleTestCanInput())return false;let result=false;
@@ -3101,15 +3143,23 @@ function cardBattleTestUnitOverlay(name,hp,maxHp,block,buffs=''){
 function cardBattleTestEnemyHtml(enemy,slot){
  if(!enemy)return `<div class="ctEnemyCell ctFrameEmpty" aria-hidden="true"></div>`;
  const locked=enemy.instanceId===attackExercise.lockedEnemyId&&enemy.hp>0,back=enemy.row==='back',dead=enemy.hp<=0;
- // Mock enemy identities have no adopted standing PNG mapping. Preserve trial icon, never substitute another character.
- const art=`<span class="ctArt ctMockArt" aria-hidden="true"><span class="ctEnemyIcon">⚔️</span></span>`;
+ // VER.519: a VISUAL-ONLY ★1–★5 comparison over the existing six mock enemy slots.
+ // The mock enemy object, HP, block, instance ID, line and all combat calculations stay unchanged.
+ // Derive the visual rank from existing immutable homeSlot, so rear promotion does not recolor the same enemy.
+ // Reuse the adopted production sprite through the old shared afterimage source resolver.
+ const originalSlot=Number.isInteger(Number(enemy.homeSlot))?Number(enemy.homeSlot):slot;
+ const comparisonRank=({0:1,3:2,1:3,4:4,2:5,5:1})[originalSlot]||1;
+ const afterimageSrc=getAfterimageSource('mizuki')?.sprite||'';
+ const art=afterimageSrc?`<span class="ctArt" aria-hidden="true"><img src="${cardDebugEsc(afterimageSrc)}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt" aria-hidden="true"></span>`;
  const info=cardBattleTestUnitOverlay(enemy.name,enemy.hp,enemy.maxHp,enemy.block);
- return `<button type="button" class="ctEnemyCell ctSharedFrame ${back?'backline':'frontline'} ${locked?'locked':''} ${dead?'pendingDeath':''}" data-ct-enemy-id="${cardDebugEsc(enemy.instanceId)}" onclick="cardBattleTestSelectEnemy('${cardDebugEsc(enemy.instanceId)}')" ${dead?'disabled':''} aria-label="${cardDebugEsc(enemy.name)} ${back?'後衛':'前衛'} HP ${attackExerciseFmt(enemy.hp)} BLOCK ${attackExerciseFmt(enemy.block)}${locked?' TARGET LOCK':''}">${art}${info}${enemy.overkill>0?`<span class="ctEnemyOk">OK +${attackExerciseFmt(enemy.overkill)}</span>`:''}</button>`;
+ return `<button type="button" class="ctEnemyCell ctSharedFrame ctAfterimage ${back?'backline':'frontline'} ${locked?'locked':''} ${dead?'pendingDeath':''}" data-ct-afterimage-rank="${comparisonRank}" data-ct-enemy-id="${cardDebugEsc(enemy.instanceId)}" onclick="cardBattleTestSelectEnemy('${cardDebugEsc(enemy.instanceId)}')" ${dead?'disabled':''} aria-label="${cardDebugEsc(enemy.name)} ${back?'後衛':'前衛'} HP ${attackExerciseFmt(enemy.hp)} BLOCK ${attackExerciseFmt(enemy.block)}${locked?' TARGET LOCK':''}">${art}${info}${enemy.overkill>0?`<span class="ctEnemyOk">OK +${attackExerciseFmt(enemy.overkill)}</span>`:''}</button>`;
 }
 function cardBattleTestActorHtml(a){
  const base=cardBattleTestBase(a.ownerRosterId),slot=Math.max(0,Math.min(5,Number(a.formationSlot)||0)),src=base?.sprite||base?.actionSprite||'',target=attackExercise.defenseTargetRosterId===a.ownerRosterId;
  // Adopted PNG URLs and their original dimensions/alpha remain unchanged.
- const art=src?`<span class="ctArt"><span class="ctFallback">${cardDebugEsc(base?.icon||'◆')}</span><img src="${src}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt"><span class="ctFallback">${cardDebugEsc(base?.icon||'◆')}</span></span>`;
+ // VER.519: no fallback emoji behind transparent formal sprites or while they load.
+ // Missing/broken sprite leaves the art empty for investigation; roster icon metadata is untouched.
+ const art=src?`<span class="ctArt"><img src="${cardDebugEsc(src)}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt"></span>`;
  const sword=(Number(a.sword)||0)>0?`<span class="ctRealBuff" aria-label="剣 ${attackExerciseFmt(a.sword)}">🗡️${attackExerciseFmt(a.sword)}</span>`:'';
  return `<button class="ctUnit ctSharedFrame ctSlot${slot} ${target?'target':''} ${!a.alive?'dead':''}" data-ct-rid="${cardDebugEsc(a.ownerRosterId)}" type="button" onclick="cardBattleTestSelectAlly('${cardDebugEsc(a.ownerRosterId)}')" ${!a.alive?'disabled':''} aria-label="${cardDebugEsc(a.ownerName)} HP ${attackExerciseFmt(a.hp)} / ${attackExerciseFmt(a.maxHp)} BLOCK ${attackExerciseFmt(a.block)}">${art}${cardBattleTestUnitOverlay(a.ownerName,a.hp,a.maxHp,a.block,sword)}</button>`;
 }
