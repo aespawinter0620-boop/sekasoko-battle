@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.519.1</title>
+<title>セカソコ ver.520</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.519.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.520";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2366,7 +2366,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.519.1</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.520</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2483,7 +2483,31 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctDebugActions .ctAssist:disabled{opacity:.30}
 #cardBattleTestScreen .ctDebugStatus{font-size:10px;line-height:1.55;color:#d1deeb;margin:14px 0 0;min-height:30px}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.519.1 新カード戦闘試験モード">
+
+<style id="ver520-mock-intent-visual-only">
+/* VER.520 visual trial only: enemy attack intent never executes damage. */
+#cardBattleTestScreen #ctBoard #ctIntentOverlay{position:absolute;inset:0;z-index:7;pointer-events:none!important;overflow:hidden;isolation:isolate}
+#cardBattleTestScreen #ctIntentArrows{display:block;width:100%;height:100%;overflow:hidden;pointer-events:none!important}
+#cardBattleTestScreen #ctIntentTargets{position:absolute;inset:0;pointer-events:none!important}
+#cardBattleTestScreen .ctIntentTarget{position:absolute;width:38px;height:38px;transform:translate(-50%,-50%);pointer-events:none!important;color:#ff6267;
+  border:1.5px solid rgba(255,82,87,.85);border-radius:50%;box-shadow:0 0 0 2px rgba(160,10,32,.22),0 0 8px rgba(255,42,52,.32);
+  background:rgba(92,0,15,.09)}
+#cardBattleTestScreen .ctIntentTarget::before,#cardBattleTestScreen .ctIntentTarget::after{content:"";position:absolute;pointer-events:none;background:rgba(255,105,112,.94)}
+#cardBattleTestScreen .ctIntentTarget::before{height:1px;left:9px;right:9px;top:17px}
+#cardBattleTestScreen .ctIntentTarget::after{width:1px;top:9px;bottom:9px;left:17px}
+#cardBattleTestScreen .ctIntentTarget .ctIntentTotal{position:absolute;left:50%;bottom:calc(100% + 2px);transform:translateX(-50%);white-space:nowrap;
+  font-size:11px;line-height:14px;font-weight:1000;color:#fff1f1;text-shadow:0 1px 2px #120008,0 0 4px #ba001c;
+  border:1px solid rgba(255,115,115,.48);border-radius:4px;padding:1px 3px;background:rgba(59,8,21,.72);font-variant-numeric:tabular-nums}
+#cardBattleTestScreen .ctEnemyCell.ctSharedFrame .ctEnemyIntent{position:absolute;top:3px;right:3px;z-index:13;pointer-events:none!important;
+  font-size:10px;font-weight:1000;line-height:15px;color:#ffe7e7;white-space:nowrap;letter-spacing:-.03em;
+  padding:1px 3px;border-radius:4px;border:1px solid rgba(237,99,105,.45);background:rgba(64,11,24,.77);
+  text-shadow:0 1px 2px #120008,0 0 4px #a72035;font-variant-numeric:tabular-nums}
+@media(max-width:360px){#cardBattleTestScreen .ctIntentTarget{width:34px;height:34px}
+#cardBattleTestScreen .ctIntentTarget::before{top:15px}#cardBattleTestScreen .ctIntentTarget::after{left:15px}
+#cardBattleTestScreen .ctIntentTarget .ctIntentTotal{font-size:10px}#cardBattleTestScreen .ctEnemyCell.ctSharedFrame .ctEnemyIntent{font-size:9px}}
+</style>
+
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.520 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2498,6 +2522,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   <div class="ctBoard" id="ctBoard">
     <div class="ctArmy" id="ctAllyArmy"></div>
     <div class="ctEnemyArea"><div class="ctEnemyGrid" id="ctEnemyGrid"></div><div class="ctEnemyDefeatStatus" id="ctEnemyDefeatStatus" hidden>模擬敵全滅｜演習終了せず確認可能</div></div>
+    <div id="ctIntentOverlay" aria-hidden="true"><svg id="ctIntentArrows" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ctIntentArrowHead" viewBox="0 0 7 7" refX="6" refY="3.5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="none" stroke="#ff6069" stroke-width="1.1"/></marker></defs><g id="ctIntentLines"></g></svg><div id="ctIntentTargets"></div></div>
     <div id="ctLockReticle" class="targetReticle" hidden aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><circle class="reticleOuterRing" cx="50" cy="50" r="42" pathLength="100"/><g class="reticleCardinals"><path class="reticleMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="reticleMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="reticleInnerRing" cx="50" cy="50" r="29"/><path class="reticleCross" d="M50 39v7 M50 54v7 M39 50h7 M54 50h7"/><circle class="reticleCenter" cx="50" cy="50" r="2.2"/></svg></div>
     <div class="ctFx" id="ctFx"></div>
   </div>
@@ -3091,7 +3116,7 @@ function cardBattleTestStart(){
 function cardBattleTestExit(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){showScreen('home');return true}if(cardBattleTestMode.busy)return false
  cardBattleTestMode.busy=true;if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
- cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();cardDebugRender();renderHome();showScreen('home');return true
+ cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');return true
 }
 function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
 function cardBattleTestCardTap(id){
@@ -3177,7 +3202,9 @@ function cardBattleTestEnemyHtml(enemy,slot){
  const afterimageSrc=getAfterimageSource('mizuki')?.sprite||'';
  const art=afterimageSrc?`<span class="ctArt" aria-hidden="true"><img src="${cardDebugEsc(afterimageSrc)}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt" aria-hidden="true"></span>`;
  const info=cardBattleTestUnitOverlay(enemy.name,enemy.hp,enemy.maxHp,enemy.block);
- return `<button type="button" class="ctEnemyCell ctSharedFrame ctAfterimage ${back?'backline':'frontline'} ${locked?'locked':''} ${dead?'pendingDeath':''}" data-ct-afterimage-rank="${comparisonRank}" data-ct-enemy-id="${cardDebugEsc(enemy.instanceId)}" onclick="cardBattleTestSelectEnemy('${cardDebugEsc(enemy.instanceId)}')" ${dead?'disabled':''} aria-label="${cardDebugEsc(enemy.name)} ${back?'後衛':'前衛'} HP ${attackExerciseFmt(enemy.hp)} BLOCK ${attackExerciseFmt(enemy.block)}${locked?' TARGET LOCK':''}">${art}${info}${enemy.overkill>0?`<span class="ctEnemyOk">OK +${attackExerciseFmt(enemy.overkill)}</span>`:''}</button>`;
+ // VER.520 mock label only: original homeSlot fixes 20/15; keep preview until the final Hit animation removes the sprite.
+ const mockIntent=cardBattleTestMode.active&&!enemy.graphicGone?`<span class="ctEnemyIntent" aria-label="模擬攻撃予告 ${cardBattleTestMockIntentValue(enemy)}">🗡️${cardBattleTestMockIntentValue(enemy)}</span>`:'';
+ return `<button type="button" class="ctEnemyCell ctSharedFrame ctAfterimage ${back?'backline':'frontline'} ${locked?'locked':''} ${dead?'pendingDeath':''}" data-ct-afterimage-rank="${comparisonRank}" data-ct-enemy-id="${cardDebugEsc(enemy.instanceId)}" onclick="cardBattleTestSelectEnemy('${cardDebugEsc(enemy.instanceId)}')" ${dead?'disabled':''} aria-label="${cardDebugEsc(enemy.name)} ${back?'後衛':'前衛'} HP ${attackExerciseFmt(enemy.hp)} BLOCK ${attackExerciseFmt(enemy.block)}${locked?' TARGET LOCK':''}">${art}${info}${mockIntent}${enemy.overkill>0?`<span class="ctEnemyOk">OK +${attackExerciseFmt(enemy.overkill)}</span>`:''}</button>`;
 }
 function cardBattleTestActorHtml(a){
  const base=cardBattleTestBase(a.ownerRosterId),slot=Math.max(0,Math.min(5,Number(a.formationSlot)||0)),src=base?.sprite||base?.actionSprite||'',target=attackExercise.defenseTargetRosterId===a.ownerRosterId;
@@ -3226,6 +3253,63 @@ function cardBattleTestDebugOpen(){
  ctGestureReset(true);el.hidden=false;cardBattleTestRender();document.querySelector('#ctDebugClose')?.focus({preventScroll:true});return true;
 }
 function cardBattleTestDebugClose(){const el=document.querySelector('#ctDebugOverlay');if(el)el.hidden=true;}
+
+// VER.520: read-only, debug trial-only attack intent. NOT enemy AI and NOT predicted HP damage.
+// homeSlot keeps each enemy's preview value after rear-to-front promotion.
+function cardBattleTestMockIntentValue(enemy){
+ const home=Number(enemy?.homeSlot);
+ return home>=3&&home<=5?15:20;
+}
+function cardBattleTestMockIntentData(){
+ if(!cardBattleTestMode.active||!attackExercise.active)return [];
+ const front=Object.values(attackExercise.actors).filter(a=>a&&a.alive&&a.hp>0&&Number(a.formationSlot)>=0&&Number(a.formationSlot)<=2).sort((a,b)=>a.formationSlot-b.formationSlot);
+ // No living front row: avoid inventing a new targeting rule. Draw no trial intentions.
+ if(!front.length)return [];
+ return attackExercise.enemies.filter(e=>e&&!e.graphicGone).map(e=>{
+  const home=Number(e.homeSlot),column=Number.isFinite(home)&&home>=0&&home<=5?home%3:0;
+  const target=front[column%front.length];
+  return {enemyId:e.instanceId,allyId:target.ownerRosterId,value:cardBattleTestMockIntentValue(e),homeSlot:home};
+ });
+}
+function cardBattleTestIntentSync(){
+ const board=document.querySelector('#ctBoard'),overlay=document.querySelector('#ctIntentOverlay'),svg=document.querySelector('#ctIntentArrows'),lines=document.querySelector('#ctIntentLines'),targets=document.querySelector('#ctIntentTargets');
+ if(!board||!overlay||!svg||!lines||!targets)return;
+ const data=cardBattleTestMockIntentData();
+ if(!cardBattleTestMode.active||!data.length){lines.replaceChildren();targets.replaceChildren();return;}
+ const base=board.getBoundingClientRect(),w=board.clientWidth,h=board.clientHeight;
+ svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+ const ns='http://www.w3.org/2000/svg',totals=new Map(),links=[];
+ const findEnemy=id=>[...document.querySelectorAll('#ctEnemyGrid [data-ct-enemy-id]')].find(x=>x.dataset.ctEnemyId===id);
+ const findAlly=id=>[...document.querySelectorAll('#ctAllyArmy [data-ct-rid]')].find(x=>x.dataset.ctRid===id);
+ for(const intent of data){
+  const enemy=findEnemy(intent.enemyId),ally=findAlly(intent.allyId);
+  if(!enemy||!ally)continue;
+  const e=enemy.getBoundingClientRect(),a=ally.getBoundingClientRect();
+  const sx=e.left-base.left+e.width*.17,sy=e.top-base.top+e.height*.43;
+  const tx=a.left-base.left+a.width*.59,ty=a.top-base.top+a.height*.42;
+  links.push([sx,sy,tx,ty]);
+  totals.set(intent.allyId,(totals.get(intent.allyId)||0)+intent.value);
+ }
+ const fragment=document.createDocumentFragment();
+ for(const [sx,sy,tx,ty] of links){
+  const line=document.createElementNS(ns,'line');
+  for(const [k,v] of [['x1',sx],['y1',sy],['x2',tx],['y2',ty]])line.setAttribute(k,String(v));
+  line.setAttribute('stroke','#ff6069');line.setAttribute('stroke-width','1.25');line.setAttribute('stroke-opacity','.67');
+  line.setAttribute('stroke-dasharray','3 5');line.setAttribute('marker-end','url(#ctIntentArrowHead)');
+  line.setAttribute('vector-effect','non-scaling-stroke');fragment.appendChild(line);
+ }
+ lines.replaceChildren(fragment);
+ const badges=document.createDocumentFragment();
+ for(const [id,total] of totals){
+  const ally=findAlly(id);if(!ally)continue;
+  const a=ally.getBoundingClientRect(),badge=document.createElement('div');badge.className='ctIntentTarget';
+  badge.style.left=(a.left-base.left+a.width*.59)+'px';badge.style.top=(a.top-base.top+a.height*.42)+'px';
+  badge.setAttribute('aria-label',`模擬予告攻撃の合計 ${total}`);
+  const label=document.createElement('span');label.className='ctIntentTotal';label.textContent=`🗡️${total}`;badge.appendChild(label);badges.appendChild(badge);
+ }
+ targets.replaceChildren(badges);
+}
+
 // VER.519.1: position the unchanged VER.501.2 reticle above the currently locked card.
 // SVG stays mounted outside the enemy-grid redraw, so repeated render() cannot restart its rings.
 function cardBattleTestReticleSync(){
@@ -3239,7 +3323,7 @@ function cardBattleTestReticleSync(){
  marker.style.width=Math.min(target.width*.88,96)+'px';
  marker.hidden=false;
 }
-window.addEventListener('resize',()=>{if(cardBattleTestMode.active)cardBattleTestReticleSync()});
+window.addEventListener('resize',()=>{if(cardBattleTestMode.active){cardBattleTestReticleSync();cardBattleTestIntentSync();}});
 function cardBattleTestRender(){
  if(!cardBattleTestMode.active)return;const phase=phaseFoundation.phase===PHASE_SIDE_ALLY?'味方':phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵':'停止',blocked=cardFoundation.overflowPending||cardFoundation.pendingDraw>0,alive=attackExerciseAliveCount();
  const set=(id,v)=>{const e=document.querySelector('#'+id);if(e)e.textContent=v};set('ctCost',`${phaseFoundation.costRemaining} / ${phaseFoundation.costMax}`);cardBattleTestHudLogRefresh();
@@ -3249,6 +3333,7 @@ function cardBattleTestRender(){
  const defeat=document.querySelector('#ctEnemyDefeatStatus');if(defeat)defeat.hidden=enemies.some(e=>e.alive&&e.hp>0)||enemies.some(e=>e.hp<=0&&!e.graphicGone);
 
  const army=document.querySelector('#ctAllyArmy');if(army){const actors=Object.values(attackExercise.actors);army.innerHTML=[3,0,4,1,5,2].map(slot=>{const actor=actors.find(a=>Number(a.formationSlot)===slot);return actor?cardBattleTestActorHtml(actor):cardBattleTestEmptyAllyHtml(slot)}).join('');}
+ cardBattleTestIntentSync();
  const rail=document.querySelector('#ctFanRail');if(rail){rail.innerHTML=cardFoundation.hand.length?cardFoundation.hand.map(cardBattleTestCardHtml).join(''):'<div style="padding:18px 10px;color:#8792a6;font-size:9px">手札なし</div>';cardBattleTestFanLayout();}
  set('ctOverflow',cardFoundation.overflowPending?'21枚｜1枚タップして破棄':'');
  const msg=document.querySelector('#ctMessage');if(msg){msg.textContent=blocked?'選択破棄／残りドロー完了まで他操作停止':alive<=0?'味方全滅｜試験停止。状態確認後「撤退」してください。':(cardBattleTestMode.message||attackExercise.message||phaseFoundation.message)}
