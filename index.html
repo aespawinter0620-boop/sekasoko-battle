@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.519</title>
+<title>セカソコ ver.519.1</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.519";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.519.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2328,6 +2328,30 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctEnemyCell.ctAfterimage.locked{filter:none!important}
 </style>
 
+
+<style id="ver519-1-card-enemy-flip-reticle">
+/* VER.519.1: flip only the enemy afterimage PNG plus its existing aura filter. */
+#cardBattleTestScreen .ctEnemyCell.ctAfterimage .ctArt img{transform:scaleX(-1)!important;transform-origin:center center}
+/* The old yellow text strip is superseded by the original SVG circular reticle. */
+#cardBattleTestScreen .ctEnemyCell.ctSharedFrame.locked::before{content:none!important;display:none!important}
+/* Stable board-level reticle: the enemy-grid HTML can redraw without restarting the ring animations. */
+#cardBattleTestScreen #ctLockReticle{position:absolute;left:0;top:0;width:96px;aspect-ratio:1/1;
+ transform:translate(-50%,-53%);z-index:8;pointer-events:none!important;
+ color:#ffdc56;filter:drop-shadow(0 0 2px rgba(255,218,82,.88)) drop-shadow(0 0 6px rgba(236,170,38,.42))}
+#cardBattleTestScreen #ctLockReticle[hidden]{display:none!important}
+#cardBattleTestScreen #ctLockReticle svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none!important}
+#cardBattleTestScreen #ctLockReticle .reticleOuterRing,
+#cardBattleTestScreen #ctLockReticle .reticleInnerRing,
+#cardBattleTestScreen #ctLockReticle .reticleMarker,
+#cardBattleTestScreen #ctLockReticle .reticleCross{fill:none;stroke:currentColor;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+#cardBattleTestScreen #ctLockReticle .reticleOuterRing{stroke-width:1.45;stroke-dasharray:12 5 7 5;opacity:.96;transform-origin:50% 50%;animation:phase1ReticleRotate 9s linear infinite}
+#cardBattleTestScreen #ctLockReticle .reticleInnerRing{stroke-width:.8;stroke-dasharray:2.5 5;opacity:.52;transform-origin:50% 50%;animation:phase1ReticleRotateReverse 7s linear infinite}
+#cardBattleTestScreen #ctLockReticle .reticleMarker{stroke-width:1.7;opacity:.94}
+#cardBattleTestScreen #ctLockReticle .reticleCross{stroke-width:1.1;opacity:.86}
+#cardBattleTestScreen #ctLockReticle .reticleCenter{fill:rgba(255,224,104,.92);stroke:rgba(79,50,5,.78);stroke-width:.5;vector-effect:non-scaling-stroke}
+@media(prefers-reduced-motion:reduce){#cardBattleTestScreen #ctLockReticle .reticleOuterRing,#cardBattleTestScreen #ctLockReticle .reticleInnerRing{animation:none!important}}
+</style>
+
 <style id="ver518-2-handlog">
 /* VER.518.2: static latest log inside the existing 17px hand heading. */
 #cardBattleTestScreen .ctHandHead{height:17px;min-height:17px;display:flex;align-items:center;gap:4px}
@@ -2342,7 +2366,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.519</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.519.1</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2459,7 +2483,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctDebugActions .ctAssist:disabled{opacity:.30}
 #cardBattleTestScreen .ctDebugStatus{font-size:10px;line-height:1.55;color:#d1deeb;margin:14px 0 0;min-height:30px}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.519 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.519.1 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2474,6 +2498,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   <div class="ctBoard" id="ctBoard">
     <div class="ctArmy" id="ctAllyArmy"></div>
     <div class="ctEnemyArea"><div class="ctEnemyGrid" id="ctEnemyGrid"></div><div class="ctEnemyDefeatStatus" id="ctEnemyDefeatStatus" hidden>模擬敵全滅｜演習終了せず確認可能</div></div>
+    <div id="ctLockReticle" class="targetReticle" hidden aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><circle class="reticleOuterRing" cx="50" cy="50" r="42" pathLength="100"/><g class="reticleCardinals"><path class="reticleMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="reticleMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="reticleInnerRing" cx="50" cy="50" r="29"/><path class="reticleCross" d="M50 39v7 M50 54v7 M39 50h7 M54 50h7"/><circle class="reticleCenter" cx="50" cy="50" r="2.2"/></svg></div>
     <div class="ctFx" id="ctFx"></div>
   </div>
   <div class="ctHandWrap"><div class="ctHandHead"><b>手札</b><span class="ctHandDivider" aria-hidden="true">｜</span><button id="ctHudLatestLog" type="button" aria-label="最新戦闘ログ。タップで履歴を表示" aria-haspopup="dialog" title="戦闘ログ履歴を開く"><span id="ctHandLogText">ログ待機中</span></button><span class="ctOverflow" id="ctOverflow"></span></div><div class="ctHand" id="ctHand"><div class="ctFanRail" id="ctFanRail"></div></div><div class="ctDragGuide">↔ 空白で手札を送る・重ねて合成　↑ 攻撃　⇧ 味方へ防御</div></div>
@@ -3201,11 +3226,26 @@ function cardBattleTestDebugOpen(){
  ctGestureReset(true);el.hidden=false;cardBattleTestRender();document.querySelector('#ctDebugClose')?.focus({preventScroll:true});return true;
 }
 function cardBattleTestDebugClose(){const el=document.querySelector('#ctDebugOverlay');if(el)el.hidden=true;}
+// VER.519.1: position the unchanged VER.501.2 reticle above the currently locked card.
+// SVG stays mounted outside the enemy-grid redraw, so repeated render() cannot restart its rings.
+function cardBattleTestReticleSync(){
+ const board=document.querySelector('#ctBoard'),marker=document.querySelector('#ctLockReticle');
+ if(!board||!marker)return;
+ const cell=document.querySelector('#ctEnemyGrid .ctEnemyCell.ctSharedFrame.locked:not(.pendingDeath)');
+ if(!cell||!cardBattleTestMode.active){marker.hidden=true;return;}
+ const base=board.getBoundingClientRect(),target=cell.getBoundingClientRect();
+ marker.style.left=(target.left-base.left+target.width/2)+'px';
+ marker.style.top=(target.top-base.top+target.height*.43)+'px';
+ marker.style.width=Math.min(target.width*.88,96)+'px';
+ marker.hidden=false;
+}
+window.addEventListener('resize',()=>{if(cardBattleTestMode.active)cardBattleTestReticleSync()});
 function cardBattleTestRender(){
  if(!cardBattleTestMode.active)return;const phase=phaseFoundation.phase===PHASE_SIDE_ALLY?'味方':phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵':'停止',blocked=cardFoundation.overflowPending||cardFoundation.pendingDraw>0,alive=attackExerciseAliveCount();
  const set=(id,v)=>{const e=document.querySelector('#'+id);if(e)e.textContent=v};set('ctCost',`${phaseFoundation.costRemaining} / ${phaseFoundation.costMax}`);cardBattleTestHudLogRefresh();
  const grid=document.querySelector('#ctEnemyGrid'),enemies=attackExercise.enemies;
  if(grid)grid.innerHTML=[0,3,1,4,2,5].map(slot=>cardBattleTestEnemyHtml(enemies.find(e=>e.formationSlot===slot&&!e.graphicGone),slot)).join('');
+ cardBattleTestReticleSync();
  const defeat=document.querySelector('#ctEnemyDefeatStatus');if(defeat)defeat.hidden=enemies.some(e=>e.alive&&e.hp>0)||enemies.some(e=>e.hp<=0&&!e.graphicGone);
 
  const army=document.querySelector('#ctAllyArmy');if(army){const actors=Object.values(attackExercise.actors);army.innerHTML=[3,0,4,1,5,2].map(slot=>{const actor=actors.find(a=>Number(a.formationSlot)===slot);return actor?cardBattleTestActorHtml(actor):cardBattleTestEmptyAllyHtml(slot)}).join('');}
