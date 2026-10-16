@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.521</title>
+<title>セカソコ ver.522</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.521";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.522";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2363,10 +2363,54 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* The existing formal 4-button row owns the bottom safe area. No other bottom band. */
 #cardBattleTestScreen .ctBottomBar{padding-bottom:max(7px,env(safe-area-inset-bottom))}
 </style>
+
+<style id="ver522-sequential-intent-red-reticle">
+/* VER.522 visual trial only. Enemy/ally action, BLOCK, HP, cost, phase logic are untouched. */
+/* Each route persists under its enemy instance ID; 4 stationary dashes light in enemy -> ally order. */
+#cardBattleTestScreen #ctIntentLines .ctIntentRoute,
+#cardBattleTestScreen #ctIntentLines .ctIntentRoute *{pointer-events:none!important}
+#cardBattleTestScreen #ctIntentLines .ctIntentPulse{stroke:#ff9b9f;stroke-width:1.8;stroke-linecap:round;
+  stroke-opacity:.12;filter:drop-shadow(0 0 1.1px rgba(255,86,94,.38));
+  animation:ctIntentSequentialGlow 1.8s linear infinite;vector-effect:non-scaling-stroke}
+/* Only one brief glow window per 1.8s; the other segments remain their subdued default red. */
+@keyframes ctIntentSequentialGlow{
+  0%,8%{stroke-opacity:.98;stroke-width:2.35;filter:drop-shadow(0 0 2px rgba(255,113,120,.68))}
+  22%,100%{stroke-opacity:.12;stroke-width:1.8;filter:drop-shadow(0 0 1.1px rgba(255,86,94,.38))}
+}
+/* This UI is only the red forecaster: do not affect #ctLockReticle or #battleScreen. */
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget{width:var(--ct-red-size,72px);height:var(--ct-red-size,72px);
+  border:0!important;box-shadow:none!important;background:transparent!important;border-radius:0!important;
+  color:#ff6267;pointer-events:none!important;isolation:isolate}
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget::before,
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget::after{display:none!important;content:none!important}
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none!important;
+  filter:drop-shadow(0 0 2px rgba(255,66,77,.70)) drop-shadow(0 0 4px rgba(153,11,28,.38))}
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget .ctRedOuter,
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget .ctRedInner,
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget .ctRedMarker{fill:none;stroke:currentColor;
+  vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget .ctRedOuter{stroke-width:1.45;stroke-dasharray:12 5 7 5;opacity:.94;
+  transform-origin:50% 50%;animation:phase1ReticleRotate 9s linear infinite}
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget .ctRedInner{stroke-width:.8;stroke-dasharray:2.5 5;opacity:.69;
+  transform-origin:50% 50%;animation:phase1ReticleRotateReverse 7s linear infinite}
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget .ctRedMarker{stroke-width:1.6;opacity:.86}
+#cardBattleTestScreen #ctIntentTargets .ctIntentTarget .ctIntentTotal{position:absolute;inset:0!important;
+  display:flex;align-items:center;justify-content:center;transform:none!important;
+  border:0!important;border-radius:0!important;padding:0!important;background:transparent!important;
+  font-size:clamp(13px,3.7vw,17px);line-height:1;font-weight:1000;color:#fff7f4;
+  text-shadow:0 1px 2px #150003,0 0 3px #90091e;pointer-events:none!important;
+  font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.04em}
+@media(max-width:360px){#cardBattleTestScreen #ctIntentTargets .ctIntentTarget .ctIntentTotal{font-size:13px}}
+@media(prefers-reduced-motion:reduce){
+ #cardBattleTestScreen #ctIntentLines .ctIntentPulse{animation:none!important;stroke-opacity:.32;filter:none}
+ #cardBattleTestScreen #ctIntentTargets .ctRedOuter,
+ #cardBattleTestScreen #ctIntentTargets .ctRedInner{animation:none!important}
+}
+</style>
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.521</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.522</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2507,7 +2551,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctIntentTarget .ctIntentTotal{font-size:10px}#cardBattleTestScreen .ctEnemyCell.ctSharedFrame .ctEnemyIntent{font-size:9px}}
 </style>
 
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.521 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.522 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3349,6 +3393,7 @@ function cardBattleTestMockIntentData(){
   return {enemyId:e.instanceId,allyId:target.ownerRosterId,value:cardBattleTestMockIntentValue(e),homeSlot:home};
  });
 }
+// VER.522: keep route/target nodes keyed so routine battle renders do not restart CSS animations.
 function cardBattleTestIntentSync(){
  const board=document.querySelector('#ctBoard'),overlay=document.querySelector('#ctIntentOverlay'),svg=document.querySelector('#ctIntentArrows'),lines=document.querySelector('#ctIntentLines'),targets=document.querySelector('#ctIntentTargets');
  if(!board||!overlay||!svg||!lines||!targets)return;
@@ -3356,36 +3401,67 @@ function cardBattleTestIntentSync(){
  if(!cardBattleTestMode.active||!data.length){lines.replaceChildren();targets.replaceChildren();return;}
  const base=board.getBoundingClientRect(),w=board.clientWidth,h=board.clientHeight;
  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
- const ns='http://www.w3.org/2000/svg',totals=new Map(),links=[];
+ const ns='http://www.w3.org/2000/svg',totals=new Map(),allyElements=new Map(),visibleRoutes=new Set();
  const findEnemy=id=>[...document.querySelectorAll('#ctEnemyGrid [data-ct-enemy-id]')].find(x=>x.dataset.ctEnemyId===id);
  const findAlly=id=>[...document.querySelectorAll('#ctAllyArmy [data-ct-rid]')].find(x=>x.dataset.ctRid===id);
- for(const intent of data){
+ // Pre-existing positions and endpoints are unchanged from VER.521.
+ for(const [index,intent] of data.entries()){
   const enemy=findEnemy(intent.enemyId),ally=findAlly(intent.allyId);
   if(!enemy||!ally)continue;
   const e=enemy.getBoundingClientRect(),a=ally.getBoundingClientRect();
   const sx=e.left-base.left+e.width*.17,sy=e.top-base.top+e.height*.43;
   const tx=a.left-base.left+a.width*.59,ty=a.top-base.top+a.height*.42;
-  links.push([sx,sy,tx,ty]);
+  const key=intent.enemyId;
+  visibleRoutes.add(key);
   totals.set(intent.allyId,(totals.get(intent.allyId)||0)+intent.value);
+  allyElements.set(intent.allyId,ally);
+  let group=[...lines.children].find(x=>x.dataset.enemyId===key);
+  if(!group){
+   group=document.createElementNS(ns,'g');group.classList.add('ctIntentRoute');group.dataset.enemyId=key;
+   const background=document.createElementNS(ns,'line');background.classList.add('ctIntentBase');
+   background.setAttribute('stroke','#ff6069');background.setAttribute('stroke-width','1.25');background.setAttribute('stroke-opacity','.67');
+   background.setAttribute('stroke-dasharray','3 5');background.setAttribute('marker-end','url(#ctIntentArrowHead)');
+   background.setAttribute('vector-effect','non-scaling-stroke');group.appendChild(background);
+   for(let n=0;n<4;n++){
+    const pulse=document.createElementNS(ns,'line');pulse.classList.add('ctIntentPulse');
+    pulse.dataset.step=String(n+1);
+    // 4 step pulses in 1.8s: ① closest to enemy, then ②③④ toward the ally.
+    // Each attack source has a distinct deterministic phase offset, avoiding full synchronization.
+    const delay=n*.45-index*.19;
+    pulse.style.animationDelay=`${delay.toFixed(2)}s`;
+    group.appendChild(pulse);
+   }
+   lines.appendChild(group);
+  }
+  const baseLine=group.querySelector('.ctIntentBase');
+  for(const [name,val] of [['x1',sx],['y1',sy],['x2',tx],['y2',ty]])baseLine.setAttribute(name,String(val));
+  const dx=tx-sx,dy=ty-sy;
+  for(let n=0;n<4;n++){
+   const pulse=group.querySelector(`.ctIntentPulse[data-step="${n+1}"]`);
+   const t=.13+n*.225,len=.056;
+   pulse.setAttribute('x1',String(sx+dx*t));pulse.setAttribute('y1',String(sy+dy*t));
+   pulse.setAttribute('x2',String(sx+dx*(t+len)));pulse.setAttribute('y2',String(sy+dy*(t+len)));
+  }
  }
- const fragment=document.createDocumentFragment();
- for(const [sx,sy,tx,ty] of links){
-  const line=document.createElementNS(ns,'line');
-  for(const [k,v] of [['x1',sx],['y1',sy],['x2',tx],['y2',ty]])line.setAttribute(k,String(v));
-  line.setAttribute('stroke','#ff6069');line.setAttribute('stroke-width','1.25');line.setAttribute('stroke-opacity','.67');
-  line.setAttribute('stroke-dasharray','3 5');line.setAttribute('marker-end','url(#ctIntentArrowHead)');
-  line.setAttribute('vector-effect','non-scaling-stroke');fragment.appendChild(line);
- }
- lines.replaceChildren(fragment);
- const badges=document.createDocumentFragment();
+ for(const old of [...lines.children])if(!visibleRoutes.has(old.dataset.enemyId))old.remove();
+ const activeTargets=new Set();
  for(const [id,total] of totals){
-  const ally=findAlly(id);if(!ally)continue;
-  const a=ally.getBoundingClientRect(),badge=document.createElement('div');badge.className='ctIntentTarget';
+  const ally=allyElements.get(id);if(!ally)continue;
+  activeTargets.add(id);
+  const a=ally.getBoundingClientRect();
+  let badge=[...targets.children].find(x=>x.dataset.allyId===id);
+  if(!badge){
+   badge=document.createElement('div');badge.className='ctIntentTarget';badge.dataset.allyId=id;
+   badge.innerHTML='<svg viewBox="0 0 100 100" focusable="false" aria-hidden="true"><circle class="ctRedOuter" cx="50" cy="50" r="42"/><g class="ctRedCardinals"><path class="ctRedMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="ctRedMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="ctRedInner" cx="50" cy="50" r="29"/></svg><span class="ctIntentTotal"></span>';
+   targets.appendChild(badge);
+  }
   badge.style.left=(a.left-base.left+a.width*.59)+'px';badge.style.top=(a.top-base.top+a.height*.42)+'px';
+  badge.style.setProperty('--ct-red-size',Math.min(a.width*.79,76)+'px');
   badge.setAttribute('aria-label',`模擬予告攻撃の合計 ${total}`);
-  const label=document.createElement('span');label.className='ctIntentTotal';label.textContent=`🗡️${total}`;badge.appendChild(label);badges.appendChild(badge);
+  const label=badge.querySelector('.ctIntentTotal');const value=String(total);
+  if(label.textContent!==value)label.textContent=value;
  }
- targets.replaceChildren(badges);
+ for(const old of [...targets.children])if(!activeTargets.has(old.dataset.allyId))old.remove();
 }
 
 // VER.519.1: position the unchanged VER.501.2 reticle above the currently locked card.
