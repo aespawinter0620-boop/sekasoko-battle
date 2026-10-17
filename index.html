@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.525.1</title>
+<title>セカソコ ver.525.2</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.525.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.525.2";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2410,7 +2410,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.525.1</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.525.2</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2490,7 +2490,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
  #cardBattleTestScreen #ctAllyArmy,#cardBattleTestScreen #ctEnemyGrid{column-gap:2px;row-gap:4px}
 }
 
-/* VER.525.1: temporary direct-attack drop candidate only; never a persistent LOCK decoration. */
+/* VER.525.2: temporary direct-attack drop candidate only; never a persistent LOCK decoration. */
 #cardBattleTestScreen #ctEnemyGrid .ctEnemyCell.ctEnemyDropReady{
  border-color:#ffe052!important;
  box-shadow:0 0 0 2px #ffd84a9c,0 0 15px #ffd44880,inset 0 1px 0 #ffffff25!important;
@@ -2563,7 +2563,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
    Once mounted, the original tap/drag/fusion transforms keep their transitions. */
 #cardBattleTestScreen .ctCard.ctCardMounting{transition:none!important}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.525.1 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.525.2 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3588,42 +3588,70 @@ function ctGestureReset(returning=false){
  if(g.ghost){if(returning){g.ghost.style.setProperty('--drag-dx','0px');g.ghost.style.setProperty('--drag-dy','0px');g.ghost.classList.add('ctReturning');setTimeout(()=>g.ghost.remove(),180)}else g.ghost.remove()}
 }
 function ctGestureCanFuse(a,b){if(!a||!b||a.instanceId===b.instanceId)return false;const atk=attackCardTier(a),def=defenseCardTier(a);return (atk&&[1,2].includes(atk)&&attackCardTier(b)===atk)||(def&&[1,2].includes(def)&&defenseCardTier(b)===def)}
+// VER.525.2: use the rendered drag card's lower edge, not the finger tip.
+// The drag ghost is positioned at g.rect and translated by the pointer delta.
+// Its existing CSS transform uses scale(1.07) around its center; compute that
+// geometry synchronously so pointerup never depends on the prior animation frame.
+function ctGestureCardBottom(g){
+ const dragScale=1.07;
+ return g.rect.bottom+(g.y-g.startY)+(dragScale-1)*g.rect.height/2;
+}
+function ctGestureCommonUseReady(g,hand){
+ if(!g.moved||!g.ghost||!hand)return false;
+ const r=hand.getBoundingClientRect();
+ return ctGestureCardBottom(g)<=r.top+r.height/2;
+}
+function ctGestureUseAllowed(){
+ return cardBattleTestMode.active&&!cardBattleTestMode.busy&&attackExerciseCanOperate()&&phaseFoundation.costRemaining>0;
+}
 function ctGestureDropTarget(g){
- ctGestureClearMarks();const node=document.elementFromPoint(g.x,g.y),hand=document.querySelector('#ctHand'),onHand=hand?.contains(node),card=onHand?node?.closest('[data-ct-card-id]'):null;
- const a=cardFoundation.hand.find(c=>c.instanceId===g.id),b=cardFoundation.hand.find(c=>c.instanceId===card?.dataset.ctCardId);const dropAllowed=cardBattleTestMode.active&&!cardBattleTestMode.busy&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw;
- if(dropAllowed&&ctGestureCanFuse(a,b)){g.target={type:'fuse',id:b.instanceId};card.classList.add('ctFuseReady');g.ghost?.classList.add('ctFuseReady');return}
- g.ghost?.classList.remove('ctFuseReady');
- const board=document.querySelector('#ctBoard'),unit=node?.closest('#ctAllyArmy [data-ct-rid]'),directRid=unit?.dataset.ctRid,directActor=attackExercise.actors[directRid];
- if(defenseCardTier(a)&&dropAllowed&&phaseFoundation.phase===PHASE_SIDE_ALLY&&phaseFoundation.costRemaining>0){
-  // An actual living ally drop wins over the cyan selection, even if another ally is selected.
-  if(directActor?.alive&&directActor.hp>0){
-   g.target={type:'defense',rid:directRid};unit.classList.add('ctDropReady');return
-  }
-  // Elsewhere on the battle board, defend the cyan-selected ally. No implicit fallback.
-  if(board?.contains(node)){
-   const rid=attackExercise.defenseTargetRosterId,actor=attackExercise.actors[rid];
-   if(actor?.alive&&actor.hp>0){
-    g.target={type:'defense',rid};board.classList.add('ctDefenseReady');
-    const selected=[...document.querySelectorAll('#ctAllyArmy [data-ct-rid]')].find(el=>el.dataset.ctRid===rid);
-    selected?.classList.add('ctDropReady');return
-   }
-  }
+ ctGestureClearMarks();
+ const node=document.elementFromPoint(g.x,g.y),hand=document.querySelector('#ctHand'),onHand=hand?.contains(node),card=onHand?node?.closest('[data-ct-card-id]'):null;
+ const a=cardFoundation.hand.find(c=>c.instanceId===g.id),b=cardFoundation.hand.find(c=>c.instanceId===card?.dataset.ctCardId);
+ const dropAllowed=cardBattleTestMode.active&&!cardBattleTestMode.busy&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw;
+ // 1. Fusing keeps priority over every form of card use.
+ if(dropAllowed&&ctGestureCanFuse(a,b)){
+  g.target={type:'fuse',id:b.instanceId};card.classList.add('ctFuseReady');g.ghost?.classList.add('ctFuseReady');return;
  }
- // VER.525.1: enemy-card landing takes priority over the legacy upward flick.
- // Preserve the enemy instance ID even for a protected back row or a dying enemy:
- // these are invalid direct drops, never fallbacks to the current LOCK.
+ g.ghost?.classList.remove('ctFuseReady');
+ const canUse=ctGestureUseAllowed();
+ const board=document.querySelector('#ctBoard'),unit=node?.closest('#ctAllyArmy [data-ct-rid]');
+ const directRid=unit?.dataset.ctRid,directActor=attackExercise.actors[directRid];
+ const ready=ctGestureCommonUseReady(g,hand);
+ // 2. Direct living-ally defense remains higher priority than cyan selection.
+ if(defenseCardTier(a)&&canUse&&directActor?.alive&&directActor.hp>0){
+  g.target={type:'defense',rid:directRid};unit.classList.add('ctDropReady');return;
+ }
+ // 2. Living frontline enemy: direct-target attack with temporary yellow candidate.
+ // A dead/non-lockable FRONT remains an invalid direct drop, with NO lock fallback.
  if(attackCardTier(a)){
   const enemyCell=node?.closest('#ctEnemyGrid [data-ct-enemy-id]');
   if(enemyCell){
-   g.target={type:'enemyDrop',id:enemyCell.dataset.ctEnemyId};
-   if(g.moved&&dropAllowed&&phaseFoundation.phase===PHASE_SIDE_ALLY&&phaseFoundation.costRemaining>0&&attackExerciseCanOperate()&&attackExerciseEnemyLockable(attackExerciseEnemyById(g.target.id)))enemyCell.classList.add('ctEnemyDropReady');
-   return;
+   const enemy=attackExerciseEnemyById(enemyCell.dataset.ctEnemyId);
+   if(enemy?.row!=='back'){
+    g.target={type:'enemyDrop',id:enemyCell.dataset.ctEnemyId};
+    if(canUse&&attackExerciseEnemyLockable(enemy))enemyCell.classList.add('ctEnemyDropReady');
+    return;
+   }
+   // Back row is NOT a direct target in VER.525.2. It behaves like background.
   }
  }
- const beyondHand=g.y<(hand?.getBoundingClientRect().top??0)-20;
- if(attackCardTier(a)&&beyondHand&&g.startY-g.y>=58&&Math.abs(g.startY-g.y)>Math.abs(g.x-g.startX)*.65&&dropAllowed&&phaseFoundation.phase===PHASE_SIDE_ALLY&&phaseFoundation.costRemaining>0&&attackExerciseLockedEnemy()){
-  g.target={type:'attack'};document.querySelector('#ctBoard')?.classList.add('ctAttackReady');return
+ // 3. Shared use zone: ghost bottom must cross the live #ctHand center line.
+ // No legacy 58px, direction ratio, or hand.top-20 tests are chained on.
+ if(ready&&canUse){
+  if(attackCardTier(a)&&attackExerciseLockedEnemy()){
+   g.target={type:'attack'};board?.classList.add('ctAttackReady');return;
+  }
+  if(defenseCardTier(a)){
+   const rid=attackExercise.defenseTargetRosterId,actor=attackExercise.actors[rid];
+   if(actor?.alive&&actor.hp>0){
+    g.target={type:'defense',rid};board?.classList.add('ctDefenseReady');
+    const selected=[...document.querySelectorAll('#ctAllyArmy [data-ct-rid]')].find(el=>el.dataset.ctRid===rid);
+    selected?.classList.add('ctDropReady');return;
+   }
+  }
  }
+ // 4. Anything else returns to the hand without consuming cards or COST.
  g.target=null;
 }
 function ctGestureTick(){
@@ -3661,7 +3689,8 @@ function ctGestureEnd(e,cancelled=false){
  const dragged=g.moved,target=g.target,source=g.id;ctSuppressClickUntil=Date.now()+125;
  // Capturing the pointer on the hand lane reroutes its synthetic click to the lane.
  // Call the original tap action once here, and suppress that follow-up synthetic click.
- ctGestureReset(dragged&&!target);
+ const invalidEnemy=target?.type==='enemyDrop'&&(!ctGestureUseAllowed()||!attackExerciseEnemyLockable(attackExerciseEnemyById(target.id)));
+ ctGestureReset(dragged&&(!target||invalidEnemy));
  if(!dragged){if(!cancelled)cardBattleTestCardTap(source);return}
  if(cancelled||!target||!cardBattleTestCanInput())return;
  const c=cardFoundation.hand.find(v=>v.instanceId===source);if(!c)return;
