@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.525.2</title>
+<title>セカソコ ver.526</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.525.2";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.526";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2410,7 +2410,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.525.2</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.526</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2563,7 +2563,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
    Once mounted, the original tap/drag/fusion transforms keep their transitions. */
 #cardBattleTestScreen .ctCard.ctCardMounting{transition:none!important}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.525.2 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.526 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2840,8 +2840,10 @@ function cardResolveOverflowDiscard(instanceId){
 }
 function cardEndTurn(){
  if(cardFoundation.overflowPending){cardFoundation.message='21枚超過の選択破棄を先に完了してください';cardDebugRender();return false}
- const kept=[],removed=[];for(const c of cardFoundation.hand){if(c.retain)kept.push(c);else removed.push(c)}
- cardFoundation.hand=kept;removed.forEach(cardReleaseFusionOrBase);cardFoundation.message=`ターン終了｜《保持》${kept.length}枚を手札維持｜${removed.length}枚を手札から除去`;cardDebugRender();return true
+ // VER.526: keep every unused hand card intact across ally/enemy phases.
+ // Only card use, overflow discard, and death may move or release its base sources.
+ cardFoundation.message=`ターン終了｜未使用カード${cardFoundation.hand.length}枚をすべて次フェーズへ持ち越し`;
+ cardDebugRender();return true
 }
 function cardDebugToggleRetain(instanceId){const c=cardFoundation.hand.find(x=>x.instanceId===instanceId);if(!c||cardFoundation.overflowPending)return;if(cardIsFusion(c)){c.retain=true;cardFoundation.message=`${c.name}｜合成カードは自動《保持》固定`;return cardDebugRender()}c.retain=!c.retain;cardFoundation.message=`${c.name}｜《保持》${c.retain?'ON':'OFF'}`;cardDebugRender()}
 function cardDebugToggleExhaust(instanceId){const c=cardFoundation.hand.find(x=>x.instanceId===instanceId);if(!c||cardFoundation.overflowPending)return;if(cardIsFusion(c)){cardFoundation.message=`${c.name}｜消滅指定は元素材カード側の設定を維持`;return cardDebugRender()}c.exhaustOnDiscard=!c.exhaustOnDiscard;cardFoundation.message=`${c.name}｜破棄時${c.exhaustOnDiscard?'消滅':'捨て札'}`;cardDebugRender()}
@@ -3160,7 +3162,7 @@ function attackExerciseSetMockHp(){
  const input=document.querySelector('#dbgAttackEnemyHp'),n=Math.max(1,Math.min(999999999,Math.floor(Number(input?.value)||1000)));
  e.maxHp=n;e.hp=n;e.alive=true;e.overkill=0;e.graphicGone=false;attackExercise.message=`${e.name}のHP ${n}へ設定（本人BLOCKは維持）`;attackExerciseLogPush(attackExercise.message);attackExerciseRender();return n
 }
-function attackExerciseEndAlly(){if(!attackExercise.active)return false;const ok=phaseDebugEndAlly();if(ok){attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.message='味方フェーズ終了｜合成カードは《保持》で手札維持｜味方BLOCKは敵フェーズ中も維持';attackExerciseRender()}return ok}
+function attackExerciseEndAlly(){if(!attackExercise.active)return false;const ok=phaseDebugEndAlly();if(ok){attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.message='味方フェーズ終了｜未使用カードはすべて次フェーズへ持ち越し｜味方BLOCKは敵フェーズ中も維持';attackExerciseRender()}return ok}
 function attackExerciseAdvanceEnemy(){if(!attackExercise.active)return false;const ok=phaseDebugAdvanceEnemy();attackExercise.selected=[];attackExercise.defenseSelected=[];attackExerciseRender();return ok}
 function attackExerciseOnEnemyActions(count){const n=Math.max(0,Math.floor(Number(count)||0));if(!attackExercise.active||n<=0)return;attackExercise.chain=1;attackExercise.message=`敵の模擬行動${n}枠成立｜演習CHAINを×1.0へリセット`;attackExerciseLogPush(attackExercise.message);attackExerciseRender()}
 function attackExerciseFmt(v,d=2){const n=Number(v)||0;return n.toFixed(d).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1')}
