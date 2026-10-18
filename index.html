@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.527</title>
+<title>セカソコ ver.528</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.527";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.528";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2410,7 +2410,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.527</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.528</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2574,7 +2574,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctExit.ctFinalExit{position:relative;z-index:220}
 #cardBattleTestScreen.ctResultFinal .ctTop{position:relative;z-index:221}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.527 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.528 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2782,7 +2782,7 @@ const CARD_DRAW_PER_TURN=5,CARD_HAND_LIMIT=20;
 let cardInstanceSeq=0;
 function freshCardFoundation(){return{partyIndex:null,partyRosterIds:[],drawPile:[],hand:[],discardPile:[],exhausted:[],fusionSourceLedger:{},pendingDraw:0,overflowPending:false,reshuffleCount:0,message:'未生成'}}
 let cardFoundation=freshCardFoundation();
-function freshCardBattleTestMode(){return{floor:1,floorSerial:0,clearedFloor:0,resultType:'',floorBaseWD:0,runBaseWD:0,runOverkillWD:0,checkpointBaseWD:0,checkpointOverkillWD:0,rewardClaimed:false,active:false,busy:false,message:'停止中',lastAction:'',enteredFrom:'home',enemyDeathComplete:false}}
+function freshCardBattleTestMode(){return{floor:1,floorSerial:0,clearedFloor:0,lockSerial:0,resultType:'',floorBaseWD:0,runBaseWD:0,runOverkillWD:0,checkpointBaseWD:0,checkpointOverkillWD:0,rewardClaimed:false,active:false,busy:false,message:'停止中',lastAction:'',enteredFrom:'home',enemyDeathComplete:false}}
 let cardBattleTestMode=freshCardBattleTestMode();
 function cardDebugEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function cardShuffle(list){for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[list[i],list[j]]=[list[j],list[i]]}return list}
@@ -3022,7 +3022,7 @@ function attackExercisePromoteAfterDeath(enemy){
  return replacement||null;
 }
 function attackExerciseCompleteTargetDeath(enemyId){
- const e=attackExerciseEnemyById(enemyId);if(!e||e.hp>0)return;
+ const e=attackExerciseEnemyById(enemyId);if(!e||e.hp>0||(cardBattleTestMode.active&&(e.ctPendingAnimations||0)>0))return;
  attackExercisePromoteAfterDeath(e);
  // Auto correction resets CHAIN at most once; this is not an extra manual LOCK.
  attackExerciseEnsureLock({resetChain:true});
@@ -3217,20 +3217,44 @@ function cardBattleTestSetMessage(msg){
  // Direct-target refusals may not redraw; surface them in the moved ticker without touching the log history.
  if(cardBattleTestMode.active&&cardBattleTestMode.message)cardBattleTestHandLogSet(cardBattleTestMode.message);
 }
-function cardBattleTestLock(ms=160){cardBattleTestMode.busy=true;cardBattleTestRender();setTimeout(()=>{if(!cardBattleTestMode.active||cardBattleTestMode.resultType)return;cardBattleTestMode.busy=false;cardBattleTestRender()},ms)}
+// VER.528 B-01: a lock belongs to one run object, floor generation and action serial.
+// A previous attack's unlock is never allowed to unlock the next attack or floor.
+function cardBattleTestLock(ms=160){
+ const mode=cardBattleTestMode,serial=++mode.lockSerial,floorSerial=mode.floorSerial;
+ mode.busy=true;cardBattleTestRender();
+ setTimeout(()=>{
+  if(cardBattleTestMode!==mode||!mode.active||mode.resultType||mode.floorSerial!==floorSerial||mode.lockSerial!==serial)return;
+  mode.busy=false;cardBattleTestRender();
+ },ms);
+}
 
 // =========================================================
 // VER.527: official afterimages, multi-floor flow and original result renderer adapter.
 // Independent from the old SPD/ACTION loop. No floor transition regenerates cards.
 // =========================================================
-function cardBattleTestDamagePct(){
+// VER.528 B-02: calculate health totals once; do not use rounded display percentage for WD.
+function cardBattleTestDamageTotals(){
  const actors=Object.values(attackExercise.actors);
  const max=actors.reduce((n,a)=>n+Math.max(0,Number(a.maxHp)||0),0);
  const hp=actors.reduce((n,a)=>n+Math.max(0,Math.min(Number(a.hp)||0,Number(a.maxHp)||0)),0);
- return max?Math.max(0,Math.min(100,(1-hp/max)*100)):0;
+ return{max,hp};
+}
+function cardBattleTestDamagePct(){
+ const {max,hp}=cardBattleTestDamageTotals();
+ return max?Math.max(0,Math.min(100,(max-hp)*100/max)):0;
+}
+function cardBattleTestDamageRewardMultiplier(){
+ const {max,hp}=cardBattleTestDamageTotals();
+ if(max<=0)return damageRewardMultiplier(0);
+ const lost=Math.max(0,Math.min(max,max-hp));
+ // Inclusive thresholds compared against original HP totals, without division error.
+ for(const boundary of [5,10,20,30,40,50,60,70,80,90]){
+  if(lost*100<=max*boundary)return damageRewardMultiplier(boundary);
+ }
+ return damageRewardMultiplier(100);
 }
 function cardBattleTestRunReward(){
- const m=cardBattleTestMode,damageMult=damageRewardMultiplier(cardBattleTestDamagePct()),bossPct=bossRewardBonusPct(m.clearedFloor);
+ const m=cardBattleTestMode,damageMult=cardBattleTestDamageRewardMultiplier(),bossPct=bossRewardBonusPct(m.clearedFloor);
  const floorBase=Math.max(0,Math.floor(m.runBaseWD)),overkill=Math.max(0,Math.floor(m.runOverkillWD));
  const base=floorBase+overkill,bossMult=1+bossPct/100,strongRoute=0;
  return{base,floorBase,overkill,damageMult,bossPct,bossMult,strongRoute,total:Math.max(0,Math.round(base*damageMult*bossMult+strongRoute))};
@@ -3250,7 +3274,7 @@ function cardBattleTestRecordOverkill(hits,target){
 function cardBattleTestMaybeClearFloor(){
  const mode=cardBattleTestMode;
  if(!mode.active||mode.resultType||mode.clearedFloor>=mode.floor||!attackExercise.active)return false;
- if(!attackExercise.enemies.length||attackExercise.enemies.some(e=>e.hp>0||!e.graphicGone))return false;
+ if(!attackExercise.enemies.length||attackExercise.enemies.some(e=>e.hp>0||!e.graphicGone||(e.ctPendingAnimations||0)>0))return false;
  // Called only after cardBattleTestAnimateEnemy's final scheduled animation has ended.
  mode.clearedFloor=mode.floor;mode.busy=true;
  const floorWD=attackExercise.enemies.reduce((n,e)=>n+Math.max(0,Number(e.baseRewardWD)||enemyBaseRewardWD(e)),0);
@@ -3282,7 +3306,8 @@ function cardBattleTestContinueFloor(){
 function cardBattleTestAdvanceFloor(){
  const mode=cardBattleTestMode;
  if(!mode.active||mode.floor>=100||!attackExercise.active||attackExerciseAliveCount()<=0||cardFoundation.overflowPending)return false;
- const oldFloor=mode.floor;mode.floor++;
+ // Invalidate any outstanding lock/attack callbacks from the previous floor.
+ ++mode.lockSerial;const oldFloor=mode.floor;mode.floor++;
  attackExercise.enemies=attackExerciseMakeEnemies(true);
  attackExercise.lockedEnemyId=attackExercise.enemies.find(attackExerciseEnemyLockable)?.instanceId||null;
  attackExercise.chain=1;attackExercise.lastAttackHits=[];
@@ -3331,7 +3356,18 @@ function cardBattleTestFuse(){
 }
 function cardBattleTestAttack(){
  if(!cardBattleTestCanInput())return false;const ok=attackExerciseUseSelected();cardBattleTestMode.message=attackExercise.message;
- if(ok){const hits=attackExercise.lastAttackHits.slice();cardBattleTestRecordOverkill(hits,attackExerciseEnemyById(hits[0]?.targetEnemyId));cardBattleTestLock(Math.max(260,10+Math.max(0,hits.length-1)*180+730));setTimeout(()=>cardBattleTestAnimateEnemy(hits),10)}else cardBattleTestRender();return !!ok
+ if(ok){
+  const hits=attackExercise.lastAttackHits.slice(),mode=cardBattleTestMode,serial=mode.floorSerial;
+  const enemy=attackExerciseEnemyById(hits[0]?.targetEnemyId);
+  // Register at attack acceptance (not 10ms later) so older death callbacks wait.
+  const animation={mode,serial,enemy};if(enemy)enemy.ctPendingAnimations=(enemy.ctPendingAnimations||0)+1;
+  cardBattleTestRecordOverkill(hits,enemy);
+  cardBattleTestLock(Math.max(260,10+Math.max(0,hits.length-1)*180+730));
+  setTimeout(()=>{
+   if(cardBattleTestMode!==mode||!mode.active||mode.floorSerial!==serial)return;
+   cardBattleTestAnimateEnemy(hits,animation);
+  },10);
+ }else cardBattleTestRender();return !!ok
 }
 function cardBattleTestDefense(){
  if(!cardBattleTestCanInput())return false;const rid=attackExercise.defenseTargetRosterId,before=rid&&attackExercise.actors[rid]?Number(attackExercise.actors[rid].block)||0:0,ok=defenseExerciseUseSelected();cardBattleTestMode.message=attackExercise.message;
@@ -3382,13 +3418,13 @@ function cardBattleTestEnemyBlock(){
  if(!cardBattleTestMode.active||cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY){cardBattleTestMode.message='敵BLOCK付与は敵フェーズ中に使用してください';cardBattleTestRender();return false}
  const input=document.querySelector('#dbgEnemyBlock');if(input)input.value='20';const v=defenseExerciseAddEnemyBlock();cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return v!==false
 }
-function cardBattleTestAnimateEnemy(hits){
+function cardBattleTestAnimateEnemy(hits,animation=null){
  if(!cardBattleTestMode.active||!hits.length)return;
- const mode=cardBattleTestMode,targetId=hits[0].targetEnemyId,enemy=attackExerciseEnemyById(targetId),fx=document.querySelector('#ctFx'),board=document.querySelector('#ctBoard'),step=180;
+ const mode=cardBattleTestMode,serial=mode.floorSerial,targetId=hits[0].targetEnemyId,enemy=attackExerciseEnemyById(targetId),fx=document.querySelector('#ctFx'),board=document.querySelector('#ctBoard'),step=180;
  // Never derive the target from the current LOCK during async animation.
  if(!enemy||hits.some(h=>h.targetEnemyId!==targetId))return;
  hits.forEach((h,i)=>setTimeout(()=>{
-  if(!mode.active||cardBattleTestMode!==mode)return;
+  if(!mode.active||cardBattleTestMode!==mode||mode.floorSerial!==serial)return;
   const cell=[...document.querySelectorAll('#ctEnemyGrid [data-ct-enemy-id]')].find(el=>el.dataset.ctEnemyId===targetId);
   if(cell){cell.classList.remove('hit');void cell.offsetWidth;cell.classList.add('hit');setTimeout(()=>{if(cardBattleTestMode===mode&&cell.isConnected)cell.classList.remove('hit')},155)}
   if(!fx||!board)return;
@@ -3400,8 +3436,13 @@ function cardBattleTestAnimateEnemy(hits){
  },i*step));
  // Preserve the death image until every remaining Hit popup has finished.
  setTimeout(()=>{
-  if(!mode.active||cardBattleTestMode!==mode||!attackExercise.enemies.includes(enemy))return;
-  if(enemy.hp<=0)attackExerciseCompleteTargetDeath(targetId);
+  if(!mode.active||cardBattleTestMode!==mode||mode.floorSerial!==serial||!attackExercise.enemies.includes(enemy))return;
+  // An earlier batch may finish after a later attack has already made this enemy fatal.
+  // Only the final scheduled batch may complete death and allow floor progression.
+  if(animation&&animation.mode===mode&&animation.serial===serial&&animation.enemy===enemy){
+   enemy.ctPendingAnimations=Math.max(0,(enemy.ctPendingAnimations||0)-1);
+  }
+  if(enemy.hp<=0){if(!(enemy.ctPendingAnimations>0))attackExerciseCompleteTargetDeath(targetId)}
   else cardBattleTestRender();
  },(hits.length-1)*step+670)
 }
@@ -5004,7 +5045,7 @@ function damageRate(){
  const totalMaxHP=allUnits.reduce((sum,u)=>sum+Math.max(0,Number(u?.max)||0),0);
  const totalHP=allUnits.reduce((sum,u)=>sum+Math.max(0,Math.min(Number(u?.hp)||0,Number(u?.max)||0)),0);
  if(totalMaxHP<=0)return 0;
- return Math.max(0,Math.min(100,(1-totalHP/totalMaxHP)*100));
+ return Math.max(0,Math.min(100,(totalMaxHP-totalHP)*100/totalMaxHP));
 }
 // ver.338: finalized damage-rate reward table. Thresholds are inclusive.
 function damageRewardMultiplier(rate=damageRate()){
