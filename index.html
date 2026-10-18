@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.530</title>
+<title>セカソコ ver.531</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.530";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.531";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2166,7 +2166,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 .ctTop{flex:0 0 auto;padding:calc(7px + env(safe-area-inset-top)) 9px 7px;background:#0a0e18f2;border-bottom:1px solid #ffffff18;z-index:20}
 .ctTopLine{display:flex;align-items:center;gap:7px}.ctTopLine strong{font-size:13px;letter-spacing:.02em}.ctTrialBadge{font-size:7px;padding:3px 6px;border:1px solid #79d7ff77;border-radius:999px;color:#aee9ff;background:#0d2535}.ctExit{margin-left:auto;border:1px solid #ffffff2b;background:#222938;color:#fff;border-radius:8px;padding:7px 10px;font-size:9px;font-weight:900}
 .ctStats{display:grid;grid-template-columns:1.1fr .9fr .75fr .75fr;gap:4px;margin-top:6px}.ctStat{min-width:0;padding:5px 4px;border:1px solid #ffffff14;border-radius:7px;background:#111724;text-align:center;font-size:7px;color:#aeb9cd}.ctStat b{display:block;margin-top:1px;color:#fff;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ctBoard{position:relative;flex:1 1 0;min-height:260px;overflow:hidden;background:linear-gradient(180deg,rgba(3,7,13,.17),rgba(3,6,11,.32)),url("assets/backgrounds/cave.webp") center top/100% auto no-repeat,#070b12;border-bottom:1px solid #ffffff17}
+.ctBoard{position:relative;flex:1 1 0;min-height:260px;overflow:hidden;background:transparent;border-bottom:1px solid #ffffff17}
 .ctBoard::after{content:"新カード戦闘 試験モード";position:absolute;top:7px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:1000;letter-spacing:.08em;color:#d8e8ff80;white-space:nowrap;pointer-events:none}
 .ctArmy{position:absolute;inset:0 50% 0 0}.ctEnemyArea{position:absolute;inset:0 0 0 50%}
 .ctUnit{position:absolute;width:43%;height:28%;min-height:82px;border:1px solid #ffffff20;border-radius:12px;background:rgba(8,12,20,.56);padding:0;color:#fff;overflow:visible;text-align:center;transition:.16s;box-shadow:0 8px 24px #0005}
@@ -2410,7 +2410,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.530</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.531</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2584,7 +2584,18 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctExit.ctFinalExit{position:relative;z-index:220}
 #cardBattleTestScreen.ctResultFinal .ctTop{position:relative;z-index:221}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.530 新カード戦闘試験モード">
+<style id="ver531-card-floor-background">
+/* VER.531: the adopted full-portrait background belongs ONLY to the new card battle screen.
+   All foreground HUD, hand, roster, and unit rules remain unchanged. */
+#cardBattleTestScreen{
+  background-color:#070b12;
+  background-image:var(--ct531-background,none);
+  background-position:center center;
+  background-repeat:no-repeat;
+  background-size:cover;
+}
+</style>
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.531 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3340,7 +3351,33 @@ function cardBattleTestAdvanceFloor(){
  cardBattleTestPlanEnemyActions();
  cardBattleTestMode.message=`${oldFloor}F→${mode.floor}F｜正式残像更新｜未使用カード・山札・捨て札・消滅を継続`;
  attackExerciseLogPush(cardBattleTestMode.message);
- cardBattleTestRender();return true;
+ ct531ApplyBackground(mode.floor);cardBattleTestRender();return true;
+}
+
+
+/* VER.531: floor backgrounds are visual-only and use the existing card battle floor state.
+   Invalid floors intentionally have no adopted background. Keep the 100F gameplay cap. */
+function ct531BackgroundPathForFloor(floor){
+  const f=Number(floor);
+  if(!Number.isInteger(f)||f<1)return null;
+  const base='assets/backgrounds/';
+  if(f%1000===0)return base+'1000階毎.png';
+  if(f%100===0)return base+'100階毎.png';
+  if(f%10===0)return base+'10階毎.png';
+  if(f%5===0)return base+'五階毎.png';
+  return base+(f%2===0?'偶数階.png':'奇数階.png');
+}
+function ct531ApplyBackground(floor){
+  const screen=document.getElementById('cardBattleTestScreen');
+  if(!screen)return false;
+  const path=ct531BackgroundPathForFloor(floor);
+  if(!path)return false;
+  // Keep the exact same CSS background for unchanged categories, so re-renders
+  // or e.g. the 1F -> 3F odd background never force a redundant fetch.
+  if(screen.dataset.ct531BackgroundPath===path)return true;
+  screen.style.setProperty('--ct531-background',`url("${path}")`);
+  screen.dataset.ct531BackgroundPath=path;
+  return true;
 }
 
 function cardBattleTestStart(){
@@ -3350,7 +3387,7 @@ function cardBattleTestStart(){
  cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
  attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
- showScreen('cardBattleTestScreen');cardBattleTestRender();return true
+ ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');cardBattleTestRender();return true
 }
 function cardBattleTestExit(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
