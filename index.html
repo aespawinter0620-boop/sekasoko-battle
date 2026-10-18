@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.526</title>
+<title>セカソコ ver.527</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.526";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.527";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2410,7 +2410,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.526</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.527</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2562,8 +2562,19 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* New cards start directly at the computed fan transform, without a default-to-fan tween.
    Once mounted, the original tap/drag/fusion transforms keep their transitions. */
 #cardBattleTestScreen .ctCard.ctCardMounting{transition:none!important}
+
+/* VER.527 card battle expedition result. Existing expeditionResultHTML renders its contents. */
+#ctRunResult[hidden]{display:none!important}
+#ctRunResult{position:absolute;inset:0;z-index:210;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(5,7,14,.94);overflow:auto}
+#ctRunResult .ctRunResultPanel{width:100%;max-width:450px;max-height:95%;overflow:auto;padding:18px 12px;border:1px solid rgba(223,203,142,.45);border-radius:14px;background:#111827;box-shadow:0 10px 40px #0009}
+#ctRunResultTitle{text-align:center;color:#f4d28c;font-weight:800;font-size:20px;margin:0 0 12px}
+#ctRunResultNext{display:block;width:100%;min-height:46px;margin-top:16px;border:1px solid #d7af62;border-radius:10px;background:#705729;color:white;font-weight:800}
+#ctRunResultNext[hidden]{display:none}
+
+#cardBattleTestScreen .ctExit.ctFinalExit{position:relative;z-index:220}
+#cardBattleTestScreen.ctResultFinal .ctTop{position:relative;z-index:221}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.526 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.527 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2610,6 +2621,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
       <ol class="ctLogEntries" id="ctLogEntries" aria-live="off"></ol>
     </div>
   </div>
+<div id="ctRunResult" hidden role="dialog" aria-modal="true" aria-label="遠征リザルト"><div class="ctRunResultPanel"><h2 id="ctRunResultTitle"></h2><div id="ctRunResultDetail"></div><button id="ctRunResultNext" type="button" onclick="cardBattleTestContinueFloor()">次の階層へ</button></div></div>
 </section>
 
 <section class="screen" id="battleScreen">
@@ -2770,7 +2782,7 @@ const CARD_DRAW_PER_TURN=5,CARD_HAND_LIMIT=20;
 let cardInstanceSeq=0;
 function freshCardFoundation(){return{partyIndex:null,partyRosterIds:[],drawPile:[],hand:[],discardPile:[],exhausted:[],fusionSourceLedger:{},pendingDraw:0,overflowPending:false,reshuffleCount:0,message:'未生成'}}
 let cardFoundation=freshCardFoundation();
-function freshCardBattleTestMode(){return{active:false,busy:false,message:'停止中',lastAction:'',enteredFrom:'home',enemyDeathComplete:false}}
+function freshCardBattleTestMode(){return{floor:1,floorSerial:0,clearedFloor:0,resultType:'',floorBaseWD:0,runBaseWD:0,runOverkillWD:0,checkpointBaseWD:0,checkpointOverkillWD:0,rewardClaimed:false,active:false,busy:false,message:'停止中',lastAction:'',enteredFrom:'home',enemyDeathComplete:false}}
 let cardBattleTestMode=freshCardBattleTestMode();
 function cardDebugEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function cardShuffle(list){for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[list[i],list[j]]=[list[j],list[i]]}return list}
@@ -2971,9 +2983,22 @@ const DEFENSE_EXERCISE_SPEC={1:{label:'防御',rate:.05},2:{label:'鉄壁',rate:
 let attackFusionSeq=0,defenseFusionSeq=0;
 // VER.514.1: the transient enemy roster is the sole source of HP/BLOCK/OVERKILL.
 // Trial fixtures are DEBUG values, NOT battle balance data or legacy E units.
+// VER.527: map official legacy spawn data to the independent card-battle HP/BLOCK layer.
+// This does not alter the generator's party, tier, placement, stats or sprites.
 function attackExerciseMakeEnemies(trial=false){
- const fixtures=trial?[['模擬前衛A',0,65],['模擬前衛B',1,1],['模擬前衛C',2,90],['模擬後衛A',3,55],['模擬後衛B',4,65],['模擬後衛C',5,75]]:[['模擬敵',0,1000]];
- return fixtures.map(([name,slot,hp],i)=>({instanceId:`mock5141_${i}`,name,formationSlot:slot,homeSlot:slot,row:slot<3?'front':'back',hp,maxHp:hp,block:0,alive:true,overkill:0,graphicGone:false}));
+ if(!trial){
+  const fixtures=[['模擬敵',0,1000]];
+  return fixtures.map(([name,slot,hp],i)=>({instanceId:`mock5141_${i}`,name,formationSlot:slot,homeSlot:slot,row:'front',hp,maxHp:hp,block:0,alive:true,overkill:0,graphicGone:false}));
+ }
+ const mode=cardBattleTestMode,f=Math.max(1,Math.min(100,Math.floor(mode.floor)||1)),serial=++mode.floorSerial;
+ const official=assignEnemyBaseRewards(makeEnemies(f));
+ return official.map((e,i)=>({...e,
+  instanceId:`ct527_f${f}_s${serial}_${i}_${e.afterimageCharacterId||e.cid||'enemy'}`,
+  formationSlot:e.formationSlot,homeSlot:e.homeSlot,row:e.row,
+  hp:e.hp,maxHp:e.max,block:0,alive:e.hp>0,overkill:0,graphicGone:false,
+  // Existing afterimage reward table and actual floor-scaled stats are retained.
+  baseRewardWD:e.baseRewardWD
+ }));
 }
 function freshAttackExercise(){return{active:false,selected:[],defenseSelected:[],defenseTargetRosterId:null,lockedEnemyId:null,chain:1,actors:{},burst:{},enemies:[],baseInstanceIds:[],hitLog:[],lastAttackHits:[],log:[],message:'停止中'}}
 function attackExerciseEnemyById(id){return attackExercise.enemies.find(e=>e.instanceId===id)||null}
@@ -3002,8 +3027,9 @@ function attackExerciseCompleteTargetDeath(enemyId){
  // Auto correction resets CHAIN at most once; this is not an extra manual LOCK.
  attackExerciseEnsureLock({resetChain:true});
  phaseFoundation.simulatedEnemyRoster=attackExercise.enemies.filter(x=>x.alive&&x.hp>0).map(x=>({key:x.instanceId,name:x.name}));
- if(!phaseFoundation.simulatedEnemyRoster.length){attackExercise.message='模擬敵全滅｜演出完了。試験を継続確認するか終了してください';attackExerciseLogPush(attackExercise.message)}
+ if(!phaseFoundation.simulatedEnemyRoster.length){attackExercise.message=cardBattleTestMode.active?'階層の敵全滅｜全Hit・敵消失演出完了':'模擬敵全滅｜演出完了。試験を継続確認するか終了してください';attackExerciseLogPush(attackExercise.message)}
  attackExerciseRender();
+ if(cardBattleTestMode.active)cardBattleTestMaybeClearFloor();
 }
 function cardBattleTestSelectEnemy(id){
  if(!cardBattleTestMode.active||cardBattleTestMode.busy)return false;
@@ -3032,7 +3058,7 @@ function attackExerciseBaseIds(){return cardManagedBaseInstances().map(c=>c.inst
 function attackExerciseIntegrity(){const cur=attackExerciseBaseIds(),base=[...attackExercise.baseInstanceIds].sort(),dupes=cur.filter((x,i)=>i&&x===cur[i-1]);return{ok:base.length===cur.length&&!dupes.length&&base.every((x,i)=>x===cur[i]),current:cur.length,expected:base.length,dupes}}
 function attackExerciseLogPush(msg){attackExercise.log.push(String(msg));if(attackExercise.log.length>120)attackExercise.log.splice(0,attackExercise.log.length-120);if(cardBattleTestMode.active)cardBattleTestHudLogRefresh()}
 function attackExerciseHitPush(hit){attackExercise.hitLog.push(hit);if(attackExercise.hitLog.length>80)attackExercise.hitLog.splice(0,attackExercise.hitLog.length-80)}
-function attackExerciseCanOperate(){return (!cardBattleTestMode.active||!cardBattleTestMode.busy)&&attackExercise.active&&phaseFoundation.active&&phaseFoundation.phase===PHASE_SIDE_ALLY&&phaseFoundation.allyReady&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw}
+function attackExerciseCanOperate(){return (!cardBattleTestMode.active||(!cardBattleTestMode.resultType&&!cardBattleTestMode.busy))&&attackExercise.active&&phaseFoundation.active&&phaseFoundation.phase===PHASE_SIDE_ALLY&&phaseFoundation.allyReady&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw}
 function attackExerciseAliveCount(){return Object.values(attackExercise.actors).filter(a=>a&&a.alive&&a.hp>0).length}
 function attackExerciseSyncAliveCount(){
  const n=attackExerciseAliveCount();phaseFoundation.simulatedAliveAllies=n;
@@ -3041,7 +3067,7 @@ function attackExerciseSyncAliveCount(){
 }
 function attackExerciseStart(){
  attackExercise=freshAttackExercise();attackExercise.enemies=attackExerciseMakeEnemies(cardBattleTestMode.active);attackExercise.lockedEnemyId=attackExercise.enemies.find(attackExerciseEnemyLockable)?.instanceId||null;if(phaseFoundation.active)phaseDebugStop();const ok=phaseDebugStart();if(!ok){attackExercise.message='演習開始不可｜有効な出撃部隊がありません';attackExerciseRender();return false}
- attackExercise.active=true;attackExercise.actors=attackExerciseActorSnapshot();for(const rid of cardFoundation.partyRosterIds)attackExercise.burst[rid]=0;phaseFoundation.simulatedAliveAllies=attackExerciseAliveCount();attackExercise.baseInstanceIds=attackExerciseBaseIds();attackExercise.message='演習開始｜味方フェーズ1';attackExerciseLogPush(`演習開始｜基礎カード${attackExercise.baseInstanceIds.length}枚｜CHAIN×1.0｜演習BURST全員0｜BLOCK全員0`);attackExerciseRender();return true
+ attackExercise.active=true;attackExercise.actors=attackExerciseActorSnapshot();for(const rid of cardFoundation.partyRosterIds)attackExercise.burst[rid]=0;phaseFoundation.simulatedAliveAllies=attackExerciseAliveCount();attackExercise.baseInstanceIds=attackExerciseBaseIds();attackExercise.message=cardBattleTestMode.active?'1F｜正式残像出現｜味方フェーズ1':'演習開始｜味方フェーズ1';attackExerciseLogPush(`演習開始｜基礎カード${attackExercise.baseInstanceIds.length}枚｜CHAIN×1.0｜演習BURST全員0｜BLOCK全員0`);attackExerciseRender();return true
 }
 function attackExerciseStop(){const integrity=attackExerciseIntegrity();attackExerciseLogPush(`演習停止｜素材整合 ${integrity.ok?'OK':'NG'} ${integrity.current}/${integrity.expected}`);attackExercise.active=false;attackExercise.selected=[];attackExercise.defenseSelected=[];if(phaseFoundation.active)phaseDebugStop();attackExercise.message='停止済み｜旧実戦HP/BURST/DEF/セーブは未変更';attackExerciseRender();return true}
 function exercisePrepareType(type,label){
@@ -3184,26 +3210,107 @@ function attackExerciseRender(){
 // It never calls battle(), renderBattle(), legacy AUTO or legacy enemy AI.
 // =========================================================
 function cardBattleTestBase(rid){return formationRosterData.find(c=>c.id===rid)||null}
-function cardBattleTestCanInput(){return cardBattleTestMode.active&&!cardBattleTestMode.busy&&!cardBattleTestMode.dragging&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw}
+function cardBattleTestCanInput(){return cardBattleTestMode.active&&!cardBattleTestMode.resultType&&!cardBattleTestMode.busy&&!cardBattleTestMode.dragging&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw}
 function cardBattleTestSetMessage(msg){
  cardBattleTestMode.message=String(msg||'');
  const el=document.querySelector('#ctMessage');if(el)el.textContent=cardBattleTestMode.message;
  // Direct-target refusals may not redraw; surface them in the moved ticker without touching the log history.
  if(cardBattleTestMode.active&&cardBattleTestMode.message)cardBattleTestHandLogSet(cardBattleTestMode.message);
 }
-function cardBattleTestLock(ms=160){cardBattleTestMode.busy=true;cardBattleTestRender();setTimeout(()=>{if(!cardBattleTestMode.active)return;cardBattleTestMode.busy=false;cardBattleTestRender()},ms)}
+function cardBattleTestLock(ms=160){cardBattleTestMode.busy=true;cardBattleTestRender();setTimeout(()=>{if(!cardBattleTestMode.active||cardBattleTestMode.resultType)return;cardBattleTestMode.busy=false;cardBattleTestRender()},ms)}
+
+// =========================================================
+// VER.527: official afterimages, multi-floor flow and original result renderer adapter.
+// Independent from the old SPD/ACTION loop. No floor transition regenerates cards.
+// =========================================================
+function cardBattleTestDamagePct(){
+ const actors=Object.values(attackExercise.actors);
+ const max=actors.reduce((n,a)=>n+Math.max(0,Number(a.maxHp)||0),0);
+ const hp=actors.reduce((n,a)=>n+Math.max(0,Math.min(Number(a.hp)||0,Number(a.maxHp)||0)),0);
+ return max?Math.max(0,Math.min(100,(1-hp/max)*100)):0;
+}
+function cardBattleTestRunReward(){
+ const m=cardBattleTestMode,damageMult=damageRewardMultiplier(cardBattleTestDamagePct()),bossPct=bossRewardBonusPct(m.clearedFloor);
+ const floorBase=Math.max(0,Math.floor(m.runBaseWD)),overkill=Math.max(0,Math.floor(m.runOverkillWD));
+ const base=floorBase+overkill,bossMult=1+bossPct/100,strongRoute=0;
+ return{base,floorBase,overkill,damageMult,bossPct,bossMult,strongRoute,total:Math.max(0,Math.round(base*damageMult*bossMult+strongRoute))};
+}
+function cardBattleTestRecordOverkill(hits,target){
+ if(!cardBattleTestMode.active||!Array.isArray(hits)||!hits.length||!target||target.hp>0)return;
+ // Canonical legacy OVERKILL rule: excess / target maximum HP, threshold 100%, cap 500%.
+ const totalDamage=hits.reduce((n,h)=>n+Math.max(0,Number(h.hpDamage)||0)+Math.max(0,Number(h.overkillDamage)||0),0);
+ const startHp=Math.max(0,Number(hits[0].hpBefore)||0),maxHp=Math.max(1,Number(target.maxHp)||1);
+ const rawPct=overkillRate(totalDamage,startHp,maxHp);
+ if(rawPct<OVERKILL_MIN_PCT)return;
+ const pct=Math.min(OVERKILL_REWARD_CAP,Math.floor(rawPct));
+ const base=Math.max(0,Number(target.baseRewardWD)||enemyBaseRewardWD(target));
+ const bonus=Math.max(0,Math.floor(base*pct/100));
+ if(bonus){cardBattleTestMode.runOverkillWD+=bonus;attackExerciseLogPush(`🔥 OVERKILL報酬 ${Math.min(OVERKILL_DISPLAY_CAP,Math.floor(rawPct))}%｜+💎${bonus} WD`)}
+}
+function cardBattleTestMaybeClearFloor(){
+ const mode=cardBattleTestMode;
+ if(!mode.active||mode.resultType||mode.clearedFloor>=mode.floor||!attackExercise.active)return false;
+ if(!attackExercise.enemies.length||attackExercise.enemies.some(e=>e.hp>0||!e.graphicGone))return false;
+ // Called only after cardBattleTestAnimateEnemy's final scheduled animation has ended.
+ mode.clearedFloor=mode.floor;mode.busy=true;
+ const floorWD=attackExercise.enemies.reduce((n,e)=>n+Math.max(0,Number(e.baseRewardWD)||enemyBaseRewardWD(e)),0);
+ mode.runBaseWD+=floorWD;
+ attackExerciseLogPush(`${mode.floor}F CLEAR｜敵全滅・全Hit演出完了｜基本報酬 +💎${floorWD} WD`);
+ attackExercise.selected=[];attackExercise.defenseSelected=[];
+ if(mode.floor===100){cardBattleTestShowResult('complete');return true}
+ if(mode.floor%5===0){cardBattleTestShowResult('checkpoint');return true}
+ // No additional draw/phase before the one new phase started by transition.
+ cardBattleTestAdvanceFloor();return true;
+}
+function cardBattleTestShowResult(type){
+ const mode=cardBattleTestMode;if(!mode.active)return;
+ mode.resultType=type;mode.busy=true;
+ const overlay=document.querySelector('#ctRunResult'),title=document.querySelector('#ctRunResultTitle'),body=document.querySelector('#ctRunResultDetail'),next=document.querySelector('#ctRunResultNext');
+ if(!overlay||!title||!body||!next)return;
+ title.textContent=type==='checkpoint'?`${mode.floor}F RESULT`:type==='complete'?`${maxFloor}F 踏破！`:'GAME OVER';
+ const sectionBase=mode.runBaseWD-mode.checkpointBaseWD,sectionOverkill=mode.runOverkillWD-mode.checkpointOverkillWD;
+ body.innerHTML=expeditionResultHTML(sectionBase,sectionOverkill,{reward:cardBattleTestRunReward(),damagePct:cardBattleTestDamagePct(),strongRouteGain:0});
+ next.hidden=type!=='checkpoint';next.textContent='次の階層へ';overlay.hidden=false;const exit=document.querySelector('#cardTestExit');if(exit)exit.classList.toggle('ctFinalExit',type!=='checkpoint');document.querySelector('#cardBattleTestScreen')?.classList.toggle('ctResultFinal',type!=='checkpoint');
+ cardBattleTestRender();
+}
+function cardBattleTestContinueFloor(){
+ const mode=cardBattleTestMode;if(!mode.active||mode.resultType!=='checkpoint'||mode.floor>=100)return false;
+ mode.checkpointBaseWD=mode.runBaseWD;mode.checkpointOverkillWD=mode.runOverkillWD;
+ mode.resultType='';const overlay=document.querySelector('#ctRunResult');if(overlay)overlay.hidden=true;
+ return cardBattleTestAdvanceFloor();
+}
+function cardBattleTestAdvanceFloor(){
+ const mode=cardBattleTestMode;
+ if(!mode.active||mode.floor>=100||!attackExercise.active||attackExerciseAliveCount()<=0||cardFoundation.overflowPending)return false;
+ const oldFloor=mode.floor;mode.floor++;
+ attackExercise.enemies=attackExerciseMakeEnemies(true);
+ attackExercise.lockedEnemyId=attackExercise.enemies.find(attackExerciseEnemyLockable)?.instanceId||null;
+ attackExercise.chain=1;attackExercise.lastAttackHits=[];
+ attackExercise.selected=[];attackExercise.defenseSelected=[];
+ phaseFoundation.simulatedEnemyRoster=attackExercise.enemies.map(e=>({key:e.instanceId,name:e.name}));
+ phaseFoundation.simulatedAliveAllies=attackExerciseAliveCount();
+ phaseFoundation.phase='between';phaseFoundation.allyReady=false;phaseFoundation.allyDrawIssued=false;phaseFoundation.enemySlots=[];
+ // Exactly one call controls COST recovery and the 5-card draw, including 21-card overflow.
+ const started=phaseBeginAlly();
+ if(!started){attackExerciseLogPush(`${mode.floor}F開始に失敗｜二重ドローを防止`);mode.busy=true;return false}
+ mode.busy=false;mode.resultType='';
+ cardBattleTestMode.message=`${oldFloor}F→${mode.floor}F｜正式残像更新｜未使用カード・山札・捨て札・消滅を継続`;
+ attackExerciseLogPush(cardBattleTestMode.message);
+ cardBattleTestRender();return true;
+}
+
 function cardBattleTestStart(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
  cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
- attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=null;cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜味方先攻｜敵Bは試験用HP1。前衛をタップしてTARGET LOCK`;
+ attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=null;cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
  showScreen('cardBattleTestScreen');cardBattleTestRender();return true
 }
 function cardBattleTestExit(){
- cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){showScreen('home');return true}if(cardBattleTestMode.busy)return false
- cardBattleTestMode.busy=true;if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
+ cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
+ cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
  cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');return true
 }
 function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
@@ -3224,7 +3331,7 @@ function cardBattleTestFuse(){
 }
 function cardBattleTestAttack(){
  if(!cardBattleTestCanInput())return false;const ok=attackExerciseUseSelected();cardBattleTestMode.message=attackExercise.message;
- if(ok){const hits=attackExercise.lastAttackHits.slice();cardBattleTestLock(Math.max(260,10+Math.max(0,hits.length-1)*180+730));setTimeout(()=>cardBattleTestAnimateEnemy(hits),10)}else cardBattleTestRender();return !!ok
+ if(ok){const hits=attackExercise.lastAttackHits.slice();cardBattleTestRecordOverkill(hits,attackExerciseEnemyById(hits[0]?.targetEnemyId));cardBattleTestLock(Math.max(260,10+Math.max(0,hits.length-1)*180+730));setTimeout(()=>cardBattleTestAnimateEnemy(hits),10)}else cardBattleTestRender();return !!ok
 }
 function cardBattleTestDefense(){
  if(!cardBattleTestCanInput())return false;const rid=attackExercise.defenseTargetRosterId,before=rid&&attackExercise.actors[rid]?Number(attackExercise.actors[rid].block)||0:0,ok=defenseExerciseUseSelected();cardBattleTestMode.message=attackExercise.message;
@@ -3293,7 +3400,7 @@ function cardBattleTestAnimateEnemy(hits){
  },i*step));
  // Preserve the death image until every remaining Hit popup has finished.
  setTimeout(()=>{
-  if(!mode.active||cardBattleTestMode!==mode)return;
+  if(!mode.active||cardBattleTestMode!==mode||!attackExercise.enemies.includes(enemy))return;
   if(enemy.hp<=0)attackExerciseCompleteTargetDeath(targetId);
   else cardBattleTestRender();
  },(hits.length-1)*step+670)
@@ -3313,14 +3420,10 @@ function cardBattleTestUnitOverlay(name,hp,maxHp,block,buffs=''){
 function cardBattleTestEnemyHtml(enemy,slot){
  if(!enemy)return `<div class="ctEnemyCell ctFrameEmpty" aria-hidden="true"></div>`;
  const locked=enemy.instanceId===attackExercise.lockedEnemyId&&enemy.hp>0,back=enemy.row==='back',dead=enemy.hp<=0;
- // VER.519: a VISUAL-ONLY ★1–★5 comparison over the existing six mock enemy slots.
- // The mock enemy object, HP, block, instance ID, line and all combat calculations stay unchanged.
- // Derive the visual rank from existing immutable homeSlot, so rear promotion does not recolor the same enemy.
- // Reuse the adopted production sprite through the old shared afterimage source resolver.
- const originalSlot=Number.isInteger(Number(enemy.homeSlot))?Number(enemy.homeSlot):slot;
- const comparisonRank=({0:1,3:2,1:3,4:4,2:5,5:1})[originalSlot]||1;
- const afterimageSrc=getAfterimageSource('mizuki')?.sprite||'';
- const art=afterimageSrc?`<span class="ctArt" aria-hidden="true"><img src="${cardDebugEsc(afterimageSrc)}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt" aria-hidden="true"></span>`;
+  // Official ★ rank / sprite from makeEnemies(f), never infer a rank from the slot.
+  const comparisonRank=Number(enemy.afterimageRank)||1;
+  const afterimageSrc=enemy.sprite||getAfterimageSource(enemy.afterimageCharacterId)?.sprite||'';
+  const art=afterimageSrc?`<span class="ctArt" aria-hidden="true"><img src="${cardDebugEsc(afterimageSrc)}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt" aria-hidden="true"></span>`;
  const info=cardBattleTestUnitOverlay(enemy.name,enemy.hp,enemy.maxHp,enemy.block);
  // VER.520 mock label only: original homeSlot fixes 20/15; keep preview until the final Hit animation removes the sprite.
  const hasIntent=cardBattleTestMode.active&&cardBattleTestMockIntentData().some(x=>x.enemyId===enemy.instanceId);
@@ -3410,6 +3513,7 @@ function cardBattleTestExecuteEnemySlots(pending){
  }
  return true;
 }
+// VER.527: intentional fixed test preview. Official enemy AI is NOT connected.
 function cardBattleTestMockIntentValue(enemy){
  const home=Number(enemy?.homeSlot);
  return home>=3&&home<=5?15:20;
@@ -3512,11 +3616,11 @@ function cardBattleTestReticleSync(){
 window.addEventListener('resize',()=>{if(cardBattleTestMode.active){cardBattleTestReticleSync();cardBattleTestIntentSync();}});
 function cardBattleTestRender(){
  if(!cardBattleTestMode.active)return;const phase=phaseFoundation.phase===PHASE_SIDE_ALLY?'味方':phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵':'停止',blocked=cardFoundation.overflowPending||cardFoundation.pendingDraw>0,alive=attackExerciseAliveCount();
- const set=(id,v)=>{const e=document.querySelector('#'+id);if(e)e.textContent=v};set('ctCost',`${phaseFoundation.costRemaining} / ${phaseFoundation.costMax}`);cardBattleTestHudLogRefresh();
+ const set=(id,v)=>{const e=document.querySelector('#'+id);if(e)e.textContent=v};set('ctCost',`${phaseFoundation.costRemaining} / ${phaseFoundation.costMax}`);set('ctHudDepth',`世界深度 ${worldDepth} / ${cardBattleTestMode.floor}F/${maxFloor}F`);set('ctHudRemaining',`残存率 ${Math.max(0,100-cardBattleTestDamagePct()).toFixed(0)}%`);set('ctHudReward',`💎×${formatMultiplier(cardBattleTestRunReward().damageMult)}`);cardBattleTestHudLogRefresh();
  const grid=document.querySelector('#ctEnemyGrid'),enemies=attackExercise.enemies;
  if(grid)grid.innerHTML=[0,3,1,4,2,5].map(slot=>cardBattleTestEnemyHtml(enemies.find(e=>e.formationSlot===slot&&!e.graphicGone),slot)).join('');
  cardBattleTestReticleSync();
- const defeat=document.querySelector('#ctEnemyDefeatStatus');if(defeat)defeat.hidden=enemies.some(e=>e.alive&&e.hp>0)||enemies.some(e=>e.hp<=0&&!e.graphicGone);
+ const defeat=document.querySelector('#ctEnemyDefeatStatus');if(defeat){defeat.textContent=`${cardBattleTestMode.floor}F CLEAR｜階層進行処理中`;defeat.hidden=!!cardBattleTestMode.resultType||enemies.some(e=>e.alive&&e.hp>0)||enemies.some(e=>e.hp<=0&&!e.graphicGone);}
 
  const army=document.querySelector('#ctAllyArmy');if(army){const actors=Object.values(attackExercise.actors);army.innerHTML=[3,0,4,1,5,2].map(slot=>{const actor=actors.find(a=>Number(a.formationSlot)===slot);return actor?cardBattleTestActorHtml(actor):cardBattleTestEmptyAllyHtml(slot)}).join('');}
  cardBattleTestIntentSync();
@@ -6008,8 +6112,8 @@ async function battle(){
    running=false;showRunResult(false);return
  }
 }
-function resultSpecialRows(sectionOverkillGain=0){let html='';if(sectionOverkillGain>0)html+=`<div class="resultRow specialBonus"><span>🔥 OVERKILL報酬</span><b>+💎${Math.floor(sectionOverkillGain).toLocaleString()} WD</b></div>`;if(runStrongRouteBonusWD>0)html+=`<div class="resultRow specialBonus"><span>⚠️ 強敵ルート報酬</span><b>+💎${Math.floor(runStrongRouteBonusWD).toLocaleString()} WD</b></div>`;return html}
-function expeditionResultHTML(sectionBaseGain,sectionOverkillGain=0){const r=currentRunReward(),sectionGain=Math.max(0,Math.floor(sectionBaseGain))+Math.max(0,Math.floor(sectionOverkillGain));return `<div class="expeditionResult"><div class="resultLead">今回の区間獲得</div><div class="resultWD">💎${sectionGain.toLocaleString()} WD</div><div class="resultRow"><span>遠征累計</span><b>💎${r.base.toLocaleString()} WD</b></div><div class="resultRow"><span>現在の損壊率</span><b>${formatDamageRateLabel(damageRate())}%</b></div><div class="resultRow"><span>損壊率倍率</span><b>×${formatMultiplier(r.damageMult)}</b></div><div class="resultRow bonusRow"><span>踏破ボーナス</span><b>+${r.bossPct}%（×${formatMultiplier(r.bossMult)}）</b></div>${resultSpecialRows(sectionOverkillGain)}<div class="resultTotal"><span>持ち帰り見込</span><b>💎${r.total.toLocaleString()} WD</b></div></div>`}
+function resultSpecialRows(sectionOverkillGain=0,strongRouteGain=runStrongRouteBonusWD){let html='';if(sectionOverkillGain>0)html+=`<div class="resultRow specialBonus"><span>🔥 OVERKILL報酬</span><b>+💎${Math.floor(sectionOverkillGain).toLocaleString()} WD</b></div>`;if(strongRouteGain>0)html+=`<div class="resultRow specialBonus"><span>⚠️ 強敵ルート報酬</span><b>+💎${Math.floor(strongRouteGain).toLocaleString()} WD</b></div>`;return html}
+function expeditionResultHTML(sectionBaseGain,sectionOverkillGain=0,cardContext=null){const r=cardContext?.reward||currentRunReward(),damagePct=cardContext?.damagePct??damageRate(),sectionGain=Math.max(0,Math.floor(sectionBaseGain))+Math.max(0,Math.floor(sectionOverkillGain));return `<div class="expeditionResult"><div class="resultLead">今回の区間獲得</div><div class="resultWD">💎${sectionGain.toLocaleString()} WD</div><div class="resultRow"><span>遠征累計</span><b>💎${r.base.toLocaleString()} WD</b></div><div class="resultRow"><span>現在の損壊率</span><b>${formatDamageRateLabel(damagePct)}%</b></div><div class="resultRow"><span>損壊率倍率</span><b>×${formatMultiplier(r.damageMult)}</b></div><div class="resultRow bonusRow"><span>踏破ボーナス</span><b>+${r.bossPct}%（×${formatMultiplier(r.bossMult)}）</b></div>${resultSpecialRows(sectionOverkillGain,cardContext?.strongRouteGain??runStrongRouteBonusWD)}<div class="resultTotal"><span>持ち帰り見込</span><b>💎${r.total.toLocaleString()} WD</b></div></div>`}
 function advanceCheckpoint(){if(overlayMode!=='checkpoint')return;if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}document.querySelector('#overlay').classList.remove('show');document.querySelector('#overlay .result')?.classList.remove('checkpointResult');runCheckpointStartLoot=runLoot;runCheckpointStartOverkillBonusWD=runOverkillBonusWD;overlayMode='';if(!nextFloor()){showRunResult(false);return}updateFloorUI();setTimeout(()=>battle(),80)}
 function showCheckpointResult(){overlayMode='checkpoint';const box=document.querySelector('#overlay .result');box?.classList.add('checkpointResult');document.querySelector('#resultText').textContent=`${floor}F RESULT`;document.querySelector('#resultDetail').innerHTML=expeditionResultHTML(runLoot-runCheckpointStartLoot,runOverkillBonusWD-runCheckpointStartOverkillBonusWD);const next=document.querySelector('#continueFloor'),home=document.querySelector('#again');next.style.display='block';next.textContent=autoMode?'AUTO｜次の階層へ…':'次の階層へ';home.style.display='none';document.querySelector('#overlay').classList.add('show');if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}if(autoMode)checkpointAutoTimer=setTimeout(()=>advanceCheckpoint(),2000)}
 function showRunResult(win){overlayMode=win?'complete':'gameover';document.querySelector('#overlay .result')?.classList.remove('checkpointResult');const r=currentRunReward();document.querySelector('#resultText').textContent=win?`${maxFloor}F 踏破！`:'GAME OVER';document.querySelector('#resultDetail').innerHTML=expeditionResultHTML(runLoot-runCheckpointStartLoot,runOverkillBonusWD-runCheckpointStartOverkillBonusWD);const next=document.querySelector('#continueFloor'),home=document.querySelector('#again');if(win){next.style.display='none';home.style.display='block';home.textContent='拠点へ戻る'}else{next.style.display='block';next.textContent='この階層からコンティニュー';home.style.display='block';home.textContent='拠点へ戻る'}document.querySelector('#overlay').classList.add('show')}
