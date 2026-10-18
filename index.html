@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.529</title>
+<title>セカソコ ver.530</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.529";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.530";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2410,7 +2410,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.529</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.530</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2556,6 +2556,11 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctIntentTarget::before{top:15px}#cardBattleTestScreen .ctIntentTarget::after{left:15px}
 #cardBattleTestScreen .ctIntentTarget .ctIntentTotal{font-size:10px}#cardBattleTestScreen .ctEnemyCell.ctSharedFrame .ctEnemyIntent{font-size:9px}}
 </style>
+<style id="ver530-card-forecast">
+#cardBattleTestScreen .ctCardEffect{font-size:7px;line-height:1.24;margin-top:4px;overflow-wrap:anywhere;}
+#cardBattleTestScreen .ctCardEffect .ctEffectLine{display:block;margin-bottom:3px;}
+#cardBattleTestScreen .ctCardEffect .ctEffectLine:last-child{color:#c9d6eb;font-size:6.5px;}
+</style>
 <style id="ver529-enemy-intent-labels">
 #cardBattleTestScreen .ctEnemyCell.ctSharedFrame .ctEnemyIntent{max-width:96%;overflow:hidden;text-overflow:ellipsis;font-size:9px}
 #cardBattleTestScreen .ctEnemyCell.ctSharedFrame .ctIntent-defend{border-color:rgba(102,205,255,.7);background:rgba(8,57,89,.85);color:#c8efff}
@@ -2579,7 +2584,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctExit.ctFinalExit{position:relative;z-index:220}
 #cardBattleTestScreen.ctResultFinal .ctTop{position:relative;z-index:221}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.529 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.530 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3130,6 +3135,12 @@ function attackExerciseUseSelected(){
  // All calculations succeed before any cost/card state is committed.
  cardFoundation.hand.splice(idx,1);attackExercise.lastAttackHits=plan.hits.map(h=>({...h,kind:'attack'}));phaseFoundation.costRemaining--;attackExercise.chain=plan.nextChain;target.hp=plan.nextHp;target.block=plan.nextBlock;target.overkill=plan.nextOverkill;if(target.hp<=0)target.alive=false;attackExercise.burst=plan.nextBurst;for(const h of plan.hits){attackExerciseHitPush({...h,kind:'attack'});attackExerciseLogPush(`${h.ownerName}｜ATK参照${attackExerciseFmt(h.referenceAtk)}×${Math.round(h.rate*100)}%×CHAIN${attackExerciseFmt(h.chain,1)}＝${attackExerciseFmt(h.raw)}｜${h.targetName||'模擬敵'} BLOCK ${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}｜実HPダメージ${attackExerciseFmt(h.hpDamage)}｜OVERKILL+${attackExerciseFmt(h.overkillDamage)}（累積${attackExerciseFmt(h.overkillTotal)}）｜BURST ${h.burstBefore}→${h.burstAfter}`)}const released=cardReleaseFusionOrBase(card);attackExercise.selected=[];const integrity=attackExerciseIntegrity();attackExercise.message=`${card.name}使用｜コスト-1→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材返却 捨て札${released.discarded}${released.exhausted?`／消滅${released.exhausted}`:''}｜整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;phaseLogPush(`VER.508 ${card.name}｜${plan.hits.length}Hit｜CHAIN→×${attackExerciseFmt(attackExercise.chain,1)}｜${target.name} BLOCK${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardFoundation.message=attackExercise.message;if(target.hp<=0&&!cardBattleTestMode.active)attackExerciseCompleteTargetDeath(target.instanceId);cardDebugRender();return true
 }
+// VER.530: choose the topmost surviving front-row actor, by roster identity.
+function cardBattleTestDefaultDefenseTarget(){
+ const front=Object.values(attackExercise.actors).filter(a=>a&&a.alive&&a.hp>0&&a.row==='front'&&Number(a.formationSlot)>=0&&Number(a.formationSlot)<=2);
+ front.sort((a,b)=>a.formationSlot-b.formationSlot);
+ return front[0]?.ownerRosterId||null;
+}
 function defenseExerciseTarget(rid){const a=attackExercise.actors[rid];if(!attackExercise.active||!a||!a.alive||a.hp<=0)return false;attackExercise.defenseTargetRosterId=rid;attackExercise.message=`防御対象：${a.ownerName}（${a.row==='back'?'後衛':'前衛'}）`;attackExerciseRender();return true}
 function defenseExercisePlanUse(card,target){const tier=defenseCardTier(card),spec=DEFENSE_EXERCISE_SPEC[tier];if(!spec||!target||!target.alive||target.hp<=0)return null;const amount=attackExerciseInt((Number(target.referenceDef)||0)*spec.rate),blockBefore=attackExerciseInt(target.block);return{tier,spec,amount,blockBefore,blockAfter:blockBefore+amount}}
 function defenseExerciseUseSelected(){
@@ -3162,8 +3173,9 @@ function attackExerciseProcessDeath(rid,reason='HP0'){
  for(const zoneName of zones){const zone=cardFoundation[zoneName],keep=[];for(const card of zone){if(cardIsFusion(card)){const sources=cardBaseSources(card),hasDead=sources.some(x=>x.ownerRosterId===rid);if(!hasDead){keep.push(card);continue}result.fusions++;delete cardFoundation.fusionSourceLedger[card.instanceId];for(const src of sources){if(src.ownerRosterId===rid){if(exerciseExhaustUnique(src))result.exhausted++}else{cardFoundation.discardPile.push(src);result.survivors++}}continue}if(card.ownerRosterId===rid){if(exerciseExhaustUnique(card))result.exhausted++;continue}keep.push(card)}cardFoundation[zoneName]=keep}
  // Cards already exhausted stay there; do not duplicate them.
  const known=new Set(),dedup=[];for(const c of cardFoundation.exhausted){if(!c||known.has(c.instanceId))continue;known.add(c.instanceId);dedup.push(c)}cardFoundation.exhausted=dedup;
- attackExercise.selected=attackExercise.selected.filter(id=>cardFoundation.hand.some(c=>c.instanceId===id&&attackCardTier(c)));attackExercise.defenseSelected=attackExercise.defenseSelected.filter(id=>cardFoundation.hand.some(c=>c.instanceId===id&&defenseCardTier(c)));if(attackExercise.defenseTargetRosterId===rid)attackExercise.defenseTargetRosterId=Object.values(attackExercise.actors).find(a=>a.alive&&a.hp>0)?.ownerRosterId||null;
+ attackExercise.selected=attackExercise.selected.filter(id=>cardFoundation.hand.some(c=>c.instanceId===id&&attackCardTier(c)));attackExercise.defenseSelected=attackExercise.defenseSelected.filter(id=>cardFoundation.hand.some(c=>c.instanceId===id&&defenseCardTier(c)));const defenseTargetDied=attackExercise.defenseTargetRosterId===rid;
  const promoted=attackExercisePullAllyFront(actor);
+ if(defenseTargetDied)attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();
  const alive=attackExerciseSyncAliveCount(),integrity=attackExerciseIntegrity();const line=`死亡処理｜${actor.ownerName}（${reason}）｜死亡者素材→消滅 ${result.exhausted}｜含有合成解体 ${result.fusions}｜生存素材→捨て札 ${result.survivors}｜生存${alive}人｜素材整合${integrity.ok?'OK':'NG'}`;attackExerciseLogPush(line);attackExerciseHitPush({kind:'death',targetName:actor.ownerName,reason,exhausted:result.exhausted,fusions:result.fusions,survivors:result.survivors,alive});cardFoundation.message=line;phaseFoundation.message=alive>0?`演習生存味方${alive}人｜コスト最大値変更は次の味方フェーズ開始時`:'演習味方0人｜停止';cardDebugRender();return result
 }
 // VER.521: shared VER.508 BLOCK-first calculation; no DEF reduction and no new rounding.
@@ -3317,6 +3329,7 @@ function cardBattleTestAdvanceFloor(){
  attackExercise.lockedEnemyId=attackExercise.enemies.find(attackExerciseEnemyLockable)?.instanceId||null;
  attackExercise.chain=1;attackExercise.lastAttackHits=[];
  attackExercise.selected=[];attackExercise.defenseSelected=[];
+ attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();
  phaseFoundation.simulatedEnemyRoster=attackExercise.enemies.map(e=>({key:e.instanceId,name:e.name}));
  phaseFoundation.simulatedAliveAllies=attackExerciseAliveCount();
  phaseFoundation.phase='between';phaseFoundation.allyReady=false;phaseFoundation.allyDrawIssued=false;phaseFoundation.enemySlots=[];
@@ -3336,7 +3349,7 @@ function cardBattleTestStart(){
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
  cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
- attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=null;cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
+ attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
  showScreen('cardBattleTestScreen');cardBattleTestRender();return true
 }
 function cardBattleTestExit(){
@@ -3489,11 +3502,38 @@ function cardBattleTestActorHtml(a){
  return `<button class="ctUnit ctSharedFrame ctSlot${slot} ${target?'target':''} ${!a.alive?'dead':''}" data-ct-rid="${cardDebugEsc(a.ownerRosterId)}" type="button" onclick="cardBattleTestSelectAlly('${cardDebugEsc(a.ownerRosterId)}')" ${!a.alive?'disabled':''} aria-label="${cardDebugEsc(a.ownerName)} HP ${attackExerciseFmt(a.hp)} / ${attackExerciseFmt(a.maxHp)} BLOCK ${attackExerciseFmt(a.block)}">${art}${cardBattleTestUnitOverlay(a.ownerName,a.hp,a.maxHp,a.block,sword)}</button>`;
 }
 function cardBattleTestEmptyAllyHtml(slot){return `<div class="ctUnit ctFrameEmpty ctSlot${slot}" aria-hidden="true"></div>`}
+// VER.530: read-only UI prediction. The real planners create ephemeral hit/block data.
+// They do not execute or mutate the combat state.
+function cardBattleTestCardPreview(c){
+ const attackTier=attackCardTier(c),defenseTier=defenseCardTier(c);
+ if(attackTier){
+  const spec=ATTACK_EXERCISE_SPEC[attackTier],enemy=attackExerciseLockedEnemy(),target=enemy&&attackExerciseEnemyLockable(enemy)?enemy:null;
+  const rate=`ATK${Math.round(spec.rate*100)}%`;
+  if(!target)return [attackTier>1?`${rate}×${attackTier}Hit`:`${rate} ダメージ`,'TARGET対象なし｜使用不可'];
+  // Each hit is calculated using the original owner's ATK, evolving CHAIN,
+  // and the current enemy's BLOCK/HP in actual source order.
+  const plan=attackExercisePlanUse(c,target.instanceId);
+  if(!plan)return [rate,'攻撃対象なし｜使用不可'];
+  const total=plan.hits.reduce((v,h)=>v+h.raw,0);
+  const hpReach=plan.hits.reduce((v,h)=>v+h.hpDamage,0);
+  const suffix=attackTier>1?`${rate}×${attackTier}Hit`:`${rate}`;
+  return [`${suffix}（${attackExerciseFmt(total)}）ダメージ`,`敵BLOCK${attackExerciseFmt(enemy.block)} → HP到達予測${attackExerciseFmt(hpReach)}`];
+ }
+ if(defenseTier){
+  const spec=DEFENSE_EXERCISE_SPEC[defenseTier],target=attackExercise.actors[attackExercise.defenseTargetRosterId];
+  if(!target||!target.alive||target.hp<=0)return [`対象DEF${Math.round(spec.rate*100)}%`,'防御対象なし｜使用不可'];
+  const plan=defenseExercisePlanUse(c,target);
+  if(!plan)return ['防御対象なし｜使用不可'];
+  return [`対象DEF${Math.round(spec.rate*100)}%（${attackExerciseFmt(plan.amount)}）BLOCK`,`現在${attackExerciseFmt(plan.blockBefore)} → 使用後${attackExerciseFmt(plan.blockAfter)}`];
+ }
+ return ['未実装'];
+}
 function cardBattleTestCardHtml(c){
- const atk=attackCardTier(c),def=defenseCardTier(c),fusion=cardIsFusion(c),atkSel=attackExercise.selected.indexOf(c.instanceId),defSel=attackExercise.defenseSelected.indexOf(c.instanceId),order=atkSel>=0?atkSel+1:defSel>=0?defSel+1:0,selected=order>0,overflow=cardFoundation.overflowPending,owners=(atk?attackCardSources(c):def?defenseCardSources(c):[c]).map(x=>x.ownerName).join('→');let type='SP',effect='未実装';
- if(atk){const s=ATTACK_EXERCISE_SPEC[atk];type=s.label;effect=`ATK ${Math.round(s.rate*100)}% × ${atk}Hit`}
- else if(def){const s=DEFENSE_EXERCISE_SPEC[def];type=s.label;effect=`対象DEF × ${Math.round(s.rate*100)}%`}
- const cls=atk?'attackCard':def?'defenseCard':'spCard';return `<button class="ctCard ${cls} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div><div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div><div class="ctCardEffect">${cardDebugEsc(effect)}</div><div class="ctCardTags">${fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
+ const atk=attackCardTier(c),def=defenseCardTier(c),fusion=cardIsFusion(c),atkSel=attackExercise.selected.indexOf(c.instanceId),defSel=attackExercise.defenseSelected.indexOf(c.instanceId),order=atkSel>=0?atkSel+1:defSel>=0?defSel+1:0,selected=order>0,overflow=cardFoundation.overflowPending,owners=(atk?attackCardSources(c):def?defenseCardSources(c):[c]).map(x=>x.ownerName).join('→');let type='SP';
+ if(atk)type=ATTACK_EXERCISE_SPEC[atk].label;
+ else if(def)type=DEFENSE_EXERCISE_SPEC[def].label;
+ const effect=cardBattleTestCardPreview(c).map(line=>`<span class="ctEffectLine">${cardDebugEsc(line)}</span>`).join('');
+ const cls=atk?'attackCard':def?'defenseCard':'spCard';return `<button class="ctCard ${cls} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div><div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div><div class="ctCardEffect">${effect}</div><div class="ctCardTags">${fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
 }
 function cardBattleTestHandLogSet(message){
  const button=document.querySelector('#ctHudLatestLog'),text=document.querySelector('#ctHandLogText');
@@ -3599,7 +3639,7 @@ function cardBattleTestMockIntentData(){
   }else if(action.specialType!=='unavailable'){
    // One distinct arrow per (enemy,ally), regardless of how many Hits are expected there.
    const counts=new Map();for(const id of action.targets)counts.set(id,(counts.get(id)||0)+1);
-   for(const [allyId,hits] of counts)intents.push({enemyId:enemy.instanceId,allyId,value:0,hitCount:action.specialType==='nagiAfterimageCommand'?action.hits:hits,kind:'special'});
+   for(const [allyId,hits] of counts)intents.push({enemyId:enemy.instanceId,allyId,value:attackExerciseInt((Number(enemy.atk)||0)*action.rate)*(action.specialType==='nagiAfterimageCommand'?action.hits:hits),hitCount:action.specialType==='nagiAfterimageCommand'?action.hits:hits,kind:'special'});
   }
  }
  return intents;
@@ -3680,7 +3720,7 @@ function cardBattleTestIntentSync(){
   const tx=a.left-base.left+a.width*.59,ty=a.top-base.top+a.height*.42;
   const key=intent.enemyId+"__"+intent.allyId;
   visibleRoutes.add(key);
-  const prior=totals.get(intent.allyId)||{normal:0,specialHits:0};prior.normal+=intent.kind==='attack'?intent.value:0;prior.specialHits+=intent.kind==='special'?intent.hitCount:0;totals.set(intent.allyId,prior);
+  const prior=totals.get(intent.allyId)||{damage:0};prior.damage+=intent.value;totals.set(intent.allyId,prior);
   allyElements.set(intent.allyId,ally);
   let group=[...lines.children].find(x=>x.dataset.enemyId===key);
   if(!group){
@@ -3724,8 +3764,8 @@ function cardBattleTestIntentSync(){
   }
   badge.style.left=(a.left-base.left+a.width*.59)+'px';badge.style.top=(a.top-base.top+a.height*.42)+'px';
   badge.style.setProperty('--ct-red-size',Math.min(a.width*.75,72)+'px');
-  const value=total.specialHits?`${total.normal?total.normal+'+':''}${total.specialHits}Hit`:String(total.normal);
-  badge.setAttribute('aria-label',`次回攻撃予告 ${value}（特殊Hitの数値は確定ダメージではありません）`);
+  const value=`🗡️${attackExerciseFmt(total.damage)}`;
+  badge.setAttribute('aria-label',`次回攻撃予定総量（BLOCK吸収前）${attackExerciseFmt(total.damage)}。途中の撃破や対象変更で変化する場合があります`);
   const label=badge.querySelector('.ctIntentTotal');
   if(label.textContent!==value)label.textContent=value;
  }
@@ -3794,7 +3834,12 @@ function cardBattleTestHandUpdate(rail){
    template.innerHTML=markup;const updated=template.content.firstElementChild;
    const mountingNow=el.classList.contains('ctCardMounting');
    el.className=updated.className+(mountingNow?' ctCardMounting':'');
-   if(el.innerHTML!==updated.innerHTML)el.innerHTML=updated.innerHTML;
+   if(el.innerHTML!==updated.innerHTML){
+    const priorEffect=el.querySelector('.ctCardEffect'),nextEffect=updated.querySelector('.ctCardEffect');
+    if(priorEffect&&nextEffect&&el.innerHTML.replace(priorEffect.outerHTML,'')===updated.innerHTML.replace(nextEffect.outerHTML,'')){
+     priorEffect.innerHTML=nextEffect.innerHTML;
+    }else el.innerHTML=updated.innerHTML;
+   }
   }
   el.__ctVisualHtml=markup;
   if(rail.children[i]!==el)rail.insertBefore(el,rail.children[i]||null);
