@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.531</title>
+<title>セカソコ ver.532</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.531";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.532";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2410,7 +2410,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.531</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.532</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2595,7 +2595,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-size:cover;
 }
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.531 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.532 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3631,7 +3631,8 @@ function cardBattleTestMakeEnemyAction(enemy){
  }else if(type==='special'){
   const profile=afterimageAttackProfile(enemy); // official profile, never its CT or old buff/DEF damage functions
   if(profile&&['mikotoAfterimageMulti','nagiAfterimageCommand'].includes(enemy.enemySkillType)){
-   action.specialType=enemy.enemySkillType;action.hits=Math.max(1,Math.floor(Number(profile.hitCount)||1));action.rate=Math.max(0,Number(profile.hitRate)||0);
+   // VER.532: new card battle ONLY. Old SPD/ACTION afterimage skill profiles stay unchanged.
+   action.specialType=enemy.enemySkillType;action.hits=Math.max(1,Math.floor(Number(profile.hitCount)||1));action.rate=enemy.enemySkillType==='mikotoAfterimageMulti'?0.15:0.05;
    if(profile.targetMode==='allLiving'){
     action.targets=cardBattleTestAliveActors().map(a=>a.ownerRosterId);
    }else{
@@ -3801,7 +3802,7 @@ function cardBattleTestIntentSync(){
   }
   badge.style.left=(a.left-base.left+a.width*.59)+'px';badge.style.top=(a.top-base.top+a.height*.42)+'px';
   badge.style.setProperty('--ct-red-size',Math.min(a.width*.75,72)+'px');
-  const value=`🗡️${attackExerciseFmt(total.damage)}`;
+  const value=attackExerciseFmt(total.damage);
   badge.setAttribute('aria-label',`次回攻撃予定総量（BLOCK吸収前）${attackExerciseFmt(total.damage)}。途中の撃破や対象変更で変化する場合があります`);
   const label=badge.querySelector('.ctIntentTotal');
   if(label.textContent!==value)label.textContent=value;
