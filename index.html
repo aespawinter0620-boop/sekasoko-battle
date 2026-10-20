@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.535.1</title>
+<title>セカソコ ver.536</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.535.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.536";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2417,7 +2417,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.535.1</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.536</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2603,7 +2603,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-size:cover;
 }
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.535.1 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.536 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2878,6 +2878,30 @@ function cardStartTurn(){if(cardFoundation.partyIndex===null)cardFoundationCreat
 function cardSendToDiscardOrExhaust(card){if(!card)return;if(card.exhaustOnDiscard)cardFoundation.exhausted.push(card);else cardFoundation.discardPile.push(card)}
 function cardIsFusion(card){return !!(card&&card.isFusion&&Array.isArray(card.fusionSourceCards)&&card.fusionSourceCards.length)}
 function cardBaseSources(card){return cardIsFusion(card)?card.fusionSourceCards:[card].filter(Boolean)}
+
+// VER.536: only the shared HAND array is ordered; no card/source/zone data is mutated.
+// Compare membership/order signatures first so a routine render never re-sorts.
+let ct536LastFoundation=null,ct536LastHandSignature=null,ct536DeferredHandRender=false;
+function ct536CardSortRank(card){
+ const atk=attackCardTier(card);if(atk)return [0,-atk];
+ const def=defenseCardTier(card);if(def)return [1,-def];
+ return [card?.type==='sp'?2:3,0];
+}
+function ct536SortHandIfChanged(){
+ const state=cardFoundation;if(!state||!Array.isArray(state.hand))return false;
+ const key=state.hand.map(c=>String(c?.instanceId)).join('\u001f');
+ if(ct536LastFoundation===state&&ct536LastHandSignature===key)return false;
+ // Do not change hit targets or move live buttons while a finger holds the hand.
+ if(ctGesture||ctHandPan||cardBattleTestMode?.dragging)return false;
+ const hand=state.hand,before=hand.map(c=>c.instanceId).join('\u001f');
+ const ordered=hand.map((card,index)=>({card,index,rank:ct536CardSortRank(card)}));
+ ordered.sort((a,b)=>a.rank[0]-b.rank[0]||a.rank[1]-b.rank[1]||a.index-b.index);
+ hand.splice(0,hand.length,...ordered.map(x=>x.card));
+ ct536LastFoundation=state;
+ ct536LastHandSignature=hand.map(c=>String(c?.instanceId)).join('\u001f');
+ return before!==ct536LastHandSignature;
+}
+
 function cardReleaseFusionOrBase(card){
  if(!card)return{discarded:0,exhausted:0,sources:[]};const src=cardBaseSources(card),beforeEx=cardFoundation.exhausted.length;
  if(cardIsFusion(card))delete cardFoundation.fusionSourceLedger[card.instanceId];
@@ -2920,6 +2944,7 @@ function cardDebugCardHtml(c,zone){
 }
 function cardDebugMiniList(cards,zone,limit=12){return cards.slice(0,limit).map(c=>cardDebugCardHtml(c,zone)).join('')+(cards.length>limit?`<div class="cardDebugLead">…ほか${cards.length-limit}枚</div>`:'')}
 function cardDebugRender(){
+ ct536SortHandIfChanged();
  const root=document.querySelector('#cardDebug');if(!root)return;
  const members=cardFoundation.partyRosterIds.length,total=cardManagedBaseInstances().length;
  const status=document.querySelector('#cardDebugStatus');if(status){status.classList.toggle('warn',cardFoundation.overflowPending);status.innerHTML=`対象：${cardFoundation.partyIndex===null?'未選択':`部隊${cardFoundation.partyIndex+1}`}｜編成${members}人｜管理中${total}枚${members?`（初期${cardFoundation.initialBaseCount}枚）`:''}<br>${cardDebugEsc(cardFoundation.message)}${cardFoundation.overflowPending?'<br><b>21枚から1枚をタップして破棄してください。</b>':''}`}
@@ -3953,6 +3978,9 @@ let ctGesture=null,ctHandPan=null,ctSuppressClickUntil=0;
 // battle/HUD redraw must not remount every card and replay the 150ms fan transition.
 // The underlying hand array, selection/gesture events and original fan layout are unchanged.
 function cardBattleTestHandUpdate(rail){
+ if(ctGesture||ctHandPan||cardBattleTestMode?.dragging){ct536DeferredHandRender=true;return;}
+ ct536SortHandIfChanged();
+ ct536DeferredHandRender=false;
  const hand=cardFoundation.hand;
  if(!hand.length){
   if(!rail.querySelector('.ctHandEmpty'))rail.innerHTML='<div class="ctHandEmpty" style="padding:18px 10px;color:#8792a6;font-size:9px">手札なし</div>';
@@ -4008,6 +4036,7 @@ function ctGestureReset(returning=false){
  const g=ctGesture;if(!g)return;ctGesture=null;cardBattleTestMode.dragging=false;ctGestureClearMarks();g.element?.classList.remove('ctTouching','ctDragSource');if(g.element)g.element.style.zIndex='';
  if(g.frame)cancelAnimationFrame(g.frame);
  if(g.ghost){if(returning){g.ghost.style.setProperty('--drag-dx','0px');g.ghost.style.setProperty('--drag-dy','0px');g.ghost.classList.add('ctReturning');setTimeout(()=>g.ghost.remove(),180)}else g.ghost.remove()}
+ const updated=ct536SortHandIfChanged();if(updated||ct536DeferredHandRender){const rail=document.querySelector('#ctFanRail');if(rail)cardBattleTestHandUpdate(rail)}
 }
 // VER.535.1: match the already-supported 1/2/4/8 fusion tiers in the actual pointer gesture path.
 function ctGestureCanFuse(a,b){if(!a||!b||a.instanceId===b.instanceId)return false;const atk=attackCardTier(a),def=defenseCardTier(a);return (atk&&[1,2,4,8].includes(atk)&&attackCardTier(b)===atk)||(def&&[1,2,4,8].includes(def)&&defenseCardTier(b)===def)}
@@ -4166,6 +4195,7 @@ function ctHandPanEnd(e){
  const max=Math.max(0,pan.lane.scrollWidth-pan.lane.clientWidth);
  pan.lane.scrollLeft=Math.max(0,Math.min(max,pan.lane.scrollLeft));
  if(pan.moved)ctSuppressClickUntil=Date.now()+125;
+ const updated=ct536SortHandIfChanged();if(updated||ct536DeferredHandRender){const rail=document.querySelector('#ctFanRail');if(rail)cardBattleTestHandUpdate(rail)}
 }
 function cardBattleTestGestureInit(){
  const hand=document.querySelector('#ctHand');if(!hand)return;
