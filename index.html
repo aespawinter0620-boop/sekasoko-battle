@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.537</title>
+<title>セカソコ ver.538</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.537";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.538";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2417,7 +2417,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.537</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.538</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2603,7 +2603,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-size:cover;
 }
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.537 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.538 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3267,6 +3267,9 @@ function defenseExerciseAddEnemyBlock(){
 }
 function attackExerciseOnPhaseStart(side){
  if(!attackExercise.active)return;
+ // VER.538: card-battle BLOCK lasts for the entire floor, for both sides.
+ // Standalone DEBUG phase exercise retains its pre-existing per-phase reset.
+ if(cardBattleTestMode.active)return;
  if(side===PHASE_SIDE_ALLY){const cleared=Object.values(attackExercise.actors).reduce((sum,a)=>sum+Math.max(0,Number(a.block)||0),0);for(const a of Object.values(attackExercise.actors))a.block=0;if(cleared>0)attackExerciseLogPush(`味方フェーズ開始｜残味方BLOCK合計${attackExerciseFmt(cleared)}を消滅`)}
  else if(side===PHASE_SIDE_ENEMY){const cleared=attackExercise.enemies.reduce((sum,e)=>sum+Math.max(0,Number(e.block)||0),0);for(const e of attackExercise.enemies)e.block=0;if(cleared>0)attackExerciseLogPush(`敵フェーズ開始｜残敵BLOCK合計${attackExerciseFmt(cleared)}を消滅`)}
 }
@@ -3406,6 +3409,9 @@ function cardBattleTestAdvanceFloor(){
  // Exactly one call controls COST recovery and the 5-card draw, including 21-card overflow.
  const started=phaseBeginAlly();
  if(!started){attackExerciseLogPush(`${mode.floor}F開始に失敗｜二重ドローを防止`);mode.busy=true;return false}
+ // VER.538: reset surviving allies' BLOCK only after a successful floor transition.
+ // Freshly generated enemies already start with BLOCK 0; do not reset on result display.
+ for(const actor of Object.values(attackExercise.actors)){if(actor&&actor.alive&&actor.hp>0)actor.block=0}
  mode.busy=false;mode.resultType='';
  cardBattleTestPlanEnemyActions();
  cardBattleTestMode.message=`${oldFloor}F→${mode.floor}F｜正式残像更新｜未使用カード・山札・捨て札・消滅を継続`;
