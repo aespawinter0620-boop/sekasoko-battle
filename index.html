@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.540</title>
+<title>セカソコ ver.540.1</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.540";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.540.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2475,7 +2475,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.540</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.540.1</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2661,7 +2661,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-size:cover;
 }
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.540 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.540.1 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2985,8 +2985,8 @@ function cardManagedBaseInstances(){const out=[];for(const zone of [cardFoundati
 function cardResolveOverflowDiscard(instanceId){
  if(!cardFoundation.overflowPending||cardFoundation.hand.length<=CARD_HAND_LIMIT)return false;
  const i=cardFoundation.hand.findIndex(c=>c.instanceId===instanceId);if(i<0)return false;
- if(ct540GeneratedKind(cardFoundation.hand[i])){cardFoundation.message='生成カードの選択破棄は仕様未確定｜通常カードを選択してください';cardDebugRender();return false}
  const [card]=cardFoundation.hand.splice(i,1),released=cardReleaseFusionOrBase(card);cardFoundation.overflowPending=false;
+ if(ct540GeneratedKind(card)){cardFoundation.message=`${card.name}を選択破棄｜手札から消失・山札／捨て札へ移動なし｜残りドロー再開`;return cardContinuePendingDraw()}
  cardFoundation.message=cardIsFusion(card)?`${card.name}を選択破棄｜元素材${released.sources.length}枚を${released.exhausted?`捨て札${released.discarded}／消滅${released.exhausted}`:'捨て札'}へ返却｜残り${cardFoundation.pendingDraw}枚のドロー再開`:`${card.name}を${card.exhaustOnDiscard?'消滅':'破棄'}｜手札${cardFoundation.hand.length}枚｜残りドロー再開`;
  return cardContinuePendingDraw();
 }
@@ -3230,7 +3230,7 @@ function attackExerciseFuseSelected(){
  if(!attackExerciseCanOperate()){attackExercise.message='味方フェーズ操作可能時のみ合成できます';return attackExerciseRender()}
  if(attackExercise.selected.length!==2){attackExercise.message='合成する攻撃2枚を順番に選択してください';return attackExerciseRender()}
  const cards=attackExercise.selected.map(id=>cardFoundation.hand.find(c=>c.instanceId===id));if(cards.some(x=>!x)||cards[0]===cards[1]){attackExercise.message='同じカードを重複して合成できません';return attackExerciseRender()}
- if(cards.some(ct540GeneratedKind)){attackExercise.message='生成カードの合成は仕様未確定｜実行しません';return attackExerciseRender()}
+ if(cards.some(ct540GeneratedKind)){attackExercise.message='生成カードは合成不可｜実行しません';return attackExerciseRender()}
  const tier=attackCardTier(cards[0]);if(tier!==attackCardTier(cards[1])||![1,2,4,8].includes(tier)){attackExercise.message='同じ段階の攻撃カード2枚のみ合成可能（最大16連撃）';return attackExerciseRender()}
  const sources=cards.flatMap(attackCardSources),ids=sources.map(c=>c.instanceId);if(new Set(ids).size!==ids.length){attackExercise.message='元素材instanceId重複を検出｜合成中止';return attackExerciseRender()}
  const nextTier=tier*2,fusionId=`fusion507_${Date.now().toString(36)}_${(++attackFusionSeq).toString(36)}`,hitOwners=attackCardOwners({isFusion:true,type:'attackFusion',attackTier:nextTier,fusionSourceCards:sources}),fusion={instanceId:fusionId,templateId:`v507:fusion:${nextTier}`,type:'attackFusion',typeName:ATTACK_EXERCISE_SPEC[nextTier].label,name:attackExerciseFusionName(nextTier,sources),isFusion:true,attackTier:nextTier,retain:true,autoRetain:true,exhaustOnDiscard:false,fusionSourceCards:sources,fusionSourceInstanceIds:[...ids],hitOwners};
@@ -3240,7 +3240,7 @@ function defenseExerciseFuseSelected(){
  if(!attackExerciseCanOperate()){attackExercise.message='味方フェーズ操作可能時のみ防御合成できます';return attackExerciseRender()}
  if(attackExercise.defenseSelected.length!==2){attackExercise.message='合成する防御2枚を順番に選択してください';return attackExerciseRender()}
  const cards=attackExercise.defenseSelected.map(id=>cardFoundation.hand.find(c=>c.instanceId===id));if(cards.some(x=>!x)||cards[0]===cards[1]){attackExercise.message='同じカードを重複して合成できません';return attackExerciseRender()}
- if(cards.some(ct540GeneratedKind)){attackExercise.message='生成カードの合成は仕様未確定｜実行しません';return attackExerciseRender()}
+ if(cards.some(ct540GeneratedKind)){attackExercise.message='生成カードは合成不可｜実行しません';return attackExerciseRender()}
  const tier=defenseCardTier(cards[0]);if(tier!==defenseCardTier(cards[1])||![1,2,4,8].includes(tier)){attackExercise.message='同じ段階の防御カード2枚のみ合成可能（最大無敵）';return attackExerciseRender()}
  const sources=cards.flatMap(defenseCardSources),ids=sources.map(c=>c.instanceId);if(new Set(ids).size!==ids.length){attackExercise.message='元素材instanceId重複を検出｜防御合成中止';return attackExerciseRender()}
  const nextTier=tier*2,fusionId=`fusion508d_${Date.now().toString(36)}_${(++defenseFusionSeq).toString(36)}`,hitOwners=defenseCardOwners({isFusion:true,type:'defenseFusion',defenseTier:nextTier,fusionSourceCards:sources}),fusion={instanceId:fusionId,templateId:`v508:defenseFusion:${nextTier}`,type:'defenseFusion',typeName:DEFENSE_EXERCISE_SPEC[nextTier].label,name:defenseExerciseFusionName(nextTier,sources),isFusion:true,defenseTier:nextTier,retain:true,autoRetain:true,exhaustOnDiscard:false,fusionSourceCards:sources,fusionSourceInstanceIds:[...ids],hitOwners};
@@ -3250,7 +3250,7 @@ function attackExerciseActorForSource(source){const snap=attackExercise.actors[s
 function attackExercisePlanUse(card,targetEnemyId){
  const tier=attackCardTier(card),spec=ATTACK_EXERCISE_SPEC[tier],enemy=attackExerciseEnemyById(targetEnemyId);if(ct533AllyBlocked(card)||!spec||!attackExerciseEnemyLockable(enemy))return null;
  const useSelected=cardBattleTestMode.active&&(tier===1||tier===2);const selected=useSelected?ct540SelectedActor():null;
- if(useSelected&&(!selected||ct540SelectedActorBroken()))return null;
+ if(useSelected&&(!selected||(!ct540GeneratedKind(card)&&ct540SelectedActorBroken())))return null;
  let chain=attackExercise.chain,hp=attackExerciseInt(enemy.hp),block=attackExerciseInt(enemy.block),overkill=attackExerciseInt(enemy.overkill);
  const burst={...attackExercise.burst},hits=[];
  // Fixed target ID for every planned Hit, including post-lethal OVERKILL.
@@ -3322,7 +3322,7 @@ function attackExerciseProcessDeath(rid,reason='HP0'){
  const actor=attackExercise.actors[rid];if(!actor||!actor.alive)return{dead:0,fusions:0,survivors:0,exhausted:0};actor.hp=0;actor.block=0;actor.alive=false;
  const result={dead:1,fusions:0,survivors:0,exhausted:0};
  const zones=['drawPile','hand','discardPile'];
- for(const zoneName of zones){const zone=cardFoundation[zoneName],keep=[];for(const card of zone){if(cardIsFusion(card)){const sources=cardBaseSources(card),hasDead=sources.some(x=>x.ownerRosterId===rid);if(!hasDead){keep.push(card);continue}result.fusions++;delete cardFoundation.fusionSourceLedger[card.instanceId];for(const src of sources){if(src.ownerRosterId===rid){if(exerciseExhaustUnique(src))result.exhausted++}else{cardFoundation.discardPile.push(src);result.survivors++}}continue}if(card.ownerRosterId===rid){if(exerciseExhaustUnique(card))result.exhausted++;continue}keep.push(card)}cardFoundation[zoneName]=keep}
+ for(const zoneName of zones){const zone=cardFoundation[zoneName],keep=[];for(const card of zone){if(ct540GeneratedKind(card)){keep.push(card);continue}if(cardIsFusion(card)){const sources=cardBaseSources(card),hasDead=sources.some(x=>x.ownerRosterId===rid);if(!hasDead){keep.push(card);continue}result.fusions++;delete cardFoundation.fusionSourceLedger[card.instanceId];for(const src of sources){if(src.ownerRosterId===rid){if(exerciseExhaustUnique(src))result.exhausted++}else{cardFoundation.discardPile.push(src);result.survivors++}}continue}if(card.ownerRosterId===rid){if(exerciseExhaustUnique(card))result.exhausted++;continue}keep.push(card)}cardFoundation[zoneName]=keep}
  // Cards already exhausted stay there; do not duplicate them.
  const known=new Set(),dedup=[];for(const c of cardFoundation.exhausted){if(!c||known.has(c.instanceId))continue;known.add(c.instanceId);dedup.push(c)}cardFoundation.exhausted=dedup;
  attackExercise.selected=attackExercise.selected.filter(id=>cardFoundation.hand.some(c=>c.instanceId===id&&attackCardTier(c)));attackExercise.defenseSelected=attackExercise.defenseSelected.filter(id=>cardFoundation.hand.some(c=>c.instanceId===id&&defenseCardTier(c)));const defenseTargetDied=attackExercise.defenseTargetRosterId===rid;
@@ -3720,7 +3720,7 @@ function cardBattleTestCardPreview(c){
  if(attackTier){
   const spec=ATTACK_EXERCISE_SPEC[attackTier],enemy=attackExerciseLockedEnemy(),target=enemy&&attackExerciseEnemyLockable(enemy)?enemy:null;
   const rate=`ATK${Math.round(spec.rate*100)}%`;
-  if(ct533AllyBlocked(c)||((attackTier===1||attackTier===2)&&ct540SelectedActorBroken()))return [rate,'BREAK｜このフェーズ使用不可'];
+  if(!ct540GeneratedKind(c)&&(ct533AllyBlocked(c)||((attackTier===1||attackTier===2)&&ct540SelectedActorBroken())))return [rate,'BREAK｜このフェーズ使用不可'];
   if(ct540GeneratedKind(c)==='attack')return ['COST0｜選択中味方のATK20%','実HPダメージのBREAK蓄積×1.5・使用後消滅'];
   if(attackTier===2)return ['COST1｜選択中味方のATK20%×1Hit','生成《追加攻撃》1枚を手札へ'];
   if(!target)return [attackTier>1?`${rate}×${attackTier}Hit`:`${rate} ダメージ`,'TARGET対象なし｜使用不可'];
@@ -3751,7 +3751,7 @@ function cardBattleTestCardHtml(c){
  else if(atk)type=ATTACK_EXERCISE_SPEC[atk].label;
  else if(def)type=DEFENSE_EXERCISE_SPEC[def].label;
  const effect=cardBattleTestCardPreview(c).map(line=>`<span class="ctEffectLine">${cardDebugEsc(line)}</span>`).join('');
- const cls=atk?'attackCard':def?'defenseCard':'spCard',breakDisabled=ct533AllyBlocked(c)||((atk===1||atk===2)&&ct540SelectedActorBroken());return `<button class="ctCard ${cls} ${breakDisabled?'ct533BreakDisabled':''} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div>${fusion||ct540GeneratedKind(c)?'':`<div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div>`}<div class="ctCardEffect">${effect}</div><div class="ctCardTags">${ct540GeneratedKind(c)?'<span class="ctTag retain">COST0・使い切り</span>':fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
+ const cls=atk?'attackCard':def?'defenseCard':'spCard',breakDisabled=!ct540GeneratedKind(c)&&(ct533AllyBlocked(c)||((atk===1||atk===2)&&ct540SelectedActorBroken()));return `<button class="ctCard ${cls} ${breakDisabled?'ct533BreakDisabled':''} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div>${fusion||ct540GeneratedKind(c)?'':`<div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div>`}<div class="ctCardEffect">${effect}</div><div class="ctCardTags">${ct540GeneratedKind(c)?'<span class="ctTag retain">COST0・使い切り</span>':fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
 }
 function cardBattleTestHandLogSet(message){
  const button=document.querySelector('#ctHudLatestLog'),text=document.querySelector('#ctHandLogText');
@@ -3818,7 +3818,7 @@ function ct533Recovery(side){
  }
 }
 function ct533AllyBlocked(card){
- if(!cardBattleTestMode.active||!attackCardTier(card))return false;
+ if(!cardBattleTestMode.active||!attackCardTier(card)||ct540GeneratedKind(card))return false;
  return attackCardSources(card).some(src=>{const a=attackExercise.actors[src.ownerRosterId],b=a?.ct533Break;return !!(b?.broken&&b.blockAllyPhase===phaseFoundation.allyPhaseCount)});
 }
 function ct533EndAllyPhase(){
