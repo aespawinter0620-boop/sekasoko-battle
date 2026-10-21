@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.536</title>
+<title>セカソコ ver.537</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.536";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.537";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2417,7 +2417,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.536</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.537</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2603,7 +2603,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-size:cover;
 }
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.536 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.537 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3224,12 +3224,12 @@ function defenseExerciseUseSelected(){
 function exerciseExhaustUnique(card){if(!card)return false;if(cardFoundation.exhausted.some(c=>c.instanceId===card.instanceId))return false;cardFoundation.exhausted.push(card);return true}
 // VER.523: single-column ally-backline pull-up, independent from legacy A/E and turnNo.
 function attackExercisePullAllyFront(deadActor){
- if(!deadActor||deadActor.row!=='front')return null;
- const frontSlot=Number(deadActor.formationSlot);
- if(!Number.isInteger(frontSlot)||frontSlot<0||frontSlot>2)return null;
- const back=Object.values(attackExercise.actors).find(a=>a&&a!==deadActor&&a.alive&&a.hp>0&&a.row==='back'&&Number(a.formationSlot)===frontSlot+3);
- // Dead units no longer occupy a board slot; do not change their roster/card identity.
+ if(!deadActor)return null;
+ const wasFront=deadActor.row==='front',frontSlot=Number(deadActor.formationSlot);
+ // VER.537: both front and rear casualties leave the board; retain roster and card history.
  deadActor.formationSlot=-1;
+ if(!wasFront||!Number.isInteger(frontSlot)||frontSlot<0||frontSlot>2)return null;
+ const back=Object.values(attackExercise.actors).find(a=>a&&a!==deadActor&&a.alive&&a.hp>0&&a.row==='back'&&Number(a.formationSlot)===frontSlot+3);
  if(!back)return null;
  back.formationSlot=frontSlot;
  back.row='front';
@@ -3812,8 +3812,9 @@ function cardBattleTestApplyEnemyHit(enemy,target,raw,tag,hitIndex){
  attackExerciseHitPush({kind:'damage',source:'enemyPhase',action:tag,hitIndex,enemyId:enemy.instanceId,sourceName:enemy.name,targetRosterId:target.ownerRosterId,targetName:target.ownerName,homeSlot:enemy.homeSlot,...result});
  const line=`${enemy.name}「${tag}」→${target.ownerName}${hitIndex?` [${hitIndex}]`:''}｜攻撃${attackExerciseFmt(result.damage)}｜BLOCK ${attackExerciseFmt(result.blockBefore)}→${attackExerciseFmt(result.blockAfter)}｜HP ${attackExerciseFmt(result.hpBefore)}→${attackExerciseFmt(result.hpAfter)}`;
  attackExerciseLogPush(line);phaseFoundation.enemyLog.push(line);phaseLogPush(line);
+ cardBattleTestShowEnemyHit(enemy,target,result);
  if(result.hpAfter<=0)attackExerciseProcessDeath(target.ownerRosterId,`VER.529 ${tag}`);
- attackExerciseRender();cardBattleTestShowEnemyHit(enemy,target,result);return true;
+ attackExerciseRender();return true;
 }
 function cardBattleTestExecuteEnemySlots(pending){
  if(!cardBattleTestMode.active||!attackExercise.active||phaseFoundation.phase!==PHASE_SIDE_ENEMY)return false;
@@ -3958,7 +3959,7 @@ function cardBattleTestRender(){
  cardBattleTestReticleSync();
  const defeat=document.querySelector('#ctEnemyDefeatStatus');if(defeat){defeat.textContent=`${cardBattleTestMode.floor}F CLEAR｜階層進行処理中`;defeat.hidden=!!cardBattleTestMode.resultType||enemies.some(e=>e.alive&&e.hp>0)||enemies.some(e=>e.hp<=0&&!e.graphicGone);}
 
- const army=document.querySelector('#ctAllyArmy');if(army){const actors=Object.values(attackExercise.actors);army.innerHTML=[3,0,4,1,5,2].map(slot=>{const actor=actors.find(a=>Number(a.formationSlot)===slot);return actor?cardBattleTestActorHtml(actor):cardBattleTestEmptyAllyHtml(slot)}).join('');}
+ const army=document.querySelector('#ctAllyArmy');if(army){const actors=Object.values(attackExercise.actors);army.innerHTML=[3,0,4,1,5,2].map(slot=>{const actor=actors.find(a=>a&&a.alive&&a.hp>0&&Number(a.formationSlot)===slot);return actor?cardBattleTestActorHtml(actor):cardBattleTestEmptyAllyHtml(slot)}).join('');}
  cardBattleTestIntentSync();
  const rail=document.querySelector('#ctFanRail');if(rail)cardBattleTestHandUpdate(rail);
  set('ctOverflow',cardFoundation.overflowPending?'21枚｜1枚タップして破棄':'');
