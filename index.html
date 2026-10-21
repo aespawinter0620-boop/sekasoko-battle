@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.540.2</title>
+<title>セカソコ ver.540.3</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.540.2";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.540.3";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2475,7 +2475,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.540.2</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.540.3</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2661,7 +2661,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-size:cover;
 }
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.540.2 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.540.3 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3270,7 +3270,7 @@ function attackExerciseUseSelected(){
  if(!chosen||phaseFoundation.costRemaining<ct540Cost(chosen)){attackExercise.message='共通コスト不足｜攻撃カード使用不可';return attackExerciseRender()}
  const id=attackExercise.selected[0],idx=cardFoundation.hand.findIndex(c=>c.instanceId===id);if(idx<0){attackExercise.message='選択カードが手札にありません';return attackExerciseRender()}const card=cardFoundation.hand[idx];if(ct533AllyBlocked(card)){attackExercise.message='BREAK中の素材を含む攻撃カードはこの味方フェーズ使用不可';return attackExerciseRender()}const target=attackExerciseLockedEnemy();if(!target){attackExercise.message='有効なTARGET LOCKがありません｜カード・コストは消費しません';return attackExerciseRender()}const plan=attackExercisePlanUse(card,target.instanceId);if(!plan){attackExercise.message='攻撃対象または攻撃カードが不正です｜消費なし';return attackExerciseRender()}
  // All calculations succeed before any cost/card state is committed.
- cardFoundation.hand.splice(idx,1);attackExercise.lastAttackHits=plan.hits.map(h=>({...h,kind:'attack'}));phaseFoundation.costRemaining-=ct540Cost(card);attackExercise.chain=plan.nextChain;target.hp=plan.nextHp;target.block=plan.nextBlock;target.overkill=plan.nextOverkill;attackExercise.burst=plan.nextBurst;if(cardBattleTestMode.active)for(const h of plan.hits)ct533AddBreak(target,ct540GeneratedKind(card)==='attack'?attackExerciseInt(h.hpDamage*1.5):h.hpDamage,'enemy');if(target.hp<=0)target.alive=false;for(const h of plan.hits){attackExerciseHitPush({...h,kind:'attack'});attackExerciseLogPush(`${h.ownerName}｜ATK参照${attackExerciseFmt(h.referenceAtk)}×${Math.round(h.rate*100)}%×CHAIN${attackExerciseFmt(h.chain,1)}＝${attackExerciseFmt(h.raw)}｜${h.targetName||'模擬敵'} BLOCK ${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}｜実HPダメージ${attackExerciseFmt(h.hpDamage)}｜OVERKILL+${attackExerciseFmt(h.overkillDamage)}（累積${attackExerciseFmt(h.overkillTotal)}）｜BURST ${h.burstBefore}→${h.burstAfter}`)}const released=cardReleaseFusionOrBase(card);if(cardBattleTestMode.active&&attackCardTier(card)===2)ct540Generate('attack',card);attackExercise.selected=[];const integrity=attackExerciseIntegrity();attackExercise.message=`${card.name}使用｜コスト-${ct540Cost(card)}→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材返却 捨て札${released.discarded}${released.exhausted?`／消滅${released.exhausted}`:''}｜整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;phaseLogPush(`VER.508 ${card.name}｜${plan.hits.length}Hit｜CHAIN→×${attackExerciseFmt(attackExercise.chain,1)}｜${target.name} BLOCK${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardFoundation.message=attackExercise.message;if(target.hp<=0&&!cardBattleTestMode.active)attackExerciseCompleteTargetDeath(target.instanceId);cardDebugRender();return true
+ cardFoundation.hand.splice(idx,1);attackExercise.lastAttackHits=plan.hits.map(h=>({...h,kind:'attack'}));phaseFoundation.costRemaining-=ct540Cost(card);attackExercise.chain=plan.nextChain;target.hp=plan.nextHp;target.block=plan.nextBlock;target.overkill=plan.nextOverkill;attackExercise.burst=plan.nextBurst;if(cardBattleTestMode.active)for(const h of plan.hits)ct533AddBreak(target,ct540GeneratedKind(card)==='attack'?attackExerciseInt(h.hpDamage*1.0):h.hpDamage,'enemy');if(target.hp<=0)target.alive=false;for(const h of plan.hits){attackExerciseHitPush({...h,kind:'attack'});attackExerciseLogPush(`${h.ownerName}｜ATK参照${attackExerciseFmt(h.referenceAtk)}×${Math.round(h.rate*100)}%×CHAIN${attackExerciseFmt(h.chain,1)}＝${attackExerciseFmt(h.raw)}｜${h.targetName||'模擬敵'} BLOCK ${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}｜実HPダメージ${attackExerciseFmt(h.hpDamage)}｜OVERKILL+${attackExerciseFmt(h.overkillDamage)}（累積${attackExerciseFmt(h.overkillTotal)}）｜BURST ${h.burstBefore}→${h.burstAfter}`)}const released=cardReleaseFusionOrBase(card);if(cardBattleTestMode.active&&attackCardTier(card)===2)ct540Generate('attack',card);attackExercise.selected=[];const integrity=attackExerciseIntegrity();attackExercise.message=`${card.name}使用｜コスト-${ct540Cost(card)}→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材返却 捨て札${released.discarded}${released.exhausted?`／消滅${released.exhausted}`:''}｜整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;phaseLogPush(`VER.508 ${card.name}｜${plan.hits.length}Hit｜CHAIN→×${attackExerciseFmt(attackExercise.chain,1)}｜${target.name} BLOCK${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardFoundation.message=attackExercise.message;if(target.hp<=0&&!cardBattleTestMode.active)attackExerciseCompleteTargetDeath(target.instanceId);cardDebugRender();return true
 }
 // VER.530: choose the topmost surviving front-row actor, by roster identity.
 function cardBattleTestDefaultDefenseTarget(){
@@ -3721,7 +3721,7 @@ function cardBattleTestCardPreview(c){
   const spec=ATTACK_EXERCISE_SPEC[attackTier],enemy=attackExerciseLockedEnemy(),target=enemy&&attackExerciseEnemyLockable(enemy)?enemy:null;
   const rate=`ATK${Math.round(spec.rate*100)}%`;
   if(!ct540GeneratedKind(c)&&(ct533AllyBlocked(c)||((attackTier===1||attackTier===2)&&ct540SelectedActorBroken())))return [rate,'BREAK｜このフェーズ使用不可'];
-  if(ct540GeneratedKind(c)==='attack')return ['COST0｜選択中味方のATK20%','実HPダメージのBREAK蓄積×1.5・使用後消滅'];
+  if(ct540GeneratedKind(c)==='attack')return ['COST0｜選択中味方のATK20%','実HPダメージのBREAK蓄積×1.0・使用後消滅'];
   if(attackTier===2)return ['COST1｜選択中味方のATK20%×1Hit','生成《追加攻撃》1枚を手札へ'];
   if(!target)return [attackTier>1?`${rate}×${attackTier}Hit`:`${rate} ダメージ`,'TARGET対象なし｜使用不可'];
   // Each hit is calculated using the original owner's ATK, evolving CHAIN,
