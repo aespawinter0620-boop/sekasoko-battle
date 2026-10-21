@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.539</title>
+<title>セカソコ ver.540</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.539";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.540";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2212,6 +2212,28 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   text-shadow:0 1px 3px #000,0 0 6px #9d4800;
 }
 #cardBattleTestScreen .ct539Hit.blockHit .ct539Number{font-size:clamp(17px,4.5vw,23px);color:#a8eaff;-webkit-text-stroke:.5px #103454}
+/* VER.540 trial: compact, legible, non-decorative fixed-position damage readout. */
+#cardBattleTestScreen .ctDamagePop.ct539Hit{
+  z-index:72;min-width:0;width:auto;max-width:44%;filter:none!important;
+  transform:translateX(-50%);animation:ct540FixedHit .62s ease-out forwards;
+  text-shadow:none!important;
+}
+#cardBattleTestScreen .ct539Chain{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;
+  font-size:clamp(10px,2.8vw,12px);font-weight:700;letter-spacing:0;
+  color:#f3e3be;-webkit-text-stroke:0;text-shadow:0 1px 2px #000;
+}
+#cardBattleTestScreen .ct539Number{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;
+  font-size:clamp(26px,7.4vw,34px);font-weight:800;letter-spacing:-.025em;
+  color:#fff4db;-webkit-text-stroke:0;text-shadow:0 2px 3px #000;
+}
+#cardBattleTestScreen .ct539Hit.longNumber .ct539Number{font-size:clamp(21px,6vw,29px)}
+#cardBattleTestScreen .ct539Hit.veryLongNumber .ct539Number{font-size:clamp(16px,4.5vw,22px)}
+#cardBattleTestScreen .ct539Hit.overkill .ct539Number{color:#ffe0a2;-webkit-text-stroke:0}
+#cardBattleTestScreen .ct539Hit .ct539Detail{font-size:clamp(9px,2.5vw,11px);font-weight:700;color:#ffdfb9;text-shadow:0 1px 2px #000}
+#cardBattleTestScreen .ct539Hit.blockHit .ct539Number{font-size:clamp(17px,4.8vw,22px);color:#b7e9ff;-webkit-text-stroke:0}
+@keyframes ct540FixedHit{0%{opacity:0}13%{opacity:1}77%{opacity:1}100%{opacity:0}}
 @keyframes ct539DamageFloat{
   0%{opacity:0;transform:translate(-50%,10px) scale(.78)}
   18%{opacity:1;transform:translate(-50%,-5px) scale(1.12)}
@@ -2453,7 +2475,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.539</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.540</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2639,7 +2661,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-size:cover;
 }
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.539 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.540 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2911,9 +2933,25 @@ function cardDrawCards(amount){
  cardFoundation.pendingDraw+=n;return cardContinuePendingDraw();
 }
 function cardStartTurn(){if(cardFoundation.partyIndex===null)cardFoundationCreateForPartyIndex(selectedParty);cardFoundation.message=`ターン開始｜${CARD_DRAW_PER_TURN}枚ドロー`;return cardDrawCards(CARD_DRAW_PER_TURN)}
-function cardSendToDiscardOrExhaust(card){if(!card)return;if(card.exhaustOnDiscard)cardFoundation.exhausted.push(card);else cardFoundation.discardPile.push(card)}
+function cardSendToDiscardOrExhaust(card){if(!card||ct540GeneratedKind(card))return;if(card.exhaustOnDiscard)cardFoundation.exhausted.push(card);else cardFoundation.discardPile.push(card)}
 function cardIsFusion(card){return !!(card&&card.isFusion&&Array.isArray(card.fusionSourceCards)&&card.fusionSourceCards.length)}
-function cardBaseSources(card){return cardIsFusion(card)?card.fusionSourceCards:[card].filter(Boolean)}
+// VER.540: generated one-shot effects are distinct from persistent base card sources.
+let ct540GeneratedSeq=0;
+function ct540GeneratedKind(c){return c?.type==='ct540Attack'?'attack':c?.type==='ct540Defense'?'defense':null}
+function ct540MakeGenerated(kind,origin){
+ const id=`ct540_${kind}_${Date.now().toString(36)}_${(++ct540GeneratedSeq).toString(36)}`;
+ return {instanceId:id,templateId:`v540:generated:${kind}`,type:kind==='attack'?'ct540Attack':'ct540Defense',typeName:kind==='attack'?'追加攻撃':'全体防御',name:kind==='attack'?'追加攻撃':'全体防御',ct540Generated:true,ct540OriginInstanceId:origin?.instanceId||null,ct540SourceIds:cardBaseSources(origin).map(c=>c.instanceId),retain:true,exhaustOnDiscard:true};
+}
+function ct540Generate(kind,origin){
+ const c=ct540MakeGenerated(kind,origin);cardFoundation.hand.push(c);
+ // The triggering card is removed first, so standard hand size does not grow.
+ if(cardFoundation.hand.length>CARD_HAND_LIMIT)cardFoundation.overflowPending=true;
+ attackExerciseLogPush(`${c.name}生成｜手札へ直接追加・COST0`);return c;
+}
+function ct540SelectedActor(){const a=attackExercise.actors[attackExercise.defenseTargetRosterId];return a&&a.alive&&a.hp>0&&a.formationSlot>=0?a:null}
+function ct540SelectedActorBroken(){const a=ct540SelectedActor();const b=a?.ct533Break;return !!(b?.broken&&b.blockAllyPhase===phaseFoundation.allyPhaseCount)}
+function ct540Cost(c){return ct540GeneratedKind(c)?0:1}
+function cardBaseSources(card){return ct540GeneratedKind(card)?[]:cardIsFusion(card)?card.fusionSourceCards:[card].filter(Boolean)}
 
 // VER.536: only the shared HAND array is ordered; no card/source/zone data is mutated.
 // Compare membership/order signatures first so a routine render never re-sorts.
@@ -2939,7 +2977,7 @@ function ct536SortHandIfChanged(){
 }
 
 function cardReleaseFusionOrBase(card){
- if(!card)return{discarded:0,exhausted:0,sources:[]};const src=cardBaseSources(card),beforeEx=cardFoundation.exhausted.length;
+ if(!card||ct540GeneratedKind(card))return{discarded:0,exhausted:0,sources:[]};const src=cardBaseSources(card),beforeEx=cardFoundation.exhausted.length;
  if(cardIsFusion(card))delete cardFoundation.fusionSourceLedger[card.instanceId];
  src.forEach(cardSendToDiscardOrExhaust);return{discarded:src.length-(cardFoundation.exhausted.length-beforeEx),exhausted:cardFoundation.exhausted.length-beforeEx,sources:src};
 }
@@ -2947,6 +2985,7 @@ function cardManagedBaseInstances(){const out=[];for(const zone of [cardFoundati
 function cardResolveOverflowDiscard(instanceId){
  if(!cardFoundation.overflowPending||cardFoundation.hand.length<=CARD_HAND_LIMIT)return false;
  const i=cardFoundation.hand.findIndex(c=>c.instanceId===instanceId);if(i<0)return false;
+ if(ct540GeneratedKind(cardFoundation.hand[i])){cardFoundation.message='生成カードの選択破棄は仕様未確定｜通常カードを選択してください';cardDebugRender();return false}
  const [card]=cardFoundation.hand.splice(i,1),released=cardReleaseFusionOrBase(card);cardFoundation.overflowPending=false;
  cardFoundation.message=cardIsFusion(card)?`${card.name}を選択破棄｜元素材${released.sources.length}枚を${released.exhausted?`捨て札${released.discarded}／消滅${released.exhausted}`:'捨て札'}へ返却｜残り${cardFoundation.pendingDraw}枚のドロー再開`:`${card.name}を${card.exhaustOnDiscard?'消滅':'破棄'}｜手札${cardFoundation.hand.length}枚｜残りドロー再開`;
  return cardContinuePendingDraw();
@@ -3081,8 +3120,8 @@ function phaseDebugRender(){
 // Defense BLOCK is based on the selected target's exercise reference DEF.
 // Formal rounding/minimums, BREAK establishment, evade, OVERKILL and enemy AI remain unconnected.
 // =========================================================
-const ATTACK_EXERCISE_SPEC={1:{label:'攻撃',rate:.05},2:{label:'2連撃',rate:.08},4:{label:'4連撃',rate:.12},8:{label:'8連撃',rate:.17},16:{label:'16連撃',rate:.23}};
-const DEFENSE_EXERCISE_SPEC={1:{label:'防御',rate:.05},2:{label:'鉄壁',rate:.15},4:{label:'城塞',rate:.35},8:{label:'要塞',rate:.80},16:{label:'無敵',rate:0,invincible:true}};
+const ATTACK_EXERCISE_SPEC={1:{label:'攻撃',rate:.20},2:{label:'連撃',rate:.20},4:{label:'4連撃',rate:.12},8:{label:'8連撃',rate:.17},16:{label:'16連撃',rate:.23}};
+const DEFENSE_EXERCISE_SPEC={1:{label:'防御',rate:.15},2:{label:'鉄壁',rate:.15},4:{label:'城塞',rate:.35},8:{label:'要塞',rate:.80},16:{label:'無敵',rate:0,invincible:true}};
 let attackFusionSeq=0,defenseFusionSeq=0;
 // VER.514.1: the transient enemy roster is the sole source of HP/BLOCK/OVERKILL.
 // Trial fixtures are DEBUG values, NOT battle balance data or legacy E units.
@@ -3145,10 +3184,10 @@ function cardBattleTestSelectEnemy(id){
 }
 let attackExercise=freshAttackExercise();
 function attackExerciseResetForNewRun(){attackExercise=freshAttackExercise();attackExerciseRender()}
-function attackCardTier(card){if(cardIsFusion(card))return card?.type==='attackFusion'||card?.attackTier?Number(card.attackTier)||card.fusionSourceCards.length:0;return card?.type==='attack'?1:0}
-function defenseCardTier(card){if(cardIsFusion(card))return card?.type==='defenseFusion'||card?.defenseTier?Number(card.defenseTier)||card.fusionSourceCards.length:0;return card?.type==='defense'?1:0}
-function attackCardSources(card){return attackCardTier(card)?cardBaseSources(card):[]}
-function defenseCardSources(card){return defenseCardTier(card)?cardBaseSources(card):[]}
+function attackCardTier(card){if(ct540GeneratedKind(card)==='attack')return 1;if(cardIsFusion(card))return card?.type==='attackFusion'||card?.attackTier?Number(card.attackTier)||card.fusionSourceCards.length:0;return card?.type==='attack'?1:0}
+function defenseCardTier(card){if(ct540GeneratedKind(card)==='defense')return 1;if(cardIsFusion(card))return card?.type==='defenseFusion'||card?.defenseTier?Number(card.defenseTier)||card.fusionSourceCards.length:0;return card?.type==='defense'?1:0}
+function attackCardSources(card){return ct540GeneratedKind(card)?[]:attackCardTier(card)?cardBaseSources(card):[]}
+function defenseCardSources(card){return ct540GeneratedKind(card)?[]:defenseCardTier(card)?cardBaseSources(card):[]}
 function attackCardOwners(card){return attackCardSources(card).map(c=>({instanceId:c.instanceId,ownerCid:c.ownerCid,ownerRosterId:c.ownerRosterId,ownerName:c.ownerName}))}
 function defenseCardOwners(card){return defenseCardSources(card).map(c=>({instanceId:c.instanceId,ownerCid:c.ownerCid,ownerRosterId:c.ownerRosterId,ownerName:c.ownerName}))}
 // VER.523: only new-card/trial HP, BLOCK, Hit and OVERKILL quantities are floored.
@@ -3191,6 +3230,7 @@ function attackExerciseFuseSelected(){
  if(!attackExerciseCanOperate()){attackExercise.message='味方フェーズ操作可能時のみ合成できます';return attackExerciseRender()}
  if(attackExercise.selected.length!==2){attackExercise.message='合成する攻撃2枚を順番に選択してください';return attackExerciseRender()}
  const cards=attackExercise.selected.map(id=>cardFoundation.hand.find(c=>c.instanceId===id));if(cards.some(x=>!x)||cards[0]===cards[1]){attackExercise.message='同じカードを重複して合成できません';return attackExerciseRender()}
+ if(cards.some(ct540GeneratedKind)){attackExercise.message='生成カードの合成は仕様未確定｜実行しません';return attackExerciseRender()}
  const tier=attackCardTier(cards[0]);if(tier!==attackCardTier(cards[1])||![1,2,4,8].includes(tier)){attackExercise.message='同じ段階の攻撃カード2枚のみ合成可能（最大16連撃）';return attackExerciseRender()}
  const sources=cards.flatMap(attackCardSources),ids=sources.map(c=>c.instanceId);if(new Set(ids).size!==ids.length){attackExercise.message='元素材instanceId重複を検出｜合成中止';return attackExerciseRender()}
  const nextTier=tier*2,fusionId=`fusion507_${Date.now().toString(36)}_${(++attackFusionSeq).toString(36)}`,hitOwners=attackCardOwners({isFusion:true,type:'attackFusion',attackTier:nextTier,fusionSourceCards:sources}),fusion={instanceId:fusionId,templateId:`v507:fusion:${nextTier}`,type:'attackFusion',typeName:ATTACK_EXERCISE_SPEC[nextTier].label,name:attackExerciseFusionName(nextTier,sources),isFusion:true,attackTier:nextTier,retain:true,autoRetain:true,exhaustOnDiscard:false,fusionSourceCards:sources,fusionSourceInstanceIds:[...ids],hitOwners};
@@ -3200,6 +3240,7 @@ function defenseExerciseFuseSelected(){
  if(!attackExerciseCanOperate()){attackExercise.message='味方フェーズ操作可能時のみ防御合成できます';return attackExerciseRender()}
  if(attackExercise.defenseSelected.length!==2){attackExercise.message='合成する防御2枚を順番に選択してください';return attackExerciseRender()}
  const cards=attackExercise.defenseSelected.map(id=>cardFoundation.hand.find(c=>c.instanceId===id));if(cards.some(x=>!x)||cards[0]===cards[1]){attackExercise.message='同じカードを重複して合成できません';return attackExerciseRender()}
+ if(cards.some(ct540GeneratedKind)){attackExercise.message='生成カードの合成は仕様未確定｜実行しません';return attackExerciseRender()}
  const tier=defenseCardTier(cards[0]);if(tier!==defenseCardTier(cards[1])||![1,2,4,8].includes(tier)){attackExercise.message='同じ段階の防御カード2枚のみ合成可能（最大無敵）';return attackExerciseRender()}
  const sources=cards.flatMap(defenseCardSources),ids=sources.map(c=>c.instanceId);if(new Set(ids).size!==ids.length){attackExercise.message='元素材instanceId重複を検出｜防御合成中止';return attackExerciseRender()}
  const nextTier=tier*2,fusionId=`fusion508d_${Date.now().toString(36)}_${(++defenseFusionSeq).toString(36)}`,hitOwners=defenseCardOwners({isFusion:true,type:'defenseFusion',defenseTier:nextTier,fusionSourceCards:sources}),fusion={instanceId:fusionId,templateId:`v508:defenseFusion:${nextTier}`,type:'defenseFusion',typeName:DEFENSE_EXERCISE_SPEC[nextTier].label,name:defenseExerciseFusionName(nextTier,sources),isFusion:true,defenseTier:nextTier,retain:true,autoRetain:true,exhaustOnDiscard:false,fusionSourceCards:sources,fusionSourceInstanceIds:[...ids],hitOwners};
@@ -3208,11 +3249,13 @@ function defenseExerciseFuseSelected(){
 function attackExerciseActorForSource(source){const snap=attackExercise.actors[source.ownerRosterId];if(snap)return snap;const base=formationRosterData.find(c=>c.id===source.ownerRosterId||Number(c.cid)===Number(source.ownerCid));const enh=base?getEnhancedStats(base.id,base):{atk:0};return{ownerRosterId:source.ownerRosterId,ownerCid:source.ownerCid,ownerName:source.ownerName,baseAtk:Math.max(0,Number(enh.atk)||0),referenceAtk:Math.max(0,Number(enh.atk)||0),sword:0,source:'フォールバック編成ATK'}}
 function attackExercisePlanUse(card,targetEnemyId){
  const tier=attackCardTier(card),spec=ATTACK_EXERCISE_SPEC[tier],enemy=attackExerciseEnemyById(targetEnemyId);if(ct533AllyBlocked(card)||!spec||!attackExerciseEnemyLockable(enemy))return null;
+ const useSelected=cardBattleTestMode.active&&(tier===1||tier===2);const selected=useSelected?ct540SelectedActor():null;
+ if(useSelected&&(!selected||ct540SelectedActorBroken()))return null;
  let chain=attackExercise.chain,hp=attackExerciseInt(enemy.hp),block=attackExerciseInt(enemy.block),overkill=attackExerciseInt(enemy.overkill);
  const burst={...attackExercise.burst},hits=[];
  // Fixed target ID for every planned Hit, including post-lethal OVERKILL.
- for(const source of attackCardSources(card)){
-  const actor=attackExerciseActorForSource(source),burstBefore=Math.max(0,Math.min(100,Number(burst[source.ownerRosterId])||0)),burstAfter=Math.min(100,burstBefore+10),raw=attackExerciseInt(actor.referenceAtk*spec.rate*chain),blockBefore=block,blocked=Math.min(blockBefore,raw),blockAfter=Math.max(0,blockBefore-blocked);
+ for(const source of (useSelected?[{instanceId:ct540GeneratedKind(card)?card.instanceId:attackCardSources(card)[0]?.instanceId,ownerRosterId:selected.ownerRosterId,ownerCid:selected.ownerCid,ownerName:selected.ownerName}]:attackCardSources(card))){
+  const actor=useSelected?selected:attackExerciseActorForSource(source),burstBefore=Math.max(0,Math.min(100,Number(burst[source.ownerRosterId])||0)),burstAfter=Math.min(100,burstBefore+10),raw=attackExerciseInt(actor.referenceAtk*spec.rate*chain),blockBefore=block,blocked=Math.min(blockBefore,raw),blockAfter=Math.max(0,blockBefore-blocked);
   const penetrated=Math.max(0,raw-blocked),hpBefore=hp,hpDamage=Math.min(hpBefore,penetrated),overkillDamage=Math.max(0,penetrated-hpDamage),hpAfter=Math.max(0,hpBefore-hpDamage);
   overkill+=overkillDamage;
   hits.push({targetEnemyId:enemy.instanceId,targetName:enemy.name,ownerRosterId:source.ownerRosterId,ownerCid:source.ownerCid,ownerName:source.ownerName,baseAtk:actor.baseAtk,referenceAtk:actor.referenceAtk,rate:spec.rate,chain,raw,blockBefore,blocked,blockAfter,hpDamage,overkillDamage,overkillTotal:overkill,breakBasis:hpDamage,hpBefore,hpAfter,burstBefore,burstAfter,sourceInstanceId:source.instanceId});
@@ -3223,10 +3266,11 @@ function attackExercisePlanUse(card,targetEnemyId){
 function attackExerciseUseSelected(){
  if(!attackExerciseCanOperate()){attackExercise.message='味方フェーズ操作可能時のみ攻撃カードを使用できます';return attackExerciseRender()}
  if(attackExercise.selected.length!==1){attackExercise.message='使用する攻撃カードを1枚だけ選択してください';return attackExerciseRender()}
- if(phaseFoundation.costRemaining<=0){attackExercise.message='共通コスト0｜攻撃カード使用不可（合成は可能）';return attackExerciseRender()}
+ const chosen=cardFoundation.hand.find(c=>c.instanceId===attackExercise.selected[0]);
+ if(!chosen||phaseFoundation.costRemaining<ct540Cost(chosen)){attackExercise.message='共通コスト不足｜攻撃カード使用不可';return attackExerciseRender()}
  const id=attackExercise.selected[0],idx=cardFoundation.hand.findIndex(c=>c.instanceId===id);if(idx<0){attackExercise.message='選択カードが手札にありません';return attackExerciseRender()}const card=cardFoundation.hand[idx];if(ct533AllyBlocked(card)){attackExercise.message='BREAK中の素材を含む攻撃カードはこの味方フェーズ使用不可';return attackExerciseRender()}const target=attackExerciseLockedEnemy();if(!target){attackExercise.message='有効なTARGET LOCKがありません｜カード・コストは消費しません';return attackExerciseRender()}const plan=attackExercisePlanUse(card,target.instanceId);if(!plan){attackExercise.message='攻撃対象または攻撃カードが不正です｜消費なし';return attackExerciseRender()}
  // All calculations succeed before any cost/card state is committed.
- cardFoundation.hand.splice(idx,1);attackExercise.lastAttackHits=plan.hits.map(h=>({...h,kind:'attack'}));phaseFoundation.costRemaining--;attackExercise.chain=plan.nextChain;target.hp=plan.nextHp;target.block=plan.nextBlock;target.overkill=plan.nextOverkill;attackExercise.burst=plan.nextBurst;if(cardBattleTestMode.active)for(const h of plan.hits)ct533AddBreak(target,h.hpDamage,'enemy');if(target.hp<=0)target.alive=false;for(const h of plan.hits){attackExerciseHitPush({...h,kind:'attack'});attackExerciseLogPush(`${h.ownerName}｜ATK参照${attackExerciseFmt(h.referenceAtk)}×${Math.round(h.rate*100)}%×CHAIN${attackExerciseFmt(h.chain,1)}＝${attackExerciseFmt(h.raw)}｜${h.targetName||'模擬敵'} BLOCK ${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}｜実HPダメージ${attackExerciseFmt(h.hpDamage)}｜OVERKILL+${attackExerciseFmt(h.overkillDamage)}（累積${attackExerciseFmt(h.overkillTotal)}）｜BURST ${h.burstBefore}→${h.burstAfter}`)}const released=cardReleaseFusionOrBase(card);attackExercise.selected=[];const integrity=attackExerciseIntegrity();attackExercise.message=`${card.name}使用｜コスト-1→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材返却 捨て札${released.discarded}${released.exhausted?`／消滅${released.exhausted}`:''}｜整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;phaseLogPush(`VER.508 ${card.name}｜${plan.hits.length}Hit｜CHAIN→×${attackExerciseFmt(attackExercise.chain,1)}｜${target.name} BLOCK${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardFoundation.message=attackExercise.message;if(target.hp<=0&&!cardBattleTestMode.active)attackExerciseCompleteTargetDeath(target.instanceId);cardDebugRender();return true
+ cardFoundation.hand.splice(idx,1);attackExercise.lastAttackHits=plan.hits.map(h=>({...h,kind:'attack'}));phaseFoundation.costRemaining-=ct540Cost(card);attackExercise.chain=plan.nextChain;target.hp=plan.nextHp;target.block=plan.nextBlock;target.overkill=plan.nextOverkill;attackExercise.burst=plan.nextBurst;if(cardBattleTestMode.active)for(const h of plan.hits)ct533AddBreak(target,ct540GeneratedKind(card)==='attack'?attackExerciseInt(h.hpDamage*1.5):h.hpDamage,'enemy');if(target.hp<=0)target.alive=false;for(const h of plan.hits){attackExerciseHitPush({...h,kind:'attack'});attackExerciseLogPush(`${h.ownerName}｜ATK参照${attackExerciseFmt(h.referenceAtk)}×${Math.round(h.rate*100)}%×CHAIN${attackExerciseFmt(h.chain,1)}＝${attackExerciseFmt(h.raw)}｜${h.targetName||'模擬敵'} BLOCK ${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}｜実HPダメージ${attackExerciseFmt(h.hpDamage)}｜OVERKILL+${attackExerciseFmt(h.overkillDamage)}（累積${attackExerciseFmt(h.overkillTotal)}）｜BURST ${h.burstBefore}→${h.burstAfter}`)}const released=cardReleaseFusionOrBase(card);if(cardBattleTestMode.active&&attackCardTier(card)===2)ct540Generate('attack',card);attackExercise.selected=[];const integrity=attackExerciseIntegrity();attackExercise.message=`${card.name}使用｜コスト-${ct540Cost(card)}→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材返却 捨て札${released.discarded}${released.exhausted?`／消滅${released.exhausted}`:''}｜整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;phaseLogPush(`VER.508 ${card.name}｜${plan.hits.length}Hit｜CHAIN→×${attackExerciseFmt(attackExercise.chain,1)}｜${target.name} BLOCK${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardFoundation.message=attackExercise.message;if(target.hp<=0&&!cardBattleTestMode.active)attackExerciseCompleteTargetDeath(target.instanceId);cardDebugRender();return true
 }
 // VER.530: choose the topmost surviving front-row actor, by roster identity.
 function cardBattleTestDefaultDefenseTarget(){
@@ -3245,6 +3289,7 @@ function ct535ExpireInvincible(nextAllyPhase){
 function defenseExercisePlanUse(card,target){
  const tier=defenseCardTier(card),spec=DEFENSE_EXERCISE_SPEC[tier];
  if(!spec||!target||!target.alive||target.hp<=0)return null;
+ if(ct540GeneratedKind(card)==='defense'){const grants=Object.values(attackExercise.actors).filter(a=>a&&a.alive&&a.hp>0&&a.formationSlot>=0).map(a=>({rid:a.ownerRosterId,amount:attackExerciseInt((Number(a.referenceDef)||0)*.05)}));return {tier,spec,globalDefense:true,grants,invincible:false,amount:grants.reduce((n,g)=>n+g.amount,0),blockBefore:target.block,blockAfter:target.block};}
  const blockBefore=attackExerciseInt(target.block),invincible=!!spec.invincible;
  const amount=invincible?0:attackExerciseInt((Number(target.referenceDef)||0)*spec.rate);
  return{tier,spec,invincible,amount,blockBefore,blockAfter:blockBefore+amount};
@@ -3253,9 +3298,10 @@ function defenseExerciseUseSelected(){
  if(!attackExerciseCanOperate()){attackExercise.message='味方フェーズ操作可能時のみ防御カードを使用できます';return attackExerciseRender()}
  if(attackExercise.defenseSelected.length!==1){attackExercise.message='使用する防御カードを1枚だけ選択してください';return attackExerciseRender()}
  const target=attackExercise.actors[attackExercise.defenseTargetRosterId];if(!target||!target.alive||target.hp<=0){attackExercise.message='生存味方から防御対象を選択してください';return attackExerciseRender()}
- if(phaseFoundation.costRemaining<=0){attackExercise.message='共通コスト0｜防御カード使用不可（合成は可能）';return attackExerciseRender()}
+ const chosen=cardFoundation.hand.find(c=>c.instanceId===attackExercise.defenseSelected[0]);
+ if(!chosen||phaseFoundation.costRemaining<ct540Cost(chosen)){attackExercise.message='共通コスト不足｜防御カード使用不可';return attackExerciseRender()}
  const id=attackExercise.defenseSelected[0],idx=cardFoundation.hand.findIndex(c=>c.instanceId===id);if(idx<0){attackExercise.message='選択防御カードが手札にありません';return attackExerciseRender()}const card=cardFoundation.hand[idx],plan=defenseExercisePlanUse(card,target);if(!plan){attackExercise.message='防御系カードではありません';return attackExerciseRender()}
- cardFoundation.hand.splice(idx,1);phaseFoundation.costRemaining--;if(plan.invincible){if(cardBattleTestMode.active)target.ct535InvincibleUntilPhase=phaseFoundation.allyPhaseCount+1;}else target.block=plan.blockAfter;const released=cardReleaseFusionOrBase(card);attackExercise.defenseSelected=[];attackExerciseLogPush(plan.invincible?`${card.name}→${target.ownerName}｜次の味方フェーズ開始まで無敵`:`${card.name}→${target.ownerName}｜対象DEF${attackExerciseFmt(target.referenceDef)}×${Math.round(plan.spec.rate*100)}%＝BLOCK+${attackExerciseFmt(plan.amount)}｜${attackExerciseFmt(plan.blockBefore)}→${attackExerciseFmt(plan.blockAfter)}`);attackExerciseHitPush({kind:'defense',cardName:card.name,targetName:target.ownerName,referenceDef:target.referenceDef,rate:plan.spec.rate,blockGain:plan.amount,invincible:plan.invincible,blockBefore:plan.blockBefore,blockAfter:plan.blockAfter});const integrity=attackExerciseIntegrity();attackExercise.message=plan.invincible?`${card.name}使用｜${target.ownerName}を次の味方フェーズ開始まで無敵｜コスト-1→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材整合${integrity.ok?'OK':'NG'}`:`${card.name}使用｜${target.ownerName}へBLOCK+${attackExerciseFmt(plan.amount)}｜コスト-1→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;cardFoundation.message=attackExercise.message;phaseLogPush(`VER.508 防御｜${target.ownerName} BLOCK ${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardDebugRender();return true
+ cardFoundation.hand.splice(idx,1);phaseFoundation.costRemaining-=ct540Cost(card);if(plan.globalDefense){for(const grant of plan.grants){const actor=attackExercise.actors[grant.rid];if(actor&&actor.alive&&actor.hp>0)actor.block=attackExerciseInt(actor.block)+grant.amount}}else if(plan.invincible){if(cardBattleTestMode.active)target.ct535InvincibleUntilPhase=phaseFoundation.allyPhaseCount+1;}else target.block=plan.blockAfter;const released=cardReleaseFusionOrBase(card);if(cardBattleTestMode.active&&defenseCardTier(card)===2)ct540Generate('defense',card);attackExercise.defenseSelected=[];attackExerciseLogPush(plan.invincible?`${card.name}→${target.ownerName}｜次の味方フェーズ開始まで無敵`:`${card.name}→${target.ownerName}｜対象DEF${attackExerciseFmt(target.referenceDef)}×${Math.round(plan.spec.rate*100)}%＝BLOCK+${attackExerciseFmt(plan.amount)}｜${attackExerciseFmt(plan.blockBefore)}→${attackExerciseFmt(plan.blockAfter)}`);attackExerciseHitPush({kind:'defense',cardName:card.name,targetName:target.ownerName,referenceDef:target.referenceDef,rate:plan.spec.rate,blockGain:plan.amount,invincible:plan.invincible,blockBefore:plan.blockBefore,blockAfter:plan.blockAfter});const integrity=attackExerciseIntegrity();attackExercise.message=plan.globalDefense?`${card.name}使用｜生存${plan.grants.length}人に各自DEF5% BLOCK｜コスト-0→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材整合${integrity.ok?'OK':'NG'}`:plan.invincible?`${card.name}使用｜${target.ownerName}を次の味方フェーズ開始まで無敵｜コスト-1→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材整合${integrity.ok?'OK':'NG'}`:`${card.name}使用｜${target.ownerName}へBLOCK+${attackExerciseFmt(plan.amount)}｜コスト-1→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;cardFoundation.message=attackExercise.message;phaseLogPush(`VER.508 防御｜${target.ownerName} BLOCK ${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardDebugRender();return true
 }
 function exerciseExhaustUnique(card){if(!card)return false;if(cardFoundation.exhausted.some(c=>c.instanceId===card.instanceId))return false;cardFoundation.exhausted.push(card);return true}
 // VER.523: single-column ally-backline pull-up, independent from legacy A/E and turnNo.
@@ -3337,7 +3383,7 @@ function attackExerciseRender(){
  const hand=document.querySelector('#attackExerciseHand'),attackCards=cardFoundation.hand.filter(c=>attackCardTier(c));if(hand)hand.innerHTML=attackCards.length?attackCards.map(c=>{const x=attackExerciseCardLabel(c),sel=attackExercise.selected.includes(c.instanceId);return `<button class="attackExerciseCard ${sel?'selected':''}" type="button" onclick="attackExerciseSelect('${c.instanceId}')"><span><strong>${cardDebugEsc(c.name)}</strong><small>${cardDebugEsc(x.owners)}｜${Math.round(x.rate*100)}%×${x.tier}Hit｜${cardIsFusion(c)?`素材 ${c.fusionSourceInstanceIds.length}枚｜自動《保持》`:`instance ${cardDebugEsc(c.instanceId)}`}</small></span><em>${sel?`選択${attackExercise.selected.indexOf(c.instanceId)+1}`:'選択'}</em></button>`}).join(''):'<div class="attackExerciseLead">手札に攻撃系カードなし</div>';
  const defHand=document.querySelector('#defenseExerciseHand'),defCards=cardFoundation.hand.filter(c=>defenseCardTier(c));if(defHand)defHand.innerHTML=defCards.length?defCards.map(c=>{const x=defenseExerciseCardLabel(c),sel=attackExercise.defenseSelected.includes(c.instanceId);return `<button class="attackExerciseCard defenseCard ${sel?'selected':''}" type="button" onclick="defenseExerciseSelect('${c.instanceId}')"><span><strong>${cardDebugEsc(c.name)}</strong><small>${cardDebugEsc(x.owners)}｜対象DEF×${Math.round(x.rate*100)}%｜${cardIsFusion(c)?`素材 ${c.fusionSourceInstanceIds.length}枚｜自動《保持》`:`instance ${cardDebugEsc(c.instanceId)}`}</small></span><em>${sel?`選択${attackExercise.defenseSelected.indexOf(c.instanceId)+1}`:'選択'}</em></button>`}).join(''):'<div class="attackExerciseLead">手札に防御系カードなし</div>';
  const log=document.querySelector('#attackExerciseLog');if(log)log.innerHTML=attackExercise.hitLog.length?attackExercise.hitLog.slice(-32).map(h=>{if(h.kind==='defense')return `<div class="blockLine"><b>BLOCK付与</b>｜${cardDebugEsc(h.cardName)}→${cardDebugEsc(h.targetName)}｜DEF ${attackExerciseFmt(h.referenceDef)}×${Math.round(h.rate*100)}%＝+${attackExerciseFmt(h.blockGain)}｜${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}</div>`;if(h.kind==='damage')return `<div class="blockLine"><b>模擬被ダメ</b>｜${cardDebugEsc(h.targetName)} ${attackExerciseFmt(h.damage)}｜BLOCK吸収 ${attackExerciseFmt(h.blocked)}｜HP ${attackExerciseFmt(h.hpBefore)}→${attackExerciseFmt(h.hpAfter)}｜BREAK引継ぎ ${attackExerciseFmt(h.breakBasis)}</div>`;if(h.kind==='death')return `<div class="deathLine"><b>死亡</b>｜${cardDebugEsc(h.targetName)}｜消滅${h.exhausted}／合成解体${h.fusions}／生存素材返却${h.survivors}</div>`;return `<div><b>${cardDebugEsc(h.ownerName)}→${cardDebugEsc(h.targetName||'模擬敵')}</b>｜ATK ${attackExerciseFmt(h.referenceAtk)} × ${Math.round(h.rate*100)}% × CHAIN ${attackExerciseFmt(h.chain,1)} ＝ <b>${attackExerciseFmt(h.raw)}</b>｜${h.targetName||'模擬敵'} BLOCK ${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}｜実HPダメージ ${attackExerciseFmt(h.hpDamage)}｜OVERKILL +${attackExerciseFmt(h.overkillDamage||0)}｜模擬HP ${attackExerciseFmt(h.hpBefore)}→${attackExerciseFmt(h.hpAfter)}｜BURST ${h.burstBefore}→${h.burstAfter}</div>`}).join(''):'ログなし';
- const btn=(id,disabled)=>{const b=document.querySelector('#'+id);if(b)b.disabled=!!disabled};const can=attackExerciseCanOperate(),target=attackExercise.actors[attackExercise.defenseTargetRosterId],hasTarget=!!(target&&target.alive&&target.hp>0);btn('dbgAttackStart',attackExercise.active);btn('dbgAttackPrep',!can);btn('dbgAttackFuse',!can||attackExercise.selected.length!==2);btn('dbgAttackUse',!can||attackExercise.selected.length!==1||phaseFoundation.costRemaining<=0);btn('dbgDefensePrep',!can);btn('dbgDefenseFuse',!can||attackExercise.defenseSelected.length!==2);btn('dbgDefenseUse',!can||attackExercise.defenseSelected.length!==1||!hasTarget||phaseFoundation.costRemaining<=0);btn('dbgAttackEndAlly',!can);btn('dbgAttackEnemy',!attackExercise.active||phaseFoundation.phase!==PHASE_SIDE_ENEMY);btn('dbgAttackStop',!attackExercise.active);btn('dbgAttackSetHp',!attackExercise.active);btn('dbgDefenseSetDef',!attackExercise.active||!hasTarget);btn('dbgDefenseDamageApply',!attackExercise.active||!hasTarget);btn('dbgDefenseKill',!attackExercise.active||!hasTarget);btn('dbgEnemyBlockAdd',!attackExercise.active||phaseFoundation.phase!==PHASE_SIDE_ENEMY);if(cardBattleTestMode.active&&typeof cardBattleTestRender==='function')cardBattleTestRender()
+ const btn=(id,disabled)=>{const b=document.querySelector('#'+id);if(b)b.disabled=!!disabled};const can=attackExerciseCanOperate(),target=attackExercise.actors[attackExercise.defenseTargetRosterId],hasTarget=!!(target&&target.alive&&target.hp>0);btn('dbgAttackStart',attackExercise.active);btn('dbgAttackPrep',!can);btn('dbgAttackFuse',!can||attackExercise.selected.length!==2);btn('dbgAttackUse',!can||attackExercise.selected.length!==1||phaseFoundation.costRemaining<ct540Cost(cardFoundation.hand.find(c=>c.instanceId===attackExercise.selected[0])));btn('dbgDefensePrep',!can);btn('dbgDefenseFuse',!can||attackExercise.defenseSelected.length!==2);btn('dbgDefenseUse',!can||attackExercise.defenseSelected.length!==1||!hasTarget||phaseFoundation.costRemaining<ct540Cost(cardFoundation.hand.find(c=>c.instanceId===attackExercise.defenseSelected[0])));btn('dbgAttackEndAlly',!can);btn('dbgAttackEnemy',!attackExercise.active||phaseFoundation.phase!==PHASE_SIDE_ENEMY);btn('dbgAttackStop',!attackExercise.active);btn('dbgAttackSetHp',!attackExercise.active);btn('dbgDefenseSetDef',!attackExercise.active||!hasTarget);btn('dbgDefenseDamageApply',!attackExercise.active||!hasTarget);btn('dbgDefenseKill',!attackExercise.active||!hasTarget);btn('dbgEnemyBlockAdd',!attackExercise.active||phaseFoundation.phase!==PHASE_SIDE_ENEMY);if(cardBattleTestMode.active&&typeof cardBattleTestRender==='function')cardBattleTestRender()
 }
 
 // =========================================================
@@ -3540,7 +3586,7 @@ function cardBattleTestAttack(){
 }
 function cardBattleTestDefense(){
  if(!cardBattleTestCanInput())return false;const rid=attackExercise.defenseTargetRosterId,before=rid&&attackExercise.actors[rid]?Number(attackExercise.actors[rid].block)||0:0,ok=defenseExerciseUseSelected();cardBattleTestMode.message=attackExercise.message;
- if(ok){const after=rid&&attackExercise.actors[rid]?Number(attackExercise.actors[rid].block)||0:before;cardBattleTestLock(260);setTimeout(()=>cardBattleTestAnimateAlly(rid,`BLOCK +${attackExerciseFmt(after-before)}`),10)}else cardBattleTestRender();return !!ok
+ if(ok){const after=rid&&attackExercise.actors[rid]?Number(attackExercise.actors[rid].block)||0:before;cardBattleTestLock(260);setTimeout(()=>cardBattleTestAnimateAlly(rid,cardBattleTestMode.message.includes('全体防御')?'生存味方全員 BLOCK +DEF5%':`BLOCK +${attackExerciseFmt(after-before)}`),10)}else cardBattleTestRender();return !!ok
 }
 // VER.521: allow six mock enemy actions to be seen individually on the existing card board.
 // The phase core remains unchanged for standalone DEBUG / legacy battles.
@@ -3603,10 +3649,10 @@ function cardBattleTestAnimateEnemy(hits,animation=null){
   // Keep large numbers inside narrow iPhone battle viewports; stagger concurrent multi-Hit labels.
   const baseX=r?r.left-b.left+r.width*.55:b.width*.72;
   // Four overlapping Hit windows occupy separate diagonally staggered lanes.
-  const lane=i%4,sideOffset=[-64,0,64,-28][lane],verticalOffset=[-38,12,64,107][lane];
-  const x=Math.max(10,Math.min(b.width-10,baseX+sideOffset));
-  const y=r?r.top-b.top+r.height*.45:b.height*.40;
-  pop.style.left=x+'px';pop.style.top=Math.max(34,Math.min(b.height-110,y+verticalOffset))+'px';
+  // VER.540 trial: one stable enemy-side popup anchor; replace each preceding Hit.
+  fx.querySelectorAll('.ctDamagePop.ct539Hit').forEach(el=>el.remove());
+  const x=b.width*.73,y=b.height*.34;
+  pop.style.left=x+'px';pop.style.top=y+'px';
   pop.style.zIndex=String(65+i%8);
   const chain=document.createElement('span');chain.className='ct539Chain';
   chain.textContent=`CHAIN ×${attackExerciseFmt(h.chain,1)}`;
@@ -3674,7 +3720,9 @@ function cardBattleTestCardPreview(c){
  if(attackTier){
   const spec=ATTACK_EXERCISE_SPEC[attackTier],enemy=attackExerciseLockedEnemy(),target=enemy&&attackExerciseEnemyLockable(enemy)?enemy:null;
   const rate=`ATK${Math.round(spec.rate*100)}%`;
-  if(ct533AllyBlocked(c))return [rate,'BREAK｜このフェーズ使用不可'];
+  if(ct533AllyBlocked(c)||((attackTier===1||attackTier===2)&&ct540SelectedActorBroken()))return [rate,'BREAK｜このフェーズ使用不可'];
+  if(ct540GeneratedKind(c)==='attack')return ['COST0｜選択中味方のATK20%','実HPダメージのBREAK蓄積×1.5・使用後消滅'];
+  if(attackTier===2)return ['COST1｜選択中味方のATK20%×1Hit','生成《追加攻撃》1枚を手札へ'];
   if(!target)return [attackTier>1?`${rate}×${attackTier}Hit`:`${rate} ダメージ`,'TARGET対象なし｜使用不可'];
   // Each hit is calculated using the original owner's ATK, evolving CHAIN,
   // and the current enemy's BLOCK/HP in actual source order.
@@ -3687,6 +3735,8 @@ function cardBattleTestCardPreview(c){
  }
  if(defenseTier){
   const spec=DEFENSE_EXERCISE_SPEC[defenseTier],target=attackExercise.actors[attackExercise.defenseTargetRosterId];
+  if(ct540GeneratedKind(c)==='defense')return ['COST0｜生存味方全員に各DEF5% BLOCK','使用後消滅'];
+  if(defenseTier===2)return ['COST1｜対象DEF15%分BLOCK','生成《全体防御》1枚を手札へ'];
   if(spec.invincible)return target&&target.alive&&target.hp>0?['指定味方1体を無敵','次の味方フェーズ開始まで']:['指定味方1体を無敵','防御対象なし｜使用不可'];
   if(!target||!target.alive||target.hp<=0)return [`対象DEF${Math.round(spec.rate*100)}%`,'防御対象なし｜使用不可'];
   const plan=defenseExercisePlanUse(c,target);
@@ -3697,10 +3747,11 @@ function cardBattleTestCardPreview(c){
 }
 function cardBattleTestCardHtml(c){
  const atk=attackCardTier(c),def=defenseCardTier(c),fusion=cardIsFusion(c),atkSel=attackExercise.selected.indexOf(c.instanceId),defSel=attackExercise.defenseSelected.indexOf(c.instanceId),order=atkSel>=0?atkSel+1:defSel>=0?defSel+1:0,selected=order>0,overflow=cardFoundation.overflowPending,owners=(atk?attackCardSources(c):def?defenseCardSources(c):[c]).map(x=>x.ownerName).join('→');let type='SP';
- if(atk)type=ATTACK_EXERCISE_SPEC[atk].label;
+ if(ct540GeneratedKind(c))type=c.typeName;
+ else if(atk)type=ATTACK_EXERCISE_SPEC[atk].label;
  else if(def)type=DEFENSE_EXERCISE_SPEC[def].label;
  const effect=cardBattleTestCardPreview(c).map(line=>`<span class="ctEffectLine">${cardDebugEsc(line)}</span>`).join('');
- const cls=atk?'attackCard':def?'defenseCard':'spCard',breakDisabled=ct533AllyBlocked(c);return `<button class="ctCard ${cls} ${breakDisabled?'ct533BreakDisabled':''} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div>${fusion?'':`<div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div>`}<div class="ctCardEffect">${effect}</div><div class="ctCardTags">${fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
+ const cls=atk?'attackCard':def?'defenseCard':'spCard',breakDisabled=ct533AllyBlocked(c)||((atk===1||atk===2)&&ct540SelectedActorBroken());return `<button class="ctCard ${cls} ${breakDisabled?'ct533BreakDisabled':''} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div>${fusion||ct540GeneratedKind(c)?'':`<div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div>`}<div class="ctCardEffect">${effect}</div><div class="ctCardTags">${ct540GeneratedKind(c)?'<span class="ctTag retain">COST0・使い切り</span>':fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
 }
 function cardBattleTestHandLogSet(message){
  const button=document.querySelector('#ctHudLatestLog'),text=document.querySelector('#ctHandLogText');
@@ -4109,7 +4160,7 @@ function ctGestureReset(returning=false){
  const updated=ct536SortHandIfChanged();if(updated||ct536DeferredHandRender){const rail=document.querySelector('#ctFanRail');if(rail)cardBattleTestHandUpdate(rail)}
 }
 // VER.535.1: match the already-supported 1/2/4/8 fusion tiers in the actual pointer gesture path.
-function ctGestureCanFuse(a,b){if(!a||!b||a.instanceId===b.instanceId)return false;const atk=attackCardTier(a),def=defenseCardTier(a);return (atk&&[1,2,4,8].includes(atk)&&attackCardTier(b)===atk)||(def&&[1,2,4,8].includes(def)&&defenseCardTier(b)===def)}
+function ctGestureCanFuse(a,b){if(!a||!b||ct540GeneratedKind(a)||ct540GeneratedKind(b)||a.instanceId===b.instanceId)return false;const atk=attackCardTier(a),def=defenseCardTier(a);return (atk&&[1,2,4,8].includes(atk)&&attackCardTier(b)===atk)||(def&&[1,2,4,8].includes(def)&&defenseCardTier(b)===def)}
 // VER.525.2: use the rendered drag card's lower edge, not the finger tip.
 // The drag ghost is positioned at g.rect and translated by the pointer delta.
 // Its existing CSS transform uses scale(1.07) around its center; compute that
@@ -4123,8 +4174,8 @@ function ctGestureCommonUseReady(g,hand){
  const r=hand.getBoundingClientRect();
  return ctGestureCardBottom(g)<=r.top+r.height/2;
 }
-function ctGestureUseAllowed(){
- return cardBattleTestMode.active&&!cardBattleTestMode.busy&&attackExerciseCanOperate()&&phaseFoundation.costRemaining>0;
+function ctGestureUseAllowed(card){
+ return cardBattleTestMode.active&&!cardBattleTestMode.busy&&attackExerciseCanOperate()&&phaseFoundation.costRemaining>=ct540Cost(card);
 }
 function ctGestureDropTarget(g){
  ctGestureClearMarks();
@@ -4136,7 +4187,7 @@ function ctGestureDropTarget(g){
   g.target={type:'fuse',id:b.instanceId};card.classList.add('ctFuseReady');g.ghost?.classList.add('ctFuseReady');return;
  }
  g.ghost?.classList.remove('ctFuseReady');
- const canUse=ctGestureUseAllowed();
+ const canUse=ctGestureUseAllowed(a);
  const board=document.querySelector('#ctBoard'),unit=node?.closest('#ctAllyArmy [data-ct-rid]');
  const directRid=unit?.dataset.ctRid,directActor=attackExercise.actors[directRid];
  const ready=ctGestureCommonUseReady(g,hand);
@@ -4211,7 +4262,7 @@ function ctGestureEnd(e,cancelled=false){
  const dragged=g.moved,target=g.target,source=g.id;ctSuppressClickUntil=Date.now()+125;
  // Capturing the pointer on the hand lane reroutes its synthetic click to the lane.
  // Call the original tap action once here, and suppress that follow-up synthetic click.
- const invalidEnemy=target?.type==='enemyDrop'&&(!ctGestureUseAllowed()||!attackExerciseEnemyLockable(attackExerciseEnemyById(target.id)));
+ const invalidEnemy=target?.type==='enemyDrop'&&(!ctGestureUseAllowed(cardFoundation.hand.find(c=>c.instanceId===source))||!attackExerciseEnemyLockable(attackExerciseEnemyById(target.id)));
  ctGestureReset(dragged&&(!target||invalidEnemy));
  if(!dragged){if(!cancelled)cardBattleTestCardTap(source);return}
  if(cancelled||!target||!cardBattleTestCanInput())return;
@@ -4224,7 +4275,7 @@ function ctGestureEnd(e,cancelled=false){
  if(target.type==='enemyDrop'&&attackCardTier(c)){
   // Invalid enemy, interrupted phase or zero COST: no lock/chain/card changes.
   const enemy=attackExerciseEnemyById(target.id);
-  if(!attackExerciseCanOperate()||ct533AllyBlocked(c)||phaseFoundation.costRemaining<=0||!attackExerciseEnemyLockable(enemy)){
+  if(!attackExerciseCanOperate()||ct533AllyBlocked(c)||phaseFoundation.costRemaining<ct540Cost(c)||!attackExerciseEnemyLockable(enemy)){
    if(!attackExerciseEnemyLockable(enemy))cardBattleTestSetMessage(enemy?.row==='back'?'前衛を倒すまで狙えない':'その敵は戦闘不能');
    return;
   }
@@ -4233,8 +4284,8 @@ function ctGestureEnd(e,cancelled=false){
   attackExercise.selected=[source];attackExercise.defenseSelected=[];
   cardBattleTestAttack();return;
  }
- if(target.type==='attack'&&attackCardTier(c)&&attackExerciseLockedEnemy()&&phaseFoundation.costRemaining>0){attackExercise.selected=[source];attackExercise.defenseSelected=[];cardBattleTestAttack();return}
- if(target.type==='defense'&&defenseCardTier(c)&&attackExercise.actors[target.rid]?.alive&&phaseFoundation.costRemaining>0){
+ if(target.type==='attack'&&attackCardTier(c)&&attackExerciseLockedEnemy()&&phaseFoundation.costRemaining>=ct540Cost(c)){attackExercise.selected=[source];attackExercise.defenseSelected=[];cardBattleTestAttack();return}
+ if(target.type==='defense'&&defenseCardTier(c)&&attackExercise.actors[target.rid]?.alive&&phaseFoundation.costRemaining>=ct540Cost(c)){
   attackExercise.selected=[];attackExercise.defenseSelected=[source];defenseExerciseTarget(target.rid);cardBattleTestDefense();return
  }
 }
