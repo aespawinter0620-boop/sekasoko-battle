@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.544</title>
+<title>セカソコ ver.545</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.544";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.545";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2475,7 +2475,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.544</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.545</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2667,6 +2667,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen #ct542SpiritView .ct542SpiritLabel{min-width:0;overflow:hidden;text-overflow:ellipsis}
 #cardBattleTestScreen #ct542SpiritView .ct543SpiritTurns{flex:none;font-size:10px;font-weight:800;color:#ffe8b5;white-space:nowrap}
 
+#cardBattleTestScreen .ct545InjectSpiritCard{width:100%;min-height:40px;margin-top:8px;border:1px solid #83bfc377;border-radius:8px;background:#183a43;color:#e4faff;font-size:11px;font-weight:700}
 /* VER.544: only the individual spirit rail is interactive; existing unit/card gestures remain outside it. */
 #cardBattleTestScreen #ct542SpiritView .ct544SpiritList{display:flex;align-items:center;gap:4px;flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;pointer-events:auto;touch-action:pan-x;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 #cardBattleTestScreen #ct542SpiritView .ct544SpiritChip{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:48px;height:43px;padding:2px 4px;border:1px solid #88c5cf88;border-radius:7px;background:#1a3545;color:#efffff;font-size:10px;line-height:1.1;touch-action:manipulation;cursor:pointer}
@@ -2679,7 +2680,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct542SpiritActions button:disabled{opacity:.35}
 #cardBattleTestScreen #ct542SpiritTrialStatus{margin:7px 0 0;color:#bfe6e8;font-size:10px;line-height:1.4}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.544 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.545 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2719,6 +2720,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
         <button class="ctAssist" id="ctMockEnemyBlock" type="button">敵BLOCK +20</button>
       </div>
       <div class="ct542SpiritActions" role="group" aria-label="守護精霊試験操作"><button id="ct542SpiritSummon" type="button">🧚 精霊召喚（試験）</button><button id="ct542SpiritReturn" type="button">精霊帰還（試験）</button></div>
+      <button id="ct545InjectSpiritCard" type="button" class="ct545InjectSpiritCard">🃏 精霊カードを手札へ投入（試験）</button>
       <p id="ct542SpiritTrialStatus" aria-live="polite">精霊：未召喚</p>
       <p id="ctDebugStatus" class="ctDebugStatus" aria-live="polite">開閉だけでは戦闘状態を変更しません。</p>
     </div>
@@ -2971,7 +2973,7 @@ function ct540Generate(kind,origin){
 }
 function ct540SelectedActor(){const a=attackExercise.actors[attackExercise.defenseTargetRosterId];return a&&a.alive&&a.hp>0&&a.formationSlot>=0?a:null}
 function ct540SelectedActorBroken(){const a=ct540SelectedActor();const b=a?.ct533Break;return !!(b?.broken&&b.blockAllyPhase===phaseFoundation.allyPhaseCount)}
-function ct540Cost(c){return ct540GeneratedKind(c)?0:1}
+function ct540Cost(c){return ct545IsSpiritCard(c)?0:ct540GeneratedKind(c)?0:1} // VER.545 DEBUG-only: no formal SP COST adopted
 function cardBaseSources(card){return ct540GeneratedKind(card)?[]:cardIsFusion(card)?card.fusionSourceCards:[card].filter(Boolean)}
 
 // VER.536: only the shared HAND array is ordered; no card/source/zone data is mutated.
@@ -2998,6 +3000,7 @@ function ct536SortHandIfChanged(){
 }
 
 function cardReleaseFusionOrBase(card){
+ if(ct545IsSpiritCard(card)){cardFoundation.discardPile.push(card);return{discarded:1,exhausted:0,sources:[card]}}
  if(!card||ct540GeneratedKind(card))return{discarded:0,exhausted:0,sources:[]};const src=cardBaseSources(card),beforeEx=cardFoundation.exhausted.length;
  if(cardIsFusion(card))delete cardFoundation.fusionSourceLedger[card.instanceId];
  src.forEach(cardSendToDiscardOrExhaust);return{discarded:src.length-(cardFoundation.exhausted.length-beforeEx),exhausted:cardFoundation.exhausted.length-beforeEx,sources:src};
@@ -3340,7 +3343,7 @@ function attackExercisePullAllyFront(deadActor){
  return back;
 }
 function attackExerciseProcessDeath(rid,reason='HP0'){
- const actor=attackExercise.actors[rid];if(!actor||!actor.alive)return{dead:0,fusions:0,survivors:0,exhausted:0};actor.hp=0;actor.block=0;actor.alive=false;
+ const actor=attackExercise.actors[rid];if(!actor||!actor.alive)return{dead:0,fusions:0,survivors:0,exhausted:0};actor.hp=0;actor.block=0;actor.alive=false;ct545ReturnSpiritsForDeadSummoner(rid);
  const result={dead:1,fusions:0,survivors:0,exhausted:0};
  const zones=['drawPile','hand','discardPile'];
  for(const zoneName of zones){const zone=cardFoundation[zoneName],keep=[];for(const card of zone){if(ct540GeneratedKind(card)){keep.push(card);continue}if(cardIsFusion(card)){const sources=cardBaseSources(card),hasDead=sources.some(x=>x.ownerRosterId===rid);if(!hasDead){keep.push(card);continue}result.fusions++;delete cardFoundation.fusionSourceLedger[card.instanceId];for(const src of sources){if(src.ownerRosterId===rid){if(exerciseExhaustUnique(src))result.exhausted++}else{cardFoundation.discardPile.push(src);result.survivors++}}continue}if(card.ownerRosterId===rid){if(exerciseExhaustUnique(card))result.exhausted++;continue}keep.push(card)}cardFoundation[zoneName]=keep}
@@ -3563,24 +3566,17 @@ function ct531ApplyBackground(floor){
 /* VER.543: 10-turn duration is a creator-approved TEMPORARY TEST VALUE, not adopted game balance. */
 const CT543_TRIAL_INITIAL_TURNS=10;
 function ct543SpiritOnAllyPhaseStart(options={}){
- // One decrement per spirit on a genuine ally-phase start; floor entry is not a tick.
+ // VER.545: one effect then one decrement per genuine ally phase, oldest first.
  if(!cardBattleTestMode?.active||!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ALLY)return false;
- const count=phaseFoundation.allyPhaseCount,spirits=ct544ActiveSpirits();
+ const count=phaseFoundation.allyPhaseCount,spirits=ct544ActiveSpirits().slice().sort((a,b)=>a.summonOrder-b.summonOrder);
  if(!spirits.length)return false;
- let changed=false;
- for(const spirit of spirits){
-  if(options.floorTransition===true){
-   spirit.lastDecrementAllyPhase=Math.max(spirit.lastDecrementAllyPhase,count);
-   continue;
-  }
-  if(count<=spirit.summonedAllyPhase||count<=spirit.lastDecrementAllyPhase)continue;
-  spirit.lastDecrementAllyPhase=count;
-  spirit.remainingTurns=Math.max(0,spirit.remainingTurns-1);
-  if(spirit.remainingTurns===0){spirit.status='returned';spirit.keep=false;changed=true;}
-  else changed=true;
- }
- if(changed)ct542SpiritTrial.lastStatus='滞在ターン更新｜召喚中'+ct544ActiveSpirits().length+'体（試験値）';
- ct542SpiritRender();return changed;
+ if(options.floorTransition===true){for(const spirit of spirits)spirit.lastDecrementAllyPhase=Math.max(spirit.lastDecrementAllyPhase,count);return false}
+ const due=spirits.filter(s=>count>s.summonedAllyPhase&&count>s.lastDecrementAllyPhase);
+ if(!due.length)return false;
+ // Commit the phase serial synchronously, preventing double invocation while effects animate.
+ for(const spirit of due)spirit.lastDecrementAllyPhase=count;
+ ct545RunSpiritPhaseEffects(due,count,cardBattleTestMode,cardBattleTestMode.floorSerial);
+ return true;
 }
 /* VER.542 guardian spirit display trial. Ephemeral, no combat or save integration. */
 /* VER.544: up to ten independent spirit slots per actor; all state is trial-only. */
@@ -3590,15 +3586,91 @@ let ct542SpiritTrial=ct542FreshSpiritTrial();
 function ct542ResetSpiritTrial(){ct542SpiritTrial=ct542FreshSpiritTrial();ct542SpiritRender()}
 function ct544ActiveSpirits(rid){return ct542SpiritTrial.spirits.filter(s=>s.status==='summoned'&&(rid===undefined||String(s.summonerRosterId)===String(rid)))}
 function ct542ActiveSpirit(){return ct544ActiveSpirits()[0]||null}
+
+// VER.545: trial-only SP card; never registered as equipped SP or normal draw-pile card.
+let ct545TrialCardSeq=0;
+function ct545IsSpiritCard(c){return c?.type==='ct545TrialSpirit'}
+function ct545InjectSpiritCard(){
+ if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.resultType||!attackExercise.active||!phaseFoundation.active)return false;
+ const c={instanceId:'ct545-spirit-card-'+(++ct545TrialCardSeq),templateId:'debug:ct545:guardian',type:'ct545TrialSpirit',typeName:'試験精霊',name:'🧚 守護精霊（試験）',retain:false,exhaustOnDiscard:false,ct545DebugOnly:true};
+ cardFoundation.hand.push(c);
+ if(cardFoundation.hand.length>CARD_HAND_LIMIT)cardFoundation.overflowPending=true;
+ ct542SpiritTrial.lastStatus='DEBUG試験精霊カード投入｜手札'+cardFoundation.hand.length+'枚';cardDebugRender();cardBattleTestRender();return true;
+}
+function ct545ReturnSpiritsForDeadSummoner(rid){
+ let n=0;for(const s of ct544ActiveSpirits(rid)){s.status='returned';s.keep=false;n++}
+ if(n){ct542SpiritTrial.lastStatus=String(rid)+'死亡｜配下'+n+'体を即時帰還';ct542SpiritRender()}
+ return n;
+}
+// Reuse the VER.508 BLOCK->HP pipeline and CHAIN progression, without new random target selection.
+function ct545SpiritHit(actor,enemy,source){
+ if(!actor?.alive||actor.hp<=0||!attackExerciseEnemyLockable(enemy))return null;
+ const chain=attackExercise.chain,raw=attackExerciseInt((Number(actor.referenceAtk)||0)*.10*chain);
+ const blockBefore=attackExerciseInt(enemy.block),blocked=Math.min(blockBefore,raw),blockAfter=blockBefore-blocked;
+ const penetrated=Math.max(0,raw-blocked),hpBefore=attackExerciseInt(enemy.hp),hpDamage=Math.min(hpBefore,penetrated),overkillDamage=Math.max(0,penetrated-hpDamage),hpAfter=hpBefore-hpDamage;
+ enemy.block=blockAfter;enemy.hp=hpAfter;enemy.overkill=attackExerciseInt(enemy.overkill)+overkillDamage;
+ const h={kind:'attack',ct545Spirit:true,targetEnemyId:enemy.instanceId,targetName:enemy.name,ownerRosterId:actor.ownerRosterId,ownerName:actor.ownerName,referenceAtk:actor.referenceAtk,rate:.10,chain,raw,blockBefore,blocked,blockAfter,hpDamage,overkillDamage,overkillTotal:enemy.overkill,breakBasis:hpDamage,hpBefore,hpAfter};
+ if(cardBattleTestMode.active)ct533AddBreak(enemy,hpDamage,'enemy');
+ if(enemy.hp<=0)enemy.alive=false;
+ attackExercise.chain=Math.min(100,Math.round((chain+.1)*10)/10);
+ attackExerciseHitPush(h);attackExerciseLogPush('🧚 '+actor.ownerName+'｜'+source+'｜ATK'+attackExerciseFmt(actor.referenceAtk)+'×10%×CHAIN'+attackExerciseFmt(chain,1)+'｜'+enemy.name+' HP '+attackExerciseFmt(hpBefore)+'→'+attackExerciseFmt(hpAfter)+' OVERKILL+'+attackExerciseFmt(overkillDamage));
+ const mode=cardBattleTestMode,serial=mode.floorSerial;
+ enemy.ctPendingAnimations=(enemy.ctPendingAnimations||0)+1;
+ cardBattleTestRecordOverkill([h],enemy);
+ cardBattleTestAnimateEnemy([h],{mode,serial,enemy});
+ return h;
+}
+function ct545SpiritTick(spirit){
+ spirit.remainingTurns=Math.max(0,spirit.remainingTurns-1);
+ if(spirit.remainingTurns===0){spirit.status='returned';spirit.keep=false}
+}
+async function ct545RunSpiritPhaseEffects(spirits,phaseCount,mode,serial){
+ if(mode.ct545SpiritProcessing||mode.resultType)return;
+ mode.ct545SpiritProcessing=true;mode.busy=true;cardBattleTestRender();
+ try{
+  for(const spirit of spirits){
+   if(!mode.active||cardBattleTestMode!==mode||mode.floorSerial!==serial||phaseFoundation.allyPhaseCount!==phaseCount)break;
+   if(spirit.status!=='summoned')continue; // death can return a spirit while awaiting a prior animation
+   const actor=attackExercise.actors[spirit.summonerRosterId];
+   if(!actor?.alive||actor.hp<=0){ct545ReturnSpiritsForDeadSummoner(spirit.summonerRosterId);continue}
+   const target=attackExerciseEnsureLock({resetChain:false});
+   const hit=target?ct545SpiritHit(actor,target,'滞在中効果'):null;
+   ct545SpiritTick(spirit);ct542SpiritRender();
+   if(hit){
+    // Wait for the existing single-Hit death animation to promote the back row and correct TARGET.
+    // If every enemy is already HP0, remaining spirits still tick without attacking this floor.
+    if(attackExercise.enemies.some(e=>e.hp>0))await new Promise(resolve=>setTimeout(resolve,730));
+   }
+  }
+  ct542SpiritTrial.lastStatus='自フェーズ'+phaseCount+'｜精霊効果→滞在T減算 完了';ct542SpiritRender();
+ }finally{
+  mode.ct545SpiritProcessing=false;
+  if(mode.active&&cardBattleTestMode===mode&&mode.floorSerial===serial&&!mode.resultType){mode.busy=false;cardBattleTestRender()}
+ }
+}
+function ct545UseSpiritCard(cardId,rid){
+ if(!cardBattleTestCanInput()||!attackExerciseCanOperate())return false;
+ const idx=cardFoundation.hand.findIndex(c=>c.instanceId===cardId),card=cardFoundation.hand[idx],actor=attackExercise.actors[rid],target=attackExerciseLockedEnemy();
+ if(!ct545IsSpiritCard(card)||!actor?.alive||actor.hp<=0||!target)return false;
+ // The trial cost is deliberately NOT defined: no COST consumed in this DEBUG-only path.
+ cardFoundation.hand.splice(idx,1);cardFoundation.discardPile.push(card);
+ const h=ct545SpiritHit(actor,target,'発動時効果');
+ const summoned=ct542SpiritSummon(rid);
+ if(summoned){actor.block=attackExerciseInt(actor.block)+10;attackExerciseLogPush('🧚 '+actor.ownerName+'｜召喚成功 BLOCK+10')}
+ else attackExerciseLogPush('🧚 '+actor.ownerName+'｜10体KEEP満員・発動時効果のみ');
+ cardBattleTestMode.message='🧚 '+actor.ownerName+'｜発動時ATK10%'+(summoned?'／召喚BLOCK+10':'／召喚不可（全KEEP）');
+ cardDebugRender();if(h)cardBattleTestLock(780);else cardBattleTestRender();return !!h;
+}
+
 function ct544SpiritToggleKeep(id){
  if(!cardBattleTestMode?.active||cardBattleTestMode.busy||cardBattleTestMode.resultType)return false;
  const spirit=ct542SpiritTrial.spirits.find(s=>s.id===id&&s.status==='summoned');if(!spirit)return false;
  spirit.keep=!spirit.keep;ct542SpiritTrial.lastStatus=spirit.summonerName+'｜精霊'+spirit.summonOrder+' KEEP '+(spirit.keep?'ON':'OFF');
  ct542SpiritRender();return true;
 }
-function ct542SpiritSummon(){
+function ct542SpiritSummon(requestedRid){
  if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.resultType)return false;
- const rid=attackExercise.defenseTargetRosterId,actor=attackExercise.actors[rid];
+ const rid=requestedRid===undefined?attackExercise.defenseTargetRosterId:requestedRid,actor=attackExercise.actors[rid];
  if(!actor||!actor.alive||actor.hp<=0){ct542SpiritTrial.lastStatus='生存中の味方を選択してください';ct542SpiritRender();return false}
  const owned=ct544ActiveSpirits(rid);
  if(owned.length>=CT544_SLOTS_PER_ACTOR){
@@ -3754,12 +3826,12 @@ function cardBattleTestAnimateEnemy(hits,animation=null){
   const chain=document.createElement('span');chain.className='ct539Chain';
   chain.textContent=`CHAIN ×${attackExerciseFmt(h.chain,1)}`;
   const amount=document.createElement('span');amount.className='ct539Number';
-  const number=h.hpDamage>0?'-'+attackExerciseFmt(h.hpDamage):h.overkillDamage>0?'+'+attackExerciseFmt(h.overkillDamage):'BLOCK';
+  const effectiveDamage=attackExerciseInt(h.hpDamage)+attackExerciseInt(h.overkillDamage);const number=effectiveDamage>0?'-'+attackExerciseFmt(effectiveDamage):'BLOCK';
   amount.textContent=number;
   if(number.length>10)pop.classList.add('veryLongNumber');else if(number.length>7)pop.classList.add('longNumber');
   if(h.hpDamage<=0&&h.overkillDamage<=0)pop.classList.add('blockHit');
   pop.append(chain,amount);
-  if(h.overkillDamage>0){const detail=document.createElement('span');detail.className='ct539Detail';detail.textContent=h.hpDamage>0?`OVERKILL +${attackExerciseFmt(h.overkillDamage)}`:'OVERKILL';pop.append(detail)}
+  if(h.overkillDamage>0){const detail=document.createElement('span');detail.className='ct539Detail';detail.textContent=`OVERKILL +${attackExerciseFmt(h.overkillDamage)}`;pop.append(detail)}
   fx.appendChild(pop);setTimeout(()=>pop.remove(),700);
  },i*step));
  // Preserve the death image until every remaining Hit popup has finished.
@@ -3813,6 +3885,7 @@ function cardBattleTestEmptyAllyHtml(slot){return `<div class="ctUnit ctFrameEmp
 // VER.530: read-only UI prediction. The real planners create ephemeral hit/block data.
 // They do not execute or mutate the combat state.
 function cardBattleTestCardPreview(c){
+ if(ct545IsSpiritCard(c))return ['試験｜味方へドラッグして召喚','発動 ATK10%→黄色TARGET／召喚者 BLOCK+10','滞在中 自フェーズ開始 ATK10%（10T試験）'];
  const attackTier=attackCardTier(c),defenseTier=defenseCardTier(c);
  if(attackTier){
   const spec=ATTACK_EXERCISE_SPEC[attackTier],enemy=attackExerciseLockedEnemy(),target=enemy&&attackExerciseEnemyLockable(enemy)?enemy:null;
@@ -3848,7 +3921,7 @@ function cardBattleTestCardHtml(c){
  else if(atk)type=ATTACK_EXERCISE_SPEC[atk].label;
  else if(def)type=DEFENSE_EXERCISE_SPEC[def].label;
  const effect=cardBattleTestCardPreview(c).map(line=>`<span class="ctEffectLine">${cardDebugEsc(line)}</span>`).join('');
- const cls=atk?'attackCard':def?'defenseCard':'spCard',breakDisabled=!ct540GeneratedKind(c)&&(ct533AllyBlocked(c)||((atk===1||atk===2)&&ct540SelectedActorBroken()));return `<button class="ctCard ${cls} ${breakDisabled?'ct533BreakDisabled':''} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div>${fusion||ct540GeneratedKind(c)?'':`<div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div>`}<div class="ctCardEffect">${effect}</div><div class="ctCardTags">${ct540GeneratedKind(c)?'<span class="ctTag retain">COST0・使い切り</span>':fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
+ const cls=atk?'attackCard':def?'defenseCard':'spCard',breakDisabled=!ct540GeneratedKind(c)&&(ct533AllyBlocked(c)||((atk===1||atk===2)&&ct540SelectedActorBroken()));return `<button class="ctCard ${cls} ${breakDisabled?'ct533BreakDisabled':''} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div>${fusion||ct540GeneratedKind(c)?'':`<div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div>`}<div class="ctCardEffect">${effect}</div><div class="ctCardTags">${ct545IsSpiritCard(c)?'<span class="ctTag retain">DEBUG試験・COST未確定</span>':ct540GeneratedKind(c)?'<span class="ctTag retain">COST0・使い切り</span>':fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
 }
 function cardBattleTestHandLogSet(message){
  const button=document.querySelector('#ctHudLatestLog'),text=document.querySelector('#ctHandLogText');
@@ -4288,7 +4361,12 @@ function ctGestureDropTarget(g){
  const board=document.querySelector('#ctBoard'),unit=node?.closest('#ctAllyArmy [data-ct-rid]');
  const directRid=unit?.dataset.ctRid,directActor=attackExercise.actors[directRid];
  const ready=ctGestureCommonUseReady(g,hand);
- // 2. Direct living-ally defense remains higher priority than cyan selection.
+ // VER.545: only DEBUG trial spirit cards use direct ally drop. No enemy or background fallback.
+  if(ct545IsSpiritCard(a)){
+   if(canUse&&directActor?.alive&&directActor.hp>0&&phaseFoundation.phase===PHASE_SIDE_ALLY){g.target={type:'spirit',rid:directRid};unit.classList.add('ctDropReady')}else g.target=null;
+   return;
+  }
+  // 2. Direct living-ally defense remains higher priority than cyan selection.
  if(defenseCardTier(a)&&canUse&&directActor?.alive&&directActor.hp>0){
   g.target={type:'defense',rid:directRid};unit.classList.add('ctDropReady');return;
  }
@@ -4364,7 +4442,8 @@ function ctGestureEnd(e,cancelled=false){
  if(!dragged){if(!cancelled)cardBattleTestCardTap(source);return}
  if(cancelled||!target||!cardBattleTestCanInput())return;
  const c=cardFoundation.hand.find(v=>v.instanceId===source);if(!c)return;
- if(target.type==='fuse'){
+ if(target.type==='spirit'&&ct545IsSpiritCard(c)){ct545UseSpiritCard(source,target.rid);return}
+  if(target.type==='fuse'){
   const other=cardFoundation.hand.find(v=>v.instanceId===target.id);if(!ctGestureCanFuse(c,other))return;
   attackExercise.selected=attackCardTier(c)?[source,target.id]:[];attackExercise.defenseSelected=defenseCardTier(c)?[source,target.id]:[];
   cardBattleTestFuse();return;
@@ -6820,6 +6899,7 @@ function initCardPanelDebugEvents(){
  if(document.querySelector('#ctMockEnemyBlock')) document.querySelector('#ctMockEnemyBlock').onclick=()=>cardBattleTestEnemyBlock();
  if(document.querySelector('#ct542SpiritSummon')) document.querySelector('#ct542SpiritSummon').onclick=()=>ct542SpiritSummon();
  if(document.querySelector('#ct542SpiritReturn')) document.querySelector('#ct542SpiritReturn').onclick=()=>ct542SpiritReturn();
+ if(document.querySelector('#ct545InjectSpiritCard')) document.querySelector('#ct545InjectSpiritCard').onclick=()=>ct545InjectSpiritCard();
  ct541CardPanelDebugInitialized=true;
 }
 function initDebugUiEvents(){
