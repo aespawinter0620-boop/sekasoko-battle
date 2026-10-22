@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.545</title>
+<title>セカソコ ver.546</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.545";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.546";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2475,7 +2475,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.545</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.546</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2680,7 +2680,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct542SpiritActions button:disabled{opacity:.35}
 #cardBattleTestScreen #ct542SpiritTrialStatus{margin:7px 0 0;color:#bfe6e8;font-size:10px;line-height:1.4}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.545 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.546 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3708,6 +3708,75 @@ function ct542SpiritRender(){
  if(summon)summon.disabled=!enabled;
  if(ret)ret.disabled=!enabled||!active.length;
 }
+// =========================================================
+// VER.546 — isolated BGM transport. Adopted v26-B WAV is external and unchanged.
+// Volume=1 is a browser-original trial setting, NOT an adopted game balance value.
+// No SE, UI, storage or legacy SPD/ACTION battle integration in this version.
+// =========================================================
+const CT546_BGM_SRC='assets/audio/Heartbeat_of_the_Abyss_v26_B_160BPM_80BPM_HEART_36s.wav';
+const ct546Bgm={audio:null,wanted:false,suspended:false,volume:1,muted:false,lastError:'',playRequests:0};
+function ct546BgmEnsure(){
+ if(ct546Bgm.audio)return ct546Bgm.audio;
+ try{
+  const a=new Audio(CT546_BGM_SRC);
+  a.loop=true;a.preload='auto';a.volume=ct546Bgm.volume;a.muted=ct546Bgm.muted;
+  a.addEventListener('error',()=>{ct546Bgm.lastError='WAVの読込／再生エラー';});
+  ct546Bgm.audio=a;return a;
+ }catch(e){ct546Bgm.lastError=String(e);return null}
+}
+function ct546BgmPlay(){
+ if(!ct546Bgm.wanted||ct546Bgm.suspended||document.hidden)return false;
+ const a=ct546BgmEnsure();if(!a)return false;
+ try{
+  if(!a.paused)return true; // duplicate requests must never layer or restart the track
+  ct546Bgm.playRequests++;
+  const promise=a.play();
+  if(promise&&typeof promise.catch==='function')promise.catch(e=>{ct546Bgm.lastError=String(e);});
+  return true;
+ }catch(e){ct546Bgm.lastError=String(e);return false}
+}
+function ct546BgmStart(){
+ // Called only after a new card-battle expedition was successfully initialized,
+ // synchronously within its user-initiated start handler for iOS playback policy.
+ ct546Bgm.wanted=true;ct546Bgm.suspended=!!document.hidden;ct546Bgm.lastError='';
+ const a=ct546BgmEnsure();if(!a)return false;
+ try{a.pause();a.currentTime=0}catch(e){ct546Bgm.lastError=String(e)}
+ return ct546BgmPlay();
+}
+function ct546BgmStop(){
+ ct546Bgm.wanted=false;ct546Bgm.suspended=false;
+ const a=ct546Bgm.audio;if(!a)return true;
+ try{a.pause();a.currentTime=0;return true}catch(e){ct546Bgm.lastError=String(e);return false}
+}
+function ct546BgmSetVolume(value){
+ const n=Number(value);if(!Number.isFinite(n))return false;
+ ct546Bgm.volume=Math.max(0,Math.min(1,n));
+ if(ct546Bgm.audio)ct546Bgm.audio.volume=ct546Bgm.volume;
+ return true;
+}
+function ct546BgmSetMuted(value){
+ ct546Bgm.muted=!!value;
+ if(ct546Bgm.audio)ct546Bgm.audio.muted=ct546Bgm.muted;
+ return true;
+}
+function ct546BgmSuspend(){
+ if(!ct546Bgm.wanted)return;
+ ct546Bgm.suspended=true;
+ try{ct546Bgm.audio?.pause()}catch(e){ct546Bgm.lastError=String(e)}
+}
+function ct546BgmResume(){
+ if(!ct546Bgm.wanted||document.hidden)return;
+ ct546Bgm.suspended=false;
+ ct546BgmPlay(); // Browser may require a fresh gesture; failure is non-fatal.
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)ct546BgmSuspend();else ct546BgmResume()});
+window.addEventListener('pagehide',ct546BgmSuspend);
+window.addEventListener('pageshow',ct546BgmResume);
+// If iOS refuses a background-resume autoplay, retry only after a later user gesture.
+document.addEventListener('pointerdown',()=>{
+ if(ct546Bgm.wanted&&!ct546Bgm.suspended&&!document.hidden&&ct546Bgm.audio?.paused)ct546BgmPlay();
+},{passive:true});
+
 function cardBattleTestStart(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
@@ -3715,12 +3784,12 @@ function cardBattleTestStart(){
  ct542ResetSpiritTrial();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
  attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
- ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');cardBattleTestRender();return true
+ ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');ct546BgmStart();cardBattleTestRender();return true
 }
 function cardBattleTestExit(){
- cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
+ cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){ct546BgmStop();showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
  cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
- cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');return true
+ cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');ct546BgmStop();return true
 }
 function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
 function cardBattleTestCardTap(id){
