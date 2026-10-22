@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.540.3</title>
+<title>セカソコ ver.541</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.540.3";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.541";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2475,7 +2475,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.540.3</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.541</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2661,7 +2661,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-size:cover;
 }
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.540.3 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.541 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2812,7 +2812,7 @@ function initPlayableDetailZoom(){
 }
 function openInfo(title,text,icon){document.querySelector('#modal').classList.remove('playableDetailMode','skillBookMode');document.querySelector('#modalCard').innerHTML=`<div class="cardHead"><h2>${title}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="coming"><span class="big">${icon}</span>${text}</div>`;document.querySelector('#modal').classList.add('show')}
 function closeModal(){document.querySelector('#skillPanel')?.classList.remove('detailSuppressed');document.querySelector('#modal').classList.remove('show','playableDetailMode','skillBookMode')}
-document.querySelector('#book').onclick=()=>openSkillBookInventory();document.querySelector('#shop').onclick=()=>openInfo('ショップ','Waldonium（WD）でアイテムを購入する場所。ショップ本体は次段階で実装。','🎁');document.querySelector('#descend').onclick=()=>{cardFoundationStartRun();prepareSortie();showScreen('battleScreen');setTimeout(()=>battle(),80)};document.querySelector('#formation').onclick=()=>{renderFormation();showScreen('formationScreen')};document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+
 
 const formationRosterData=[
 {id:'mizuki',name:'名切 命',icon:'🌙',faceIcon:'assets/icons/mikoto.png',sprite:'assets/characters/mikoto_standing_ver509.png',actionSprite:'assets/characters/mikoto_standing_ver509.png',attr:'透波',hp:110,atk:100,def:100,row:'front',cid:101,spd:100,mirror:0,skill:{name:'固有技《絶対領域展開》',ct:90},cost:1},
@@ -4070,7 +4070,7 @@ function cardBattleTestReticleSync(){
  marker.style.width=Math.min(target.width*.88,96)+'px';
  marker.hidden=false;
 }
-window.addEventListener('resize',()=>{if(cardBattleTestMode.active){cardBattleTestReticleSync();cardBattleTestIntentSync();}});
+
 function cardBattleTestRender(){
  if(!cardBattleTestMode.active)return;const phase=phaseFoundation.phase===PHASE_SIDE_ALLY?'味方':phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵':'停止',blocked=cardFoundation.overflowPending||cardFoundation.pendingDraw>0,alive=attackExerciseAliveCount();
  const set=(id,v)=>{const e=document.querySelector('#'+id);if(e)e.textContent=v};set('ctCost',`${phaseFoundation.costRemaining} / ${phaseFoundation.costMax}`);set('ctHudDepth',`世界深度 ${worldDepth} / ${cardBattleTestMode.floor}F/${maxFloor}F`);set('ctHudRemaining',`残存率 ${Math.max(0,100-cardBattleTestDamagePct()).toFixed(0)}%`);set('ctHudReward',`💎×${formatMultiplier(cardBattleTestRunReward().damageMult)}`);cardBattleTestHudLogRefresh();
@@ -4355,7 +4355,7 @@ function renderFormation(){
 }
 function toggleChar(id){let old=usedPartyOf(id);if(old===selectedParty){let slot=parties[selectedParty].indexOf(id);if(slot>=0&&removeFromFormationSlot(slot)){selectedFormationSlot=null;renderFormation()}return}if(old>=0){openInfo('編成済み','このキャラは部隊'+(old+1)+'にいます。先に外してください。','⚠️');return}let c=formationRosterData.find(x=>x.id===id);if(partyCost(parties[selectedParty])+c.cost>6){openInfo('編成できません','1部隊は最大6マスです。','⚠️');return}let p=parties[selectedParty];let slot=(selectedFormationSlot!==null&&canPlaceInFormationSlot(p,selectedFormationSlot))?selectedFormationSlot:p.findIndex((x,idx)=>canPlaceInFormationSlot(p,idx));if(slot<0){openInfo('編成できません','配置可能な空きマスがありません。後衛は同じ列の前衛が必要です。','⚠️');return}p[slot]=id;selectedFormationSlot=null;renderFormation()}
 function validateFormationForSave(){const invalidFront=parties.findIndex(p=>p.some(Boolean)&&!partyHasFront(p));if(invalidFront>=0){openInfo('前衛が必要です','部隊'+(invalidFront+1)+'は後衛のみです。出撃する部隊には前衛を1人以上配置してください。','⚠️');selectedParty=invalidFront;selectedFormationSlot=null;renderFormation();return false}const invalidColumn=parties.findIndex(p=>partyHasBrokenColumns(p));if(invalidColumn>=0){openInfo('編成エラー','部隊'+(invalidColumn+1)+'に、前衛のいない列の後衛がいます。後衛は同じ列の前衛がいる場合のみ配置できます。','⚠️');selectedParty=invalidColumn;selectedFormationSlot=null;renderFormation();return false}return true}
-document.querySelector('#formationBack').onclick=()=>showScreen('home');document.querySelector('#formationHome').onclick=()=>showScreen('home');document.querySelector('#saveFormation').onclick=()=>{if(!validateFormationForSave())return;saveParties();showScreen('home')};document.querySelector('#clearParty').onclick=()=>{parties[selectedParty]=emptyParty();selectedFormationSlot=null;renderFormation()};document.querySelector('#clearAllParties').onclick=()=>{if(confirm('すべての編成を解除しますか？')){parties=Array.from({length:12},emptyParty);saveParties();renderFormation()}};
+
 const allies=[
 {name:'名切 命',icon:'🌙',sprite:'assets/characters/mikoto_standing_ver509.png',actionSprite:'assets/characters/mikoto_standing_ver509.png',hp:110,atk:29,row:'front',cid:101,spd:120,mirror:0,skill:{name:'固有技《絶対領域展開》',ct:75}},
 {name:'聖なる乳牛ハトホル',icon:'🥛',sprite:'assets/characters/hathor.PNG',hp:145,atk:18,row:'front',cid:201,spd:55,milk:0,skill:{name:'固有《聖なる雫》',ct:0}},
@@ -4708,7 +4708,7 @@ function refreshStatUpgradePanel(rid){
  document.querySelector('.statUpgradeDone')?.remove()
 }
 function changeStatPending(rid,key,delta){if(!pendingStatUpgrade||pendingStatUpgrade.rid!==rid)pendingStatUpgrade={rid,hp:0,atk:0,def:0,spd:0};if(!STAT_KEYS.includes(key))return false;const cur=Math.max(0,pendingStatUpgrade[key]||0),next=Math.max(0,cur+delta);if(next===cur)return false;if(delta>0&&(statPendingTotal()+1)*STAT_UPGRADE_COST>getWaldonium())return false;pendingStatUpgrade[key]=next;refreshStatUpgradePanel(rid);return true}
-document.addEventListener('pointerup',stopStatHold,true);document.addEventListener('pointercancel',stopStatHold,true);window.addEventListener('blur',stopStatHold);
+
 function showStatUpgradeConfirm(rid){
  const base=formationRosterData.find(x=>x.id===rid);if(!base)return;const pts=statPendingTotal(),cost=pts*STAT_UPGRADE_COST;if(!pts)return renderStatUpgrade(rid);
  const parts=STAT_KEYS.filter(k=>(pendingStatUpgrade?.[k]||0)>0).map(k=>`${k.toUpperCase()} +${pendingStatUpgrade[k]}`).join(' ／ ');
@@ -6586,26 +6586,26 @@ function advanceCheckpoint(){if(overlayMode!=='checkpoint')return;if(checkpointA
 function showCheckpointResult(){overlayMode='checkpoint';const box=document.querySelector('#overlay .result');box?.classList.add('checkpointResult');document.querySelector('#resultText').textContent=`${floor}F RESULT`;document.querySelector('#resultDetail').innerHTML=expeditionResultHTML(runLoot-runCheckpointStartLoot,runOverkillBonusWD-runCheckpointStartOverkillBonusWD);const next=document.querySelector('#continueFloor'),home=document.querySelector('#again');next.style.display='block';next.textContent=autoMode?'AUTO｜次の階層へ…':'次の階層へ';home.style.display='none';document.querySelector('#overlay').classList.add('show');if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}if(autoMode)checkpointAutoTimer=setTimeout(()=>advanceCheckpoint(),2000)}
 function showRunResult(win){overlayMode=win?'complete':'gameover';document.querySelector('#overlay .result')?.classList.remove('checkpointResult');const r=currentRunReward();document.querySelector('#resultText').textContent=win?`${maxFloor}F 踏破！`:'GAME OVER';document.querySelector('#resultDetail').innerHTML=expeditionResultHTML(runLoot-runCheckpointStartLoot,runOverkillBonusWD-runCheckpointStartOverkillBonusWD);const next=document.querySelector('#continueFloor'),home=document.querySelector('#again');if(win){next.style.display='none';home.style.display='block';home.textContent='拠点へ戻る'}else{next.style.display='block';next.textContent='この階層からコンティニュー';home.style.display='block';home.textContent='拠点へ戻る'}document.querySelector('#overlay').classList.add('show')}
 function retreatHome(){if(checkpointAutoTimer){clearTimeout(checkpointAutoTimer);checkpointAutoTimer=null}cancelBurstChainTransient();clearTargetSelection();running=false;if(resolvePlayerAction){let r=resolvePlayerAction;resolvePlayerAction=null;r()}document.querySelector('#skillPanel').classList.remove('show');document.querySelector('#overlay').classList.remove('show');const gained=claimRunReward();overlayMode='';renderHome();showScreen('home');openInfo('攻略終了','💎'+gained.toLocaleString()+' WD を持ち帰りました。次回の世界深度攻略は1Fから開始します。','💎')}
-document.querySelector('#swapBtn').onclick=()=>{if(resolvePlayerAction&&currentActor&&findSwapPartner(currentActor)){selectedSkillSlot=0;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};
+
 let skillHoldSuppressClickUntil=0;
 function skillTapSuppressedByHold(){if(Date.now()>=skillHoldSuppressClickUntil)return false;skillHoldSuppressClickUntil=0;return true}
 function chooseUniqueSkill(){if(skillTapSuppressedByHold()||!resolvePlayerAction)return;const reason=playerSkillBlockReason(currentActor,1);if(reason){document.querySelector('#status').textContent=reason;refreshSkillAvailability(currentActor);return}selectedSkillSlot=1;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
-document.querySelector('#uniqueSkill').onclick=chooseUniqueSkill;
+
 function chooseFreeSkill(slot){if(skillTapSuppressedByHold()||!resolvePlayerAction)return;const book=equippedSkillBook(currentActor,slot);if(!book){document.querySelector('#status').textContent='スキルが設定されていません';return}const reason=playerSkillBlockReason(currentActor,slot);if(reason){document.querySelector('#status').textContent=reason;refreshSkillAvailability(currentActor);return}selectedSkillSlot=slot;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
-document.querySelector('#freeSkill1').onclick=()=>chooseFreeSkill(2);document.querySelector('#freeSkill2').onclick=()=>chooseFreeSkill(3);document.querySelector('#freeSkill3').onclick=()=>chooseFreeSkill(4);function choosePhase1NormalAttack(){if(skillTapSuppressedByHold()||!resolvePlayerAction)return;const t=phase1EnsureValidLock({resetChainOnChange:true});if(!t){document.querySelector('#status').textContent='攻撃可能な敵前衛がいない';phase1UpdateChainHud();return}selectedSkillSlot=1;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
+function choosePhase1NormalAttack(){if(skillTapSuppressedByHold()||!resolvePlayerAction)return;const t=phase1EnsureValidLock({resetChainOnChange:true});if(!t){document.querySelector('#status').textContent='攻撃可能な敵前衛がいない';phase1UpdateChainHud();return}selectedSkillSlot=1;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
 function phase1UnimplementedAction(name){if(skillTapSuppressedByHold())return;document.querySelector('#status').textContent=`${name}｜Phase1では未実装`;phase1UpdateChainHud()}
-document.querySelector('#uniqueSkill').onclick=choosePhase1NormalAttack;
+
 function choosePhase3Burst(){if(skillTapSuppressedByHold()||!resolvePlayerAction)return;const u=currentActor;syncBurstState(u);if(!hasImplementedPlayerBurst(u)){phase1UnimplementedAction('必殺技');return}if(u.burstGauge<BURST_MAX){const skill=isMikotoUnit(u)?'《絶対領域解放》':'《一世掃射》';document.querySelector('#status').textContent=`${skill}｜BURST ${u.burstGauge}/${BURST_MAX}｜使用不可`;phase1ConfigureActionPanel(u);return}const t=phase1EnsureValidLock({resetChainOnChange:true});if(!t){document.querySelector('#status').textContent='攻撃可能な敵前衛がいない';phase1UpdateChainHud();return}selectedSkillSlot=2;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}
-document.querySelector('#freeSkill1').onclick=choosePhase3Burst;document.querySelector('#freeSkill2').onclick=()=>phase1UnimplementedAction('スキップ');document.querySelector('#freeSkill3').onclick=()=>phase1UnimplementedAction('アイテム');
-document.querySelector('#burstChainEnd').onclick=endBurstChainSelection;
-document.querySelector('#autoToggle').onclick=()=>{if(!autoMode){autoMode=true;autoBurstMode='instant'}else if(autoBurstMode==='instant'){autoBurstMode='all'}else{autoMode=false;autoBurstMode='instant'}if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、獲得WDを持って拠点へ戻りますか？'))retreatHome()};document.querySelector('#continueFloor').onclick=()=>{if(overlayMode==='checkpoint'){advanceCheckpoint();return}restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};document.querySelector('#again').onclick=()=>retreatHome();
-cardBattleTestGestureInit();document.querySelector('#cardBattleTestEntry').onclick=()=>cardBattleTestStart();document.querySelector('#cardTestExit').onclick=()=>cardBattleTestExit();document.querySelector('#ctHudLatestLog').onclick=()=>cardBattleTestLogOpen();document.querySelector('#ctHudDebug').onclick=()=>cardBattleTestDebugOpen();document.querySelector('#ctDebugLogOpen').onclick=()=>{cardBattleTestDebugClose();cardBattleTestLogOpen()};document.querySelector('#ctDebugClose').onclick=()=>cardBattleTestDebugClose();document.querySelector('#ctLogClose').onclick=()=>cardBattleTestLogClose();document.querySelector('#ctPhaseAction').onclick=()=>cardBattleTestEndOrAdvance();document.querySelector('#ctPrepAttack').onclick=()=>cardBattleTestPrep('attack');document.querySelector('#ctPrepDefense').onclick=()=>cardBattleTestPrep('defense');document.querySelector('#ctMockHit').onclick=()=>cardBattleTestMockHit();document.querySelector('#ctMockEnemyBlock').onclick=()=>cardBattleTestEnemyBlock();
-const dp=document.querySelector('#debugPanel');document.querySelector('#debugOpen').onclick=()=>{dp.classList.add('show');cardDebugRender();attackExerciseRender()};document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
+
+
+
+
+
 function dbgStatus(msg){document.querySelector('#status').textContent='DEBUG: '+msg;renderBattle()}
-document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');dbgStatus('敵を即時撃破')};document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
-document.querySelector('#dbgCardBuild').onclick=()=>cardFoundationCreateForPartyIndex(selectedParty);document.querySelector('#dbgCardStartTurn').onclick=()=>cardStartTurn();document.querySelector('#dbgCardFill20').onclick=()=>cardDebugFillHand20();document.querySelector('#dbgCardEndTurn').onclick=()=>cardEndTurn();document.querySelector('#dbgCardRecycle').onclick=()=>cardDebugRecycleTest();document.querySelector('#dbgCardClear').onclick=()=>cardDebugClear();
-document.querySelector('#dbgPhaseStart').onclick=()=>phaseDebugStart();document.querySelector('#dbgPhaseSpend').onclick=()=>phaseDebugSpendCost();document.querySelector('#dbgPhaseEndAlly').onclick=()=>phaseDebugEndAlly();document.querySelector('#dbgPhaseEnemy').onclick=()=>phaseDebugAdvanceEnemy();document.querySelector('#dbgPhaseStop').onclick=()=>phaseDebugStop();document.querySelectorAll('[data-phase-alive]').forEach(b=>b.onclick=()=>phaseDebugSetAlive(b.dataset.phaseAlive));
-document.querySelector('#dbgAttackStart').onclick=()=>attackExerciseStart();document.querySelector('#dbgAttackPrep').onclick=()=>attackExercisePrepareHand();document.querySelector('#dbgAttackFuse').onclick=()=>attackExerciseFuseSelected();document.querySelector('#dbgAttackUse').onclick=()=>attackExerciseUseSelected();document.querySelector('#dbgDefensePrep').onclick=()=>defenseExercisePrepareHand();document.querySelector('#dbgDefenseFuse').onclick=()=>defenseExerciseFuseSelected();document.querySelector('#dbgDefenseUse').onclick=()=>defenseExerciseUseSelected();document.querySelector('#dbgAttackEndAlly').onclick=()=>attackExerciseEndAlly();document.querySelector('#dbgAttackEnemy').onclick=()=>attackExerciseAdvanceEnemy();document.querySelector('#dbgAttackStop').onclick=()=>attackExerciseStop();document.querySelector('#dbgAttackSetHp').onclick=()=>attackExerciseSetMockHp();document.querySelector('#dbgDefenseSetDef').onclick=()=>defenseExerciseSetTargetDef();document.querySelector('#dbgDefenseDamageApply').onclick=()=>defenseExerciseApplyDamage();document.querySelector('#dbgDefenseKill').onclick=()=>defenseExerciseKillSelected();document.querySelector('#dbgEnemyBlockAdd').onclick=()=>defenseExerciseAddEnemyBlock();
+
+
+
+
 function resetSekasokoSave(){
  const keys=[];
  for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key&&key.startsWith('sekasoko'))keys.push(key)}
@@ -6615,14 +6615,130 @@ function resetSekasokoSave(){
  localStorage.setItem(FRESH_SAVE_RESET_KEY,'1');
  location.reload();
 }
-document.querySelector('#dbgResetSave').onclick=()=>{
+
+
+/* VER.541 static UI registration responsibility separation. No gameplay callbacks changed. */
+let ct541CommonUiInitialized=false,ct541LegacyUiInitialized=false,ct541CardUiInitialized=false;
+let ct541DebugUiInitialized=false,ct541LegacyPanelDebugInitialized=false,ct541CardPanelDebugInitialized=false;
+function initCommonUiEvents(){
+ if(ct541CommonUiInitialized)return;
+ if(document.querySelector('#book')) document.querySelector('#book').onclick=()=>openSkillBookInventory();
+ if(document.querySelector('#shop')) document.querySelector('#shop').onclick=()=>openInfo('ショップ','Waldonium（WD）でアイテムを購入する場所。ショップ本体は次段階で実装。','🎁');
+ if(document.querySelector('#formation')) document.querySelector('#formation').onclick=()=>{renderFormation();showScreen('formationScreen')};
+ if(document.querySelector('#modal')) document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+ if(document.querySelector('#formationBack')) document.querySelector('#formationBack').onclick=()=>showScreen('home');
+ if(document.querySelector('#formationHome')) document.querySelector('#formationHome').onclick=()=>showScreen('home');
+ if(document.querySelector('#saveFormation')) document.querySelector('#saveFormation').onclick=()=>{if(!validateFormationForSave())return;saveParties();showScreen('home')};
+ if(document.querySelector('#clearParty')) document.querySelector('#clearParty').onclick=()=>{parties[selectedParty]=emptyParty();selectedFormationSlot=null;renderFormation()};
+ if(document.querySelector('#clearAllParties')) document.querySelector('#clearAllParties').onclick=()=>{if(confirm('すべての編成を解除しますか？')){parties=Array.from({length:12},emptyParty);saveParties();renderFormation()}};
+ document.addEventListener('pointerup',stopStatHold,true);
+ document.addEventListener('pointercancel',stopStatHold,true);
+ window.addEventListener('blur',stopStatHold);
+ ct541CommonUiInitialized=true;
+}
+function initLegacyBattleUiEvents(){
+ if(ct541LegacyUiInitialized||!document.querySelector('#battleScreen'))return;
+ if(document.querySelector('#descend')) document.querySelector('#descend').onclick=()=>{cardFoundationStartRun();prepareSortie();showScreen('battleScreen');setTimeout(()=>battle(),80)};
+ if(document.querySelector('#swapBtn')) document.querySelector('#swapBtn').onclick=()=>{if(resolvePlayerAction&&currentActor&&findSwapPartner(currentActor)){selectedSkillSlot=0;document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}};
+ if(document.querySelector('#uniqueSkill')) document.querySelector('#uniqueSkill').onclick=chooseUniqueSkill;
+ if(document.querySelector('#freeSkill1')) document.querySelector('#freeSkill1').onclick=()=>chooseFreeSkill(2);
+ if(document.querySelector('#freeSkill2')) document.querySelector('#freeSkill2').onclick=()=>chooseFreeSkill(3);
+ if(document.querySelector('#freeSkill3')) document.querySelector('#freeSkill3').onclick=()=>chooseFreeSkill(4);
+ if(document.querySelector('#uniqueSkill')) document.querySelector('#uniqueSkill').onclick=choosePhase1NormalAttack;
+ if(document.querySelector('#freeSkill1')) document.querySelector('#freeSkill1').onclick=choosePhase3Burst;
+ if(document.querySelector('#freeSkill2')) document.querySelector('#freeSkill2').onclick=()=>phase1UnimplementedAction('スキップ');
+ if(document.querySelector('#freeSkill3')) document.querySelector('#freeSkill3').onclick=()=>phase1UnimplementedAction('アイテム');
+ if(document.querySelector('#burstChainEnd')) document.querySelector('#burstChainEnd').onclick=endBurstChainSelection;
+ if(document.querySelector('#autoToggle')) document.querySelector('#autoToggle').onclick=()=>{if(!autoMode){autoMode=true;autoBurstMode='instant'}else if(autoBurstMode==='instant'){autoBurstMode='all'}else{autoMode=false;autoBurstMode='instant'}if(autoMode&&resolvePlayerAction){document.querySelector('#skillPanel').classList.remove('show');const r=resolvePlayerAction;resolvePlayerAction=null;r()}updateFloorUI()};
+ if(document.querySelector('#homeBack')) document.querySelector('#homeBack').onclick=()=>{if(confirm('今回の攻略を終了して、獲得WDを持って拠点へ戻りますか？'))retreatHome()};
+ if(document.querySelector('#continueFloor')) document.querySelector('#continueFloor').onclick=()=>{if(overlayMode==='checkpoint'){advanceCheckpoint();return}restoreFloorSnapshot();autoMode=false;updateFloorUI();setTimeout(()=>battle(),80)};
+ if(document.querySelector('#again')) document.querySelector('#again').onclick=()=>retreatHome();
+ ct541LegacyUiInitialized=true;
+}
+function initCardBattleUiEvents(){
+ if(ct541CardUiInitialized||!document.querySelector('#cardBattleTestScreen'))return;
+ window.addEventListener('resize',()=>{if(cardBattleTestMode.active){cardBattleTestReticleSync();cardBattleTestIntentSync();}});
+ cardBattleTestGestureInit();
+ if(document.querySelector('#cardBattleTestEntry')) document.querySelector('#cardBattleTestEntry').onclick=()=>cardBattleTestStart();
+ if(document.querySelector('#cardTestExit')) document.querySelector('#cardTestExit').onclick=()=>cardBattleTestExit();
+ if(document.querySelector('#ctHudLatestLog')) document.querySelector('#ctHudLatestLog').onclick=()=>cardBattleTestLogOpen();
+ if(document.querySelector('#ctLogClose')) document.querySelector('#ctLogClose').onclick=()=>cardBattleTestLogClose();
+ if(document.querySelector('#ctPhaseAction')) document.querySelector('#ctPhaseAction').onclick=()=>cardBattleTestEndOrAdvance();
+ ct541CardUiInitialized=true;
+}
+function initLegacyPanelDebugEvents(){
+ if(ct541LegacyPanelDebugInitialized||!document.querySelector('#battleScreen')||!document.querySelector('#debugPanel'))return;
+ const dp=document.querySelector('#debugPanel');
+ if(document.querySelector('#debugOpen')) document.querySelector('#debugOpen').onclick=()=>{dp.classList.add('show');cardDebugRender();attackExerciseRender()};
+ if(document.querySelector('#debugClose')) document.querySelector('#debugClose').onclick=()=>dp.classList.remove('show');
+ if(document.querySelector('#dbgEnemy1')) document.querySelector('#dbgEnemy1').onclick=()=>{E.forEach(x=>{if(x.hp>0)x.hp=1});dbgStatus('敵HPを1に変更')};
+ if(document.querySelector('#dbgHealA')) document.querySelector('#dbgHealA').onclick=()=>{A.forEach(x=>x.hp=x.max);dbgStatus('味方を全回復')};
+ if(document.querySelector('#dbgHealE')) document.querySelector('#dbgHealE').onclick=()=>{E.forEach(x=>x.hp=x.max);dbgStatus('敵を全回復')};
+ if(document.querySelector('#dbgAtkA')) document.querySelector('#dbgAtkA').onclick=()=>{A.forEach(x=>x.atk+=100);dbgStatus('味方ATK +100')};
+ if(document.querySelector('#dbgAtkE')) document.querySelector('#dbgAtkE').onclick=()=>{E.forEach(x=>x.atk+=100);dbgStatus('敵ATK +100')};
+ if(document.querySelector('#dbgWin')) document.querySelector('#dbgWin').onclick=()=>{E.forEach(x=>x.hp=0);renderBattle();dp.classList.remove('show');dbgStatus('敵を即時撃破')};
+ if(document.querySelector('#dbgInv')) document.querySelector('#dbgInv').onclick=e=>{debugInvincible=!debugInvincible;e.currentTarget.textContent='味方無敵 '+(debugInvincible?'ON':'OFF');e.currentTarget.classList.toggle('on',debugInvincible);dbgStatus('味方無敵 '+(debugInvincible?'ON':'OFF'))};
+ if(document.querySelector('#dbgSpeed')) document.querySelector('#dbgSpeed').onclick=e=>{debugSpeed=debugSpeed===1?5:debugSpeed===5?10:1;e.currentTarget.textContent='速度 ×'+debugSpeed;dbgStatus('戦闘速度 ×'+debugSpeed)};
+ if(document.querySelector('#dbgCardBuild')) document.querySelector('#dbgCardBuild').onclick=()=>cardFoundationCreateForPartyIndex(selectedParty);
+ if(document.querySelector('#dbgCardStartTurn')) document.querySelector('#dbgCardStartTurn').onclick=()=>cardStartTurn();
+ if(document.querySelector('#dbgCardFill20')) document.querySelector('#dbgCardFill20').onclick=()=>cardDebugFillHand20();
+ if(document.querySelector('#dbgCardEndTurn')) document.querySelector('#dbgCardEndTurn').onclick=()=>cardEndTurn();
+ if(document.querySelector('#dbgCardRecycle')) document.querySelector('#dbgCardRecycle').onclick=()=>cardDebugRecycleTest();
+ if(document.querySelector('#dbgCardClear')) document.querySelector('#dbgCardClear').onclick=()=>cardDebugClear();
+ if(document.querySelector('#dbgPhaseStart')) document.querySelector('#dbgPhaseStart').onclick=()=>phaseDebugStart();
+ if(document.querySelector('#dbgPhaseSpend')) document.querySelector('#dbgPhaseSpend').onclick=()=>phaseDebugSpendCost();
+ if(document.querySelector('#dbgPhaseEndAlly')) document.querySelector('#dbgPhaseEndAlly').onclick=()=>phaseDebugEndAlly();
+ if(document.querySelector('#dbgPhaseEnemy')) document.querySelector('#dbgPhaseEnemy').onclick=()=>phaseDebugAdvanceEnemy();
+ if(document.querySelector('#dbgPhaseStop')) document.querySelector('#dbgPhaseStop').onclick=()=>phaseDebugStop();
+ document.querySelectorAll('[data-phase-alive]').forEach(b=>b.onclick=()=>phaseDebugSetAlive(b.dataset.phaseAlive));
+ if(document.querySelector('#dbgAttackStart')) document.querySelector('#dbgAttackStart').onclick=()=>attackExerciseStart();
+ if(document.querySelector('#dbgAttackPrep')) document.querySelector('#dbgAttackPrep').onclick=()=>attackExercisePrepareHand();
+ if(document.querySelector('#dbgAttackFuse')) document.querySelector('#dbgAttackFuse').onclick=()=>attackExerciseFuseSelected();
+ if(document.querySelector('#dbgAttackUse')) document.querySelector('#dbgAttackUse').onclick=()=>attackExerciseUseSelected();
+ if(document.querySelector('#dbgDefensePrep')) document.querySelector('#dbgDefensePrep').onclick=()=>defenseExercisePrepareHand();
+ if(document.querySelector('#dbgDefenseFuse')) document.querySelector('#dbgDefenseFuse').onclick=()=>defenseExerciseFuseSelected();
+ if(document.querySelector('#dbgDefenseUse')) document.querySelector('#dbgDefenseUse').onclick=()=>defenseExerciseUseSelected();
+ if(document.querySelector('#dbgAttackEndAlly')) document.querySelector('#dbgAttackEndAlly').onclick=()=>attackExerciseEndAlly();
+ if(document.querySelector('#dbgAttackEnemy')) document.querySelector('#dbgAttackEnemy').onclick=()=>attackExerciseAdvanceEnemy();
+ if(document.querySelector('#dbgAttackStop')) document.querySelector('#dbgAttackStop').onclick=()=>attackExerciseStop();
+ if(document.querySelector('#dbgAttackSetHp')) document.querySelector('#dbgAttackSetHp').onclick=()=>attackExerciseSetMockHp();
+ if(document.querySelector('#dbgDefenseSetDef')) document.querySelector('#dbgDefenseSetDef').onclick=()=>defenseExerciseSetTargetDef();
+ if(document.querySelector('#dbgDefenseDamageApply')) document.querySelector('#dbgDefenseDamageApply').onclick=()=>defenseExerciseApplyDamage();
+ if(document.querySelector('#dbgDefenseKill')) document.querySelector('#dbgDefenseKill').onclick=()=>defenseExerciseKillSelected();
+ if(document.querySelector('#dbgEnemyBlockAdd')) document.querySelector('#dbgEnemyBlockAdd').onclick=()=>defenseExerciseAddEnemyBlock();
+ if(document.querySelector('#dbgResetSave')) document.querySelector('#dbgResetSave').onclick=()=>{
  if(!confirm('セカソコのセーブデータをすべて初期化します。\n\nWD・ステータス強化・踏破数・固有スキルツリー・自由スキルツリー・スキル装備・編成などが初期状態に戻ります。\nこの操作は元に戻せません。\n\n本当に初期化しますか？'))return;
  resetSekasokoSave();
 };
+ ct541LegacyPanelDebugInitialized=true;
+}
+function initCardPanelDebugEvents(){
+ if(ct541CardPanelDebugInitialized||!document.querySelector('#ctDebugOverlay'))return;
+ if(document.querySelector('#ctHudDebug')) document.querySelector('#ctHudDebug').onclick=()=>cardBattleTestDebugOpen();
+ if(document.querySelector('#ctDebugLogOpen')) document.querySelector('#ctDebugLogOpen').onclick=()=>{cardBattleTestDebugClose();cardBattleTestLogOpen()};
+ if(document.querySelector('#ctDebugClose')) document.querySelector('#ctDebugClose').onclick=()=>cardBattleTestDebugClose();
+ if(document.querySelector('#ctPrepAttack')) document.querySelector('#ctPrepAttack').onclick=()=>cardBattleTestPrep('attack');
+ if(document.querySelector('#ctPrepDefense')) document.querySelector('#ctPrepDefense').onclick=()=>cardBattleTestPrep('defense');
+ if(document.querySelector('#ctMockHit')) document.querySelector('#ctMockHit').onclick=()=>cardBattleTestMockHit();
+ if(document.querySelector('#ctMockEnemyBlock')) document.querySelector('#ctMockEnemyBlock').onclick=()=>cardBattleTestEnemyBlock();
+ ct541CardPanelDebugInitialized=true;
+}
+function initDebugUiEvents(){
+ if(ct541DebugUiInitialized)return;
+ initLegacyPanelDebugEvents();
+ initCardPanelDebugEvents();
+ ct541DebugUiInitialized=true;
+}
+initCommonUiEvents();
+initLegacyBattleUiEvents();
+initCardBattleUiEvents();
+initDebugUiEvents();
 renderHome();
 
 /* v0.17.1 戦闘中ピンチズーム：背景・味方・敵を同一レイヤーで変形 */
-(function(){
+let ct541LegacyZoomInitialized=false;
+function initLegacyBattleZoom(){
+ if(ct541LegacyZoomInitialized||!document.getElementById('battleScreen'))return;
   const vp=document.getElementById('battleViewport');
   const layer=document.getElementById('battleZoomLayer');
   if(!vp||!layer)return;
@@ -6693,11 +6809,15 @@ renderHome();
   // Desktop/debug convenience without affecting iPhone gestures.
   vp.addEventListener('dblclick',e=>{e.preventDefault();reset()});
   window.resetBattleZoom=reset;
-})();
+  ct541LegacyZoomInitialized=true;
+}
+initLegacyBattleZoom();
 
 
 /* v0.17.4 skill long-press help */
-(function(){
+let ct541LegacyHelpInitialized=false;
+function initLegacySkillHelp(){
+ if(ct541LegacyHelpInitialized||!document.getElementById('battleScreen'))return;
  const panel=document.getElementById('skillPanel'),tip=document.getElementById('skillHoldTip'); if(!panel||!tip)return;
  let timer=null,active=null;
  const show=btn=>{tip.textContent=btn.dataset.skillDetail||'説明未設定';tip.classList.add('show');tip.setAttribute('aria-hidden','false');active=btn;skillHoldSuppressClickUntil=Date.now()+800};
@@ -6706,6 +6826,8 @@ renderHome();
  panel.addEventListener('touchmove',()=>{if(!active)clearTimeout(timer)},{passive:true});
  panel.addEventListener('touchend',hide,{passive:true}); panel.addEventListener('touchcancel',hide,{passive:true});
  panel.addEventListener('contextmenu',e=>{const b=e.target.closest('.skillBtn');if(!b)return;e.preventDefault();show(b);setTimeout(hide,1800)});
-})();
+ ct541LegacyHelpInitialized=true;
+}
+initLegacySkillHelp();
 
 </script></body></html>
