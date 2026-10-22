@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.541</title>
+<title>セカソコ ver.542</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.541";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.542";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2475,7 +2475,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.541</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.542</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2660,8 +2660,17 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   background-repeat:no-repeat;
   background-size:cover;
 }
+/* VER.542 trial guardian spirit: strictly non-interactive visual overlay. */
+#cardBattleTestScreen #ct542SpiritView{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:8;pointer-events:none!important;touch-action:none;display:flex;align-items:center;gap:4px;max-width:42%;padding:3px 7px;border:1px solid #b9e9ef88;border-radius:20px;background:rgba(12,28,43,.83);color:#e1fbff;font-size:9px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 8px #0006;-webkit-user-select:none;user-select:none}
+#cardBattleTestScreen #ct542SpiritView[hidden]{display:none!important}
+#cardBattleTestScreen #ct542SpiritView .ct542SpiritGlyph{font-size:16px;line-height:1}
+#cardBattleTestScreen #ct542SpiritView .ct542SpiritLabel{min-width:0;overflow:hidden;text-overflow:ellipsis}
+#cardBattleTestScreen .ct542SpiritActions{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#cardBattleTestScreen .ct542SpiritActions button{font-size:11px;min-height:44px;padding:8px 4px;border:1px solid #83bfc377;border-radius:8px;background:#16313d;color:#e4faff;touch-action:manipulation}
+#cardBattleTestScreen .ct542SpiritActions button:disabled{opacity:.35}
+#cardBattleTestScreen #ct542SpiritTrialStatus{margin:7px 0 0;color:#bfe6e8;font-size:10px;line-height:1.4}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.541 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.542 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2675,6 +2684,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   </div>
   <div class="ctBoard" id="ctBoard">
     <div class="ctArmy" id="ctAllyArmy"></div>
+    <div id="ct542SpiritView" role="status" aria-label="試験守護精霊" hidden><span class="ct542SpiritGlyph" aria-hidden="true">🧚</span><span class="ct542SpiritLabel" id="ct542SpiritLabel"></span></div>
     <div class="ctEnemyArea"><div class="ctEnemyGrid" id="ctEnemyGrid"></div><div class="ctEnemyDefeatStatus" id="ctEnemyDefeatStatus" hidden>模擬敵全滅｜演習終了せず確認可能</div></div>
     <div id="ctIntentOverlay" aria-hidden="true"><svg id="ctIntentArrows" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ctIntentArrowHead" viewBox="0 0 7 7" refX="6" refY="3.5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="none" stroke="#ff6069" stroke-width="1.1"/></marker></defs><g id="ctIntentLines"></g></svg><div id="ctIntentTargets"></div></div>
     <div id="ctLockReticle" class="targetReticle" hidden aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><circle class="reticleOuterRing" cx="50" cy="50" r="42" pathLength="100"/><g class="reticleCardinals"><path class="reticleMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="reticleMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="reticleInnerRing" cx="50" cy="50" r="29"/><path class="reticleCross" d="M50 39v7 M50 54v7 M39 50h7 M54 50h7"/><circle class="reticleCenter" cx="50" cy="50" r="2.2"/></svg></div>
@@ -2699,6 +2709,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
         <button class="ctAssist" id="ctMockHit" type="button">演習被弾 20</button>
         <button class="ctAssist" id="ctMockEnemyBlock" type="button">敵BLOCK +20</button>
       </div>
+      <div class="ct542SpiritActions" role="group" aria-label="守護精霊試験操作"><button id="ct542SpiritSummon" type="button">🧚 精霊召喚（試験）</button><button id="ct542SpiritReturn" type="button">精霊帰還（試験）</button></div>
+      <p id="ct542SpiritTrialStatus" aria-live="polite">精霊：未召喚</p>
       <p id="ctDebugStatus" class="ctDebugStatus" aria-live="polite">開閉だけでは戦闘状態を変更しません。</p>
     </div>
   </div>
@@ -3470,7 +3482,7 @@ function cardBattleTestMaybeClearFloor(){
 }
 function cardBattleTestShowResult(type){
  const mode=cardBattleTestMode;if(!mode.active)return;
- mode.resultType=type;mode.busy=true;
+ mode.resultType=type;mode.busy=true;if(type==='complete'||type==='gameover')ct542ResetSpiritTrial();
  const overlay=document.querySelector('#ctRunResult'),title=document.querySelector('#ctRunResultTitle'),body=document.querySelector('#ctRunResultDetail'),next=document.querySelector('#ctRunResultNext');
  if(!overlay||!title||!body||!next)return;
  title.textContent=type==='checkpoint'?`${mode.floor}F RESULT`:type==='complete'?`${maxFloor}F 踏破！`:'GAME OVER';
@@ -3539,11 +3551,39 @@ function ct531ApplyBackground(floor){
   return true;
 }
 
+/* VER.542 guardian spirit display trial. Ephemeral, no combat or save integration. */
+function ct542FreshSpiritTrial(){return{nextId:1,spirits:[],lastStatus:'未召喚'}}
+let ct542SpiritTrial=ct542FreshSpiritTrial();
+function ct542ResetSpiritTrial(){ct542SpiritTrial=ct542FreshSpiritTrial();ct542SpiritRender()}
+function ct542ActiveSpirit(){return ct542SpiritTrial.spirits.find(s=>s.status==='summoned')||null}
+function ct542SpiritSummon(){
+ if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.resultType)return false;
+ if(ct542ActiveSpirit()){ct542SpiritTrial.lastStatus='召喚中：1体（試験上限）';ct542SpiritRender();return false}
+ const rid=attackExercise.defenseTargetRosterId,actor=attackExercise.actors[rid];
+ if(!actor||!actor.alive||actor.hp<=0){ct542SpiritTrial.lastStatus='生存中の味方を選択してください';ct542SpiritRender();return false}
+ const spirit={id:'ct542-spirit-'+ct542SpiritTrial.nextId++,kind:'trial-guardian',status:'summoned',summonerRosterId:rid,summonerName:actor.ownerName||'味方'};
+ ct542SpiritTrial.spirits.push(spirit);ct542SpiritTrial.lastStatus='召喚中｜召喚者：'+spirit.summonerName;
+ ct542SpiritRender();return true;
+}
+function ct542SpiritReturn(){
+ if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.resultType)return false;
+ const spirit=ct542ActiveSpirit();if(!spirit){ct542SpiritTrial.lastStatus='帰還対象なし';ct542SpiritRender();return false}
+ spirit.status='returned';ct542SpiritTrial.lastStatus='帰還済み｜'+spirit.summonerName;ct542SpiritRender();return true;
+}
+function ct542SpiritRender(){
+ const active=cardBattleTestMode?.active&&!['complete','gameover'].includes(cardBattleTestMode.resultType)?ct542ActiveSpirit():null;
+ const view=document.getElementById('ct542SpiritView'),label=document.getElementById('ct542SpiritLabel');
+ if(view)view.hidden=!active;if(label)label.textContent=active?'守護精霊｜'+active.summonerName:'';
+ const status=document.getElementById('ct542SpiritTrialStatus');if(status)status.textContent='精霊：'+ct542SpiritTrial.lastStatus;
+ const summon=document.getElementById('ct542SpiritSummon'),ret=document.getElementById('ct542SpiritReturn');
+ const enabled=!!(cardBattleTestMode?.active&&!cardBattleTestMode.busy&&!cardBattleTestMode.resultType);
+ if(summon)summon.disabled=!enabled||!!active;if(ret)ret.disabled=!enabled||!active;
+}
 function cardBattleTestStart(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
- cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
+ ct542ResetSpiritTrial();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
  attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
  ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');cardBattleTestRender();return true
@@ -3551,7 +3591,7 @@ function cardBattleTestStart(){
 function cardBattleTestExit(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
  cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
- cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');return true
+ cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');return true
 }
 function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
 function cardBattleTestCardTap(id){
@@ -4080,7 +4120,7 @@ function cardBattleTestRender(){
  const defeat=document.querySelector('#ctEnemyDefeatStatus');if(defeat){defeat.textContent=`${cardBattleTestMode.floor}F CLEAR｜階層進行処理中`;defeat.hidden=!!cardBattleTestMode.resultType||enemies.some(e=>e.alive&&e.hp>0)||enemies.some(e=>e.hp<=0&&!e.graphicGone);}
 
  const army=document.querySelector('#ctAllyArmy');if(army){const actors=Object.values(attackExercise.actors);army.innerHTML=[3,0,4,1,5,2].map(slot=>{const actor=actors.find(a=>a&&a.alive&&a.hp>0&&Number(a.formationSlot)===slot);return actor?cardBattleTestActorHtml(actor):cardBattleTestEmptyAllyHtml(slot)}).join('');}
- cardBattleTestIntentSync();
+ cardBattleTestIntentSync();ct542SpiritRender();
  const rail=document.querySelector('#ctFanRail');if(rail)cardBattleTestHandUpdate(rail);
  set('ctOverflow',cardFoundation.overflowPending?'21枚｜1枚タップして破棄':'');
  const msg=document.querySelector('#ctMessage');if(msg){msg.textContent=blocked?'選択破棄／残りドロー完了まで他操作停止':alive<=0?'味方全滅｜試験停止。状態確認後「撤退」してください。':(cardBattleTestMode.message||attackExercise.message||phaseFoundation.message)}
@@ -6721,6 +6761,8 @@ function initCardPanelDebugEvents(){
  if(document.querySelector('#ctPrepDefense')) document.querySelector('#ctPrepDefense').onclick=()=>cardBattleTestPrep('defense');
  if(document.querySelector('#ctMockHit')) document.querySelector('#ctMockHit').onclick=()=>cardBattleTestMockHit();
  if(document.querySelector('#ctMockEnemyBlock')) document.querySelector('#ctMockEnemyBlock').onclick=()=>cardBattleTestEnemyBlock();
+ if(document.querySelector('#ct542SpiritSummon')) document.querySelector('#ct542SpiritSummon').onclick=()=>ct542SpiritSummon();
+ if(document.querySelector('#ct542SpiritReturn')) document.querySelector('#ct542SpiritReturn').onclick=()=>ct542SpiritReturn();
  ct541CardPanelDebugInitialized=true;
 }
 function initDebugUiEvents(){
