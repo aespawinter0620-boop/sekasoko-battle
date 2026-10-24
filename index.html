@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.551</title>
+<title>セカソコ ver.552</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.551";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.552";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1696,6 +1696,14 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct548Chip b{font-size:8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
 #cardBattleTestScreen .ct548Chip small{font-size:6px;color:#c5d7e7}
 #cardBattleTestScreen .ct548Chip.keep{border-color:#ffdd65;background:#51420cde;color:#fff0a6}
+#ct552Reward{position:absolute;inset:0;z-index:300;background:#020814d9;display:flex;align-items:center;justify-content:center;padding:16px}
+#ct552Reward[hidden]{display:none!important}
+#ct552Reward .ct552RewardPanel{width:min(92vw,370px);max-height:85dvh;overflow:auto;background:#152336;color:#f3f6ff;border:2px solid #d7b870;border-radius:12px;padding:18px;text-align:center;box-shadow:0 12px 30px #0009}
+#ct552Reward h2{font-size:18px;margin:0 0 12px}
+#ct552Reward label{display:block;margin:14px 0}
+#ct552Reward select{max-width:100%;padding:8px}
+#ct552Reward .ct552RewardChoices{display:flex;gap:8px;justify-content:center}
+#ct552Reward button{flex:1;min-height:52px;border:1px solid #f2d98d;background:#273b54;color:white;border-radius:8px;font-weight:bold}
 </style>
 
 <style id="ver248-three-line-hud">
@@ -2487,7 +2495,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.551</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.552</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2692,7 +2700,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct542SpiritActions button:disabled{opacity:.35}
 #cardBattleTestScreen #ct542SpiritTrialStatus{margin:7px 0 0;color:#bfe6e8;font-size:10px;line-height:1.4}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.551 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.552 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2712,6 +2720,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
     <div class="ctFx" id="ctFx"></div>
   </div>
   <div id="ct542SpiritView" aria-label="試験守護精霊一覧" hidden><span class="ct544SpiritMeta" id="ct542SpiritLabel"></span><div class="ct544SpiritList" id="ct544SpiritList" role="group" aria-label="精霊アイコン。タップでKEEP切替"></div><span id="ct543SpiritTurns" class="ct543SpiritTurns" aria-label="先頭精霊の残り滞在ターン"></span></div>
+  <div id="ct552Reward" hidden role="dialog" aria-modal="true" aria-label="カード報酬"><div class="ct552RewardPanel"><h2 id="ct552RewardTitle">階層クリア｜カード報酬（DEBUG）</h2><p>生存味方を所有者に指定し、攻撃または防御を1枚獲得</p><label>獲得カードの所有者 <select id="ct552RewardOwner"></select></label><div class="ct552RewardChoices"><button type="button" onclick="ct552ClaimReward('attack')">⚔️ 攻撃を獲得</button><button type="button" onclick="ct552ClaimReward('defense')">🛡️ 防御を獲得</button></div><p id="ct552RewardStatus"></p></div></div>
   <div class="ctHandWrap"><div class="ctHandHead"><b>手札</b><span class="ctHandDivider" aria-hidden="true">｜</span><button id="ctHudLatestLog" type="button" aria-label="最新戦闘ログ。タップで履歴を表示" aria-haspopup="dialog" title="戦闘ログ履歴を開く"><span id="ctHandLogText">ログ待機中</span></button><span class="ctOverflow" id="ctOverflow"></span></div><div class="ctHand" id="ctHand"><div class="ctFanRail" id="ctFanRail"></div></div><div class="ctDragGuide">↔ 空白で手札を送る・重ねて合成　↑ 攻撃　⇧ 味方へ防御</div></div>
   <div class="ctBottomBar" role="group" aria-label="新カード戦闘4要素">
     <div class="ctBottomCost" aria-label="共有COST">COST <b id="ctCost">0 / 0</b></div>
@@ -3635,6 +3644,39 @@ function cardBattleTestRecordOverkill(hits,target){
  const bonus=Math.max(0,Math.floor(base*pct/100));
  if(bonus){cardBattleTestMode.runOverkillWD+=bonus;attackExerciseLogPush(`🔥 OVERKILL報酬 ${Math.min(OVERKILL_DISPLAY_CAP,Math.floor(rawPct))}%｜+💎${bonus} WD`)}
 }
+// VER.552: temporary expedition-only card reward. No save format changes.
+let ct552Reward=null;
+function ct552RewardReset(){ct552Reward=null;const el=document.getElementById('ct552Reward');if(el)el.hidden=true}
+function ct552OpenReward(){
+ const mode=cardBattleTestMode;
+ if(!mode.active||mode.floor>=100||mode.floor%5===0||ct552Reward||mode.resultType)return false;
+ const alive=Object.values(attackExercise.actors).filter(a=>a&&a.alive&&a.hp>0&&cardFoundation.partyRosterIds.includes(a.ownerRosterId));
+ if(!alive.length)return false;
+ ct552Reward={floor:mode.floor,serial:mode.lockSerial,claimed:false};
+ const el=document.getElementById('ct552Reward'),owner=document.getElementById('ct552RewardOwner');
+ if(!el||!owner){ct552Reward=null;return false}
+ owner.innerHTML=alive.map(a=>`<option value="${cardDebugEsc(a.ownerRosterId)}">${cardDebugEsc(a.ownerName)}</option>`).join('');
+ document.getElementById('ct552RewardTitle').textContent=`${mode.floor}F CLEAR｜カード報酬（DEBUG）`;
+ document.getElementById('ct552RewardStatus').textContent='1枚選択で次の階層へ進みます';
+ el.hidden=false;mode.busy=true;attackExerciseLogPush(`${mode.floor}F｜カード報酬選択待ち`);return true;
+}
+function ct552ClaimReward(type){
+ const r=ct552Reward,mode=cardBattleTestMode;
+ if(!r||r.claimed||!mode.active||mode.floor!==r.floor||mode.lockSerial!==r.serial||mode.resultType||!['attack','defense'].includes(type))return false;
+ const rid=document.getElementById('ct552RewardOwner')?.value;
+ const actor=attackExercise.actors[rid],owner=formationRosterData.find(a=>a.id===rid);
+ if(!actor?.alive||actor.hp<=0||!owner||!cardFoundation.partyRosterIds.includes(rid))return false;
+ r.claimed=true;
+ const card=cardNewInstance(owner,type,1);
+ cardFoundation.fusionSourceLedger[card.instanceId]=[card.instanceId];
+ // Add to draw pile: remains in the run and is available from the next floor onward.
+ cardFoundation.drawPile.push(card);cardShuffle(cardFoundation.drawPile);
+ attackExerciseLogPush(`報酬獲得｜${mode.floor}F ${owner.name}｜${type==='attack'?'攻撃':'防御'}｜${card.instanceId}`);
+ document.getElementById('ct552Reward').hidden=true;ct552Reward=null;
+ mode.busy=false;
+ const ok=cardBattleTestAdvanceFloor();
+ if(!ok){mode.busy=true;attackExerciseLogPush('報酬後の階層遷移失敗｜重複獲得防止のため停止')}return ok;
+}
 function cardBattleTestMaybeClearFloor(){
  const mode=cardBattleTestMode;
  if(!mode.active||mode.resultType||mode.ct545SpiritProcessing||mode.clearedFloor>=mode.floor||!attackExercise.active)return false;
@@ -3647,8 +3689,9 @@ function cardBattleTestMaybeClearFloor(){
  attackExercise.selected=[];attackExercise.defenseSelected=[];
  if(mode.floor===100){cardBattleTestShowResult('complete');return true}
  if(mode.floor%5===0){cardBattleTestShowResult('checkpoint');return true}
- // No additional draw/phase before the one new phase started by transition.
- cardBattleTestAdvanceFloor();return true;
+ // VER.552: 1–4F and other non-checkpoint floors pause for one reward.
+ if(ct552OpenReward())return true;
+ mode.busy=true;attackExerciseLogPush("カード報酬を開けないため階層移動を停止");return false;
 }
 function cardBattleTestShowResult(type){
  const mode=cardBattleTestMode;if(!mode.active)return;
@@ -3938,14 +3981,14 @@ function cardBattleTestStart(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
- ct551RushCancel();ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
+ ct552RewardReset();ct551RushCancel();ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
  attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
  ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');ct546BgmStart();cardBattleTestRender();return true
 }
 function cardBattleTestExit(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){ct546BgmStop();showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
- ct551RushCancel();cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
+ ct552RewardReset();ct551RushCancel();cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
  cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');ct546BgmStop();return true
 }
 function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
