@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.554</title>
+<title>セカソコ ver.555</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.554";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.555";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1705,7 +1705,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #ct552Reward .ct552RewardChoices{display:flex;gap:8px;justify-content:center}
 #ct552Reward button{flex:1;min-height:52px;border:1px solid #f2d98d;background:#273b54;color:white;border-radius:8px;font-weight:bold}
 
-/* VER.554: distinguish independent generic 強撃 without changing the hand layout. */
+/* VER.555: distinguish independent generic 強撃 without changing the hand layout. */
 #cardBattleTestScreen .ctCard.ct554StrongCard{border-color:#d4a247;box-shadow:inset 0 0 0 1px rgba(240,179,66,.35)}
 #cardBattleTestScreen .ctCard.ct554StrongCard .ctCardType{color:#ffda83}
 </style>
@@ -2505,7 +2505,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.554</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.555</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2710,7 +2710,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct542SpiritActions button:disabled{opacity:.35}
 #cardBattleTestScreen #ct542SpiritTrialStatus{margin:7px 0 0;color:#bfe6e8;font-size:10px;line-height:1.4}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.554 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.555 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2730,7 +2730,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
     <div class="ctFx" id="ctFx"></div>
   </div>
   <div id="ct542SpiritView" aria-label="試験守護精霊一覧" hidden><span class="ct544SpiritMeta" id="ct542SpiritLabel"></span><div class="ct544SpiritList" id="ct544SpiritList" role="group" aria-label="精霊アイコン。タップでKEEP切替"></div><span id="ct543SpiritTurns" class="ct543SpiritTurns" aria-label="先頭精霊の残り滞在ターン"></span></div>
-  <div id="ct552Reward" hidden role="dialog" aria-modal="true" aria-label="カード報酬"><div class="ct552RewardPanel"><h2 id="ct552RewardTitle">階層クリア｜カード報酬（DEBUG）</h2><p>生存味方を所有者に指定し、攻撃・防御・強撃から1枚獲得（3候補はDEBUG試験）</p><label>獲得カードの所有者 <select id="ct552RewardOwner"></select></label><div class="ct552RewardChoices"><button type="button" onclick="ct552ClaimReward('attack')">⚔️ 攻撃を獲得</button><button type="button" onclick="ct552ClaimReward('defense')">🛡️ 防御を獲得</button><button type="button" onclick="ct552ClaimReward('strongAttack')">💥 強撃を獲得（COST2）</button></div><p id="ct552RewardStatus"></p></div></div>
+  <div id="ct552Reward" hidden role="dialog" aria-modal="true" aria-label="カード報酬"><div class="ct552RewardPanel"><h2 id="ct552RewardTitle">階層クリア｜カード報酬（DEBUG）</h2><p>攻撃・防御・強撃から1枚獲得、またはスキップ（DEBUG試験）</p><div class="ct552RewardChoices"><button type="button" onclick="ct552ClaimReward('attack')">⚔️ 攻撃を獲得</button><button type="button" onclick="ct552ClaimReward('defense')">🛡️ 防御を獲得</button><button type="button" onclick="ct552ClaimReward('strongAttack')">💥 強撃を獲得（COST2）</button><button type="button" onclick="ct552SkipReward()">スキップ</button></div><p id="ct552RewardStatus"></p></div></div>
   <div class="ctHandWrap"><div class="ctHandHead"><b>手札</b><span class="ctHandDivider" aria-hidden="true">｜</span><button id="ctHudLatestLog" type="button" aria-label="最新戦闘ログ。タップで履歴を表示" aria-haspopup="dialog" title="戦闘ログ履歴を開く"><span id="ctHandLogText">ログ待機中</span></button><span class="ctOverflow" id="ctOverflow"></span></div><div class="ctHand" id="ctHand"><div class="ctFanRail" id="ctFanRail"></div></div><div class="ctDragGuide">↔ 空白で手札を送る・重ねて合成　↑ 攻撃　⇧ 味方へ防御</div></div>
   <div class="ctBottomBar" role="group" aria-label="新カード戦闘4要素">
     <div class="ctBottomCost" aria-label="共有COST">COST <b id="ctCost">0 / 0</b></div>
@@ -2939,21 +2939,25 @@ function card534VerifiedSpSlots(owner,spEquipmentReader=card534EquippedSpForOwne
   seen.add(sp.slot);return true;
  });
 }
+function ct555CommonCard(c){return !!c&&(['attack','defense','strongAttack','attackFusion','defenseFusion'].includes(c.type))}
 function cardNewInstance(owner,type,copyIndex=1,spSlot=null,spEquipment=null){
  const id=`card_${Date.now().toString(36)}_${(++cardInstanceSeq).toString(36)}`;
+ const common=type!=='sp';
  const typeName=type==='attack'?'攻撃':type==='defense'?'防御':type==='strongAttack'?'強撃':`SP${spSlot}`;
- const name=type==='attack'?`${owner.name}｜攻撃`:type==='defense'?`${owner.name}｜防御`:type==='strongAttack'?`${owner.name}｜強撃`:`${owner.name}｜${spEquipment.name}`;
- const card={instanceId:id,templateId:type==='sp'?spEquipment.templateId:`v505:${owner.cid}:${type}:0`,ownerRosterId:owner.id,ownerCid:owner.cid,ownerName:owner.name,type,typeName,name,copyIndex,spSlot:spSlot||null,retain:false,exhaustOnDiscard:false,debugTemporarySp:false,fusionSourceInstanceIds:[id]};
- return card;
+ const name=common?typeName:`${owner.name}｜${spEquipment.name}`;
+ return {instanceId:id,templateId:common?`v555:common:${type}`:spEquipment.templateId,
+  ownerRosterId:common?null:owner.id,ownerCid:common?null:owner.cid,ownerName:common?'':owner.name,
+  type,typeName,name,copyIndex,spSlot:spSlot||null,retain:false,exhaustOnDiscard:false,debugTemporarySp:false,fusionSourceInstanceIds:[id]};
 }
 function cardBuildInstancesForRosterIds(ids,spEquipmentReader=card534EquippedSpForOwner){
  const cards=[];
+ // Fixed ten common cards regardless of party size; do not attach dummy owners.
+ for(let i=1;i<=5;i++)cards.push(cardNewInstance(null,'attack',i));
+ for(let i=1;i<=5;i++)cards.push(cardNewInstance(null,'defense',i));
+ // Keep existing formally equipped SP reader; never invent SP equipment.
  for(const rid of (ids||[]).filter(Boolean).slice(0,6)){
   const owner=formationRosterData.find(c=>c.id===rid);if(!owner)continue;
-  const equipped=card534VerifiedSpSlots(owner,spEquipmentReader),n=equipped.length;
-  for(let i=1;i<=3+n;i++)cards.push(cardNewInstance(owner,'attack',i));
-  for(let i=1;i<=3+n;i++)cards.push(cardNewInstance(owner,'defense',i));
-  for(const sp of equipped)cards.push(cardNewInstance(owner,'sp',sp.slot,sp.slot,sp));
+  for(const sp of card534VerifiedSpSlots(owner,spEquipmentReader))cards.push(cardNewInstance(owner,'sp',sp.slot,sp.slot,sp));
  }
  return cards;
 }
@@ -3122,7 +3126,7 @@ function cardDebugRecycleTest(){
 }
 function cardDebugClear(){cardFoundation=freshCardFoundation();cardDebugRender()}
 function cardDebugCardHtml(c,zone){
- const fusion=cardIsFusion(c),fusionOwners=fusion?(Array.isArray(c.hitOwners)&&c.hitOwners.length?c.hitOwners:cardBaseSources(c).map(x=>({ownerName:x.ownerName}))):[],ownerText=fusion?`素材所有者 ${fusionOwners.map(x=>x.ownerName).join('→')}`:`CID ${c.ownerCid}`,tags=`<div class="cardDebugTags"><span class="cardDebugTag ${c.retain?'on':''}">${fusion?'自動保持':`保持${c.retain?' ON':''}`}</span><span class="cardDebugTag ${!fusion&&c.exhaustOnDiscard?'exhaust':''}">${fusion?`元素材${c.fusionSourceInstanceIds.length}枚`:(c.exhaustOnDiscard?'破棄→消滅':'通常破棄')}</span></div>`;
+ const fusion=cardIsFusion(c),fusionOwners=fusion?(Array.isArray(c.hitOwners)&&c.hitOwners.length?c.hitOwners:cardBaseSources(c).map(x=>({ownerName:x.ownerName}))):[],ownerText=ct555CommonCard(c)?'共通カード':fusion?`素材所有者 ${fusionOwners.map(x=>x.ownerName).join('→')}`:`CID ${c.ownerCid}`,tags=`<div class="cardDebugTags"><span class="cardDebugTag ${c.retain?'on':''}">${fusion?'自動保持':`保持${c.retain?' ON':''}`}</span><span class="cardDebugTag ${!fusion&&c.exhaustOnDiscard?'exhaust':''}">${fusion?`元素材${c.fusionSourceInstanceIds.length}枚`:(c.exhaustOnDiscard?'破棄→消滅':'通常破棄')}</span></div>`;
  if(zone==='hand'&&cardFoundation.overflowPending)return `<button class="cardDebugCard overflowChoice" type="button" onclick="cardResolveOverflowDiscard('${c.instanceId}')"><span>${cardDebugEsc(c.name)}<small>${cardDebugEsc(ownerText)}｜${cardDebugEsc(c.instanceId)}</small>${tags}</span><em>破棄候補</em></button>`;
  const actions=zone==='hand'&&!fusion?`<span class="cardDebugCardActions"><button type="button" onclick="cardDebugToggleRetain('${c.instanceId}')">保持</button><button type="button" onclick="cardDebugToggleExhaust('${c.instanceId}')">消滅</button></span>`:'';
  return `<div class="cardDebugCard"><span>${cardDebugEsc(c.name)}<small>${cardDebugEsc(ownerText)}｜${cardDebugEsc(c.instanceId)}</small>${tags}</span>${actions}</div>`
@@ -3334,8 +3338,8 @@ function attackExerciseSelect(instanceId){
 function defenseExerciseSelect(instanceId){
  if(!attackExerciseCanOperate())return false;const c=cardFoundation.hand.find(x=>x.instanceId===instanceId);if(!c||!defenseCardTier(c))return false;const i=attackExercise.defenseSelected.indexOf(instanceId);if(i>=0)attackExercise.defenseSelected.splice(i,1);else if(attackExercise.defenseSelected.length<2)attackExercise.defenseSelected.push(instanceId);else{attackExercise.message='防御選択は最大2枚｜合成は選択順を保持';attackExerciseRender();return false}attackExercise.message=`防御選択 ${attackExercise.defenseSelected.length}枚`;attackExerciseRender();return true
 }
-function attackExerciseFusionName(tier,sources){return `${ATTACK_EXERCISE_SPEC[tier].label}【${sources.map(c=>c.ownerName).join('・')}】`}
-function defenseExerciseFusionName(tier,sources){return `${DEFENSE_EXERCISE_SPEC[tier].label}【${sources.map(c=>c.ownerName).join('・')}】`}
+function attackExerciseFusionName(tier,sources){return ATTACK_EXERCISE_SPEC[tier].label}
+function defenseExerciseFusionName(tier,sources){return DEFENSE_EXERCISE_SPEC[tier].label}
 function attackExerciseFuseSelected(){
  if(!attackExerciseCanOperate())return false;
  if(attackExercise.selected.length!==2){attackExercise.message='合成するカード2枚を選択してください';return false}
@@ -3351,7 +3355,7 @@ function attackExerciseFuseSelected(){
  if(new Set(ids).size!==ids.length||ids.length!==tier+1){attackExercise.message='攻撃素材ID不整合｜合成中止';return false}
  const nextTier=tier+1,fusionId=`fusion547_${Date.now().toString(36)}_${(++attackFusionSeq).toString(36)}`;
  const hitOwners=attackCardOwners({isFusion:true,type:'attackFusion',attackTier:nextTier,fusionSourceCards:sources});
- const fusion={instanceId:fusionId,templateId:`v547:fusion:${nextTier}`,type:'attackFusion',typeName:ATTACK_EXERCISE_SPEC[nextTier].label,name:attackExerciseFusionName(nextTier,sources),isFusion:true,attackTier:nextTier,retain:true,autoRetain:true,exhaustOnDiscard:false,fusionSourceCards:sources,fusionSourceInstanceIds:[...ids],hitOwners};
+ const fusion={instanceId:fusionId,templateId:`v547:fusion:${nextTier}`,type:'attackFusion',typeName:ATTACK_EXERCISE_SPEC[nextTier].label,name:attackExerciseFusionName(nextTier,sources),isFusion:true,attackTier:nextTier,retain:true,autoRetain:true,exhaustOnDiscard:false,fusionSourceCards:sources,fusionSourceInstanceIds:[...ids],hitOwners,ownerRosterId:null,ownerCid:null,ownerName:""};
  const beforeCost=phaseFoundation.costRemaining;
  cardFoundation.hand=cardFoundation.hand.filter(c=>!attackExercise.selected.includes(c.instanceId));
  for(const c of cards)if(cardIsFusion(c))delete cardFoundation.fusionSourceLedger[c.instanceId];
@@ -3369,13 +3373,13 @@ function defenseExerciseFuseSelected(){
  const sources=cards.flatMap(defenseCardSources),ids=sources.map(c=>c.instanceId);
  if(new Set(ids).size!==ids.length||ids.length!==tier+1){attackExercise.message='防御素材instanceId不整合｜合成中止';return attackExerciseRender()}
  const nextTier=tier+1,fusionId=`fusion548d_${Date.now().toString(36)}_${(++defenseFusionSeq).toString(36)}`;
- const fusion={instanceId:fusionId,templateId:`v548:defenseFusion:${nextTier}`,type:'defenseFusion',typeName:DEFENSE_EXERCISE_SPEC[nextTier].label,name:defenseExerciseFusionName(nextTier,sources),isFusion:true,defenseTier:nextTier,retain:true,autoRetain:true,exhaustOnDiscard:false,fusionSourceCards:sources,fusionSourceInstanceIds:[...ids],hitOwners:defenseCardOwners({isFusion:true,type:'defenseFusion',defenseTier:nextTier,fusionSourceCards:sources})};
+ const fusion={instanceId:fusionId,templateId:`v548:defenseFusion:${nextTier}`,type:'defenseFusion',typeName:DEFENSE_EXERCISE_SPEC[nextTier].label,name:defenseExerciseFusionName(nextTier,sources),isFusion:true,defenseTier:nextTier,retain:true,autoRetain:true,exhaustOnDiscard:false,fusionSourceCards:sources,fusionSourceInstanceIds:[...ids],hitOwners:defenseCardOwners({isFusion:true,type:'defenseFusion',defenseTier:nextTier,fusionSourceCards:sources}),ownerRosterId:null,ownerCid:null,ownerName:""};
  const beforeCost=phaseFoundation.costRemaining;cardFoundation.hand=cardFoundation.hand.filter(c=>!attackExercise.defenseSelected.includes(c.instanceId));for(const c of cards)if(cardIsFusion(c))delete cardFoundation.fusionSourceLedger[c.instanceId];cardFoundation.fusionSourceLedger[fusionId]=[...ids];cardFoundation.hand.push(fusion);attackExercise.defenseSelected=[fusionId];attackExercise.message=`${fusion.name}を合成｜COST0 ${beforeCost}/${phaseFoundation.costMax}｜自動《保持》`;attackExerciseLogPush(attackExercise.message);cardFoundation.message=attackExercise.message;cardDebugRender();return fusion;
 }
 function attackExerciseActorForSource(source){const snap=attackExercise.actors[source.ownerRosterId];if(snap)return snap;const base=formationRosterData.find(c=>c.id===source.ownerRosterId||Number(c.cid)===Number(source.ownerCid));const enh=base?getEnhancedStats(base.id,base):{atk:0};return{ownerRosterId:source.ownerRosterId,ownerCid:source.ownerCid,ownerName:source.ownerName,baseAtk:Math.max(0,Number(enh.atk)||0),referenceAtk:Math.max(0,Number(enh.atk)||0),sword:0,source:'フォールバック編成ATK'}}
 function attackExercisePlanUse(card,targetEnemyId){
  const tier=attackCardTier(card),spec=ATTACK_EXERCISE_SPEC[tier],enemy=attackExerciseEnemyById(targetEnemyId);if(ct533AllyBlocked(card)||!spec||!attackExerciseEnemyLockable(enemy))return null;
- const useSelected=cardBattleTestMode.active&&!!spec;const selected=useSelected?ct540SelectedActor():null;
+ const useSelected=!!spec&&ct555CommonCard(card);const selected=useSelected?ct540SelectedActor():null;
  if(useSelected&&(!selected||(!ct540GeneratedKind(card)&&ct540SelectedActorBroken())))return null;
  let chain=attackExercise.chain,hp=attackExerciseInt(enemy.hp),block=attackExerciseInt(enemy.block),overkill=attackExerciseInt(enemy.overkill);
  const burst={...attackExercise.burst},hits=[];
@@ -3661,33 +3665,31 @@ function ct552RewardReset(){ct552Reward=null;const el=document.getElementById('c
 function ct552OpenReward(){
  const mode=cardBattleTestMode;
  if(!mode.active||mode.floor>=100||mode.floor%5===0||ct552Reward||mode.resultType)return false;
- const alive=Object.values(attackExercise.actors).filter(a=>a&&a.alive&&a.hp>0&&cardFoundation.partyRosterIds.includes(a.ownerRosterId));
- if(!alive.length)return false;
  ct552Reward={floor:mode.floor,serial:mode.lockSerial,claimed:false};
- const el=document.getElementById('ct552Reward'),owner=document.getElementById('ct552RewardOwner');
- if(!el||!owner){ct552Reward=null;return false}
- owner.innerHTML=alive.map(a=>`<option value="${cardDebugEsc(a.ownerRosterId)}">${cardDebugEsc(a.ownerName)}</option>`).join('');
+ const el=document.getElementById('ct552Reward');if(!el){ct552Reward=null;return false}
  document.getElementById('ct552RewardTitle').textContent=`${mode.floor}F CLEAR｜カード報酬（DEBUG）`;
- document.getElementById('ct552RewardStatus').textContent='1枚選択で次の階層へ進みます';
+ document.getElementById('ct552RewardStatus').textContent='1枚獲得またはスキップで次の階層へ進みます';
  el.hidden=false;mode.busy=true;attackExerciseLogPush(`${mode.floor}F｜カード報酬選択待ち`);return true;
 }
-function ct552ClaimReward(type){
+function ct555FinishReward(type){
  const r=ct552Reward,mode=cardBattleTestMode;
- if(!r||r.claimed||!mode.active||mode.floor!==r.floor||mode.lockSerial!==r.serial||mode.resultType||!['attack','defense','strongAttack'].includes(type))return false;
- const rid=document.getElementById('ct552RewardOwner')?.value;
- const actor=attackExercise.actors[rid],owner=formationRosterData.find(a=>a.id===rid);
- if(!actor?.alive||actor.hp<=0||!owner||!cardFoundation.partyRosterIds.includes(rid))return false;
- r.claimed=true;
- const card=cardNewInstance(owner,type,1);
- cardFoundation.fusionSourceLedger[card.instanceId]=[card.instanceId];
- // Add to draw pile: remains in the run and is available from the next floor onward.
- cardFoundation.drawPile.push(card);cardShuffle(cardFoundation.drawPile);
- attackExerciseLogPush(`報酬獲得｜${mode.floor}F ${owner.name}｜${type==='attack'?'攻撃':type==='defense'?'防御':'強撃'}｜${card.instanceId}`);
+ if(!r||r.claimed||!mode.active||mode.floor!==r.floor||mode.lockSerial!==r.serial||mode.resultType)return false;
+ if(type!==null&&!['attack','defense','strongAttack'].includes(type))return false;
+ r.claimed=true; // Claim/skip are mutually exclusive even on double taps.
+ if(type!==null){
+  const card=cardNewInstance(null,type,1);
+  cardFoundation.fusionSourceLedger[card.instanceId]=[card.instanceId];
+  cardFoundation.drawPile.push(card);cardShuffle(cardFoundation.drawPile);
+  attackExerciseLogPush(`報酬獲得｜${mode.floor}F ${card.name}｜${card.instanceId}`);
+ }else attackExerciseLogPush(`報酬スキップ｜${mode.floor}F｜カード増加なし`);
  document.getElementById('ct552Reward').hidden=true;ct552Reward=null;
  mode.busy=false;
  const ok=cardBattleTestAdvanceFloor();
- if(!ok){mode.busy=true;attackExerciseLogPush('報酬後の階層遷移失敗｜重複獲得防止のため停止')}return ok;
+ if(!ok){mode.busy=true;attackExerciseLogPush('報酬後の階層遷移失敗｜二重進行防止のため停止')}
+ return ok;
 }
+function ct552ClaimReward(type){return ct555FinishReward(type)}
+function ct552SkipReward(){return ct555FinishReward(null)}
 function cardBattleTestMaybeClearFloor(){
  const mode=cardBattleTestMode;
  if(!mode.active||mode.resultType||mode.ct545SpiritProcessing||mode.ct553RelayActive||mode.clearedFloor>=mode.floor||!attackExercise.active)return false;
@@ -4051,7 +4053,13 @@ function ct550RelayValid(mode,serial){return cardBattleTestMode===mode&&mode.act
 function ct550Wait(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
 // VER.551: presentation-only relay portrait. It never changes actor formation or applies damage.
 const ct551Rush={active:null,sequence:0};
+let ct555HiddenPortraitRid=null;
+function ct555RestorePortrait(){
+ const rid=ct555HiddenPortraitRid;ct555HiddenPortraitRid=null;
+ if(rid!==null)document.querySelectorAll('#ctAllyArmy [data-ct-rid]').forEach(el=>{if(String(el.dataset.ctRid)===String(rid)){const art=el.querySelector('.ctArt');if(art)art.style.visibility=''}});
+}
 function ct551RushCancel(){
+ ct555RestorePortrait();
  ct551Rush.sequence++;
  const a=ct551Rush.active;ct551Rush.active=null;
  if(a){try{a.animation?.cancel()}catch(_){}a.element?.remove();a.finish?.(false)}
@@ -4088,7 +4096,7 @@ function ct551RushPortrait(actor,enemy,number,cap,mode,serial,onImpact){
  return new Promise(async resolve=>{
   let settled=false,ghost=null,label=null,animation=null;
   const seq=++ct551Rush.sequence;
-  const finish=ok=>{if(settled)return;settled=true;if(ct551Rush.active?.sequence===seq)ct551Rush.active=null;ghost?.remove();label?.remove();resolve(ok)};
+  const finish=ok=>{if(settled)return;settled=true;ct555RestorePortrait();if(ct551Rush.active?.sequence===seq)ct551Rush.active=null;ghost?.remove();label?.remove();resolve(ok)};
   const valid=()=>ct550RelayValid(mode,serial)&&ct551Rush.sequence===seq;
   if(!valid()){finish(false);return}
   const board=document.getElementById('ctBoard');
@@ -4102,6 +4110,8 @@ function ct551RushPortrait(actor,enemy,number,cap,mode,serial,onImpact){
    ghost.style.cssText=`left:${r.left-b.left}px;top:${r.top-b.top}px;width:${r.width}px;height:${r.height}px`;
    label=document.createElement('div');label.className='ct551RushLabel';label.textContent=`連携 ${number}/${cap}｜${actor.ownerName}`;
    board.append(ghost,label);
+   ct555HiddenPortraitRid=actor.ownerRosterId;
+   const art=source.querySelector('.ctArt');if(art)art.style.visibility='hidden';
   }
   ct551Rush.active={sequence:seq,element:ghost,animation:null,finish};
   const motion=async(frames,duration)=>{
@@ -4325,7 +4335,8 @@ function cardBattleTestActorHtml(a){
  // Adopted PNG URLs and their original dimensions/alpha remain unchanged.
  // VER.519: no fallback emoji behind transparent formal sprites or while they load.
  // Missing/broken sprite leaves the art empty for investigation; roster icon metadata is untouched.
- const art=src?`<span class="ctArt"><img src="${cardDebugEsc(src)}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt"></span>`;
+ const concealed=ct555HiddenPortraitRid!==null&&String(ct555HiddenPortraitRid)===String(a.ownerRosterId);
+ const art=src?`<span class="ctArt" ${concealed?'style="visibility:hidden"':''}><img src="${cardDebugEsc(src)}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt"></span>`;
  const sword=(Number(a.sword)||0)>0?`<span class="ctRealBuff" aria-label="剣 ${attackExerciseFmt(a.sword)}">🗡️${attackExerciseFmt(a.sword)}</span>`:'';
  return `<button class="ctUnit ctSharedFrame ctSlot${slot} ${target?'target':''} ${!a.alive?'dead':''}" data-ct-rid="${cardDebugEsc(a.ownerRosterId)}" type="button" onclick="cardBattleTestSelectAlly('${cardDebugEsc(a.ownerRosterId)}')" ${!a.alive?'disabled':''} aria-label="${cardDebugEsc(a.ownerName)} HP ${attackExerciseFmt(a.hp)} / ${attackExerciseFmt(a.maxHp)} BLOCK ${attackExerciseFmt(a.block)}">${art}${cardBattleTestUnitOverlay(a.ownerName,a.hp,a.maxHp,a.block,sword,a)}${ct548ShieldHtml(a)}</button>`;
 }
@@ -4373,7 +4384,7 @@ function cardBattleTestCardHtml(c){
  else if(atk)type=ATTACK_EXERCISE_SPEC[atk].label;
  else if(def)type=DEFENSE_EXERCISE_SPEC[def].label;
  const effect=cardBattleTestCardPreview(c).map(line=>`<span class="ctEffectLine">${cardDebugEsc(line)}</span>`).join('');
- const cls=c?.type==='strongAttack'?'attackCard ct554StrongCard':atk?'attackCard':def?'defenseCard':'spCard',breakDisabled=!ct540GeneratedKind(c)&&(ct533AllyBlocked(c)||(atk&&ct540SelectedActorBroken()));return `<button class="ctCard ${cls} ${breakDisabled?'ct533BreakDisabled':''} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div>${fusion||ct540GeneratedKind(c)?'':`<div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div>`}<div class="ctCardEffect">${effect}</div><div class="ctCardTags">${c?.type==='strongAttack'?'<span class="ctTag">COST2・強撃</span>':ct545IsSpiritCard(c)?'<span class="ctTag retain">DEBUG試験・COST未確定</span>':ct540GeneratedKind(c)?'<span class="ctTag retain">COST0・使い切り</span>':fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
+ const cls=c?.type==='strongAttack'?'attackCard ct554StrongCard':atk?'attackCard':def?'defenseCard':'spCard',breakDisabled=!ct540GeneratedKind(c)&&(ct533AllyBlocked(c)||(atk&&ct540SelectedActorBroken()));return `<button class="ctCard ${cls} ${breakDisabled?'ct533BreakDisabled':''} ${selected?'selected':''} ${overflow?'overflowChoice':''}" data-ct-card-id="${cardDebugEsc(c.instanceId)}" type="button" onclick="cardBattleTestCardTap('${cardDebugEsc(c.instanceId)}')">${order?`<span class="ctCardOrder">${order}</span>`:''}<div class="ctCardType">${cardDebugEsc(type)}</div>${fusion||ct540GeneratedKind(c)||ct555CommonCard(c)?'':`<div class="ctCardOwner">${cardDebugEsc(owners||c.ownerName||'')}</div>`}<div class="ctCardEffect">${effect}</div><div class="ctCardTags">${c?.type==='strongAttack'?'<span class="ctTag">COST2・強撃</span>':ct545IsSpiritCard(c)?'<span class="ctTag retain">DEBUG試験・COST未確定</span>':ct540GeneratedKind(c)?'<span class="ctTag retain">COST0・使い切り</span>':fusion||c.retain?'<span class="ctTag retain">《保持》</span>':''}${fusion?`<span class="ctTag">合成${cardBaseSources(c).length}</span>`:''}${overflow?'<span class="ctTag retain">破棄候補</span>':''}</div></button>`
 }
 function cardBattleTestHandLogSet(message){
  const button=document.querySelector('#ctHudLatestLog'),text=document.querySelector('#ctHandLogText');
@@ -4441,6 +4452,7 @@ function ct533Recovery(side){
 }
 function ct533AllyBlocked(card){
  if(!cardBattleTestMode.active||!attackCardTier(card)||ct540GeneratedKind(card))return false;
+ if(ct555CommonCard(card))return ct540SelectedActorBroken();
  return attackCardSources(card).some(src=>{const a=attackExercise.actors[src.ownerRosterId],b=a?.ct533Break;return !!(b?.broken&&b.blockAllyPhase===phaseFoundation.allyPhaseCount)});
 }
 function ct533EndAllyPhase(){
