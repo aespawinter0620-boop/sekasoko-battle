@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.552</title>
+<title>セカソコ ver.553</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.552";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.553";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2489,13 +2489,19 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </style>
 <style id="ver551-relay-rush">
 /* VER.551 trial values: 490ms, 1.07x, 34% board maximum forward travel. */
+
+/* VER.553 DEBUG relay hit flash; non-interactive presentation only. */
+#cardBattleTestScreen .ct553HitFx{position:absolute;z-index:98;pointer-events:none!important;touch-action:none;width:72px;height:78px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 10px #c9f8ff);}
+#cardBattleTestScreen .ct553HitFx::before,#cardBattleTestScreen .ct553HitFx::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:75px;border-radius:90% 12% 90% 12%;background:linear-gradient(90deg,#fff,#8ce7ff 65%,transparent);box-shadow:0 0 14px #a6ecff;transform:translate(-50%,-50%) rotate(45deg)}
+#cardBattleTestScreen .ct553HitFx::after{height:58px;width:5px;opacity:.8;transform:translate(-50%,-50%) rotate(-45deg)}
+
 #cardBattleTestScreen .ct551RushGhost{position:absolute;z-index:95;pointer-events:none!important;touch-action:none;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 0 8px #aeeeffa8);will-change:transform;user-select:none;-webkit-user-select:none}
 #cardBattleTestScreen .ct551RushLabel{position:absolute;top:7%;left:50%;transform:translateX(-50%);z-index:96;pointer-events:none!important;background:#112c45e8;border:1px solid #95d9ff;color:#f1fbff;border-radius:7px;padding:4px 9px;font-size:12px;font-weight:800;white-space:nowrap;box-shadow:0 2px 9px #000a}
 </style>
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.552</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.553</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2700,7 +2706,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct542SpiritActions button:disabled{opacity:.35}
 #cardBattleTestScreen #ct542SpiritTrialStatus{margin:7px 0 0;color:#bfe6e8;font-size:10px;line-height:1.4}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.552 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.553 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3679,7 +3685,7 @@ function ct552ClaimReward(type){
 }
 function cardBattleTestMaybeClearFloor(){
  const mode=cardBattleTestMode;
- if(!mode.active||mode.resultType||mode.ct545SpiritProcessing||mode.clearedFloor>=mode.floor||!attackExercise.active)return false;
+ if(!mode.active||mode.resultType||mode.ct545SpiritProcessing||mode.ct553RelayActive||mode.clearedFloor>=mode.floor||!attackExercise.active)return false;
  if(!attackExercise.enemies.length||attackExercise.enemies.some(e=>e.hp>0||!e.graphicGone||(e.ctPendingAnimations||0)>0))return false;
  // Called only after cardBattleTestAnimateEnemy's final scheduled animation has ended.
  mode.clearedFloor=mode.floor;mode.busy=true;
@@ -3981,14 +3987,14 @@ function cardBattleTestStart(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
- ct552RewardReset();ct551RushCancel();ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
+ ct552RewardReset();ct551RushCancel();document.querySelectorAll('.ct553HitFx').forEach(el=>el.remove());ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
  attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
  ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');ct546BgmStart();cardBattleTestRender();return true
 }
 function cardBattleTestExit(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){ct546BgmStop();showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
- ct552RewardReset();ct551RushCancel();cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
+ ct552RewardReset();ct551RushCancel();document.querySelectorAll('.ct553HitFx').forEach(el=>el.remove());cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
  cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');ct546BgmStop();return true
 }
 function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
@@ -4046,37 +4052,76 @@ function ct551RushCancel(){
  if(a){try{a.animation?.cancel()}catch(_){}a.element?.remove();a.finish?.(false)}
  document.querySelectorAll('.ct551RushGhost,.ct551RushLabel').forEach(el=>el.remove());
 }
-function ct551RushPortrait(actor,enemy,number,cap,mode,serial){
- return new Promise(resolve=>{
-  let settled=false,animation=null,ghost=null,label=null;
+// VER.553: DEBUG-only synthesis, original oscillator waveform, no external samples.
+let ct553AudioContext=null;
+function ct553PrimeAudio(){
+ try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  if(!ct553AudioContext)ct553AudioContext=new AC();
+  if(ct553AudioContext.state==='suspended')ct553AudioContext.resume().catch(()=>{});
+ }catch(_){/* Audio must never stop battle. */}
+}
+function ct553PlayDebugHit(){
+ try{const c=ct553AudioContext;if(!c||c.state!=='running')return;
+  const t=c.currentTime,o=c.createOscillator(),g=c.createGain();
+  o.type='triangle';o.frequency.setValueAtTime(950,t);o.frequency.exponentialRampToValueAtTime(180,t+.085);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.055,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+.105);
+  o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.11);
+ }catch(_){/* DEBUG SE failure must not affect combat. */}
+}
+function ct553HitFlash(enemy){
+ const board=document.getElementById('ctBoard');
+ const cell=[...document.querySelectorAll('#ctEnemyGrid [data-ct-enemy-id]')].find(e=>e.dataset.ctEnemyId===String(enemy.instanceId));
+ if(!board||!cell)return;
+ const b=board.getBoundingClientRect(),r=cell.getBoundingClientRect(),fx=document.createElement('div');
+ fx.className='ct553HitFx';fx.setAttribute('aria-hidden','true');
+ fx.style.left=(r.left-b.left+r.width*.3)+'px';fx.style.top=(r.top-b.top+r.height*.45)+'px';board.appendChild(fx);
+ try{const a=fx.animate([{opacity:0,transform:'translate(-50%,-50%) scale(.55)'},{opacity:1,transform:'translate(-50%,-50%) scale(1.15)',offset:.35},{opacity:0,transform:'translate(-50%,-50%) scale(1.4)'}],{duration:235,easing:'ease-out'});a.finished.then(()=>fx.remove(),()=>fx.remove())}catch(_){fx.remove()}
+}
+// One outgoing motion, one impact callback, one returning motion. A missing portrait
+// falls back to impact only; combat never depends on Web Animations support.
+function ct551RushPortrait(actor,enemy,number,cap,mode,serial,onImpact){
+ return new Promise(async resolve=>{
+  let settled=false,ghost=null,label=null,animation=null;
   const seq=++ct551Rush.sequence;
   const finish=ok=>{if(settled)return;settled=true;if(ct551Rush.active?.sequence===seq)ct551Rush.active=null;ghost?.remove();label?.remove();resolve(ok)};
+  const valid=()=>ct550RelayValid(mode,serial)&&ct551Rush.sequence===seq;
+  if(!valid()){finish(false);return}
   const board=document.getElementById('ctBoard');
   const source=[...document.querySelectorAll('#ctAllyArmy [data-ct-rid]')].find(el=>el.dataset.ctRid===String(actor.ownerRosterId));
   const target=[...document.querySelectorAll('#ctEnemyGrid [data-ct-enemy-id]')].find(el=>el.dataset.ctEnemyId===String(enemy.instanceId));
   const img=source?.querySelector('.ctArt img');
-  if(!board||!source||!target||!img?.getAttribute('src')||!ct550RelayValid(mode,serial)){finish(false);return}
-  const b=board.getBoundingClientRect(),r=img.getBoundingClientRect(),t=target.getBoundingClientRect();
-  if(!r.width||!r.height){finish(false);return}
-  ghost=document.createElement('img');ghost.className='ct551RushGhost';ghost.src=img.currentSrc||img.src;ghost.alt='';ghost.draggable=false;
-  ghost.style.cssText=`left:${r.left-b.left}px;top:${r.top-b.top}px;width:${r.width}px;height:${r.height}px`;
-  label=document.createElement('div');label.className='ct551RushLabel';label.textContent=`連携 ${number}/${cap}｜${actor.ownerName}`;
-  board.append(ghost,label);
+  const b=board?.getBoundingClientRect(),r=img?.getBoundingClientRect(),t=target?.getBoundingClientRect();
+  const visual=!!(board&&img?.getAttribute('src')&&r?.width&&r?.height&&t?.width);
+  if(visual){
+   ghost=document.createElement('img');ghost.className='ct551RushGhost';ghost.src=img.currentSrc||img.src;ghost.alt='';ghost.draggable=false;
+   ghost.style.cssText=`left:${r.left-b.left}px;top:${r.top-b.top}px;width:${r.width}px;height:${r.height}px`;
+   label=document.createElement('div');label.className='ct551RushLabel';label.textContent=`連携 ${number}/${cap}｜${actor.ownerName}`;
+   board.append(ghost,label);
+  }
   ct551Rush.active={sequence:seq,element:ghost,animation:null,finish};
-  const dx=Math.max(12,Math.min(b.width*.34,(t.left-r.right)*.76));
-  const dy=(t.top+t.height*.45)-(r.top+r.height*.45);
-  const frames=[{transform:'translate(0,0) scale(1)',opacity:1,offset:0},{transform:`translate(${dx}px,${dy*.75}px) scale(1.07)`,opacity:1,offset:.47},{transform:`translate(${dx}px,${dy*.75}px) scale(1.07)`,opacity:1,offset:.61},{transform:'translate(0,0) scale(1)',opacity:1,offset:1}];
+  const motion=async(frames,duration)=>{
+   if(!ghost?.animate)return true;
+   try{animation=ghost.animate(frames,{duration,easing:'ease-in-out',fill:'forwards'});ct551Rush.active.animation=animation;await animation.finished;return valid()}catch(_){return false}
+  };
+  const dx=visual?Math.max(12,Math.min(b.width*.34,(t.left-r.right)*.76)):0;
+  const dy=visual?(t.top+t.height*.45)-(r.top+r.height*.45):0;
+  const outward=`translate(${dx}px,${dy*.75}px) scale(1.07)`;
   try{
-   animation=ghost.animate(frames,{duration:490,easing:'ease-in-out',fill:'forwards'});
-   ct551Rush.active.animation=animation;
-   animation.finished.then(()=>finish(ct550RelayValid(mode,serial)),()=>finish(false));
-  }catch(_){finish(false)}
+   if(visual&&!(await motion([{transform:'translate(0,0) scale(1)'},{transform:outward}],225))){finish(false);return}
+   if(!valid()){finish(false);return}
+   // This is the sole impact callback. Damage, flash, sound and number start here.
+   await onImpact();
+   if(!valid()){finish(false);return}
+   if(visual&&!(await motion([{transform:outward},{transform:'translate(0,0) scale(1)'}],265))){finish(false);return}
+   finish(valid());
+  }catch(e){finish(false);attackExerciseLogPush(`VER.553 演出異常｜${String(e?.message||e)}`)}
  });
 }
 
 async function ct549RelayAfterAttack(commanderRid,mode,serial){
  const candidates=Object.values(attackExercise.actors).filter(a=>a.alive&&a.hp>0&&String(a.ownerRosterId)!==String(commanderRid)).sort((a,b)=>a.formationSlot-b.formationSlot);
  let count=0,reason='対象不在';
+ mode.ct553RelayActive=true;
  try{
   if(!ct550RelayValid(mode,serial)){reason='戦闘終了／階層変更';return false}
   if(!candidates.length||!attackExercise.enemies.some(e=>e.hp>0)){reason='対象不在';return true}
@@ -4088,21 +4133,26 @@ async function ct549RelayAfterAttack(commanderRid,mode,serial){
    if(!ct549Relay.force&&Math.random()*100>=ct549Relay.rate){reason='発動判定不成立';break}
    const enemy=attackExerciseLockedEnemy()||attackExerciseLockCandidates()[0];if(!enemy){reason='TARGET不在';break}
    count++;attackExerciseLogPush(`VER.550 DEBUG連携 ${count}/${ct549Relay.cap}｜${actor.ownerName}`);
-   // One rush per relay, sequenced before damage. Missing art falls back to existing damage UI.
-   await ct551RushPortrait(actor,enemy,count,ct549Relay.cap,mode,serial);
-   if(!ct550RelayValid(mode,serial)){reason='戦闘終了／階層変更';break}
-   if(!actor.alive||actor.hp<=0){reason='連携者死亡';break}
-   const currentEnemy=attackExerciseEnemyById(enemy.instanceId);
-   if(!currentEnemy||currentEnemy.hp<=0){reason='対象不在';break}
-   const hit=ct550RelayHit(actor,currentEnemy,ct550RelayRate);if(!hit){reason='対象不在';break}
-   enemy.ctPendingAnimations=(enemy.ctPendingAnimations||0)+1;
-   cardBattleTestRecordOverkill([hit],enemy);
-   cardBattleTestAnimateEnemy([hit],{mode,serial,enemy});
-   await ct550Wait(700);
+   // VER.553: outbound -> ONE hit + number + DEBUG SE -> death animation -> return.
+   // Existing hit/death logic remains authoritative; no additional damage application.
+   let impactDone=false;
+   await ct551RushPortrait(actor,enemy,count,ct549Relay.cap,mode,serial,async()=>{
+    if(!ct550RelayValid(mode,serial)||!actor.alive||actor.hp<=0)return;
+    const currentEnemy=attackExerciseEnemyById(enemy.instanceId);
+    if(!currentEnemy||currentEnemy.hp<=0)return;
+    const hit=ct550RelayHit(actor,currentEnemy,ct550RelayRate);if(!hit)return;
+    impactDone=true;
+    currentEnemy.ctPendingAnimations=(currentEnemy.ctPendingAnimations||0)+1;
+    cardBattleTestRecordOverkill([hit],currentEnemy);
+    ct553HitFlash(currentEnemy);ct553PlayDebugHit();
+    await new Promise(resolve=>cardBattleTestAnimateEnemy([hit],{mode,serial,enemy:currentEnemy,onComplete:resolve}));
+   });
+   if(!impactDone){reason='連携中断／TARGET不在';break}
    if(!ct550RelayValid(mode,serial)){reason='戦闘終了／階層変更';break}
    if(!attackExercise.enemies.some(e=>e.hp>0)){reason='敵全滅';break}
   }
  }finally{
+  mode.ct553RelayActive=false;
   ct549Relay.last={commanderRid,count,reason};attackExerciseLogPush(`VER.550 DEBUG連携終了｜${count}回｜${reason}`);ct549RelayStatus();
  }
  return true;
@@ -4111,7 +4161,7 @@ let ct550RelayRate=.20;
 function ct549RelayUiInit(){
  const panel=document.querySelector('#ctDebugStatus');if(!panel||document.querySelector('#ct549RelayControls'))return;
  const div=document.createElement('div');div.id='ct549RelayControls';div.style.cssText='margin:9px 0;padding:8px;border:1px solid #5b8da8;border-radius:8px;font-size:11px';
- div.innerHTML='<strong>VER.551 DEBUG模擬連携（突進演出）</strong><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px"><label>威力% <input id="ct550Power" type="number" min="0" max="500" value="20" style="width:48px"> 上限 <select id="ct549Cap"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><label>発動率 <input id="ct549Rate" type="number" min="0" max="100" value="100" style="width:48px"></label><label><input id="ct549Force" type="checkbox" checked> 強制発動</label></div><p id="ct549RelayStatus" aria-live="polite"></p>';
+ div.innerHTML='<strong>VER.553 DEBUG模擬連携（命中同期）</strong><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px"><label>威力% <input id="ct550Power" type="number" min="0" max="500" value="20" style="width:48px"> 上限 <select id="ct549Cap"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><label>発動率 <input id="ct549Rate" type="number" min="0" max="100" value="100" style="width:48px"></label><label><input id="ct549Force" type="checkbox" checked> 強制発動</label></div><p id="ct549RelayStatus" aria-live="polite"></p>';
  panel.before(div);
  div.querySelector('#ct550Power').addEventListener('change',e=>{ct550RelayRate=Math.max(0,Math.min(5,(Number(e.target.value)||0)/100))});
  div.querySelector('#ct549Cap').addEventListener('change',e=>ct549RelayConfigure('cap',e.target.value));
@@ -4122,6 +4172,7 @@ function ct549RelayUiInit(){
 
 function cardBattleTestAttack(){
  if(!cardBattleTestCanInput())return false;
+ ct553PrimeAudio();
  if(attackExercise.selected.length===1){const c=cardFoundation.hand.find(v=>v.instanceId===attackExercise.selected[0]);if(ct540GeneratedKind(c)==='swift')return ct547UseGenerated(c.instanceId)}
  const commander=ct540SelectedActor(),commanderRid=commander?.ownerRosterId;
  const ok=attackExerciseUseSelected();cardBattleTestMode.message=attackExercise.message;
@@ -4138,6 +4189,8 @@ function cardBattleTestAttack(){
    if(!ct550RelayValid(mode,serial)||mode.lockSerial!==token)return;
    if(attackExercise.enemies.some(e=>e.hp>0)&&commanderRid!=null)await ct549RelayAfterAttack(commanderRid,mode,serial);
    if(!ct550RelayValid(mode,serial)||mode.lockSerial!==token)return;
+   // Clear-floor / VER.552 reward may open only after the complete relay and return.
+   if(cardBattleTestMaybeClearFloor())return;
    mode.busy=false;cardBattleTestRender();
   })().catch(e=>{attackExerciseLogPush(`VER.550 連携異常終了｜${String(e?.message||e)}`);if(cardBattleTestMode===mode&&mode.floorSerial===serial){mode.busy=false;cardBattleTestRender()}});
  }else cardBattleTestRender();return !!ok
@@ -4225,7 +4278,7 @@ function cardBattleTestAnimateEnemy(hits,animation=null){
  },i*step));
  // Preserve the death image until every remaining Hit popup has finished.
  setTimeout(()=>{
-  if(!mode.active||cardBattleTestMode!==mode||mode.floorSerial!==serial||!attackExercise.enemies.includes(enemy))return;
+  if(!mode.active||cardBattleTestMode!==mode||mode.floorSerial!==serial||!attackExercise.enemies.includes(enemy)){animation?.onComplete?.();return}
   // An earlier batch may finish after a later attack has already made this enemy fatal.
   // Only the final scheduled batch may complete death and allow floor progression.
   if(animation&&animation.mode===mode&&animation.serial===serial&&animation.enemy===enemy){
@@ -4233,6 +4286,7 @@ function cardBattleTestAnimateEnemy(hits,animation=null){
   }
   if(enemy.hp<=0){if(!(enemy.ctPendingAnimations>0))attackExerciseCompleteTargetDeath(targetId)}
   else cardBattleTestRender();
+  animation?.onComplete?.();
  },(hits.length-1)*step+670)
 }
 function cardBattleTestAnimateAlly(rid,label){if(!cardBattleTestMode.active)return;const el=document.querySelector(`[data-ct-rid="${rid}"]`);if(el){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),420)}cardBattleTestSetMessage(label||cardBattleTestMode.message)}
