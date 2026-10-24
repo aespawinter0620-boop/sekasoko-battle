@@ -1690,7 +1690,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ctBroken .ctBreakLabel{color:#ff9999;font-weight:900}
 #cardBattleTestScreen .ct533BreakDisabled{opacity:.55}
 
-/* VER.548: five compact independent shield chips; no card-art/HP/BREAK displacement. */
+/* VER.549: five compact independent shield chips; no card-art/HP/BREAK displacement. */
 #cardBattleTestScreen .ct548ShieldRow{position:absolute;left:1px;right:1px;bottom:43px;z-index:15;display:flex;justify-content:flex-start;gap:1px;pointer-events:none;white-space:nowrap}
 #cardBattleTestScreen .ct548Chip{display:flex;flex:1 1 0;min-width:0;max-width:32px;flex-direction:column;align-items:center;justify-content:center;border:1px solid #a5d9f4;border-radius:3px;background:#112c42df;color:#f0fbff;font-size:7px;line-height:1.0;pointer-events:auto;touch-action:manipulation;cursor:pointer;text-shadow:0 1px 2px #000}
 #cardBattleTestScreen .ct548Chip b{font-size:8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
@@ -2687,7 +2687,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct542SpiritActions button:disabled{opacity:.35}
 #cardBattleTestScreen #ct542SpiritTrialStatus{margin:7px 0 0;color:#bfe6e8;font-size:10px;line-height:1.4}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.548 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.549 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2978,7 +2978,7 @@ function ct540Generate(kind,origin){
  if(cardFoundation.hand.length>CARD_HAND_LIMIT)cardFoundation.overflowPending=true;
  attackExerciseLogPush(`${c.name}生成｜手札へ直接追加・COST0`);return c;
 }
-// VER.548: transient generated cards have no base-source ownership and never enter the deck.
+// VER.549: transient generated cards have no base-source ownership and never enter the deck.
 let ct547GeneratedSeq=0;
 function ct547MakeGenerated(kind,origin,units=1){
  const swift=kind==='swift',id=`ct547_${kind}_${Date.now().toString(36)}_${(++ct547GeneratedSeq).toString(36)}`;
@@ -3388,7 +3388,7 @@ function ct535ExpireInvincible(nextAllyPhase){
  for(const actor of Object.values(attackExercise.actors))if(actor?.ct535InvincibleUntilPhase&&actor.ct535InvincibleUntilPhase<=nextAllyPhase)actor.ct535InvincibleUntilPhase=0;
 }
 
-// VER.548: five independent shields per ally. No legacy BLOCK or guardian spirit mutation.
+// VER.549: five independent shields per ally. No legacy BLOCK or guardian spirit mutation.
 const CT548_MAX_SHIELDS=5,CT548_SHIELD_TURNS=10;
 let ct548ShieldSeq=0,ct548Shields=[];
 function ct548ResetShields(){ct548Shields=[];ct548ShieldSeq=0}
@@ -3792,7 +3792,7 @@ async function ct545RunSpiritPhaseEffects(spirits,phaseCount,mode,serial){
    }
   }
   ct542SpiritTrial.lastStatus='自フェーズ'+phaseCount+'｜精霊効果→滞在T減算 完了';ct542SpiritRender();
-  // Creator-approved VER.548 order: DEBUG spirits, then shields, then swift expiration.
+  // Creator-approved VER.549 order: DEBUG spirits, then shields, then swift expiration.
   await ct548RunShieldPhaseEffects(phaseCount,mode,serial);
  }finally{
   if(mode.active&&cardBattleTestMode===mode&&mode.floorSerial===serial)ct547ExpireSwift(phaseCount);
@@ -3861,7 +3861,7 @@ function ct542SpiritRender(){
  if(ret)ret.disabled=!enabled||!active.length;
 }
 // =========================================================
-// VER.548 — isolated BGM transport. Adopted v26-B WAV is external and unchanged.
+// VER.549 — isolated BGM transport. Adopted v26-B WAV is external and unchanged.
 // Volume=1 is a browser-original trial setting, NOT an adopted game balance value.
 // No SE, UI, storage or legacy SPD/ACTION battle integration in this version.
 // =========================================================
@@ -3933,7 +3933,7 @@ function cardBattleTestStart(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
- ct542ResetSpiritTrial();ct548ResetShields();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
+ ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
  attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
  ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');ct546BgmStart();cardBattleTestRender();return true
@@ -3941,7 +3941,7 @@ function cardBattleTestStart(){
 function cardBattleTestExit(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){ct546BgmStop();showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
  cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
- cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();ct548ResetShields();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');ct546BgmStop();return true
+ cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');ct546BgmStop();return true
 }
 function cardBattleTestSelectAlly(rid){if(!cardBattleTestMode.active||cardBattleTestMode.busy||cardBattleTestMode.dragging)return false;const ok=defenseExerciseTarget(rid);if(ok)cardBattleTestMode.message=`防御対象：${attackExercise.actors[rid]?.ownerName||rid}`;cardBattleTestRender();return !!ok}
 function cardBattleTestCardTap(id){
@@ -3961,6 +3961,51 @@ function cardBattleTestFuse(){
  else{attackExercise.message='同種カードを2枚、順番に選択してください';cardBattleTestMode.message=attackExercise.message;attackExerciseRender();return false}
  cardBattleTestMode.message=attackExercise.message;if(result)cardBattleTestLock();return result
 }
+// VER.549: DEBUG-only, non-damaging relay chain. NOT adopted combat balance.
+// Selection policy: deterministic roster order, repeat allowed after cycling;
+// temporary test policy only, pending creator specification.
+const ct549Relay={rate:100,force:true,cap:3,seq:0,last:null};
+function ct549RelayReset(){ct549Relay.seq++;ct549Relay.last=null}
+function ct549RelayConfigure(key,value){
+ if(key==='rate')ct549Relay.rate=Math.max(0,Math.min(100,Number(value)||0));
+ if(key==='cap')ct549Relay.cap=Math.max(1,Math.min(5,Math.floor(Number(value)||1)));
+ if(key==='force')ct549Relay.force=!!value;
+ ct549RelayStatus();return true;
+}
+function ct549RelayStatus(){
+ const e=document.querySelector('#ct549RelayStatus');if(e)e.textContent=`試験連携：${ct549Relay.force?'強制':'確率'} ${ct549Relay.rate}%／上限${ct549Relay.cap}｜${ct549Relay.last?.reason||'待機'}`;
+}
+function ct549RelayAfterAttack(commanderRid,mode,serial){
+ // This simulation intentionally applies no HP/BLOCK/BREAK/CHAIN/COST changes.
+ if(!mode?.active||mode.resultType||mode.floorSerial!==serial)return false;
+ const enemy=attackExercise.enemies.some(e=>e.alive&&e.hp>0);
+ const all=Object.values(attackExercise.actors).filter(a=>a.alive&&a.hp>0&&String(a.ownerRosterId)!==String(commanderRid)).sort((a,b)=>a.formationSlot-b.formationSlot);
+ let count=0,reason='対象不在';
+ if(enemy&&all.length){
+  reason='上限到達';
+  for(let n=0;n<ct549Relay.cap;n++){
+   if(cardBattleTestMode!==mode||!mode.active||mode.resultType||mode.floorSerial!==serial){reason='戦闘終了／階層変更';break}
+   if(!attackExercise.enemies.some(e=>e.alive&&e.hp>0)){reason='対象死亡';break}
+   const actor=all[n%all.length];if(!actor?.alive||actor.hp<=0){reason='連携者不在';break}
+   if(!ct549Relay.force&&Math.random()*100>=ct549Relay.rate){reason='発動判定不成立';break}
+   count++;attackExerciseLogPush(`VER.549 DEBUG連携 ${count}/${ct549Relay.cap}｜${actor.ownerName}｜演出のみ・ダメージなし`);
+  }
+ }
+ ct549Relay.last={commanderRid,count,reason};
+ attackExerciseLogPush(`VER.549 DEBUG連携終了｜${count}回｜${reason}`);
+ ct549RelayStatus();return true;
+}
+function ct549RelayUiInit(){
+ const panel=document.querySelector('#ctDebugStatus');if(!panel||document.querySelector('#ct549RelayControls'))return;
+ const div=document.createElement('div');div.id='ct549RelayControls';div.style.cssText='margin:9px 0;padding:8px;border:1px solid #5b8da8;border-radius:8px;font-size:11px';
+ div.innerHTML='<strong>VER.549 連携試験（ダメージなし）</strong><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px"><label>上限 <select id="ct549Cap"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><label>発動率 <input id="ct549Rate" type="number" min="0" max="100" value="100" style="width:48px"></label><label><input id="ct549Force" type="checkbox" checked> 強制発動</label></div><p id="ct549RelayStatus" aria-live="polite"></p>';
+ panel.before(div);
+ div.querySelector('#ct549Cap').addEventListener('change',e=>ct549RelayConfigure('cap',e.target.value));
+ div.querySelector('#ct549Rate').addEventListener('change',e=>ct549RelayConfigure('rate',e.target.value));
+ div.querySelector('#ct549Force').addEventListener('change',e=>ct549RelayConfigure('force',e.target.checked));
+ ct549RelayStatus();
+}
+
 function cardBattleTestAttack(){
  if(!cardBattleTestCanInput())return false;
  if(attackExercise.selected.length===1){const c=cardFoundation.hand.find(v=>v.instanceId===attackExercise.selected[0]);if(ct540GeneratedKind(c)==='swift')return ct547UseGenerated(c.instanceId)}
@@ -3971,6 +4016,7 @@ function cardBattleTestAttack(){
   // Register at attack acceptance (not 10ms later) so older death callbacks wait.
   const animation={mode,serial,enemy};if(enemy)enemy.ctPendingAnimations=(enemy.ctPendingAnimations||0)+1;
   cardBattleTestRecordOverkill(hits,enemy);
+  ct549RelayAfterAttack(attackExercise.defenseTargetRosterId,mode,serial);
   cardBattleTestLock(Math.max(260,10+Math.max(0,hits.length-1)*180+730));
   setTimeout(()=>{
    if(cardBattleTestMode!==mode||!mode.active||mode.floorSerial!==serial)return;
@@ -4179,7 +4225,7 @@ function cardBattleTestLogClose(){const overlay=document.querySelector('#ctLogOv
 function cardBattleTestDebugOpen(){
  if(!cardBattleTestMode.active)return false;
  const el=document.querySelector('#ctDebugOverlay');if(!el)return false;
- ctGestureReset(true);el.hidden=false;cardBattleTestRender();document.querySelector('#ctDebugClose')?.focus({preventScroll:true});return true;
+ ctGestureReset(true);el.hidden=false;ct549RelayUiInit();cardBattleTestRender();document.querySelector('#ctDebugClose')?.focus({preventScroll:true});return true;
 }
 function cardBattleTestDebugClose(){const el=document.querySelector('#ctDebugOverlay');if(el)el.hidden=true;}
 
