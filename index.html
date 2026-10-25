@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.561</title>
+<title>セカソコ ver.562</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.561";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.562";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2513,10 +2513,24 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct551RushGhost{position:absolute;z-index:95;pointer-events:none!important;touch-action:none;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 0 8px #aeeeffa8);will-change:transform;user-select:none;-webkit-user-select:none}
 #cardBattleTestScreen .ct551RushLabel{position:absolute;top:7%;left:50%;transform:translateX(-50%);z-index:96;pointer-events:none!important;background:#112c45e8;border:1px solid #95d9ff;color:#f1fbff;border-radius:7px;padding:4px 9px;font-size:12px;font-weight:800;white-space:nowrap;box-shadow:0 2px 9px #000a}
 </style>
+<style id="ver562-chain-popup-layout">
+/* VER.562: only the new-card Hit popup typography. Existing anchor/animation/OK stays. */
+#cardBattleTestScreen .ctDamagePop.ct539Hit{max-width:calc(100% - 12px);width:max-content;min-width:0;white-space:nowrap;gap:2px;}
+#cardBattleTestScreen .ctDamagePop.ct539Hit .ct539Chain,
+#cardBattleTestScreen .ctDamagePop.ct539Hit .ct539Number,
+#cardBattleTestScreen .ctDamagePop.ct539Hit .ct539Detail,
+#cardBattleTestScreen .ctDamagePop.ct539Hit.longNumber .ct539Number,
+#cardBattleTestScreen .ctDamagePop.ct539Hit.veryLongNumber .ct539Number,
+#cardBattleTestScreen .ctDamagePop.ct539Hit.blockHit .ct539Number{
+ font-size:clamp(10px,3.2vw,14px);line-height:1.2;letter-spacing:-.02em;
+ max-width:100%;font-weight:800;-webkit-text-stroke:0;text-shadow:0 1px 3px #000;
+}
+#cardBattleTestScreen .ctDamagePop.ct539Hit.veryLongNumber .ct539Number{font-size:clamp(9px,2.8vw,12px)}
+</style>
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.561</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.562</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2741,7 +2755,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct560VolumeRow span{display:flex;justify-content:space-between;align-items:center}
 #cardBattleTestScreen .ct560VolumeRow input{width:100%;accent-color:#91c5ed;touch-action:pan-x}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.561 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.562 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3425,19 +3439,26 @@ function defenseExerciseFuseSelected(){
  const beforeCost=phaseFoundation.costRemaining;cardFoundation.hand=cardFoundation.hand.filter(c=>!attackExercise.defenseSelected.includes(c.instanceId));for(const c of cards)if(cardIsFusion(c))delete cardFoundation.fusionSourceLedger[c.instanceId];cardFoundation.fusionSourceLedger[fusionId]=[...ids];cardFoundation.hand.push(fusion);attackExercise.defenseSelected=[fusionId];attackExercise.message=`${fusion.name}を合成｜COST0 ${beforeCost}/${phaseFoundation.costMax}｜自動《保持》`;attackExerciseLogPush(attackExercise.message);cardFoundation.message=attackExercise.message;cardDebugRender();return fusion;
 }
 function attackExerciseActorForSource(source){const snap=attackExercise.actors[source.ownerRosterId];if(snap)return snap;const base=formationRosterData.find(c=>c.id===source.ownerRosterId||Number(c.cid)===Number(source.ownerCid));const enh=base?getEnhancedStats(base.id,base):{atk:0};return{ownerRosterId:source.ownerRosterId,ownerCid:source.ownerCid,ownerName:source.ownerName,baseAtk:Math.max(0,Number(enh.atk)||0),referenceAtk:Math.max(0,Number(enh.atk)||0),sword:0,source:'フォールバック編成ATK'}}
+// VER.562: 0 CHAIN means the first confirmed attack Hit, at ×1.00.
+// All new-card normal/strong/relay Hits derive damage from the SAME confirmed Hit count.
+function ct562ChainMultiplier(combo){return 1+Math.max(0,Math.floor(Number(combo)||0))*.05}
+function ct562ChainBonus(combo){return Math.max(0,Math.floor(Number(combo)||0))*5}
 function attackExercisePlanUse(card,targetEnemyId){
  const tier=attackCardTier(card),spec=ATTACK_EXERCISE_SPEC[tier],enemy=attackExerciseEnemyById(targetEnemyId);if(ct533AllyBlocked(card)||!spec||!attackExerciseEnemyLockable(enemy))return null;
  const useSelected=!!spec&&ct555CommonCard(card);const selected=useSelected?ct540SelectedActor():null;
  if(useSelected&&(!selected||(!ct540GeneratedKind(card)&&ct540SelectedActorBroken())))return null;
  let chain=attackExercise.chain,hp=attackExerciseInt(enemy.hp),block=attackExerciseInt(enemy.block),overkill=attackExerciseInt(enemy.overkill);
+  const ct562StartCombo=cardBattleTestMode.active?Math.max(0,cardBattleTestMode.ct558Combo||0):null;
  const burst={...attackExercise.burst},hits=[];
  // Fixed target ID for every planned Hit, including post-lethal OVERKILL.
  for(const source of (useSelected?Array.from({length:card?.type==='strongAttack'?1:tier},(_,i)=>({instanceId:attackCardSources(card)[i]?.instanceId||card.instanceId,ownerRosterId:selected.ownerRosterId,ownerCid:selected.ownerCid,ownerName:selected.ownerName})):attackCardSources(card))){
-  const actor=useSelected?selected:attackExerciseActorForSource(source),burstBefore=Math.max(0,Math.min(100,Number(burst[source.ownerRosterId])||0)),burstAfter=Math.min(100,burstBefore+10),raw=attackExerciseInt((useSelected?ct547ActorAtk(actor):actor.referenceAtk)*spec.rate*chain),blockBefore=block,blocked=Math.min(blockBefore,raw),blockAfter=Math.max(0,blockBefore-blocked);
+  const ct562Combo=ct562StartCombo===null?null:ct562StartCombo+hits.length;
+   if(ct562Combo!==null)chain=ct562ChainMultiplier(ct562Combo);
+   const actor=useSelected?selected:attackExerciseActorForSource(source),burstBefore=Math.max(0,Math.min(100,Number(burst[source.ownerRosterId])||0)),burstAfter=Math.min(100,burstBefore+10),raw=attackExerciseInt((useSelected?ct547ActorAtk(actor):actor.referenceAtk)*spec.rate*chain),blockBefore=block,blocked=Math.min(blockBefore,raw),blockAfter=Math.max(0,blockBefore-blocked);
   const penetrated=Math.max(0,raw-blocked),hpBefore=hp,hpDamage=Math.min(hpBefore,penetrated),overkillDamage=Math.max(0,penetrated-hpDamage),hpAfter=Math.max(0,hpBefore-hpDamage);
   overkill+=overkillDamage;
-  hits.push({targetEnemyId:enemy.instanceId,targetName:enemy.name,ownerRosterId:source.ownerRosterId,ownerCid:source.ownerCid,ownerName:source.ownerName,baseAtk:actor.baseAtk,referenceAtk:useSelected?ct547ActorAtk(actor):actor.referenceAtk,rate:spec.rate,chain,raw,blockBefore,blocked,blockAfter,hpDamage,overkillDamage,overkillTotal:overkill,breakBasis:hpDamage,hpBefore,hpAfter,burstBefore,burstAfter,sourceInstanceId:source.instanceId});
-  burst[source.ownerRosterId]=burstAfter;hp=hpAfter;block=blockAfter;chain=Math.min(cardBattleTestMode.active?100:2,Math.round((chain+.1)*10)/10)
+  hits.push({targetEnemyId:enemy.instanceId,targetName:enemy.name,ownerRosterId:source.ownerRosterId,ownerCid:source.ownerCid,ownerName:source.ownerName,baseAtk:actor.baseAtk,referenceAtk:useSelected?ct547ActorAtk(actor):actor.referenceAtk,rate:spec.rate,chain,ct562Combo,raw,blockBefore,blocked,blockAfter,hpDamage,overkillDamage,overkillTotal:overkill,breakBasis:hpDamage,hpBefore,hpAfter,burstBefore,burstAfter,sourceInstanceId:source.instanceId});
+  burst[source.ownerRosterId]=burstAfter;hp=hpAfter;block=blockAfter;chain=ct562StartCombo===null?Math.min(2,Math.round((chain+.1)*10)/10):ct562ChainMultiplier(ct562StartCombo+hits.length)
  }
  return{tier,spec,hits,targetEnemyId:enemy.instanceId,nextChain:chain,nextHp:hp,nextBlock:block,nextOverkill:overkill,nextBurst:burst}
 }
@@ -3448,7 +3469,10 @@ function attackExerciseUseSelected(){
  if(!chosen||phaseFoundation.costRemaining<ct540Cost(chosen)){attackExercise.message='共通コスト不足｜攻撃カード使用不可';return attackExerciseRender()}
  const id=attackExercise.selected[0],idx=cardFoundation.hand.findIndex(c=>c.instanceId===id);if(idx<0){attackExercise.message='選択カードが手札にありません';return attackExerciseRender()}const card=cardFoundation.hand[idx];if(ct533AllyBlocked(card)){attackExercise.message='BREAK中の素材を含む攻撃カードはこの味方フェーズ使用不可';return attackExerciseRender()}const target=attackExerciseLockedEnemy();if(!target){attackExercise.message='有効なTARGET LOCKがありません｜カード・コストは消費しません';return attackExerciseRender()}const plan=attackExercisePlanUse(card,target.instanceId);if(!plan){attackExercise.message='攻撃対象または攻撃カードが不正です｜消費なし';return attackExerciseRender()}
  // All calculations succeed before any cost/card state is committed.
- cardFoundation.hand.splice(idx,1);attackExercise.lastAttackHits=plan.hits.map(h=>({...h,kind:'attack'}));phaseFoundation.costRemaining-=ct540Cost(card);attackExercise.chain=plan.nextChain;target.hp=plan.nextHp;target.block=plan.nextBlock;target.overkill=plan.nextOverkill;attackExercise.burst=plan.nextBurst;if(cardBattleTestMode.active)for(const h of plan.hits)ct533AddBreak(target,ct540GeneratedKind(card)==='attack'?attackExerciseInt(h.hpDamage*1.0):h.hpDamage,'enemy');if(target.hp<=0)target.alive=false;for(const h of plan.hits){attackExerciseHitPush({...h,kind:'attack'});attackExerciseLogPush(`${h.ownerName}｜ATK参照${attackExerciseFmt(h.referenceAtk)}×${Math.round(h.rate*100)}%×CHAIN${attackExerciseFmt(h.chain,1)}＝${attackExerciseFmt(h.raw)}｜${h.targetName||'模擬敵'} BLOCK ${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}｜実HPダメージ${attackExerciseFmt(h.hpDamage)}｜OVERKILL+${attackExerciseFmt(h.overkillDamage)}（累積${attackExerciseFmt(h.overkillTotal)}）｜BURST ${h.burstBefore}→${h.burstAfter}`)}const released=cardReleaseFusionOrBase(card);if(cardBattleTestMode.active){const t=attackCardTier(card);if(t>=2&&t<=4)ct547Generate('swift',card,t-1);else if(t===5)ct547Generate('haste',card,1)}attackExercise.selected=[];const integrity=attackExerciseIntegrity();attackExercise.message=`${card.name}使用｜コスト-${ct540Cost(card)}→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材返却 捨て札${released.discarded}${released.exhausted?`／消滅${released.exhausted}`:''}｜整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;phaseLogPush(`VER.508 ${card.name}｜${plan.hits.length}Hit｜CHAIN→×${attackExerciseFmt(attackExercise.chain,1)}｜${target.name} BLOCK${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardFoundation.message=attackExercise.message;if(target.hp<=0&&!cardBattleTestMode.active)attackExerciseCompleteTargetDeath(target.instanceId);cardDebugRender();return true
+ cardFoundation.hand.splice(idx,1);
+  // Advance only once, at the authoritative confirmed Hit commit; not in animation.
+  if(cardBattleTestMode.active)for(const h of plan.hits){h.ct557Combo=cardBattleTestMode.ct558Combo;cardBattleTestMode.ct558Combo++}
+  attackExercise.lastAttackHits=plan.hits.map(h=>({...h,kind:'attack'}));phaseFoundation.costRemaining-=ct540Cost(card);attackExercise.chain=plan.nextChain;target.hp=plan.nextHp;target.block=plan.nextBlock;target.overkill=plan.nextOverkill;attackExercise.burst=plan.nextBurst;if(cardBattleTestMode.active)for(const h of plan.hits)ct533AddBreak(target,ct540GeneratedKind(card)==='attack'?attackExerciseInt(h.hpDamage*1.0):h.hpDamage,'enemy');if(target.hp<=0)target.alive=false;for(const h of plan.hits){attackExerciseHitPush({...h,kind:'attack'});attackExerciseLogPush(`${h.ownerName}｜ATK参照${attackExerciseFmt(h.referenceAtk)}×${Math.round(h.rate*100)}%×CHAIN${attackExerciseFmt(h.chain,1)}＝${attackExerciseFmt(h.raw)}｜${h.targetName||'模擬敵'} BLOCK ${attackExerciseFmt(h.blockBefore)}→${attackExerciseFmt(h.blockAfter)}｜実HPダメージ${attackExerciseFmt(h.hpDamage)}｜OVERKILL+${attackExerciseFmt(h.overkillDamage)}（累積${attackExerciseFmt(h.overkillTotal)}）｜BURST ${h.burstBefore}→${h.burstAfter}`)}const released=cardReleaseFusionOrBase(card);if(cardBattleTestMode.active){const t=attackCardTier(card);if(t>=2&&t<=4)ct547Generate('swift',card,t-1);else if(t===5)ct547Generate('haste',card,1)}attackExercise.selected=[];const integrity=attackExerciseIntegrity();attackExercise.message=`${card.name}使用｜コスト-${ct540Cost(card)}→${phaseFoundation.costRemaining}/${phaseFoundation.costMax}｜素材返却 捨て札${released.discarded}${released.exhausted?`／消滅${released.exhausted}`:''}｜整合${integrity.ok?'OK':'NG'}`;phaseFoundation.message=attackExercise.message;phaseLogPush(`VER.508 ${card.name}｜${plan.hits.length}Hit｜CHAIN→×${attackExerciseFmt(attackExercise.chain,1)}｜${target.name} BLOCK${attackExerciseFmt(target.block)}｜コスト${phaseFoundation.costRemaining}/${phaseFoundation.costMax}`);cardFoundation.message=attackExercise.message;if(target.hp<=0&&!cardBattleTestMode.active)attackExerciseCompleteTargetDeath(target.instanceId);cardDebugRender();return true
 }
 // VER.530: choose the topmost surviving front-row actor, by roster identity.
 function cardBattleTestDefaultDefenseTarget(){
@@ -3941,7 +3965,7 @@ function ct560StopSe(){for(const a of ct560Sound.voices){try{a.pause();a.current
 function ct560SettingsOpen(){const o=document.getElementById('ctDebugOverlay');if(!cardBattleTestMode.active||!o)return false;ctGestureReset(true);o.hidden=false;document.getElementById('ct560SettingsPanel').hidden=false;document.getElementById('ct560DeveloperPanel').hidden=true;ct560SyncSettings();return true}
 function ct560DeveloperOpen(){document.getElementById('ct560SettingsPanel').hidden=true;document.getElementById('ct560DeveloperPanel').hidden=false;ct549RelayUiInit();cardBattleTestRender();return true}
 const CT546_BGM_SRC='assets/audio/Heartbeat_of_the_Abyss_v26_B_160BPM_80BPM_HEART_36s.wav';
-// VER.561: one reusable media-element Web Audio path for every future BGM track.
+// VER.562: one reusable media-element Web Audio path for every future BGM track.
 // Existing volume storage (sekasoko.ct560.bgm) remains the single shared BGM setting.
 const ct561BgmGraph={context:null,source:null,gain:null,failed:false};
 function ct561BgmEffectiveGain(){return ct546Bgm.muted?0:ct546Bgm.volume}
@@ -4100,13 +4124,17 @@ function ct549RelayStatus(){
 // VER.550 DEBUG mock attack: actual combat damage, no card/COST consumption.
 function ct550RelayHit(actor,enemy,rate){
  if(!actor?.alive||actor.hp<=0||!attackExerciseEnemyLockable(enemy))return null;
- const chain=attackExercise.chain,raw=attackExerciseInt(ct547ActorAtk(actor)*rate*chain),blockBefore=attackExerciseInt(enemy.block);
+  const ct562Combo=cardBattleTestMode.active?Math.max(0,cardBattleTestMode.ct558Combo||0):null;
+  const chain=ct562Combo===null?attackExercise.chain:ct562ChainMultiplier(ct562Combo);
+  const raw=attackExerciseInt(ct547ActorAtk(actor)*rate*chain),blockBefore=attackExerciseInt(enemy.block);
  const blocked=Math.min(raw,blockBefore),blockAfter=blockBefore-blocked,hpBefore=attackExerciseInt(enemy.hp);
  const penetrated=raw-blocked,hpDamage=Math.min(hpBefore,penetrated),overkillDamage=penetrated-hpDamage;
  enemy.block=blockAfter;enemy.hp=hpBefore-hpDamage;enemy.overkill=attackExerciseInt(enemy.overkill)+overkillDamage;
  if(enemy.hp<=0)enemy.alive=false;
- ct533AddBreak(enemy,hpDamage,'enemy');attackExercise.chain=Math.min(100,Math.round((chain+.1)*10)/10);
- const hit={kind:'relay-debug',targetEnemyId:enemy.instanceId,targetName:enemy.name,ownerRosterId:actor.ownerRosterId,ownerName:actor.ownerName,referenceAtk:ct547ActorAtk(actor),rate,chain,raw,blockBefore,blocked,blockAfter,hpBefore,hpAfter:enemy.hp,hpDamage,overkillDamage,overkillTotal:enemy.overkill,breakBasis:hpDamage};
+ ct533AddBreak(enemy,hpDamage,'enemy');
+  if(ct562Combo!==null){cardBattleTestMode.ct558Combo++;attackExercise.chain=ct562ChainMultiplier(cardBattleTestMode.ct558Combo)}
+  else attackExercise.chain=Math.min(100,Math.round((chain+.1)*10)/10);
+ const hit={kind:'relay-debug',ct562Combo,ct557Combo:ct562Combo,targetEnemyId:enemy.instanceId,targetName:enemy.name,ownerRosterId:actor.ownerRosterId,ownerName:actor.ownerName,referenceAtk:ct547ActorAtk(actor),rate,chain,raw,blockBefore,blocked,blockAfter,hpBefore,hpAfter:enemy.hp,hpDamage,overkillDamage,overkillTotal:enemy.overkill,breakBasis:hpDamage};
  attackExerciseHitPush(hit);attackExerciseLogPush(`VER.550 DEBUG連携 ${actor.ownerName}｜ATK${hit.referenceAtk}×${Math.round(rate*100)}%×CHAIN${attackExerciseFmt(chain,1)}｜BLOCK ${blockBefore}→${blockAfter}｜HP -${hpDamage}｜OVERKILL +${overkillDamage}`);
  return hit;
 }
@@ -4217,7 +4245,7 @@ async function ct549RelayAfterAttack(commanderRid,mode,serial){
     const currentEnemy=attackExerciseEnemyById(enemy.instanceId);
     if(!currentEnemy||currentEnemy.hp<=0)return;
     const hit=ct550RelayHit(actor,currentEnemy,ct550RelayRate);if(!hit)return;
-    hit.ct557Combo=++mode.ct558Combo; // VER.560: count only confirmed relay Hit, persist across floors.
+     // VER.562: ct550RelayHit() already committed this Hit to the shared combo.
     impactDone=true;
     currentEnemy.ctPendingAnimations=(currentEnemy.ctPendingAnimations||0)+1;
     cardBattleTestRecordOverkill([hit],currentEnemy);
@@ -4234,13 +4262,12 @@ async function ct549RelayAfterAttack(commanderRid,mode,serial){
  }
  return true;
 }
-let ct550RelayRate=.20;
+const ct550RelayRate=.15; // VER.562 adopted relay base power, not a DEBUG-adjustable combat rule.
 function ct549RelayUiInit(){
  const panel=document.querySelector('#ctDebugStatus');if(!panel||document.querySelector('#ct549RelayControls'))return;
  const div=document.createElement('div');div.id='ct549RelayControls';div.style.cssText='margin:9px 0;padding:8px;border:1px solid #5b8da8;border-radius:8px;font-size:11px';
- div.innerHTML='<strong>VER.553 DEBUG模擬連携（命中同期）</strong><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px"><label>威力% <input id="ct550Power" type="number" min="0" max="500" value="20" style="width:48px"> 上限 <select id="ct549Cap"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><label>発動率 <input id="ct549Rate" type="number" min="0" max="100" value="100" style="width:48px"></label><label><input id="ct549Force" type="checkbox" checked> 強制発動</label></div><p id="ct549RelayStatus" aria-live="polite"></p>';
+ div.innerHTML='<strong>VER.553 DEBUG模擬連携（命中同期）</strong><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px"><label>威力% <input id="ct550Power" type="number" min="15" max="15" value="15" readonly style="width:48px"> 上限 <select id="ct549Cap"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><label>発動率 <input id="ct549Rate" type="number" min="0" max="100" value="100" style="width:48px"></label><label><input id="ct549Force" type="checkbox" checked> 強制発動</label></div><p id="ct549RelayStatus" aria-live="polite"></p>';
  panel.before(div);
- div.querySelector('#ct550Power').addEventListener('change',e=>{ct550RelayRate=Math.max(0,Math.min(5,(Number(e.target.value)||0)/100))});
  div.querySelector('#ct549Cap').addEventListener('change',e=>ct549RelayConfigure('cap',e.target.value));
  div.querySelector('#ct549Rate').addEventListener('change',e=>ct549RelayConfigure('rate',e.target.value));
  div.querySelector('#ct549Force').addEventListener('change',e=>ct549RelayConfigure('force',e.target.checked));
@@ -4255,8 +4282,7 @@ function cardBattleTestAttack(){
  const ok=attackExerciseUseSelected();cardBattleTestMode.message=attackExercise.message;
  if(ok){
   const hits=attackExercise.lastAttackHits.slice(),mode=cardBattleTestMode,serial=mode.floorSerial;
-  // VER.560: confirmed normal/strong attack Hits count once, before asynchronous rendering.
-  if(hits.length&&hits.every(h=>h.kind==='attack'))for(const h of hits){h.ct557Combo=++mode.ct558Combo}
+   // VER.562: combo already committed exactly once in attackExerciseUseSelected().
   const enemy=attackExerciseEnemyById(hits[0]?.targetEnemyId);
   const animation={mode,serial,enemy};if(enemy)enemy.ctPendingAnimations=(enemy.ctPendingAnimations||0)+1;
   cardBattleTestRecordOverkill(hits,enemy);
@@ -4348,17 +4374,17 @@ function cardBattleTestAnimateEnemy(hits,animation=null){
   const centerY=r.top-fxRect.top+r.height*.48;
   fx.querySelectorAll('.ctDamagePop.ct539Hit').forEach(el=>el.remove());
   pop.style.zIndex=String(65+i%8);
+   const combo=Number.isInteger(h.ct562Combo)?h.ct562Combo:(Number.isInteger(h.ct557Combo)?h.ct557Combo:null);
   const chain=document.createElement('span');chain.className='ct539Chain';
-  const chainPercent=Math.round((Number(h.chain)||1)*1000)/10;
-  const combo=Number.isInteger(h.ct557Combo)&&h.ct557Combo>=1?h.ct557Combo:null;
-  chain.textContent=`${combo===null?'':combo+' '}CHAIN ${chainPercent}%`;
+  if(combo!==null&&combo>0)chain.textContent=`${combo} CHAIN`;
   const amount=document.createElement('span');amount.className='ct539Number';
   const effectiveDamage=attackExerciseInt(h.hpDamage)+attackExerciseInt(h.overkillDamage);
   const number=effectiveDamage>0?'-'+attackExerciseFmt(effectiveDamage):'BLOCK';
-  amount.textContent=number;
-  if(number.length>10)pop.classList.add('veryLongNumber');else if(number.length>7)pop.classList.add('longNumber');
+   amount.textContent=number+(combo!==null&&combo>0?`（+${ct562ChainBonus(combo)}%）`:'');
+   if(amount.textContent.length>17)pop.classList.add('veryLongNumber');else if(amount.textContent.length>12)pop.classList.add('longNumber');
   if(h.hpDamage<=0&&h.overkillDamage<=0)pop.classList.add('blockHit');
-  pop.append(chain,amount);
+   if(chain.textContent)pop.append(chain);
+   pop.append(amount);
   // Display-only OVERKILL: the cumulative excess for THIS enemy after THIS Hit.
   // This does not read or change the separate WD reward multiplier.
   const totalExcess=Math.max(0,Number(h.overkillTotal)||0);
@@ -4414,7 +4440,7 @@ function cardBattleTestEnemyHtml(enemy,slot){
  const action=cardBattleTestMode.active&&!dead&&!(phaseFoundation.phase===PHASE_SIDE_ENEMY&&phaseFoundation.enemySlots.some(slot=>slot.key===enemy.instanceId&&slot.processed))&&enemy.ctNextAction?.mode===cardBattleTestMode&&enemy.ctNextAction?.floorSerial===cardBattleTestMode.floorSerial?enemy.ctNextAction:null;
  const preview=action?cardBattleTestActionLabel(action):'';
  const mockIntent=preview?`<span class="ctEnemyIntent ctIntent-${action.type}" aria-label="次回行動 ${cardDebugEsc(preview)}">${cardDebugEsc(preview)}</span>`:'';
- return `<button type="button" class="ctEnemyCell ctSharedFrame ctAfterimage ${back?'backline':'frontline'} ${locked?'locked':''} ${dead?'pendingDeath':''}" data-ct-afterimage-rank="${comparisonRank}" data-ct-enemy-id="${cardDebugEsc(enemy.instanceId)}" onclick="cardBattleTestSelectEnemy('${cardDebugEsc(enemy.instanceId)}')" ${dead?'disabled':''} aria-label="${cardDebugEsc(enemy.name)} ${back?'後衛':'前衛'} HP ${attackExerciseFmt(enemy.hp)} BLOCK ${attackExerciseFmt(enemy.block)}${locked?' TARGET LOCK':''}">${art}${info}${mockIntent}${enemy.overkill>0?`<span class="ctEnemyOk">OK +${attackExerciseFmt(enemy.overkill)}</span>`:''}</button>`;
+ return `<button type="button" class="ctEnemyCell ctSharedFrame ctAfterimage ${back?'backline':'frontline'} ${locked?'locked':''} ${dead?'pendingDeath':''}" data-ct-afterimage-rank="${comparisonRank}" data-ct-enemy-id="${cardDebugEsc(enemy.instanceId)}" onclick="cardBattleTestSelectEnemy('${cardDebugEsc(enemy.instanceId)}')" ${dead?'disabled':''} aria-label="${cardDebugEsc(enemy.name)} ${back?'後衛':'前衛'} HP ${attackExerciseFmt(enemy.hp)} BLOCK ${attackExerciseFmt(enemy.block)}${locked?' TARGET LOCK':''}">${art}${info}${mockIntent}</button>`;
 }
 function cardBattleTestActorHtml(a){
  const base=cardBattleTestBase(a.ownerRosterId),slot=Math.max(0,Math.min(5,Number(a.formationSlot)||0)),src=base?.sprite||base?.actionSprite||'',target=attackExercise.defenseTargetRosterId===a.ownerRosterId;
