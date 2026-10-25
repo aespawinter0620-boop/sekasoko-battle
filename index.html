@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.556</title>
+<title>セカソコ ver.557</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.556";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.557";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -1705,9 +1705,20 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #ct552Reward .ct552RewardChoices{display:flex;gap:8px;justify-content:center}
 #ct552Reward button{flex:1;min-height:52px;border:1px solid #f2d98d;background:#273b54;color:white;border-radius:8px;font-weight:bold}
 
-/* VER.556: distinguish independent generic 強撃 without changing the hand layout. */
+/* VER.557: distinguish independent generic 強撃 without changing the hand layout. */
 #cardBattleTestScreen .ctCard.ct554StrongCard{border-color:#d4a247;box-shadow:inset 0 0 0 1px rgba(240,179,66,.35)}
 #cardBattleTestScreen .ctCard.ct554StrongCard .ctCardType{color:#ffda83}
+
+/* VER.557: presentation-only target-attached damage readout. */
+#cardBattleTestScreen .ctDamagePop.ct539Hit{
+ max-width:calc(100% - 8px);width:max-content;min-width:0;
+ transform:translateX(-50%);animation:ct557HitFade .68s ease-out forwards;
+ line-height:1.1;gap:2px;white-space:nowrap;
+}
+#cardBattleTestScreen .ct539Chain{font-size:clamp(10px,2.8vw,13px);color:#f6e9cf;font-weight:700}
+#cardBattleTestScreen .ct539Number{font-size:clamp(26px,7.4vw,36px);color:#fff4df;font-weight:800}
+#cardBattleTestScreen .ct539Hit .ct539Detail{font-size:clamp(10px,2.7vw,12px);color:#ffd2a0;font-weight:700}
+@keyframes ct557HitFade{0%{opacity:0}14%{opacity:1}75%{opacity:1}100%{opacity:0}}
 </style>
 
 <style id="ver248-three-line-hud">
@@ -2505,7 +2516,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.556</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.557</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2710,7 +2721,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct542SpiritActions button:disabled{opacity:.35}
 #cardBattleTestScreen #ct542SpiritTrialStatus{margin:7px 0 0;color:#bfe6e8;font-size:10px;line-height:1.4}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.556 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.557 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3353,7 +3364,7 @@ function attackExerciseFuseSelected(){
  const cards=attackExercise.selected.map(id=>cardFoundation.hand.find(c=>c.instanceId===id));
  if(cards.some(x=>!x)||cards[0]===cards[1])return false;
  if(cards.every(c=>ct540GeneratedKind(c)==='swift'))return ct547FuseSwift(cards[0],cards[1]);
- if(cards.some(c=>c.type==='strongAttack'||ct555CommonCard(c))){attackExercise.message='VER.556 汎用カードは合成不可';return false}
+ if(cards.some(c=>c.type==='strongAttack'||ct555CommonCard(c))){attackExercise.message='VER.557 汎用カードは合成不可';return false}
  if(cards.some(ct540GeneratedKind)){attackExercise.message='異種生成カードは合成不可';return false}
  const t0=attackCardTier(cards[0]),t1=attackCardTier(cards[1]);
  const tier=Math.max(t0,t1),low=Math.min(t0,t1);
@@ -3371,7 +3382,7 @@ function attackExerciseFuseSelected(){
  attackExerciseLogPush(attackExercise.message);cardFoundation.message=attackExercise.message;cardDebugRender();return fusion;
 }
 function defenseExerciseFuseSelected(){
- attackExercise.message='VER.556 汎用防御カードは合成不可';return false;
+ attackExercise.message='VER.557 汎用防御カードは合成不可';return false;
  if(!attackExerciseCanOperate()){attackExercise.message='味方フェーズ操作可能時のみ防御合成できます';return attackExerciseRender()}
  if(attackExercise.defenseSelected.length!==2){attackExercise.message='合成する防御2枚を選択してください';return attackExerciseRender()}
  const cards=attackExercise.defenseSelected.map(id=>cardFoundation.hand.find(c=>c.instanceId===id));if(cards.some(x=>!x)||cards[0]===cards[1])return false;
@@ -3427,7 +3438,7 @@ function ct535ExpireInvincible(nextAllyPhase){
 
 // VER.550: five independent shields per ally. No legacy BLOCK or guardian spirit mutation.
 const CT548_MAX_SHIELDS=5,CT548_SHIELD_TURNS=10;
-// VER.556: VER.548 independent shields, KEEP, expiration and auto attacks removed.
+// VER.557: VER.548 independent shields, KEEP, expiration and auto attacks removed.
 // These compatibility entrypoints are inert; no shield objects are created or retained.
 function ct548ResetShields(){}
 function ct548ExpireDead(rid){}
@@ -3447,7 +3458,7 @@ function defenseExerciseUseSelected(){
  let shield=null;
  if(plan.globalDefense){for(const g of plan.grants){const actor=attackExercise.actors[g.rid];if(actor?.alive&&actor.hp>0)actor.block=attackExerciseInt(actor.block)+g.amount}}
  else if(plan.invincible){if(cardBattleTestMode.active)target.ct535InvincibleUntilPhase=phaseFoundation.allyPhaseCount+1}
- else target.block=attackExerciseInt(target.block)+plan.amount; // VER.556 shared floor-persistent BLOCK
+ else target.block=attackExerciseInt(target.block)+plan.amount; // VER.557 shared floor-persistent BLOCK
  const released=cardReleaseFusionOrBase(card);attackExercise.defenseSelected=[];
  attackExerciseHitPush({kind:'defense',cardName:card.name,targetName:target.ownerName,referenceDef:target.referenceDef,rate:plan.spec.rate,shieldId:shield?.id||null,shieldValue:shield?.remaining||0,blockGain:plan.amount});
  const integrity=attackExerciseIntegrity();attackExercise.message=plan.globalDefense?`全体防御｜既存BLOCK付与｜COST0｜整合${integrity.ok?'OK':'NG'}`:plan.invincible?`無敵｜既存内部機構｜COST1｜整合${integrity.ok?'OK':'NG'}`:cardBattleTestMode.active?`${card.name}→${target.ownerName}｜BLOCK+${plan.amount}｜COST1｜整合${integrity.ok?'OK':'NG'}`:`${card.name}→${target.ownerName}｜BLOCK+${plan.amount}｜COST1｜整合${integrity.ok?'OK':'NG'}`;
@@ -3483,7 +3494,7 @@ function attackExerciseProcessDeath(rid,reason='HP0'){
 // VER.521: shared VER.508 BLOCK-first calculation; no DEF reduction and no new rounding.
 function defenseExerciseBlockHpResult(target,rawDamage){
  const damage=attackExerciseInt(rawDamage),invincible=ct535IsInvincible(target);
- const shield={left:damage,absorbed:0,broken:[]}; // VER.556 independent shields removed
+ const shield={left:damage,absorbed:0,broken:[]}; // VER.557 independent shields removed
  const blockBefore=attackExerciseInt(target.block),blocked=invincible?0:Math.min(blockBefore,shield.left),blockAfter=Math.max(0,blockBefore-blocked),hpDamage=invincible?0:Math.max(0,shield.left-blocked),hpBefore=attackExerciseInt(target.hp),hpAfter=Math.max(0,hpBefore-hpDamage);
  return {damage,shieldBlocked:shield.absorbed,shieldBroken:shield.broken,blockBefore,blocked,blockAfter,hpDamage,breakBasis:hpDamage,hpBefore,hpAfter,invincible};
 }
@@ -3800,7 +3811,7 @@ async function ct545RunSpiritPhaseEffects(spirits,phaseCount,mode,serial){
   }
   ct542SpiritTrial.lastStatus='自フェーズ'+phaseCount+'｜精霊効果→滞在T減算 完了';ct542SpiritRender();
   // Creator-approved VER.550 order: DEBUG spirits, then shields, then swift expiration.
-  // VER.556: independent shield phase attacks removed.
+  // VER.557: independent shield phase attacks removed.
  }finally{
   if(mode.active&&cardBattleTestMode===mode&&mode.floorSerial===serial)ct547ExpireSwift(phaseCount);
   mode.ct545SpiritProcessing=false;
@@ -4103,6 +4114,7 @@ async function ct549RelayAfterAttack(commanderRid,mode,serial){
     const currentEnemy=attackExerciseEnemyById(enemy.instanceId);
     if(!currentEnemy||currentEnemy.hp<=0)return;
     const hit=ct550RelayHit(actor,currentEnemy,ct550RelayRate);if(!hit)return;
+    hit.ct557Combo=count; // Presentation-only relay participant number, not Hit count.
     impactDone=true;
     currentEnemy.ctPendingAnimations=(currentEnemy.ctPendingAnimations||0)+1;
     cardBattleTestRecordOverkill([hit],currentEnemy);
@@ -4218,24 +4230,45 @@ function cardBattleTestAnimateEnemy(hits,animation=null){
   if(cell){cell.classList.remove('hit');void cell.offsetWidth;cell.classList.add('hit');setTimeout(()=>{if(cardBattleTestMode===mode&&cell.isConnected)cell.classList.remove('hit')},155)}
   if(!fx||!board)return;
   const pop=document.createElement('div');pop.className='ctDamagePop ct539Hit'+(h.overkillDamage>0?' overkill':'');
-  const b=board.getBoundingClientRect(),r=cell?.getBoundingClientRect();
-  // Keep large numbers inside narrow iPhone battle viewports; stagger concurrent multi-Hit labels.
-  const baseX=r?r.left-b.left+r.width*.55:b.width*.72;
-  // Four overlapping Hit windows occupy separate diagonally staggered lanes.
-  // VER.540 trial: one stable enemy-side popup anchor; replace each preceding Hit.
+  // VER.557: anchor to the actual damaged enemy, never the currently selected TARGET.
+  // The pending-death enemy frame remains present until the last Hit popup completes.
+  const fxRect=fx.getBoundingClientRect();
+  const art=cell?.querySelector('.ctArt');
+  const artRect=art?.getBoundingClientRect();
+  const r=artRect&&artRect.width>0&&artRect.height>0?artRect:cell?.getBoundingClientRect();
+  // No fallback to a fixed board coordinate: if the actual target is gone, omit the popup.
+  if(!r||r.width<=0||r.height<=0)return;
+  const centerX=r.left-fxRect.left+r.width*.50;
+  const centerY=r.top-fxRect.top+r.height*.48;
   fx.querySelectorAll('.ctDamagePop.ct539Hit').forEach(el=>el.remove());
-  const x=b.width*.73,y=b.height*.34;
-  pop.style.left=x+'px';pop.style.top=y+'px';
   pop.style.zIndex=String(65+i%8);
   const chain=document.createElement('span');chain.className='ct539Chain';
-  chain.textContent=`CHAIN ×${attackExerciseFmt(h.chain,1)}`;
+  const chainPercent=Math.round((Number(h.chain)||1)*1000)/10;
+  const combo=Number.isInteger(h.ct557Combo)&&h.ct557Combo>=1?h.ct557Combo:null;
+  chain.textContent=`${combo===null?'':combo+' '}CHAIN ${chainPercent}%`;
   const amount=document.createElement('span');amount.className='ct539Number';
-  const effectiveDamage=attackExerciseInt(h.hpDamage)+attackExerciseInt(h.overkillDamage);const number=effectiveDamage>0?'-'+attackExerciseFmt(effectiveDamage):'BLOCK';
+  const effectiveDamage=attackExerciseInt(h.hpDamage)+attackExerciseInt(h.overkillDamage);
+  const number=effectiveDamage>0?'-'+attackExerciseFmt(effectiveDamage):'BLOCK';
   amount.textContent=number;
   if(number.length>10)pop.classList.add('veryLongNumber');else if(number.length>7)pop.classList.add('longNumber');
   if(h.hpDamage<=0&&h.overkillDamage<=0)pop.classList.add('blockHit');
   pop.append(chain,amount);
-  if(h.overkillDamage>0){const detail=document.createElement('span');detail.className='ct539Detail';detail.textContent=`OVERKILL +${attackExerciseFmt(h.overkillDamage)}`;pop.append(detail)}
+  // Display-only OVERKILL: the cumulative excess for THIS enemy after THIS Hit.
+  // This does not read or change the separate WD reward multiplier.
+  const totalExcess=Math.max(0,Number(h.overkillTotal)||0);
+  const maxHp=Math.max(1,Number(enemy.maxHp)||1);
+  const okRatio=totalExcess/maxHp;
+  if(okRatio>=1){
+   const detail=document.createElement('span');detail.className='ct539Detail';
+   detail.textContent=`OVERKILL ${okRatio.toFixed(1)} 🔥`;
+   pop.append(detail);pop.classList.add('overkill');
+  }
+  pop.style.left=centerX+'px';pop.style.top=centerY+'px';
+  fx.appendChild(pop);
+  // Clamp the entire three-line label, not only its anchor, to the FX viewport.
+  const half=Math.min(fxRect.width/2,Math.ceil(pop.getBoundingClientRect().width/2));
+  const clampedX=Math.max(half+4,Math.min(fxRect.width-half-4,centerX));
+  pop.style.left=clampedX+'px';
   fx.appendChild(pop);setTimeout(()=>pop.remove(),700);
  },i*step));
  // Preserve the death image until every remaining Hit popup has finished.
