@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.566</title>
+<title>セカソコ ver.567</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.566";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.567";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2530,7 +2530,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.566</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.567</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2866,7 +2866,41 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 #cardBattleTestScreen .ct565CommanderGhost{z-index:96;}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.566 新カード戦闘試験モード">
+
+<style id="ver567-cut-in-display">
+/* VER.567: presentation only. The moving backdrop belongs strictly to ctBoard. */
+#cardBattleTestScreen #ctBoard .ct567SpeedBackdrop{
+ position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none!important;touch-action:none;
+ background:linear-gradient(180deg,rgba(0,10,35,.84),rgba(1,27,68,.81) 30%,rgba(2,13,47,.85) 72%,rgba(1,7,29,.85));
+}
+#cardBattleTestScreen #ctBoard .ct567SpeedBackdrop::before,
+#cardBattleTestScreen #ctBoard .ct567SpeedBackdrop::after{
+ content:"";position:absolute;inset:-5% -70%;pointer-events:none;
+ background-image:
+  repeating-linear-gradient(0deg,transparent 0 7px,rgba(15,83,168,.45) 8px 11px,rgba(118,224,255,.55) 12px,transparent 14px 24px,rgba(22,123,209,.40) 25px 27px,transparent 30px 51px),
+  repeating-linear-gradient(100deg,transparent 0 34px,rgba(129,229,255,.44) 36px 38px,transparent 42px 85px);
+ background-size:420px 100%,320px 100%;
+ animation:ct567SpeedRush .45s linear infinite;
+}
+#cardBattleTestScreen #ctBoard .ct567SpeedBackdrop::after{
+ opacity:.57;filter:blur(3px);background-size:290px 100%,230px 100%;
+ animation-duration:.24s;animation-direction:normal;
+}
+@keyframes ct567SpeedRush{from{background-position:0 0,0 0}to{background-position:420px 0,320px 0}}
+/* Army and enemies remain above the background; existing hit/HP layers keep priority. */
+#cardBattleTestScreen #ctBoard>#ctAllyArmy,
+#cardBattleTestScreen #ctBoard>.ctEnemyArea{z-index:2}
+#cardBattleTestScreen #ctBoard .ct567CutinPortrait{
+ position:absolute;z-index:10;pointer-events:none!important;touch-action:none;
+ object-fit:contain;object-position:center center;user-select:none;-webkit-user-select:none;
+ -webkit-user-drag:none;filter:drop-shadow(0 5px 12px rgba(1,11,34,.9)) drop-shadow(0 0 8px rgba(73,178,255,.5));
+ will-change:transform;
+}
+/* Conceal only the active actor artwork. Unit hitbox and HP/BLOCK/BREAK remain. */
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame.ct565AttackOut .ct563LargeArt img{visibility:hidden!important}
+#cardBattleTestScreen #ctAllyArmy .ct567AttackSourceHidden>.ctArt{visibility:hidden!important}
+</style>
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.567 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -4263,14 +4297,16 @@ function ct565SetAttackPortrait(rid){
  document.querySelectorAll('#ctAllyArmy>.ct563LargeFrame').forEach(el=>{
   el.classList.toggle('ct565AttackOut',ct565AttackVisualRid!==null);
  });
+ document.querySelectorAll('#ctAllyArmy [data-ct-rid]').forEach(el=>{
+  el.classList.toggle('ct567AttackSourceHidden',ct565AttackVisualRid!==null&&String(el.dataset.ctRid)===ct565AttackVisualRid);
+ });
 }
 function ct565StopCommanderVisual(){
  const visual=ct565CommanderVisual;ct565CommanderVisual=null;
- if(visual){try{visual.animation?.cancel()}catch(_){}visual.ghost?.remove()}
+ if(visual){try{visual.animation?.cancel()}catch(_){}visual.ghost?.remove();visual.bg?.remove()}
  ct565SetAttackPortrait(null);
 }
-// VER.566: display-only large Mikoto advance. Enemy Y never affects the visual.
-// Constrain the whole portrait to the card board at both start and end; combat targeting is untouched.
+// VER.566 retained for comparison/history. VER.567 uses board-fixed cut-in geometry.
 function ct566MikotoAdvance(boardRect,portraitLeft,portraitWidth){
  const maxRight=Math.max(0,boardRect.width-(portraitLeft+portraitWidth));
  return Math.max(0,Math.min(34,boardRect.width*.075,maxRight-4));
@@ -4280,42 +4316,50 @@ function ct566MikotoPosition(boardRect,frameRect,height,width){
  const top=Math.max(2,Math.min(boardRect.height-height-2,frameRect.bottom-boardRect.top-height));
  return {left,top};
 }
-// Reuse the existing ct551RushGhost styling and motion geometry. No impact callback,
-// damage, card use or timing changes: the original attack animation stays authoritative.
-function ct565StartCommanderVisual(actor,enemyId,mode,serial){
- if(ct563DisplayMode!==1||!ct5621GiantTrialOn||Number(actor?.ownerCid)!==101)return;
- const board=document.getElementById('ctBoard');
- const frame=document.getElementById('ct5621GiantVisual');
- const enemy=[...document.querySelectorAll('#ctEnemyGrid [data-ct-enemy-id]')]
-  .find(el=>el.dataset.ctEnemyId===String(enemyId));
- if(!board||!frame||!enemy)return;
- ct565StopCommanderVisual();
- const b=board.getBoundingClientRect(),f=frame.getBoundingClientRect(),t=enemy.getBoundingClientRect();
- if(!b.width||!f.height||!t.width)return;
- const height=Math.min(f.height*.95,b.height*.89),width=height*(940/1672);
- const {left,top}=ct566MikotoPosition(b,f,height,width);
- const ghost=document.createElement('img');ghost.className='ct551RushGhost ct565CommanderGhost';
- ghost.src='assets/characters/mikoto_abyss_guard_large_ver564.png';ghost.alt='';ghost.draggable=false;
+// VER.567: no enemy coordinates are used for the attacker's large display.
+function ct567CutinSrc(actor){
+ if(ct5621GiantTrialOn&&Number(actor?.ownerCid)===101)
+  return 'assets/characters/mikoto_abyss_guard_large_ver564.png';
+ const base=cardBattleTestBase(actor?.ownerRosterId);
+ return base?.actionSprite||base?.sprite||'';
+}
+function ct567CreateCutin(actor){
+ const board=document.getElementById('ctBoard'),src=ct567CutinSrc(actor);
+ if(!board||!src)return null;
+ const b=board.getBoundingClientRect();if(!b.width||!b.height)return null;
+ const bg=document.createElement('div');bg.className='ct567SpeedBackdrop';bg.setAttribute('aria-hidden','true');
+ const ghost=document.createElement('img');ghost.className='ct567CutinPortrait';
+ ghost.src=src;ghost.alt='';ghost.draggable=false;ghost.setAttribute('aria-hidden','true');
+ // Entire full-body image stays inside the allied half, independently of the card geometry.
+ const left=Math.max(1,b.width*.008),top=Math.max(2,b.height*.035);
+ const width=Math.max(1,b.width*.48),height=Math.max(1,b.height*.90);
  ghost.style.cssText=`left:${left}px;top:${top}px;width:${width}px;height:${height}px`;
- board.appendChild(ghost);ct565SetAttackPortrait(actor.ownerRosterId);
- const visual={ghost,animation:null};ct565CommanderVisual=visual;
- // Large-card Mikoto: short advance only. Do not chase the enemy row.
- const dx=ct566MikotoAdvance(b,left,width);
- const outward=`translate(${dx}px,0px) scale(1)`;
- // Match the pre-existing relay 225ms outbound / 265ms return. No new battle action.
+ ghost.onerror=()=>{ghost.style.display='none'}; // never substitute an unapproved sprite
+ board.prepend(bg);board.appendChild(ghost);
+ ct565SetAttackPortrait(actor.ownerRosterId);
+ return {ghost,bg,animation:null,dx:Math.min(20,b.width*.035)};
+}
+// Commander visual starts after the authoritative card attack; no extra damage or Hit.
+function ct565StartCommanderVisual(actor,enemyId,mode,serial){
+ if(!actor)return;
+ ct565StopCommanderVisual();
+ const visual=ct567CreateCutin(actor);if(!visual)return;
+ ct565CommanderVisual=visual;
+ const {ghost,dx}=visual;
+ const outward=`translate(${dx}px,0px)`;
  const valid=()=>ct565CommanderVisual===visual&&cardBattleTestMode===mode&&mode.floorSerial===serial&&mode.active;
  (async()=>{
   try{
    const motion=async(frames,duration)=>{
-    if(!ghost.animate)return;
+    if(!ghost.animate){await ct550Wait(duration);return}
     visual.animation=ghost.animate(frames,{duration,easing:'ease-in-out',fill:'forwards'});
     await visual.animation.finished;
    };
-   await motion([{transform:'translate(0,0) scale(1)'},{transform:outward}],225);
+   await motion([{transform:'translate(0,0)'},{transform:outward}],225);
    if(!valid())return;
    await ct550Wait(65);
-   await motion([{transform:outward},{transform:'translate(0,0) scale(1)'}],265);
-  }catch(_){/* animation cancellation is presentation-only */}
+   await motion([{transform:outward},{transform:'translate(0,0)'}],265);
+  }catch(_){/* visual cancellation does not alter combat */}
   finally{if(valid())ct565StopCommanderVisual()}
  })();
 }
@@ -4332,7 +4376,7 @@ function ct551RushCancel(){
  ct551Rush.sequence++;
  const a=ct551Rush.active;ct551Rush.active=null;
  if(a){try{a.animation?.cancel()}catch(_){}a.element?.remove();a.finish?.(false)}
- document.querySelectorAll('.ct551RushGhost,.ct551RushLabel').forEach(el=>el.remove());
+ document.querySelectorAll('.ct551RushGhost,.ct551RushLabel,.ct567CutinPortrait,.ct567SpeedBackdrop').forEach(el=>el.remove());
 }
 // VER.553: DEBUG-only synthesis, original oscillator waveform, no external samples.
 let ct553AudioContext=null;
@@ -4363,52 +4407,39 @@ function ct553HitFlash(enemy){
 // falls back to impact only; combat never depends on Web Animations support.
 function ct551RushPortrait(actor,enemy,number,cap,mode,serial,onImpact){
  return new Promise(async resolve=>{
-  let settled=false,ghost=null,label=null,animation=null;
+  let settled=false,visual=null,label=null,animation=null;
   const seq=++ct551Rush.sequence;
-  const finish=ok=>{if(settled)return;settled=true;ct555RestorePortrait();if(ct551Rush.active?.sequence===seq)ct551Rush.active=null;ghost?.remove();label?.remove();resolve(ok)};
+  const finish=ok=>{
+   if(settled)return;settled=true;
+   ct555RestorePortrait();
+   if(ct551Rush.active?.sequence===seq)ct551Rush.active=null;
+   if(visual){visual.ghost?.remove();visual.bg?.remove()}
+   label?.remove();resolve(ok);
+  };
   const valid=()=>ct550RelayValid(mode,serial)&&ct551Rush.sequence===seq;
   if(!valid()){finish(false);return}
-  const board=document.getElementById('ctBoard');
-  const source=[...document.querySelectorAll('#ctAllyArmy [data-ct-rid]')].find(el=>el.dataset.ctRid===String(actor.ownerRosterId));
-  const target=[...document.querySelectorAll('#ctEnemyGrid [data-ct-enemy-id]')].find(el=>el.dataset.ctEnemyId===String(enemy.instanceId));
-  const giantArt=ct5621GiantTrialOn&&Number(actor.ownerCid)===101?document.querySelector('#ct5621GiantVisual img'):null;
-  const img=giantArt||source?.querySelector('.ctArt img');
-  const b=board?.getBoundingClientRect();
-  const hybrid=!!(giantArt&&ct563DisplayMode===1&&ct5621GiantTrialOn);
-  const frame=hybrid?document.getElementById('ct5621GiantVisual'):null;
-  const f=frame?.getBoundingClientRect();
-  const raw=img?.getBoundingClientRect();
-  const attackHeight=hybrid&&f&&b?Math.min(f.height*.95,b.height*.89):0;
-  const largeWidth=attackHeight*(940/1672);
-  const largePos=hybrid&&f&&b?ct566MikotoPosition(b,f,attackHeight,largeWidth):null;
-  const r=hybrid&&largePos?{left:b.left+largePos.left,top:b.top+largePos.top,
-   width:largeWidth,height:attackHeight,right:b.left+largePos.left+largeWidth}:raw;
-  const t=target?.getBoundingClientRect();
-  const visual=!!(board&&img?.getAttribute('src')&&r?.width&&r?.height&&t?.width);
+  // The commander is never allowed to overlap the next relay portrait.
+  ct565StopCommanderVisual();
+  visual=ct567CreateCutin(actor);
   if(visual){
-   ghost=document.createElement('img');ghost.className='ct551RushGhost';ghost.src=img.currentSrc||img.src;ghost.alt='';ghost.draggable=false;
-   ghost.style.cssText=`left:${r.left-b.left}px;top:${r.top-b.top}px;width:${r.width}px;height:${r.height}px`;
-   label=document.createElement('div');label.className='ct551RushLabel';label.textContent=`連携 ${number}/${cap}｜${actor.ownerName}`;
-   board.append(ghost,label);
+   label=document.createElement('div');label.className='ct551RushLabel';
+   label.textContent=`連携 ${number}/${cap}｜${actor.ownerName}`;
+   document.getElementById('ctBoard')?.appendChild(label);
    ct555HiddenPortraitRid=actor.ownerRosterId;
-   const art=source.querySelector('.ctArt');if(art)art.style.visibility='hidden';
-   if(giantArt){giantArt.parentElement.style.visibility='hidden';if(hybrid)ct565SetAttackPortrait(actor.ownerRosterId)}
   }
-  ct551Rush.active={sequence:seq,element:ghost,animation:null,finish};
+  ct551Rush.active={sequence:seq,element:visual?.ghost,animation:null,finish};
   const motion=async(frames,duration)=>{
-   if(!ghost?.animate)return true;
-   try{animation=ghost.animate(frames,{duration,easing:'ease-in-out',fill:'forwards'});ct551Rush.active.animation=animation;await animation.finished;return valid()}catch(_){return false}
+   if(!visual?.ghost?.animate){await ct550Wait(duration);return valid()}
+   try{animation=visual.ghost.animate(frames,{duration,easing:'ease-in-out',fill:'forwards'});ct551Rush.active.animation=animation;await animation.finished;return valid()}catch(_){return false}
   };
-  const dx=visual?(hybrid?ct566MikotoAdvance(b,r.left-b.left,r.width):Math.max(12,Math.min(b.width*.34,(t.left-r.right)*.76))):0;
-  const dy=visual&&!hybrid?(t.top+t.height*.45)-(r.top+r.height*.45):0;
-  const outward=hybrid?`translate(${dx}px,0px) scale(1)`:`translate(${dx}px,${dy*.75}px) scale(1.07)`;
+  const outward=`translate(${visual?.dx||0}px,0px)`;
   try{
-   if(visual&&!(await motion([{transform:'translate(0,0) scale(1)'},{transform:outward}],225))){finish(false);return}
+   if(!(await motion([{transform:'translate(0,0)'},{transform:outward}],225))){finish(false);return}
    if(!valid()){finish(false);return}
-   // This is the sole impact callback. Damage, flash, sound and number start here.
+   // Sole existing relay impact callback: no new Hit or damage calculation.
    await onImpact();
    if(!valid()){finish(false);return}
-   if(visual&&!(await motion([{transform:outward},{transform:'translate(0,0) scale(1)'}],265))){finish(false);return}
+   if(!(await motion([{transform:outward},{transform:'translate(0,0)'}],265))){finish(false);return}
    finish(valid());
   }catch(e){finish(false);attackExerciseLogPush(`VER.553 演出異常｜${String(e?.message||e)}`)}
  });
@@ -4714,7 +4745,7 @@ function cardBattleTestActorHtml(a){
  const concealed=ct555HiddenPortraitRid!==null&&String(ct555HiddenPortraitRid)===String(a.ownerRosterId);
  const art=src?`<span class="ctArt" ${concealed?'style="visibility:hidden"':''}><img src="${cardDebugEsc(src)}" alt="" onerror="this.style.display='none'"></span>`:`<span class="ctArt"></span>`;
  const sword=(Number(a.sword)||0)>0?`<span class="ctRealBuff" aria-label="剣 ${attackExerciseFmt(a.sword)}">🗡️${attackExerciseFmt(a.sword)}</span>`:'';
- return `<button class="ctUnit ctSharedFrame ctSlot${slot} ${target?'target':''} ${!a.alive?'dead':''}" data-ct-rid="${cardDebugEsc(a.ownerRosterId)}" type="button" onclick="cardBattleTestSelectAlly('${cardDebugEsc(a.ownerRosterId)}')" ${!a.alive?'disabled':''} aria-label="${cardDebugEsc(a.ownerName)} HP ${attackExerciseFmt(a.hp)} / ${attackExerciseFmt(a.maxHp)} BLOCK ${attackExerciseFmt(a.block)}">${art}${cardBattleTestUnitOverlay(a.ownerName,a.hp,a.maxHp,a.block,sword,a)}</button>`;
+ return `<button class="ctUnit ctSharedFrame ctSlot${slot} ${target?'target':''} ${!a.alive?'dead':''} ${ct565AttackVisualRid!==null&&String(ct565AttackVisualRid)===String(a.ownerRosterId)?'ct567AttackSourceHidden':''}" data-ct-rid="${cardDebugEsc(a.ownerRosterId)}" type="button" onclick="cardBattleTestSelectAlly('${cardDebugEsc(a.ownerRosterId)}')" ${!a.alive?'disabled':''} aria-label="${cardDebugEsc(a.ownerName)} HP ${attackExerciseFmt(a.hp)} / ${attackExerciseFmt(a.maxHp)} BLOCK ${attackExerciseFmt(a.block)}">${art}${cardBattleTestUnitOverlay(a.ownerName,a.hp,a.maxHp,a.block,sword,a)}</button>`;
 }
 function cardBattleTestEmptyAllyHtml(slot){return `<div class="ctUnit ctFrameEmpty ctSlot${slot}" aria-hidden="true"></div>`}
 // VER.530: read-only UI prediction. The real planners create ephemeral hit/block data.
