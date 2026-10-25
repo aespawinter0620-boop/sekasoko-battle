@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.560</title>
+<title>セカソコ ver.561</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.560";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.561";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2516,7 +2516,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.560</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.561</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2741,7 +2741,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct560VolumeRow span{display:flex;justify-content:space-between;align-items:center}
 #cardBattleTestScreen .ct560VolumeRow input{width:100%;accent-color:#91c5ed;touch-action:pan-x}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.560 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.561 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2773,7 +2773,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
   <div class="ctDebugOverlay" id="ctDebugOverlay" hidden>
     <div class="ctDebugPanel ct560SettingsPanel" id="ct560SettingsPanel" role="dialog" aria-modal="true" aria-labelledby="ct560SettingsTitle">
       <div class="ctDebugHead"><strong id="ct560SettingsTitle">戦闘設定</strong><button id="ct560SettingsClose" type="button">閉じる</button></div>
-      <label class="ct560VolumeRow" for="ct560BgmSlider"><span>戦闘BGM音量 <output id="ct560BgmValue">40%</output></span><input id="ct560BgmSlider" type="range" min="0" max="100" value="40" step="1"></label>
+      <label class="ct560VolumeRow" for="ct560BgmSlider"><span>BGM音量 <output id="ct560BgmValue">40%</output></span><input id="ct560BgmSlider" type="range" min="0" max="100" value="40" step="1"></label>
       <label class="ct560VolumeRow" for="ct560SeSlider"><span>効果音音量 <output id="ct560SeValue">70%</output></span><input id="ct560SeSlider" type="range" min="0" max="100" value="70" step="1"></label>
       <button id="ct560DeveloperOpen" class="ctDebugLogOpen" type="button">開発者用DEBUG</button>
     </div>
@@ -3941,19 +3941,62 @@ function ct560StopSe(){for(const a of ct560Sound.voices){try{a.pause();a.current
 function ct560SettingsOpen(){const o=document.getElementById('ctDebugOverlay');if(!cardBattleTestMode.active||!o)return false;ctGestureReset(true);o.hidden=false;document.getElementById('ct560SettingsPanel').hidden=false;document.getElementById('ct560DeveloperPanel').hidden=true;ct560SyncSettings();return true}
 function ct560DeveloperOpen(){document.getElementById('ct560SettingsPanel').hidden=true;document.getElementById('ct560DeveloperPanel').hidden=false;ct549RelayUiInit();cardBattleTestRender();return true}
 const CT546_BGM_SRC='assets/audio/Heartbeat_of_the_Abyss_v26_B_160BPM_80BPM_HEART_36s.wav';
+// VER.561: one reusable media-element Web Audio path for every future BGM track.
+// Existing volume storage (sekasoko.ct560.bgm) remains the single shared BGM setting.
+const ct561BgmGraph={context:null,source:null,gain:null,failed:false};
+function ct561BgmEffectiveGain(){return ct546Bgm.muted?0:ct546Bgm.volume}
+function ct561BgmApplyGain(){
+ const a=ct546Bgm.audio,v=ct561BgmEffectiveGain();
+ if(ct561BgmGraph.gain){
+  // No HTMLMediaElement.volume reliance on iOS; MediaElementSource outputs only to GainNode.
+  ct561BgmGraph.gain.gain.value=v;
+  if(a){a.volume=1;a.muted=ct546Bgm.muted||v===0}
+ }else if(a){
+  // Graceful fallback on browsers without Web Audio; 0% and mute remain silent.
+  a.volume=ct546Bgm.volume;a.muted=ct546Bgm.muted||v===0;
+ }
+}
+function ct561BgmEnsureGraph(a){
+ if(ct561BgmGraph.source)return true;
+ if(ct561BgmGraph.failed)return false;
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)throw new Error('Web Audio API unavailable');
+  // The VER.553 DEBUG synthesizer already owns a context; reuse it rather than duplicate.
+  const ctx=ct553AudioContext||(ct553AudioContext=new AC());
+  const source=ctx.createMediaElementSource(a);
+  const gain=ctx.createGain();
+  source.connect(gain);gain.connect(ctx.destination);
+  ct561BgmGraph.context=ctx;ct561BgmGraph.source=source;ct561BgmGraph.gain=gain;
+  ct561BgmApplyGain();
+  return true;
+ }catch(e){
+  ct561BgmGraph.failed=true;ct546Bgm.lastError='BGM Web Audio: '+String(e);
+  ct561BgmApplyGain();return false;
+ }
+}
+function ct561BgmResumeContext(){
+ const c=ct561BgmGraph.context;
+ if(!c||c.state!=='suspended')return;
+ try{const p=c.resume();if(p?.catch)p.catch(e=>{ct546Bgm.lastError='BGM context resume: '+String(e)})}
+ catch(e){ct546Bgm.lastError='BGM context resume: '+String(e)}
+}
 const ct546Bgm={audio:null,wanted:false,suspended:false,volume:ct560Sound.bgm/100,muted:false,lastError:'',playRequests:0};
 function ct546BgmEnsure(){
  if(ct546Bgm.audio)return ct546Bgm.audio;
  try{
   const a=new Audio(CT546_BGM_SRC);
-  a.loop=true;a.preload='auto';a.volume=ct546Bgm.volume;a.muted=ct546Bgm.muted;
+  a.loop=true;a.preload='auto';
   a.addEventListener('error',()=>{ct546Bgm.lastError='WAVの読込／再生エラー';});
-  ct546Bgm.audio=a;return a;
+  ct546Bgm.audio=a;
+  ct561BgmEnsureGraph(a);ct561BgmApplyGain();
+  return a;
  }catch(e){ct546Bgm.lastError=String(e);return null}
 }
 function ct546BgmPlay(){
  if(!ct546Bgm.wanted||ct546Bgm.suspended||document.hidden)return false;
  const a=ct546BgmEnsure();if(!a)return false;
+ ct561BgmResumeContext();
  try{
   if(!a.paused)return true; // duplicate requests must never layer or restart the track
   ct546Bgm.playRequests++;
@@ -3978,12 +4021,12 @@ function ct546BgmStop(){
 function ct546BgmSetVolume(value){
  const n=Number(value);if(!Number.isFinite(n))return false;
  ct546Bgm.volume=Math.max(0,Math.min(1,n));
- if(ct546Bgm.audio)ct546Bgm.audio.volume=ct546Bgm.volume;
+ ct561BgmApplyGain();
  return true;
 }
 function ct546BgmSetMuted(value){
  ct546Bgm.muted=!!value;
- if(ct546Bgm.audio)ct546Bgm.audio.muted=ct546Bgm.muted;
+ ct561BgmApplyGain();
  return true;
 }
 function ct546BgmSuspend(){
@@ -4001,7 +4044,10 @@ window.addEventListener('pagehide',ct546BgmSuspend);
 window.addEventListener('pageshow',ct546BgmResume);
 // If iOS refuses a background-resume autoplay, retry only after a later user gesture.
 document.addEventListener('pointerdown',()=>{
- if(ct546Bgm.wanted&&!ct546Bgm.suspended&&!document.hidden&&ct546Bgm.audio?.paused)ct546BgmPlay();
+ if(ct546Bgm.wanted&&!ct546Bgm.suspended&&!document.hidden){
+  ct561BgmResumeContext();
+  if(ct546Bgm.audio?.paused)ct546BgmPlay();
+ }
 },{passive:true});
 
 function cardBattleTestStart(){
