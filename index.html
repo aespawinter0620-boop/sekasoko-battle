@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.562.1</title>
+<title>セカソコ ver.563</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.562.1";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.563";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2530,7 +2530,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.562.1</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.563</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2756,35 +2756,80 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen .ct560VolumeRow input{width:100%;accent-color:#91c5ed;touch-action:pan-x}
 </style>
 
-<style id="ver5621-mikoto-giant-trial">
-/* VER.562.1 VISUAL TRIAL ONLY. Does not change combat occupancy, targeting or cards. */
-#cardBattleTestScreen.ct5621GiantOn .ctSharedFrame:not(.ctFrameEmpty){
- background:transparent!important;background-image:none!important;box-shadow:none!important;
- border-color:transparent!important;
+<style id="ver563-mikoto-large-frame-trial">
+/* VER.563: DEBUG-only presentation, no combat occupancy or hitbox changes. */
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy .ct563MikotoSource{
+ background:transparent!important;background-image:none!important;border-color:transparent!important;
+ box-shadow:none!important;
 }
-/* Keep ally target, defense drop and enemy direct-attack feedback legible. */
-#cardBattleTestScreen.ct5621GiantOn .ctUnit.ctSharedFrame.target,
-#cardBattleTestScreen.ct5621GiantOn .ctUnit.ctSharedFrame.ctDropReady{
- border-color:#7cdcff!important;box-shadow:0 0 0 2px #68d7ff70,0 0 15px #75d8ff5c!important;
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy .ct563MikotoSource>.ctArt,
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy .ct563MikotoSource>.ctUnitOverlay{visibility:hidden!important}
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame{
+ position:absolute!important;left:auto!important;top:0!important;bottom:0!important;right:1px!important;
+ width:calc(50% - 2px)!important;height:100%!important;
+ z-index:3;pointer-events:none!important;isolation:isolate;
+ border:2px solid #8bcdf4;border-radius:12px;
+ background:linear-gradient(160deg,rgba(30,65,93,.32),rgba(4,16,32,.26) 60%,rgba(17,42,72,.43));
+ box-shadow:inset 0 0 0 1px #d9f4ff6e,inset 0 0 18px #5da9ff2d,0 0 14px #63bcff7a,0 4px 13px #0008;
+ overflow:visible;
 }
-#cardBattleTestScreen.ct5621GiantOn .ctEnemyCell.ctEnemyDropReady{
- border-color:#ffe052!important;box-shadow:0 0 0 2px #ffd84a9c,0 0 15px #ffd44880!important;
+/* Restrained ornament, identical for both art comparison modes. */
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame::before{
+ content:"";position:absolute;inset:4px;border:1px solid #a8d8ff66;border-radius:8px;pointer-events:none;z-index:4;
 }
-#cardBattleTestScreen.ct5621GiantOn #ctAllyArmy>.ctUnit{z-index:2}
-#cardBattleTestScreen.ct5621GiantOn #ctAllyArmy .ct5621MikotoSource .ctArt{visibility:hidden!important}
-#cardBattleTestScreen.ct5621GiantOn #ctAllyArmy .ct5621GiantVisual{
- position:absolute;top:0;bottom:0;right:0;width:calc(50% - 2px);z-index:1;
- display:flex;align-items:flex-end;justify-content:center;pointer-events:none!important;
- overflow:visible;user-select:none;-webkit-user-select:none;
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame::after{
+ content:"◆";position:absolute;left:50%;top:-8px;transform:translateX(-50%);
+ font-size:12px;line-height:14px;color:#d9f3ff;text-shadow:0 0 6px #54b8ff,0 1px 2px #001;z-index:5;pointer-events:none;
 }
-#cardBattleTestScreen.ct5621GiantOn #ctAllyArmy .ct5621GiantVisual img{
- display:block;width:auto;height:100%;max-width:none;max-height:none;object-fit:contain;
- object-position:center bottom;filter:drop-shadow(0 5px 7px #000d);pointer-events:none!important;
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame .ct563LargeArt{
+ position:absolute;inset:7px 4px 33px;display:flex;align-items:flex-end;justify-content:center;
+ overflow:hidden;pointer-events:none!important;z-index:1;border-radius:6px;
+}
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame .ct563LargeArt img{
+ display:block;width:100%;height:100%;max-width:100%;max-height:100%;
+ object-fit:contain;object-position:center bottom;pointer-events:none!important;
+ user-select:none;-webkit-user-select:none;-webkit-user-drag:none;
+ filter:drop-shadow(0 4px 5px #000a);
+}
+/* Overflow comparison: frame geometry unchanged; only artwork can extend outside. */
+#cardBattleTestScreen.ct563LargeOverflow #ctAllyArmy>.ct563LargeFrame .ct563LargeArt{
+ inset:-14% -13% 33px;overflow:visible;
+}
+#cardBattleTestScreen.ct563LargeOverflow #ctAllyArmy>.ct563LargeFrame .ct563LargeArt img{
+ width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;
+}
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame>.ctUnitOverlay{
+ position:absolute;left:2px;right:2px;bottom:3px;top:auto;z-index:6;
+ display:flex;visibility:visible!important;flex-direction:column;pointer-events:none!important;
+ padding:2px 3px 3px;background:transparent!important;box-shadow:none!important;
+}
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame .ctBuffTop:not([hidden]){
+ bottom:calc(100% + 2px);
+}
+#cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame.ct563Target{
+ border-color:#a6eaff;box-shadow:0 0 0 2px #68d7ff85,0 0 18px #75d8ffab,inset 0 0 0 1px #d9f4ff6e;
 }
 #cardBattleTestScreen #ct5621GiantToggle[aria-pressed="true"]{border-color:#86d8ff;background:#183e5c;color:#e7faff}
 #cardBattleTestScreen #ct5621GiantStatus{font-size:10px;color:#a6c9df;line-height:1.4;margin:5px 0 9px}
+
+/* Preserve the original overlay's HP/BLOCK/BREAK styling on the large visual. */
+#cardBattleTestScreen .ct563LargeFrame .ctBuffTop[hidden]{display:none!important}
+#cardBattleTestScreen .ct563LargeFrame .ctBuffTop:not([hidden]){position:absolute;bottom:calc(100% + 2px);left:2px;display:inline-block;max-width:calc(100% - 4px);white-space:nowrap;font-size:8px;font-weight:900;line-height:1.1;color:#fff;background:rgba(14,29,37,.88);border:1px solid #c5eaff99;border-radius:3px;padding:1px 3px;pointer-events:none;}
+#cardBattleTestScreen .ct563LargeFrame .ctBuffLower{display:flex;height:19px;min-height:19px;align-items:center;gap:2px;min-width:0;max-width:100%;white-space:nowrap}
+#cardBattleTestScreen .ct563LargeFrame .ctShield{position:relative;display:block;width:20px;height:22px;flex:0 0 20px;margin-top:-3px}
+#cardBattleTestScreen .ct563LargeFrame .ctShield svg{display:block;width:100%;height:100%;filter:drop-shadow(0 1px 2px #000)}
+#cardBattleTestScreen .ct563LargeFrame .ctShield b{position:absolute;top:51%;left:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:1000;color:#fff;text-shadow:0 1px 2px #071522;max-width:18px;letter-spacing:-.06em}
+#cardBattleTestScreen .ct563LargeFrame .ctRealBuff{display:inline-block;font-size:8px;color:#fff;border-radius:4px;padding:1px 2px;background:#121b24b8}
+#cardBattleTestScreen .ct563LargeFrame .ctUnitName{display:block;width:100%;min-width:0;font-size:8px;font-weight:900;text-align:left;white-space:nowrap;letter-spacing:-.05em;overflow:hidden;text-overflow:ellipsis;color:#f5f8ff;text-shadow:0 1px 2px #000}
+#cardBattleTestScreen .ct563LargeFrame .ctHpTrack{display:block;position:relative;height:12px;border-radius:3px;border:1px solid rgba(213,244,214,.32);background:rgba(1,11,6,.87);overflow:hidden}
+#cardBattleTestScreen .ct563LargeFrame .ctHpFill{display:block;height:100%;background:linear-gradient(90deg,#2d8e54,#58db79);transition:width .20s linear}
+#cardBattleTestScreen .ct563LargeFrame .ctHpText{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:1000;color:#fff;text-shadow:0 1px 2px #000,1px 0 1px #000;line-height:1;font-variant-numeric:tabular-nums}
+#cardBattleTestScreen .ct563LargeFrame .ctBreakRow{height:8px;display:flex;gap:3px;align-items:center;white-space:nowrap}
+#cardBattleTestScreen .ct563LargeFrame .ctBreakTrack{height:3px;flex:1 1 auto;min-width:0;border:1px solid #8b81925e;border-radius:3px;background:repeating-linear-gradient(100deg,#6f657456 0 3px,rgba(8,9,13,.75) 3px 6px)}
+#cardBattleTestScreen .ct563LargeFrame .ctBreakLabel{font-size:6px;line-height:8px;color:#b8aabc;letter-spacing:0}
+
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.562.1 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.563 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2823,8 +2868,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
     <div class="ctDebugPanel" id="ct560DeveloperPanel" role="dialog" aria-modal="true" aria-labelledby="ctDebugTitle" hidden>
       <div class="ctDebugHead"><strong id="ctDebugTitle">新カード戦闘｜DEBUG</strong><button id="ctDebugClose" type="button">閉じる</button></div>
       <p class="ctDebugHelp">演習補助｜既存の試験機能を使用</p>
-      <button id="ct5621GiantToggle" class="ctDebugLogOpen" type="button" aria-pressed="false" onclick="ct5621ToggleGiantTrial()">🛡️ 命・巨大化表示 OFF</button>
-      <p id="ct5621GiantStatus" aria-live="polite">試験表示のみ。命を味方前衛に配置してONにしてください。占有マス・戦闘性能は変化しません。</p>
+      <button id="ct5621GiantToggle" class="ctDebugLogOpen" type="button" aria-pressed="false" onclick="ct5621ToggleGiantTrial()">🛡️ 命・巨大化表示：OFF</button>
+      <p id="ct5621GiantStatus" aria-live="polite">表示試験：OFF → 枠内表示 → はみ出し表示。命のみ前衛配置時に有効。</p>
       <button id="ctDebugLogOpen" class="ctDebugLogOpen" type="button">📜 戦闘ログ履歴を開く</button>
       <div class="ctDebugActions">
         <button class="ctAssist" id="ctPrepAttack" type="button">演習補助｜攻撃札</button>
@@ -4476,37 +4521,74 @@ function cardBattleTestEnemyHtml(enemy,slot){
  const mockIntent=preview?`<span class="ctEnemyIntent ctIntent-${action.type}" aria-label="次回行動 ${cardDebugEsc(preview)}">${cardDebugEsc(preview)}</span>`:'';
  return `<button type="button" class="ctEnemyCell ctSharedFrame ctAfterimage ${back?'backline':'frontline'} ${locked?'locked':''} ${dead?'pendingDeath':''}" data-ct-afterimage-rank="${comparisonRank}" data-ct-enemy-id="${cardDebugEsc(enemy.instanceId)}" onclick="cardBattleTestSelectEnemy('${cardDebugEsc(enemy.instanceId)}')" ${dead?'disabled':''} aria-label="${cardDebugEsc(enemy.name)} ${back?'後衛':'前衛'} HP ${attackExerciseFmt(enemy.hp)} BLOCK ${attackExerciseFmt(enemy.block)}${locked?' TARGET LOCK':''}">${art}${info}${mockIntent}</button>`;
 }
-// VER.562.1: Debug-only, nonpersistent art comparison. No combat-state writes.
-let ct5621GiantTrialOn=false;
+// VER.563: 3-mode visual comparison. Existing combat actor remains one slot.
+let ct5621GiantTrialOn=false; // true only while a valid large card is displayed
+let ct563DisplayMode=0; // 0 OFF, 1 inside frame, 2 overflow artwork
 function ct5621GiantTrialSync(){
  const screen=document.getElementById('cardBattleTestScreen');
- if(screen)screen.classList.toggle('ct5621GiantOn',ct5621GiantTrialOn);
+ if(screen){
+  screen.classList.toggle('ct563LargeOn',ct5621GiantTrialOn);
+  screen.classList.toggle('ct563LargeOverflow',ct5621GiantTrialOn&&ct563DisplayMode===2);
+  screen.classList.remove('ct5621GiantOn');
+ }
  const b=document.getElementById('ct5621GiantToggle');
- if(b){b.setAttribute('aria-pressed',String(ct5621GiantTrialOn));b.textContent='🛡️ 命・巨大化表示 '+(ct5621GiantTrialOn?'ON':'OFF')}
+ if(b){
+  const name=['OFF','枠内表示','はみ出し表示'][ct563DisplayMode];
+  b.setAttribute('aria-pressed',String(ct563DisplayMode!==0));
+  b.textContent='🛡️ 命・巨大化表示：'+name+'（タップで切替）';
+ }
 }
 function ct5621ToggleGiantTrial(){
- ct5621GiantTrialOn=!ct5621GiantTrialOn;ct5621GiantTrialSync();
+ ct563DisplayMode=(ct563DisplayMode+1)%3;
  if(cardBattleTestMode.active)cardBattleTestRender();
+ else{ct5621GiantTrialOn=false;ct5621GiantTrialSync()}
 }
 function ct5621GiantTrialRender(army,actors){
- ct5621GiantTrialSync();
  const status=document.getElementById('ct5621GiantStatus');
- if(!ct5621GiantTrialOn){if(status)status.textContent='OFF：VER.562と同じ額縁付き表示。';return}
+ ct5621GiantTrialOn=false;
  const a=actors.find(x=>x&&Number(x.ownerCid)===101&&x.alive&&x.hp>0);
- if(!a){if(status)status.textContent='ON：命が出撃・生存しているときに表示します。';return}
- if(!(Number(a.formationSlot)>=0&&Number(a.formationSlot)<3)){
-  if(status)status.textContent='ON：命を前衛へ編成すると縦3マス相当で表示します。';return;
+ if(ct563DisplayMode===0){
+  ct5621GiantTrialSync();
+  if(status)status.textContent='OFF：VER.562と同じ通常カード表示。';
+  return;
+ }
+ if(!a){
+  ct5621GiantTrialSync();
+  if(status)status.textContent='大型表示保留：命が出撃・生存していません。通常表示を維持。';
+  return;
+ }
+ const front=actors.filter(x=>x&&x.alive&&x.hp>0&&Number(x.formationSlot)>=0&&Number(x.formationSlot)<3);
+ if(front.length!==1||front[0]!==a){
+  ct5621GiantTrialSync();
+  if(status)status.textContent='大型表示保留：味方前衛は命1体のみの編成が必要です。通常表示を維持。';
+  return;
  }
  const base=cardBattleTestBase(a.ownerRosterId),src=base?.sprite||base?.actionSprite||'';
- if(!src){if(status)status.textContent='ON：命の採用済み立ち絵が見つかりません。';return}
+ if(!src){
+  ct5621GiantTrialSync();
+  if(status)status.textContent='大型表示保留：命の採用済み立ち絵が見つかりません。';
+  return;
+ }
  const source=[...army.querySelectorAll('[data-ct-rid]')].find(el=>el.dataset.ctRid===String(a.ownerRosterId));
- if(!source)return;
- source.classList.add('ct5621MikotoSource');
- const wrap=document.createElement('div');wrap.className='ct5621GiantVisual';wrap.id='ct5621GiantVisual';wrap.setAttribute('aria-hidden','true');
+ if(!source){ct5621GiantTrialSync();return}
+ const frame=document.createElement('div');
+ frame.id='ct5621GiantVisual';
+ frame.className='ct563LargeFrame'+(source.classList.contains('target')?' ct563Target':'');
+ frame.setAttribute('aria-hidden','true');
+ const art=document.createElement('div');art.className='ct563LargeArt';
  const img=document.createElement('img');img.src=src;img.alt='';img.draggable=false;
- img.onerror=()=>{img.style.display='none';if(status)status.textContent='ON：命の立ち絵を読み込めません。'};
- wrap.appendChild(img);army.appendChild(wrap);
- if(status)status.textContent='ON：命の前衛3マス相当の巨大立ち絵＋全ユニット額縁なし。見た目のみ。';
+ img.onerror=()=>{img.style.display='none';if(status)status.textContent='大型表示：命の立ち絵の読み込みに失敗しました。'};
+ art.appendChild(img);frame.appendChild(art);
+ // Move only the read-only status overlay; the original button and its hitbox stay untouched.
+ const info=source.querySelector('.ctUnitOverlay');
+ if(info)frame.appendChild(info.cloneNode(true));
+ source.classList.add('ct563MikotoSource');
+ army.appendChild(frame);
+ ct5621GiantTrialOn=true;
+ ct5621GiantTrialSync();
+ if(status)status.textContent=ct563DisplayMode===1
+  ?'枠内表示：前衛3マス相当の大型額縁。全身を枠内に収めます。'
+  :'はみ出し表示：同じ大型額縁。立ち絵のみ枠外へ広がる比較試験。';
 }
 function cardBattleTestActorHtml(a){
  const base=cardBattleTestBase(a.ownerRosterId),slot=Math.max(0,Math.min(5,Number(a.formationSlot)||0)),src=base?.sprite||base?.actionSprite||'',target=attackExercise.defenseTargetRosterId===a.ownerRosterId;
