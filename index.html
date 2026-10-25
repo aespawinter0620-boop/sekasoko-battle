@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.571</title>
+<title>セカソコ ver.572</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.571";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.572";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2530,7 +2530,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.571</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.572</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2914,7 +2914,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame.ct565AttackOut .ct563LargeArt img{visibility:hidden!important}
 #cardBattleTestScreen #ctAllyArmy .ct567AttackSourceHidden>.ctArt{visibility:hidden!important}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.571 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.572 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -2992,8 +2992,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 <div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
 </main>
 <script>
-const attributes=[{id:'suppa',name:'透波',count:'3/3',unlocked:true},{id:'cow',name:'乳牛',count:'3/3',unlocked:true},{id:'vampire',name:'吸血',count:'0/3',unlocked:false},{id:'shield',name:'盾姫',count:'0/3',unlocked:false},{id:'poison',name:'毒牙',count:'0/3',unlocked:false},{id:'undead',name:'屍霊',count:'0/3',unlocked:false},{id:'water',name:'水棲',count:'0/3',unlocked:false},{id:'time',name:'時空',count:'0/3',unlocked:false},{id:'treasure',name:'宝盗',count:'0/3',unlocked:false},{id:'gamble',name:'賭博',count:'0/3',unlocked:false},{id:'abyss',name:'深淵',count:'0/3',unlocked:false}];
-const homeRoster={suppa:[{name:'名切 命',icon:'🌙',sub:'透波｜技巧型',hp:110,atk:100,def:100,spd:100,skills:['固有《絶対領域展開》 CT90','敵前衛ランダム1体：ATK80%｜銅🪞+20（★1初期）｜固有スキルツリーでCT・威力・銅🪞生成量と次回回避／反撃ボーナスが成長。']},{name:'月城 凪',icon:'🌪️',sub:'透波・天｜指揮官',hp:104,atk:100,def:100,spd:100,skills:['固有《補給命令》 CT120','敵全体へATK20%。攻撃後、味方全体へ銅🪞+5（★1初期）。固有スキルツリーでCT・威力・銅/銀/金🪞の補給量が成長。']},{name:'緋村 柚',icon:'🥷',sub:'透波・地｜奇襲',hp:92,atk:100,def:100,spd:100,skills:['固有《雲隠霧消》 CT110','敵後衛ランダム1体へATK40%。後衛不在時は前衛ランダム1体。攻撃後、自身を含む生存透波全員へ銅🪞+4（★1初期）。固有スキルツリーでCT・火力・銅🪞供給量が成長。']}],cow:[{name:'聖なる乳牛ハトホル',icon:'🥛',sub:'乳牛・天｜生命・回復',hp:145,atk:100,def:100,spd:100,skills:['固有《聖なる雫》 CT50','敵前衛1体に残存HP×1/4のDEF無視ダメージ。自身に🥛+3。']},{name:'豊穣の乳牛バアル',icon:'🐮',sub:'乳牛・地｜耐久・蓄積',hp:145,atk:100,def:100,spd:100,skills:['固有《豊穣の雫》 CT190','敵前衛全体に最大HP×1/5のDEF無視ダメージ。味方1体に🥛+5。']},{name:'恵みの乳牛ナンディ',icon:'🍼',sub:'乳牛・人｜供給・支援',hp:145,atk:100,def:100,spd:100,skills:['固有《搾乳の恵み》 CT10','敵前衛1体に最大HP×1/10のDEF無視ダメージ。自身に🥛+3。']}]};
+const attributes=[{id:'suppa',name:'透波',count:'3/3',unlocked:true},{id:'cow',name:'乳牛',count:'3/3',unlocked:true},{id:'idol',name:'偶像',count:'1/3',unlocked:true},{id:'vampire',name:'吸血',count:'0/3',unlocked:false},{id:'shield',name:'盾姫',count:'0/3',unlocked:false},{id:'poison',name:'毒牙',count:'0/3',unlocked:false},{id:'undead',name:'屍霊',count:'0/3',unlocked:false},{id:'water',name:'水棲',count:'0/3',unlocked:false},{id:'time',name:'時空',count:'0/3',unlocked:false},{id:'treasure',name:'宝盗',count:'0/3',unlocked:false},{id:'gamble',name:'賭博',count:'0/3',unlocked:false},{id:'abyss',name:'深淵',count:'0/3',unlocked:false}];
+const homeRoster={idol:[{name:'葉村 月',icon:'🌟',sub:'偶像族｜abyss社｜美人アイドルマネージャー｜はむら るな',hp:180,atk:180,def:120,spd:100,skills:[]}],suppa:[{name:'名切 命',icon:'🌙',sub:'透波｜技巧型',hp:110,atk:100,def:100,spd:100,skills:['固有《絶対領域展開》 CT90','敵前衛ランダム1体：ATK80%｜銅🪞+20（★1初期）｜固有スキルツリーでCT・威力・銅🪞生成量と次回回避／反撃ボーナスが成長。']},{name:'月城 凪',icon:'🌪️',sub:'透波・天｜指揮官',hp:104,atk:100,def:100,spd:100,skills:['固有《補給命令》 CT120','敵全体へATK20%。攻撃後、味方全体へ銅🪞+5（★1初期）。固有スキルツリーでCT・威力・銅/銀/金🪞の補給量が成長。']},{name:'緋村 柚',icon:'🥷',sub:'透波・地｜奇襲',hp:92,atk:100,def:100,spd:100,skills:['固有《雲隠霧消》 CT110','敵後衛ランダム1体へATK40%。後衛不在時は前衛ランダム1体。攻撃後、自身を含む生存透波全員へ銅🪞+4（★1初期）。固有スキルツリーでCT・火力・銅🪞供給量が成長。']}],cow:[{name:'聖なる乳牛ハトホル',icon:'🥛',sub:'乳牛・天｜生命・回復',hp:145,atk:100,def:100,spd:100,skills:['固有《聖なる雫》 CT50','敵前衛1体に残存HP×1/4のDEF無視ダメージ。自身に🥛+3。']},{name:'豊穣の乳牛バアル',icon:'🐮',sub:'乳牛・地｜耐久・蓄積',hp:145,atk:100,def:100,spd:100,skills:['固有《豊穣の雫》 CT190','敵前衛全体に最大HP×1/5のDEF無視ダメージ。味方1体に🥛+5。']},{name:'恵みの乳牛ナンディ',icon:'🍼',sub:'乳牛・人｜供給・支援',hp:145,atk:100,def:100,spd:100,skills:['固有《搾乳の恵み》 CT10','敵前衛1体に最大HP×1/10のDEF無視ダメージ。自身に🥛+3。']}]};
 let currentAttr=localStorage.getItem('sekasokoHomeAttr')||'suppa';
 function showScreen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
 function renderHome(){const wd=document.querySelector('#homeWD');if(wd)wd.textContent='💎'+getWaldonium().toLocaleString()+' WD';const a=attributes.find(x=>x.id===currentAttr)||attributes[0];document.querySelector('#areaName').textContent=a.unlocked?a.name:'？？？';document.querySelector('#areaCount').textContent=a.unlocked?a.count:'未発見';const chars=a.unlocked?(homeRoster[a.id]||[]):[];let html=chars.map((c,i)=>`<div class="char" data-char="${i}"><div class="portrait">${c.icon}</div><div class="charName">${c.name}</div><div class="charSub">${c.sub}</div></div>`).join('');for(let i=chars.length;i<3;i++)html+=`<div class="char emptyChar"><div class="portrait">？</div><div class="charName">${a.unlocked?'未加入':'？？？'}</div><div class="charSub">${a.unlocked?'空席':'未発見'}</div></div>`;document.querySelector('#homeCharacters').innerHTML=html;document.querySelectorAll('[data-char]').forEach(el=>el.onclick=()=>openCharacter(chars[+el.dataset.char]));document.querySelector('#attrNav').innerHTML=attributes.map(x=>`<button class="attrBtn ${x.id===currentAttr?'active':''} ${!x.unlocked?'locked':''}" data-attr="${x.id}">${x.unlocked?x.name:'？？？'}<span>${x.unlocked?x.count:'未発見'}</span></button>`).join('');document.querySelectorAll('[data-attr]').forEach(el=>el.onclick=()=>{const x=attributes.find(a=>a.id===el.dataset.attr);if(!x.unlocked){openInfo('？？？','まだ、この気配の正体を知らない。','❔');return}currentAttr=x.id;localStorage.setItem('sekasokoHomeAttr',currentAttr);renderHome()})}
@@ -3005,7 +3005,7 @@ function openCharacter(c){
  const baseStats=battleRef||c,stats=getEnhancedStats(key,baseStats),up=getStatUpgrade(key),power=calcPower(stats);
  const art=standing?`<div class="playableDetailStanding"><div class="playableDetailZoom"><img src="${standing}" alt="${c.name}"></div></div>`:`<div class="playableDetailStanding playableDetailStandingFallback">${c.icon}</div>`;
  const upText=k=>up[k]>0?`<small>強化 +${up[k]}</small>`:'<small>未強化</small>';
- document.querySelector('#modalCard').innerHTML=`<div class="playableDetailCard${key==='baal'?' detailBaal':''}"><div class="cardHead"><h2>${c.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${c.sub}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F</div><div class="stats playableDetailStats"><div class="stat">HP<b>${stats.hp}</b>${upText('hp')}</div><div class="stat">ATK<b>${stats.atk}</b>${upText('atk')}</div><div class="stat">DEF<b>${stats.def}</b>${upText('def')}</div><div class="stat">SPD<b>${stats.spd}</b>${upText('spd')}</div></div></div></div><button class="charUpgradeBtn" onclick="openStatUpgrade('${key}')">💎 ステータス強化</button>${(key==='mizuki'||key==='nagi')?`<button class="charUniqueTreeBtn" onclick="openUniqueSkillTree('${key}')">🌟 固有スキルツリー</button>`:''}<button class="charEquipBtn" onclick="openSkillEquip('${key}')">📕 スキルブック</button></div>`;
+ document.querySelector('#modalCard').innerHTML=`<div class="playableDetailCard${key==='baal'?' detailBaal':''}"><div class="cardHead"><h2>${c.name}</h2><button class="close" onclick="closeModal()">閉じる</button></div><div class="playableDetailStage">${art}<div class="playableDetailInfo"><div class="playableDetailIdentity"><b>${c.sub}</b>総合戦力 <strong>${power.toLocaleString()}</strong><br>総階層踏破 ${floors.toLocaleString()}F</div><div class="stats playableDetailStats"><div class="stat">HP<b>${stats.hp}</b>${upText('hp')}</div><div class="stat">ATK<b>${stats.atk}</b>${upText('atk')}</div><div class="stat">DEF<b>${stats.def}</b>${upText('def')}</div><div class="stat">SPD<b>${stats.spd}</b>${upText('spd')}</div></div></div></div><button class="charUpgradeBtn" onclick="openStatUpgrade('${key}')">💎 ステータス強化</button>${(key==='mizuki'||key==='nagi')?`<button class="charUniqueTreeBtn" onclick="openUniqueSkillTree('${key}')">🌟 固有スキルツリー</button>`:''}${key==='hamuraruna'?'':`<button class="charEquipBtn" onclick="openSkillEquip('${key}')">📕 スキルブック</button>`}</div>`;
  const modal=document.querySelector('#modal');modal.classList.remove('skillBookMode');modal.classList.add('playableDetailMode','show');initPlayableDetailZoom()
 }
 function initPlayableDetailZoom(){
@@ -3087,6 +3087,7 @@ const formationRosterData=[
 {id:'hathor',name:'聖なる乳牛ハトホル',icon:'🥛',sprite:'assets/characters/hathor.PNG',actionSprite:'assets/characters/hathor.PNG',faceIcon:'assets/icons/hathor.png',attr:'乳牛・天',hp:145,atk:100,def:100,row:'front',cid:201,spd:100,milk:0,skill:{name:'固有《聖なる雫》',ct:50},cost:1},
 {id:'baal',name:'豊穣の乳牛バアル',icon:'🐮',sprite:'assets/characters/baal.PNG',actionSprite:'assets/characters/baal.PNG',faceIcon:'assets/icons/baal.png',attr:'乳牛・地',hp:145,atk:100,def:100,row:'front',cid:202,spd:100,milk:0,skill:{name:'固有《豊穣の雫》',ct:190},cost:1},
 {id:'nandi',name:'恵みの乳牛ナンディ',icon:'🍼',sprite:'assets/characters/nandi.PNG',actionSprite:'assets/characters/nandi.PNG',faceIcon:'assets/icons/nandi.png',attr:'乳牛・人',hp:145,atk:100,def:100,row:'front',cid:203,spd:100,milk:0,skill:{name:'固有《搾乳の恵み》',ct:10},cost:1},
+{id:'hamuraruna',name:'葉村 月',reading:'はむら るな',company:'abyss社',title:'美人アイドルマネージャー',icon:'🌟',sprite:'assets/characters/hamuraruna_standing_v1.png',actionSprite:'assets/characters/hamuraruna_standing_v1.png',attr:'偶像族',hp:180,atk:180,def:120,row:'back',cid:401,spd:100,cost:1},
 {id:'shield',name:'白盾姫',icon:'♜',attr:'盾姫',hp:132,atk:16,row:'front',cid:301,spd:90,skill:{name:'盾撃（仮）',ct:3},cost:1},
 {id:'doll',name:'人形王女',icon:'✦',attr:'屍霊',hp:78,atk:20,row:'back',cid:302,spd:70,skill:{name:'操糸（仮）',ct:2},cost:1},
 {id:'rin',name:'凛',icon:'◆',attr:'透波',hp:88,atk:24,row:'back',cid:303,spd:70,skill:{name:'一閃（仮）',ct:4},cost:1},
@@ -4340,7 +4341,8 @@ const ct571AttackPoses=Object.freeze({
  103:'assets/characters/yuzu_attack_pose_v1.png',
  201:'assets/characters/hathor_attack_pose_v1.png',
  202:'assets/characters/baal_attack_pose_v1.png',
- 203:'assets/characters/nandi_attack_pose_v1.png'
+ 203:'assets/characters/nandi_attack_pose_v1.png',
+ 401:'assets/characters/hamuraruna_attack_pose_v1.png'
 });
 // VER.569: preload both approved images before a Mikoto attack. Failed assets
 // never block a hit or create an extra attack; only the portrait is affected.
@@ -5475,7 +5477,7 @@ function renderFormation(){
  document.querySelector('#partyGrid').innerHTML=h;
  document.querySelectorAll('[data-rem-slot]').forEach(b=>b.onclick=()=>{const slot=+b.dataset.remSlot;if(removeFromFormationSlot(slot)){selectedFormationSlot=null;renderFormation()}});
  document.querySelectorAll('[data-place-slot]').forEach(b=>b.onclick=()=>{const slot=+b.dataset.placeSlot;if(!canPlaceInFormationSlot(p,slot)){if(isBackSlot(slot)&&!p[frontPairSlot(slot)])openInfo('後衛を置けません','同じ列の前衛がいないため、この後衛枠には配置できません。','⚠️');return}selectedFormationSlot=selectedFormationSlot===slot?null:slot;renderFormation()});
- document.querySelector('#formationRoster').innerHTML=formationRosterData.map(c=>{let u=usedPartyOf(c.id);return `<button class="rosterCard ${u>=0?'used':''}" data-add="${c.id}"><span class="rIco">${c.icon}</span><b>${c.name}</b><small>${c.attr}${u>=0?'｜部隊'+(u+1):'｜未編成'}</small></button>`}).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>toggleChar(b.dataset.add))
+ document.querySelector('#formationRoster').innerHTML=formationRosterData.filter(c=>['mizuki','nagi','yuzu','hathor','baal','nandi','hamuraruna'].includes(c.id)).map(c=>{let u=usedPartyOf(c.id);return `<button class="rosterCard ${u>=0?'used':''}" data-add="${c.id}"><span class="rIco">${c.icon}</span><b>${c.name}</b><small>${c.attr}${u>=0?'｜部隊'+(u+1):'｜未編成'}</small></button>`}).join('');document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>toggleChar(b.dataset.add))
 }
 function toggleChar(id){let old=usedPartyOf(id);if(old===selectedParty){let slot=parties[selectedParty].indexOf(id);if(slot>=0&&removeFromFormationSlot(slot)){selectedFormationSlot=null;renderFormation()}return}if(old>=0){openInfo('編成済み','このキャラは部隊'+(old+1)+'にいます。先に外してください。','⚠️');return}let c=formationRosterData.find(x=>x.id===id);if(partyCost(parties[selectedParty])+c.cost>6){openInfo('編成できません','1部隊は最大6マスです。','⚠️');return}let p=parties[selectedParty];let slot=(selectedFormationSlot!==null&&canPlaceInFormationSlot(p,selectedFormationSlot))?selectedFormationSlot:p.findIndex((x,idx)=>canPlaceInFormationSlot(p,idx));if(slot<0){openInfo('編成できません','配置可能な空きマスがありません。後衛は同じ列の前衛が必要です。','⚠️');return}p[slot]=id;selectedFormationSlot=null;renderFormation()}
 function validateFormationForSave(){const invalidFront=parties.findIndex(p=>p.some(Boolean)&&!partyHasFront(p));if(invalidFront>=0){openInfo('前衛が必要です','部隊'+(invalidFront+1)+'は後衛のみです。出撃する部隊には前衛を1人以上配置してください。','⚠️');selectedParty=invalidFront;selectedFormationSlot=null;renderFormation();return false}const invalidColumn=parties.findIndex(p=>partyHasBrokenColumns(p));if(invalidColumn>=0){openInfo('編成エラー','部隊'+(invalidColumn+1)+'に、前衛のいない列の後衛がいます。後衛は同じ列の前衛がいる場合のみ配置できます。','⚠️');selectedParty=invalidColumn;selectedFormationSlot=null;renderFormation();return false}return true}
@@ -6260,6 +6262,7 @@ function playerSkillTargetReason(u,slot,book=null){
 }
 function playerSkillBlockReason(u,slot){
  const ctReason=skillCtBlockReason(u);if(ctReason)return ctReason;
+ if(slot===1&&u?.cid===401)return'固有スキル未実装（新カード戦闘専用）';
  if(slot===1)return playerSkillTargetReason(u,slot,null);
  const book=equippedSkillBook(u,slot);if(!book)return'スキルが設定されていません';
  const resourceReason=skillBookBlockReason(u,book);if(resourceReason)return resourceReason;
@@ -7453,6 +7456,7 @@ function configureUniqueSkill(u){
   202:['豊穣の雫','敵前衛全体 最大HP×1/5・DEF無視／味方1体🥛+5','190','敵前衛全体に最大HP×1/5のDEF無視ダメージ。｜味方1体に🥛+5。'],
   203:['搾乳の恵み','敵前衛1体 最大HP×1/10・DEF無視／自身🥛+3','10','敵前衛1体に最大HP×1/10のDEF無視ダメージ。｜自身に🥛+3。']
  };
+ if(u?.cid===401){n.textContent='未実装';d.textContent='専用固有スキルなし（新カード戦闘専用）';delete d.dataset.ct;btn.dataset.skillDetail='固有スキル未実装';[2,3,4].forEach((slot,i)=>{const fb=document.querySelector(`#freeSkill${i+1}`),fn=document.querySelector(`#freeSkill${i+1}Name`),fd=document.querySelector(`#freeSkill${i+1}Desc`);if(fb)fb.classList.add('placeholderSkill');if(fn)fn.textContent='未設定';if(fd)fd.textContent='装備スキル枠'});refreshSkillAvailability(u);return;}
  const a=data[u?.cid]||data[101];n.textContent=a[0];d.textContent=a[1];d.dataset.ct=a[2];btn.dataset.skillDetail=`${a[0]}｜CT${a[2]}｜${a[3]}`;
  [2,3,4].forEach((slot,i)=>{
   const idx=i+1,fb=document.querySelector(`#freeSkill${idx}`),fn=document.querySelector(`#freeSkill${idx}Name`),fd=document.querySelector(`#freeSkill${idx}Desc`),book=equippedSkillBook(u,slot);
