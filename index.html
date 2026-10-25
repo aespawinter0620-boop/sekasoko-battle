@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.565</title>
+<title>セカソコ ver.566</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.565";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.566";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2530,7 +2530,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.565</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.566</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2866,7 +2866,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 #cardBattleTestScreen .ct565CommanderGhost{z-index:96;}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.565 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.566 新カード戦闘試験モード">
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -4269,6 +4269,17 @@ function ct565StopCommanderVisual(){
  if(visual){try{visual.animation?.cancel()}catch(_){}visual.ghost?.remove()}
  ct565SetAttackPortrait(null);
 }
+// VER.566: display-only large Mikoto advance. Enemy Y never affects the visual.
+// Constrain the whole portrait to the card board at both start and end; combat targeting is untouched.
+function ct566MikotoAdvance(boardRect,portraitLeft,portraitWidth){
+ const maxRight=Math.max(0,boardRect.width-(portraitLeft+portraitWidth));
+ return Math.max(0,Math.min(34,boardRect.width*.075,maxRight-4));
+}
+function ct566MikotoPosition(boardRect,frameRect,height,width){
+ const left=Math.max(2,Math.min(boardRect.width-width-2,frameRect.left-boardRect.left+(frameRect.width-width)/2));
+ const top=Math.max(2,Math.min(boardRect.height-height-2,frameRect.bottom-boardRect.top-height));
+ return {left,top};
+}
 // Reuse the existing ct551RushGhost styling and motion geometry. No impact callback,
 // damage, card use or timing changes: the original attack animation stays authoritative.
 function ct565StartCommanderVisual(actor,enemyId,mode,serial){
@@ -4282,15 +4293,15 @@ function ct565StartCommanderVisual(actor,enemyId,mode,serial){
  const b=board.getBoundingClientRect(),f=frame.getBoundingClientRect(),t=enemy.getBoundingClientRect();
  if(!b.width||!f.height||!t.width)return;
  const height=Math.min(f.height*.95,b.height*.89),width=height*(940/1672);
- const left=f.left-b.left+(f.width-width)/2,top=f.bottom-b.top-height;
+ const {left,top}=ct566MikotoPosition(b,f,height,width);
  const ghost=document.createElement('img');ghost.className='ct551RushGhost ct565CommanderGhost';
  ghost.src='assets/characters/mikoto_abyss_guard_large_ver564.png';ghost.alt='';ghost.draggable=false;
  ghost.style.cssText=`left:${left}px;top:${top}px;width:${width}px;height:${height}px`;
  board.appendChild(ghost);ct565SetAttackPortrait(actor.ownerRosterId);
  const visual={ghost,animation:null};ct565CommanderVisual=visual;
- const dx=Math.max(12,Math.min(b.width*.34,(t.left-(f.left+f.width))*.76));
- const dy=(t.top+t.height*.45)-(top+b.top+height*.45);
- const outward=`translate(${dx}px,${dy*.75}px) scale(1.07)`;
+ // Large-card Mikoto: short advance only. Do not chase the enemy row.
+ const dx=ct566MikotoAdvance(b,left,width);
+ const outward=`translate(${dx}px,0px) scale(1)`;
  // Match the pre-existing relay 225ms outbound / 265ms return. No new battle action.
  const valid=()=>ct565CommanderVisual===visual&&cardBattleTestMode===mode&&mode.floorSerial===serial&&mode.active;
  (async()=>{
@@ -4368,9 +4379,10 @@ function ct551RushPortrait(actor,enemy,number,cap,mode,serial,onImpact){
   const f=frame?.getBoundingClientRect();
   const raw=img?.getBoundingClientRect();
   const attackHeight=hybrid&&f&&b?Math.min(f.height*.95,b.height*.89):0;
-  const r=hybrid&&f&&b?{left:f.left+(f.width-attackHeight*(940/1672))/2,
-   top:f.bottom-attackHeight,width:attackHeight*(940/1672),height:attackHeight,
-   right:f.left+(f.width+attackHeight*(940/1672))/2}:raw;
+  const largeWidth=attackHeight*(940/1672);
+  const largePos=hybrid&&f&&b?ct566MikotoPosition(b,f,attackHeight,largeWidth):null;
+  const r=hybrid&&largePos?{left:b.left+largePos.left,top:b.top+largePos.top,
+   width:largeWidth,height:attackHeight,right:b.left+largePos.left+largeWidth}:raw;
   const t=target?.getBoundingClientRect();
   const visual=!!(board&&img?.getAttribute('src')&&r?.width&&r?.height&&t?.width);
   if(visual){
@@ -4387,9 +4399,9 @@ function ct551RushPortrait(actor,enemy,number,cap,mode,serial,onImpact){
    if(!ghost?.animate)return true;
    try{animation=ghost.animate(frames,{duration,easing:'ease-in-out',fill:'forwards'});ct551Rush.active.animation=animation;await animation.finished;return valid()}catch(_){return false}
   };
-  const dx=visual?Math.max(12,Math.min(b.width*.34,(t.left-r.right)*.76)):0;
-  const dy=visual?(t.top+t.height*.45)-(r.top+r.height*.45):0;
-  const outward=`translate(${dx}px,${dy*.75}px) scale(1.07)`;
+  const dx=visual?(hybrid?ct566MikotoAdvance(b,r.left-b.left,r.width):Math.max(12,Math.min(b.width*.34,(t.left-r.right)*.76))):0;
+  const dy=visual&&!hybrid?(t.top+t.height*.45)-(r.top+r.height*.45):0;
+  const outward=hybrid?`translate(${dx}px,0px) scale(1)`:`translate(${dx}px,${dy*.75}px) scale(1.07)`;
   try{
    if(visual&&!(await motion([{transform:'translate(0,0) scale(1)'},{transform:outward}],225))){finish(false);return}
    if(!valid()){finish(false);return}
