@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.573</title>
+<title>セカソコ ver.574</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.573";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.574";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2527,10 +2527,22 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 }
 #cardBattleTestScreen .ctDamagePop.ct539Hit.veryLongNumber .ct539Number{font-size:clamp(9px,2.8vw,12px)}
 </style>
+<style id="ver574-card-warning">
+/* VER.574: legacy red WARNING visual, isolated from #battleScreen. */
+#cardBattleTestScreen #ct574BossWarning{position:absolute;inset:0;z-index:300;display:none;align-items:center;justify-content:center;overflow:hidden;pointer-events:auto;touch-action:none;background:repeating-linear-gradient(0deg,rgba(255,36,36,.055) 0 2px,transparent 2px 7px),radial-gradient(circle at 50% 50%,rgba(125,0,0,.32),rgba(2,3,7,.96) 68%);opacity:0}
+#cardBattleTestScreen #ct574BossWarning.show{display:flex;animation:bossWarningScreen 1.45s ease both}
+#cardBattleTestScreen #ct574BossWarning::before,#cardBattleTestScreen #ct574BossWarning::after{content:"";position:absolute;left:-10%;width:120%;height:4px;background:#ff3131;box-shadow:0 0 14px #ff2d2d,0 0 34px rgba(255,0,0,.75)}
+#cardBattleTestScreen #ct574BossWarning::before{top:31%;animation:bossWarnBarTop 1.45s ease both}
+#cardBattleTestScreen #ct574BossWarning::after{bottom:31%;animation:bossWarnBarBottom 1.45s ease both}
+#cardBattleTestScreen #ct574BossWarning .bossWarningInner{position:relative;width:100%;text-align:center;transform:skewX(-5deg);text-shadow:0 0 8px rgba(255,0,0,.9),0 0 22px rgba(255,0,0,.65)}
+#cardBattleTestScreen #ct574BossWarning .bossWarningMain{display:block;font-size:clamp(48px,14vw,82px);line-height:.9;font-weight:1000;letter-spacing:.08em;color:#ff3030;animation:bossWarnText .72s steps(2,end) infinite}
+#cardBattleTestScreen #ct574BossWarning .bossWarningSub{display:block;margin-top:14px;font-size:clamp(13px,4.3vw,20px);font-weight:1000;letter-spacing:.32em;color:#fff}
+#cardBattleTestScreen #ct574BossWarning .bossWarningFloor{display:block;margin-top:8px;font-size:12px;font-weight:900;letter-spacing:.18em;color:#ff9c9c}
+</style>
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.573</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.574</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2914,7 +2926,8 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 #cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame.ct565AttackOut .ct563LargeArt img{visibility:hidden!important}
 #cardBattleTestScreen #ctAllyArmy .ct567AttackSourceHidden>.ctArt{visibility:hidden!important}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.573 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.574 新カード戦闘試験モード">
+  <div id="ct574BossWarning" aria-hidden="true"><div class="bossWarningInner"><b class="bossWarningMain">WARNING!!</b><span class="bossWarningSub">BOSS ENCOUNTER</span><span class="bossWarningFloor" id="ct574BossWarningFloor">10F</span></div></div>
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
       <div class="ctHudPrimary" aria-label="探索・報酬情報">
@@ -3771,7 +3784,7 @@ function attackExerciseRender(){
 // It never calls battle(), renderBattle(), legacy AUTO or legacy enemy AI.
 // =========================================================
 function cardBattleTestBase(rid){return formationRosterData.find(c=>c.id===rid)||null}
-function cardBattleTestCanInput(){return cardBattleTestMode.active&&!cardBattleTestMode.resultType&&!cardBattleTestMode.busy&&!cardBattleTestMode.dragging&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw}
+function cardBattleTestCanInput(){return cardBattleTestMode.active&&!ct574WarningActive&&!cardBattleTestMode.resultType&&!cardBattleTestMode.busy&&!cardBattleTestMode.dragging&&attackExercise.active&&!cardFoundation.overflowPending&&!cardFoundation.pendingDraw}
 function cardBattleTestSetMessage(msg){
  cardBattleTestMode.message=String(msg||'');
  const el=document.querySelector('#ctMessage');if(el)el.textContent=cardBattleTestMode.message;
@@ -3896,6 +3909,37 @@ function cardBattleTestContinueFloor(){
  mode.resultType='';const overlay=document.querySelector('#ctRunResult');if(overlay)overlay.hidden=true;
  return cardBattleTestAdvanceFloor();
 }
+// VER.574: card-battle WARNING uses ONLY cardBattleTestMode.floor / floorSerial.
+let ct574WarningTimer=null,ct574WarningToken=0,ct574WarningActive=false;
+function ct574ClearWarning(){
+ ++ct574WarningToken;
+ if(ct574WarningTimer!==null){clearTimeout(ct574WarningTimer);ct574WarningTimer=null}
+ ct574WarningActive=false;
+ const el=document.querySelector('#ct574BossWarning');
+ if(el){el.classList.remove('show');el.setAttribute('aria-hidden','true')}
+}
+function ct574StartBossWarning(mode){
+ const f=mode.floor,serial=mode.floorSerial;
+ if(!mode.active||f<10||f>100||f%10!==0||mode.ct574WarningShownFloor===f)return false;
+ const el=document.querySelector('#ct574BossWarning'),label=document.querySelector('#ct574BossWarningFloor');
+ if(!el)return false;
+ mode.ct574WarningShownFloor=f;
+ ct574ClearWarning();
+ const token=ct574WarningToken;
+ ct574WarningActive=true;mode.busy=true;
+ if(label)label.textContent=`${f}F`;
+ el.setAttribute('aria-hidden','false');void el.offsetWidth;el.classList.add('show');
+ cardBattleTestRender();
+ ct574WarningTimer=setTimeout(()=>{
+  if(token!==ct574WarningToken)return;
+  ct574ClearWarning();
+  if(cardBattleTestMode!==mode||!mode.active||mode.floorSerial!==serial||mode.resultType)return;
+  // A spirit phase-start sequence may still be in progress; never unlock it.
+  mode.busy=!!mode.ct545SpiritProcessing;
+  cardBattleTestRender();
+ },1450);
+ return true;
+}
 function cardBattleTestAdvanceFloor(){
  const mode=cardBattleTestMode;
  if(!mode.active||mode.floor>=100||!attackExercise.active||attackExerciseAliveCount()<=0||cardFoundation.overflowPending||cardFoundation.pendingDraw)return false;
@@ -3925,7 +3969,7 @@ function cardBattleTestAdvanceFloor(){
  cardBattleTestPlanEnemyActions();
  cardBattleTestMode.message=`${oldFloor}F→${mode.floor}F｜正式残像更新｜未使用カード・山札・捨て札・消滅を継続`;
  attackExerciseLogPush(cardBattleTestMode.message);
- ct531ApplyBackground(mode.floor);cardBattleTestRender();return true;
+ ct531ApplyBackground(mode.floor);cardBattleTestRender();ct574StartBossWarning(mode);return true;
 }
 
 
@@ -4237,6 +4281,7 @@ document.addEventListener('pointerdown',()=>{
 },{passive:true});
 
 function cardBattleTestStart(){
+ ct574ClearWarning();
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
@@ -4247,6 +4292,7 @@ function cardBattleTestStart(){
 }
 function cardBattleTestExit(){
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){ct546BgmStop();showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
+ ct574ClearWarning();
  ct552RewardReset();ct551RushCancel();document.querySelectorAll('.ct553HitFx').forEach(el=>el.remove());cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
  cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');ct546BgmStop();return true
 }
@@ -4609,15 +4655,15 @@ function cardBattleTestDefense(){
 // The phase core remains unchanged for standalone DEBUG / legacy battles.
 async function cardBattleTestRunEnemyPhase(){
  if(!cardBattleTestMode.active||!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ENEMY)return false;
- const mode=cardBattleTestMode,pending=phaseFoundation.enemySlots.filter(slot=>!slot.processed);
+ const mode=cardBattleTestMode,serial=mode.floorSerial,pending=phaseFoundation.enemySlots.filter(slot=>!slot.processed);
  if(!pending.length){phaseFoundation.phase='between';return phaseBeginAlly()}
  for(const slot of pending){
-  if(!mode.active||cardBattleTestMode!==mode||!phaseFoundation.active||!attackExercise.active)return false;
+  if(!mode.active||cardBattleTestMode!==mode||mode.floorSerial!==serial||mode.resultType||!phaseFoundation.active||!attackExercise.active)return false;
   cardBattleTestExecuteEnemySlots([slot]);
-  if(!mode.active||cardBattleTestMode!==mode||!phaseFoundation.active||!attackExercise.active)return false;
+  if(!mode.active||cardBattleTestMode!==mode||mode.floorSerial!==serial||mode.resultType||!phaseFoundation.active||!attackExercise.active)return false;
   await new Promise(resolve=>setTimeout(resolve,280)); // UI display cadence, not a new combat speed statistic
  }
- if(!phaseFoundation.active||!attackExercise.active)return false;
+ if(!mode.active||cardBattleTestMode!==mode||mode.floorSerial!==serial||mode.resultType||!phaseFoundation.active||!attackExercise.active)return false;
  attackExerciseOnEnemyActions(pending.length);
  cardBattleTestPlanEnemyActions(); // prepare next enemy turn before the next ally phase
  phaseFoundation.message=`敵フェーズ完了｜${pending.length}枠処理`;
@@ -4625,21 +4671,34 @@ async function cardBattleTestRunEnemyPhase(){
  phaseFoundation.phase='between';phaseDebugRender();return phaseBeginAlly();
 }
 function cardBattleTestEndOrAdvance(){
- if(!cardBattleTestMode.active||cardBattleTestMode.busy)return false;
- if(phaseFoundation.phase===PHASE_SIDE_ENEMY){
-  const mode=cardBattleTestMode;mode.busy=true;cardBattleTestRender();
-  cardBattleTestRunEnemyPhase().then(ok=>{
-   if(cardBattleTestMode!==mode||!mode.active)return;
-   if(!mode.ct545SpiritProcessing)mode.busy=false;cardBattleTestMode.message=attackExercise.message||phaseFoundation.message;
-   if(ok&&!mode.ct545SpiritProcessing)cardBattleTestLock(220);else cardBattleTestRender();
-  }).catch(error=>{
-   console.error('VER.521 mock enemy phase failed',error);
-   if(cardBattleTestMode===mode&&mode.active){mode.busy=false;cardBattleTestSetMessage('敵フェーズ模擬攻撃を停止しました。DEBUGを確認してください');cardBattleTestRender()}
-  });return true;
+ if(!cardBattleTestMode.active||cardBattleTestMode.busy||ct574WarningActive||phaseFoundation.phase!==PHASE_SIDE_ALLY)return false;
+ const mode=cardBattleTestMode;
+ // Reserve the entire ally-end -> enemy actions -> next ally phase transaction.
+ // DEBUG phase functions are deliberately unchanged.
+ mode.busy=true;
+ let ok=false;
+ try{ok=attackExerciseEndAlly()}catch(error){
+  console.error('VER.574 ally phase end failed',error);
+  mode.busy=false;cardBattleTestSetMessage('味方フェーズ終了に失敗しました。DEBUGを確認してください');cardBattleTestRender();return false;
  }
- const ok=phaseFoundation.phase===PHASE_SIDE_ALLY?attackExerciseEndAlly():false;
- cardBattleTestMode.message=attackExercise.message||phaseFoundation.message;
- if(ok)cardBattleTestLock(220);else cardBattleTestRender();return !!ok
+ mode.message=attackExercise.message||phaseFoundation.message;
+ if(!ok){mode.busy=false;cardBattleTestRender();return false}
+ cardBattleTestRender();
+ cardBattleTestRunEnemyPhase().then(done=>{
+  if(cardBattleTestMode!==mode||!mode.active)return;
+  if(!mode.ct545SpiritProcessing)mode.busy=false;
+  mode.message=attackExercise.message||phaseFoundation.message;
+  if(done&&!mode.ct545SpiritProcessing&&!mode.resultType)cardBattleTestLock(220);
+  else cardBattleTestRender();
+ }).catch(error=>{
+  console.error('VER.574 automatic enemy phase failed',error);
+  if(cardBattleTestMode===mode&&mode.active){
+   mode.busy=false;
+   cardBattleTestSetMessage('敵フェーズ自動進行を停止しました。DEBUGで行動枠を確認してください');
+   cardBattleTestRender();
+  }
+ });
+ return true;
 }
 function cardBattleTestPrep(type){if(!cardBattleTestCanInput())return false;const moved=type==='attack'?attackExercisePrepareHand():defenseExercisePrepareHand();cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return moved}
 function cardBattleTestMockHit(){
@@ -5206,7 +5265,7 @@ function cardBattleTestRender(){
  // Keep important invalid/blocked notices accessible in the relocated ticker.
  if(msg&&(blocked||alive<=0||/不可|できません|不足|無効|未実装|停止|破棄|使えません|選択してください/.test(msg.textContent)))cardBattleTestHandLogSet(msg.textContent);
  const can=cardBattleTestCanInput(),target=attackExercise.actors[attackExercise.defenseTargetRosterId],validTarget=!!(target&&target.alive&&target.hp>0);
- const btn=(id,disabled,label)=>{const b=document.querySelector('#'+id);if(!b)return;b.disabled=!!disabled;if(label)b.textContent=label};btn('ctPhaseAction',cardBattleTestMode.busy||blocked||!phaseFoundation.active||(phaseFoundation.phase!==PHASE_SIDE_ALLY&&phaseFoundation.phase!==PHASE_SIDE_ENEMY),phaseFoundation.phase===PHASE_SIDE_ENEMY?'敵フェーズ進行':'フェーズ終了');btn('ctPrepAttack',!can);btn('ctPrepDefense',!can);btn('ctMockHit',cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY||!validTarget);btn('ctMockEnemyBlock',cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY||!attackExerciseLockedEnemy())
+ const btn=(id,disabled,label)=>{const b=document.querySelector('#'+id);if(!b)return;b.disabled=!!disabled;if(label)b.textContent=label};btn('ctPhaseAction',ct574WarningActive||cardBattleTestMode.busy||blocked||!phaseFoundation.active||phaseFoundation.phase!==PHASE_SIDE_ALLY,'フェーズ終了');btn('ctPrepAttack',!can);btn('ctPrepDefense',!can);btn('ctMockHit',cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY||!validTarget);btn('ctMockEnemyBlock',cardBattleTestMode.busy||phaseFoundation.phase!==PHASE_SIDE_ENEMY||!attackExerciseLockedEnemy())
 }
 
 
