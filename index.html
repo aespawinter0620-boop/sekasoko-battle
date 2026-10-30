@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>セカソコ ver.574</title>
+<title>セカソコ ver.575</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;background:#05070c;color:#f5f0e8;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}button{font:inherit;color:inherit}.app{height:100dvh;max-width:480px;margin:auto;position:relative;overflow:hidden;background:#080a10}.screen{position:absolute;inset:0;display:none}.screen.active{display:flex;flex-direction:column}
 /* HOME */
@@ -1461,7 +1461,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 
 /* ver.200 restart baseline: visible build number beside battle log */
 #battleScreen .battleLog{position:relative!important;padding-left:62px!important;padding-right:62px!important}
-#battleScreen .battleLog::before{content:"ver.574";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
+#battleScreen .battleLog::before{content:"ver.575";position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;letter-spacing:.02em;color:#8f97aa}
 
 /* =========================================================
    ver.201 ENEMY ART MIRROR TEST
@@ -2542,7 +2542,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 </head>
 <body><main class="app">
 <section class="screen active" id="home">
-  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.574</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
+  <div class="homeTop"><div class="brand"><div class="homeBrandLine"><b>セカソコ</b><span class="homeVersion">ver.575</span></div><small>お気に入りの彼女と、世界の底へ。</small></div><div class="resource">世界深度 1<br><span id="homeWD">💎0 WD</span></div></div>
   <div class="hub">
     <div class="abyss"></div><div class="areaTitle"><b id="areaName">透波</b><small id="areaCount">1 / 3</small></div>
     <button class="cardTestEntry" id="cardBattleTestEntry" type="button">🃏 DEV 新カード戦闘を試す</button>
@@ -2925,8 +2925,19 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
 /* Conceal only the active actor artwork. Unit hitbox and HP/BLOCK/BREAK remain. */
 #cardBattleTestScreen.ct563LargeOn #ctAllyArmy>.ct563LargeFrame.ct565AttackOut .ct563LargeArt img{visibility:hidden!important}
 #cardBattleTestScreen #ctAllyArmy .ct567AttackSourceHidden>.ctArt{visibility:hidden!important}
+
+/* VER.575: scoped, visual-only phase cut-in on the new card battle board. */
+#cardBattleTestScreen #ct575PhaseCutin{position:absolute;inset:0;z-index:320;display:none;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;overflow:hidden;isolation:isolate}
+#cardBattleTestScreen #ct575PhaseCutin.show{display:flex;animation:ct575PhaseVeil .5s ease both}
+#cardBattleTestScreen #ct575PhaseCutin::before{content:"";position:absolute;left:-10%;right:-10%;top:40%;height:20%;background:linear-gradient(90deg,transparent,rgba(25,100,170,.65) 20%,rgba(12,34,60,.9) 50%,rgba(25,100,170,.65) 80%,transparent);border-top:1px solid rgba(137,219,255,.8);border-bottom:1px solid rgba(137,219,255,.8);box-shadow:0 0 22px rgba(75,184,255,.45);transform:skewY(-3deg);animation:ct575PhaseBand .5s ease both}
+#cardBattleTestScreen #ct575PhaseCutin.enemy::before{background:linear-gradient(90deg,transparent,rgba(168,35,45,.65) 20%,rgba(61,12,20,.92) 50%,rgba(168,35,45,.65) 80%,transparent);border-color:rgba(255,138,138,.85);box-shadow:0 0 22px rgba(255,64,76,.45)}
+#cardBattleTestScreen #ct575PhaseCutin .ct575PhaseText{position:relative;z-index:1;display:block;max-width:96%;font-size:clamp(25px,8.4vw,44px);font-weight:1000;letter-spacing:.075em;white-space:nowrap;text-align:center;color:#e4f8ff;text-shadow:0 0 8px #58baff,0 0 24px rgba(63,160,255,.85),0 2px 3px #000;animation:ct575PhaseText .5s ease both}
+#cardBattleTestScreen #ct575PhaseCutin.enemy .ct575PhaseText{color:#fff0ef;text-shadow:0 0 8px #ff5b62,0 0 24px rgba(255,58,71,.85),0 2px 3px #000}
+@keyframes ct575PhaseVeil{0%{opacity:0}14%{opacity:1}74%{opacity:1}100%{opacity:0}}
+@keyframes ct575PhaseBand{0%{opacity:0;transform:translateX(-22%) skewY(-3deg)}24%{opacity:1;transform:translateX(0) skewY(-3deg)}75%{opacity:1}100%{opacity:0;transform:translateX(12%) skewY(-3deg)}}
+@keyframes ct575PhaseText{0%{opacity:0;transform:translateX(-20px) scale(.96)}25%{opacity:1;transform:translateX(0) scale(1)}75%{opacity:1}100%{opacity:0;transform:translateX(14px) scale(1.025)}}
 </style>
-<section class="screen" id="cardBattleTestScreen" aria-label="VER.574 新カード戦闘試験モード">
+<section class="screen" id="cardBattleTestScreen" aria-label="VER.575 新カード戦闘試験モード">
   <div id="ct574BossWarning" aria-hidden="true"><div class="bossWarningInner"><b class="bossWarningMain">WARNING!!</b><span class="bossWarningSub">BOSS ENCOUNTER</span><span class="bossWarningFloor" id="ct574BossWarningFloor">10F</span></div></div>
   <div class="ctTop" aria-label="新カード戦闘HUD">
     <div class="ctHudOneLine">
@@ -2940,6 +2951,7 @@ filter:drop-shadow(0 8px 6px rgba(0,0,0,.70))!important}
     </div>
   </div>
   <div class="ctBoard" id="ctBoard">
+    <div id="ct575PhaseCutin" aria-hidden="true"><b class="ct575PhaseText" id="ct575PhaseText"></b></div>
     <div class="ctArmy" id="ctAllyArmy"></div>
     <div class="ctEnemyArea"><div class="ctEnemyGrid" id="ctEnemyGrid"></div><div class="ctEnemyDefeatStatus" id="ctEnemyDefeatStatus" hidden>模擬敵全滅｜演習終了せず確認可能</div></div>
     <div id="ctIntentOverlay" aria-hidden="true"><svg id="ctIntentArrows" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ctIntentArrowHead" viewBox="0 0 7 7" refX="6" refY="3.5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="none" stroke="#ff6069" stroke-width="1.1"/></marker></defs><g id="ctIntentLines"></g></svg><div id="ctIntentTargets"></div></div>
@@ -3798,7 +3810,7 @@ function cardBattleTestLock(ms=160){
  mode.busy=true;cardBattleTestRender();
  setTimeout(()=>{
   if(cardBattleTestMode!==mode||!mode.active||mode.resultType||mode.floorSerial!==floorSerial||mode.lockSerial!==serial)return;
-  mode.busy=false;cardBattleTestRender();
+  mode.busy=!!mode.ct575PhaseActive||!!mode.ct545SpiritProcessing;cardBattleTestRender();
  },ms);
 }
 
@@ -3893,7 +3905,7 @@ function cardBattleTestMaybeClearFloor(){
  mode.busy=true;attackExerciseLogPush("カード報酬を開けないため階層移動を停止");return false;
 }
 function cardBattleTestShowResult(type){
- const mode=cardBattleTestMode;if(!mode.active)return;
+ const mode=cardBattleTestMode;if(!mode.active)return;ct575CancelPhase();
  mode.resultType=type;mode.busy=true;if(type==='complete'||type==='gameover'){ct542ResetSpiritTrial();ct548ResetShields();}
  const overlay=document.querySelector('#ctRunResult'),title=document.querySelector('#ctRunResultTitle'),body=document.querySelector('#ctRunResultDetail'),next=document.querySelector('#ctRunResultNext');
  if(!overlay||!title||!body||!next)return;
@@ -3909,6 +3921,46 @@ function cardBattleTestContinueFloor(){
  mode.resultType='';const overlay=document.querySelector('#ctRunResult');if(overlay)overlay.hidden=true;
  return cardBattleTestAdvanceFloor();
 }
+
+// VER.575: the visual has its own cancellable generation; no changes to phase core.
+let ct575PhaseToken=0,ct575PhaseTimer=null,ct575PhaseResolve=null;
+function ct575CancelPhase(){
+ ++ct575PhaseToken;
+ if(ct575PhaseTimer!==null){clearTimeout(ct575PhaseTimer);ct575PhaseTimer=null}
+ const resolve=ct575PhaseResolve;ct575PhaseResolve=null;
+ const el=document.getElementById('ct575PhaseCutin');
+ if(el){el.classList.remove('show','enemy');el.setAttribute('aria-hidden','true')}
+ if(cardBattleTestMode)cardBattleTestMode.ct575PhaseActive=false;
+ if(resolve)resolve(false);
+}
+function ct575ShowPhase(mode,side){
+ if(cardBattleTestMode!==mode||!mode.active||mode.resultType||!attackExercise.active||!phaseFoundation.active||phaseFoundation.phase!==side||
+    (side===PHASE_SIDE_ENEMY&&!attackExercise.enemies.some(e=>e.alive&&e.hp>0)))return Promise.resolve(false);
+ const el=document.getElementById('ct575PhaseCutin'),label=document.getElementById('ct575PhaseText');
+ if(!el||!label)return Promise.resolve(false);
+ ct575CancelPhase();
+ const token=ct575PhaseToken,serial=mode.floorSerial;
+ mode.ct575PhaseActive=true;mode.busy=true;
+ label.textContent=side===PHASE_SIDE_ALLY?'PLAYER PHASE':'ENEMY PHASE';
+ el.classList.toggle('enemy',side===PHASE_SIDE_ENEMY);el.setAttribute('aria-hidden','false');
+ void el.offsetWidth;el.classList.add('show');cardBattleTestRender();
+ return new Promise(resolve=>{
+  ct575PhaseResolve=resolve;
+  ct575PhaseTimer=setTimeout(()=>{
+   if(token!==ct575PhaseToken)return;
+   ct575PhaseTimer=null;ct575PhaseResolve=null;
+   el.classList.remove('show','enemy');el.setAttribute('aria-hidden','true');
+   mode.ct575PhaseActive=false;
+   const valid=cardBattleTestMode===mode&&mode.active&&!mode.resultType&&mode.floorSerial===serial&&
+     phaseFoundation.active&&phaseFoundation.phase===side&&attackExercise.active;
+   // Spirit effects and the phase overlay own separate locks.
+   if(valid&&side===PHASE_SIDE_ALLY)mode.busy=!!mode.ct545SpiritProcessing;
+   if(valid)cardBattleTestRender();
+   resolve(valid);
+  },500);
+ });
+}
+
 // VER.574: card-battle WARNING uses ONLY cardBattleTestMode.floor / floorSerial.
 let ct574WarningTimer=null,ct574WarningToken=0,ct574WarningActive=false;
 function ct574ClearWarning(){
@@ -3934,9 +3986,10 @@ function ct574StartBossWarning(mode){
   if(token!==ct574WarningToken)return;
   ct574ClearWarning();
   if(cardBattleTestMode!==mode||!mode.active||mode.floorSerial!==serial||mode.resultType)return;
-  // A spirit phase-start sequence may still be in progress; never unlock it.
-  mode.busy=!!mode.ct545SpiritProcessing;
-  cardBattleTestRender();
+  // VER.575: WARNING always precedes the PLAYER PHASE cut-in.
+  ct575ShowPhase(mode,PHASE_SIDE_ALLY).then(shown=>{
+   if(!shown&&cardBattleTestMode===mode&&mode.active&&!mode.resultType){mode.busy=!!mode.ct545SpiritProcessing;cardBattleTestRender()}
+  });
  },1450);
  return true;
 }
@@ -3947,6 +4000,7 @@ function cardBattleTestAdvanceFloor(){
  // bypassing phaseDebugEndAlly/cardEndTurn. Remaining old hand then carried into
  // the next five-card draw. End the cleared floor's normal-card hand once here.
  if(!cardEndTurn())return false;
+ ct575CancelPhase();
  // Invalidate any outstanding lock/attack callbacks from the previous floor.
  ++mode.lockSerial;const oldFloor=mode.floor;mode.floor++;
  attackExercise.enemies=attackExerciseMakeEnemies(true);
@@ -3969,7 +4023,7 @@ function cardBattleTestAdvanceFloor(){
  cardBattleTestPlanEnemyActions();
  cardBattleTestMode.message=`${oldFloor}F→${mode.floor}F｜正式残像更新｜未使用カード・山札・捨て札・消滅を継続`;
  attackExerciseLogPush(cardBattleTestMode.message);
- ct531ApplyBackground(mode.floor);cardBattleTestRender();ct574StartBossWarning(mode);return true;
+ ct531ApplyBackground(mode.floor);cardBattleTestRender();if(!ct574StartBossWarning(mode))ct575ShowPhase(mode,PHASE_SIDE_ALLY);return true;
 }
 
 
@@ -4079,7 +4133,7 @@ async function ct545RunSpiritPhaseEffects(spirits,phaseCount,mode,serial){
  }finally{
   if(mode.active&&cardBattleTestMode===mode&&mode.floorSerial===serial)ct547ExpireSwift(phaseCount);
   mode.ct545SpiritProcessing=false;
-  if(mode.active&&cardBattleTestMode===mode&&mode.floorSerial===serial&&!mode.resultType){mode.busy=false;cardBattleTestMaybeClearFloor();cardBattleTestRender()}
+  if(mode.active&&cardBattleTestMode===mode&&mode.floorSerial===serial&&!mode.resultType){mode.busy=!!mode.ct575PhaseActive;cardBattleTestMaybeClearFloor();cardBattleTestRender()}
  }
 }
 function ct545UseSpiritCard(cardId,rid){
@@ -4281,18 +4335,18 @@ document.addEventListener('pointerdown',()=>{
 },{passive:true});
 
 function cardBattleTestStart(){
- ct574ClearWarning();
+ ct575CancelPhase();ct574ClearWarning();
  cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();const home=document.querySelector('#home');if(!home?.classList.contains('active'))return false;
  const party=parties[selectedParty]||[];if(!party.some(Boolean)){openInfo('試験開始できません','選択中の部隊が空です。配置で出撃部隊を編成してください。','⚠️');return false}
  if(!partyHasFront(party)||partyHasBrokenColumns(party)){openInfo('試験開始できません','選択中の部隊の前衛／後衛配置を確認してください。','⚠️');return false}
  ct552RewardReset();ct551RushCancel();document.querySelectorAll('.ct553HitFx').forEach(el=>el.remove());ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestMode=freshCardBattleTestMode();cardBattleTestMode.active=true;cardBattleTestMode.busy=true;cardBattleTestMode.message='新カード戦闘試験を初期化中';
  const ok=attackExerciseStart();if(!ok){cardBattleTestMode=freshCardBattleTestMode();openInfo('試験開始できません','カード演習基盤を開始できませんでした。','⚠️');return false}
  attackExercise.selected=[];attackExercise.defenseSelected=[];attackExercise.defenseTargetRosterId=cardBattleTestDefaultDefenseTarget();cardBattleTestMode.busy=false;cardBattleTestMode.message=`部隊${selectedParty+1}｜1F 正式残像｜味方先攻。前衛をタップしてTARGET LOCK`;
- ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');ct546BgmStart();cardBattleTestRender();return true
+ ct531ApplyBackground(cardBattleTestMode.floor);showScreen('cardBattleTestScreen');ct546BgmStart();cardBattleTestRender();ct575ShowPhase(cardBattleTestMode,PHASE_SIDE_ALLY);return true
 }
 function cardBattleTestExit(){
- cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){ct546BgmStop();showScreen('home');return true}if(cardBattleTestMode.busy&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
- ct574ClearWarning();
+ cardBattleTestLogClose();cardBattleTestDebugClose();ctGestureReset();if(!cardBattleTestMode.active){ct546BgmStop();showScreen('home');return true}if(cardBattleTestMode.busy&&!cardBattleTestMode.ct575PhaseActive&&!['complete','gameover'].includes(cardBattleTestMode.resultType))return false
+ ct575CancelPhase();ct574ClearWarning();
  ct552RewardReset();ct551RushCancel();document.querySelectorAll('.ct553HitFx').forEach(el=>el.remove());cardBattleTestMode.busy=true;if(!cardBattleTestMode.rewardClaimed){const gained=cardBattleTestRunReward().total;if(gained>0)addWaldonium(gained);cardBattleTestMode.rewardClaimed=true}document.querySelector('#ctRunResult')?.setAttribute('hidden','');document.querySelector('#cardTestExit')?.classList.remove('ctFinalExit');document.querySelector('#cardBattleTestScreen')?.classList.remove('ctResultFinal');if(attackExercise.active)attackExerciseStop();else if(phaseFoundation.active)phaseDebugStop();
  cardFoundation=freshCardFoundation();phaseFoundation=freshPhaseFoundation();attackExercise=freshAttackExercise();cardBattleTestMode=freshCardBattleTestMode();ct542ResetSpiritTrial();ct548ResetShields();ct549RelayReset();cardBattleTestIntentSync();cardDebugRender();renderHome();showScreen('home');ct546BgmStop();return true
 }
@@ -4673,31 +4727,42 @@ async function cardBattleTestRunEnemyPhase(){
 function cardBattleTestEndOrAdvance(){
  if(!cardBattleTestMode.active||cardBattleTestMode.busy||ct574WarningActive||phaseFoundation.phase!==PHASE_SIDE_ALLY)return false;
  const mode=cardBattleTestMode;
- // Reserve the entire ally-end -> enemy actions -> next ally phase transaction.
- // DEBUG phase functions are deliberately unchanged.
  mode.busy=true;
  let ok=false;
  try{ok=attackExerciseEndAlly()}catch(error){
-  console.error('VER.574 ally phase end failed',error);
+  console.error('VER.575 ally phase end failed',error);
   mode.busy=false;cardBattleTestSetMessage('味方フェーズ終了に失敗しました。DEBUGを確認してください');cardBattleTestRender();return false;
  }
  mode.message=attackExercise.message||phaseFoundation.message;
  if(!ok){mode.busy=false;cardBattleTestRender();return false}
  cardBattleTestRender();
- cardBattleTestRunEnemyPhase().then(done=>{
-  if(cardBattleTestMode!==mode||!mode.active)return;
-  if(!mode.ct545SpiritProcessing)mode.busy=false;
-  mode.message=attackExercise.message||phaseFoundation.message;
-  if(done&&!mode.ct545SpiritProcessing&&!mode.resultType)cardBattleTestLock(220);
-  else cardBattleTestRender();
- }).catch(error=>{
-  console.error('VER.574 automatic enemy phase failed',error);
-  if(cardBattleTestMode===mode&&mode.active){
-   mode.busy=false;
-   cardBattleTestSetMessage('敵フェーズ自動進行を停止しました。DEBUGで行動枠を確認してください');
-   cardBattleTestRender();
+ // VER.575: cut-in before the existing 280ms-per-slot enemy action runner.
+ (async()=>{
+  const serial=mode.floorSerial;
+  const valid=()=>cardBattleTestMode===mode&&mode.active&&mode.floorSerial===serial&&!mode.resultType&&attackExercise.active&&phaseFoundation.active;
+  try{
+   if(attackExercise.enemies.some(e=>e.alive&&e.hp>0)){
+    if(!await ct575ShowPhase(mode,PHASE_SIDE_ENEMY))return;
+   }
+   if(!valid()||phaseFoundation.phase!==PHASE_SIDE_ENEMY)return;
+   const done=await cardBattleTestRunEnemyPhase();
+   if(!valid())return;
+   mode.message=attackExercise.message||phaseFoundation.message;
+   if(done&&phaseFoundation.phase===PHASE_SIDE_ALLY){
+    // Existing 220ms post-enemy lock is covered by the 500ms visual lock.
+    await ct575ShowPhase(mode,PHASE_SIDE_ALLY);
+   }
+   if(valid()&&!mode.ct575PhaseActive){mode.busy=!!mode.ct545SpiritProcessing;cardBattleTestRender()}
+  }catch(error){
+   console.error('VER.575 automatic enemy phase failed',error);
+   ct575CancelPhase();
+   if(valid()){
+    mode.busy=false;
+    cardBattleTestSetMessage('敵フェーズ自動進行を停止しました。DEBUGで行動枠を確認してください');
+    cardBattleTestRender();
+   }
   }
- });
+ })();
  return true;
 }
 function cardBattleTestPrep(type){if(!cardBattleTestCanInput())return false;const moved=type==='attack'?attackExercisePrepareHand():defenseExercisePrepareHand();cardBattleTestMode.message=attackExercise.message;cardBattleTestRender();return moved}
