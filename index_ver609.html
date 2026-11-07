@@ -1,0 +1,917 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="version" content="VER.609"><title>セカソコ VER.609 作業版</title><style>
+*{box-sizing:border-box}html,body{margin:0;background:#070b12;color:#f0f3fb;font-family:system-ui,sans-serif}button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}button:disabled{cursor:default}button:focus-visible{outline:2px solid #fff;outline-offset:2px}[hidden]{display:none!important}.app{max-width:480px;margin:auto;position:relative}#home{padding:18px 14px;min-height:100dvh;background:#101724}h1{font-size:20px;margin:0 0 7px}h1 small{font-size:11px;color:#aab8d5}.sub{font-size:11px;color:#b4c4d8;line-height:1.6}.formationGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:14px 0}.formationSlot,.rosterCard,.primary,.panel button{border:1px solid #647893;background:#19283b;border-radius:8px;padding:10px;min-height:44px}.formationSlot{font-size:11px}.formationSlot.selected{border-color:#72dcff;box-shadow:0 0 0 1px #72dcff}.roster{display:grid;grid-template-columns:1fr 1fr;gap:7px}.rosterCard{display:flex;gap:7px;align-items:center;text-align:left;font-size:10px}.rosterCard img{width:32px;height:42px;object-fit:contain}.rosterCard small{color:#aebed2}.rosterCard.used{border-color:#78b5c7}.primary{width:100%;margin-top:14px;background:#3b4b65;font-weight:bold}.minor{background:transparent;border:1px solid #65758b;padding:7px;border-radius:6px;font-size:11px}#homeStatus{font-size:12px;min-height:20px;color:#ffdd91}
+#battle{position:relative;height:100dvh;min-height:500px;display:flex;flex-direction:column;overflow:hidden;background:#070b12 center/cover no-repeat}.top{flex:none;padding:calc(4px + env(safe-area-inset-top)) 5px 4px;background:#0a0e18f2;border-bottom:1px solid #ffffff18;z-index:20}.hud{display:flex;align-items:center;gap:4px;height:29px;min-width:0;font-size:clamp(8px,2.28vw,10px);white-space:nowrap}.hudStats{display:flex;flex:1;justify-content:space-between;gap:2px;min-width:0}.hud button{font-size:9px;padding:5px;border:1px solid #ffffff2b;border-radius:7px;background:#222938}.board{position:relative;flex:1 1 0;min-height:0;overflow:hidden;isolation:isolate}.army{position:absolute;top:1.6666667%;bottom:1%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));column-gap:3px;row-gap:7px;min-width:0;min-height:0}#allies{left:2px;right:50%;padding-right:1px}#enemies{left:calc(50% + 1px);right:2px}.unit,.empty{position:relative;width:100%;height:100%;min-width:0;min-height:0;border-radius:8px;border:1px solid #cad8ed3d;padding:0;box-shadow:inset 0 1px 0 #ffffff0f,0 3px 12px #0006;text-align:left;overflow:visible;isolation:isolate;background:linear-gradient(180deg,#1e2a3b33,#060a1185)}.enemy{background:linear-gradient(180deg,#36222740,#0c090e91)}.empty{border-style:dashed;background:#0a0d132b;box-shadow:none;opacity:.55;pointer-events:none}.unit.selected{border-color:#7cdcff;box-shadow:0 0 0 2px #68d7ff70,0 0 15px #75d8ff5c}.art{position:absolute;inset:auto 0 0;height:100%;display:flex;align-items:flex-end;justify-content:center;overflow:visible;pointer-events:none;z-index:0}.art img{width:auto;height:105%;max-width:none;max-height:none;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 3px 5px #000b);pointer-events:none;user-select:none;-webkit-user-drag:none}.enemy .art img{transform:scaleX(-1);filter:grayscale(1) brightness(.27) contrast(1.08) drop-shadow(0 7px 6px #000b)}.overlay{position:absolute;left:0;right:0;bottom:0;z-index:8;display:flex;flex-direction:column;gap:1px;pointer-events:none;padding:2px 3px 3px;background:transparent}.unitName{font-size:8px;font-weight:900;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.05em;text-shadow:0 1px 2px #000,0 0 8px #000}.shieldRow{height:19px;display:flex;align-items:center}.shield{position:relative;display:block;width:20px;height:22px;margin-top:-3px}.shield svg{width:100%;height:100%;filter:drop-shadow(0 1px 2px #000)}.shield b{position:absolute;top:51%;left:50%;transform:translate(-50%,-50%);font-size:9px;letter-spacing:-.06em;text-shadow:0 1px 2px #071522}.hpTrack{position:relative;display:block;height:12px;border-radius:3px;border:1px solid #d5f4d652;background:#010b06de;overflow:hidden}.hpFill{display:block;height:100%;background:linear-gradient(90deg,#2d8e54,#58db79)}.hpText{position:absolute;inset:0;text-align:center;font-size:8px;font-weight:1000;line-height:10px;text-shadow:0 1px 2px #000}.break{height:8px;font-size:6px;color:#b8aabc;text-shadow:0 1px 2px #000}.intent{position:absolute;top:3px;right:3px;z-index:13;font-size:9px;font-weight:900;padding:1px 3px;border-radius:4px;border:1px solid #ed636973;background:#400b18c4;pointer-events:none}.dropReady{outline:2px solid #ffe052;outline-offset:-2px}.assetError{position:absolute;inset:20% 0 auto;text-align:center;font-size:9px;color:#ffc48e;z-index:3}
+.handWrap{flex:0 0 191px;min-height:0;padding:3px 0;overflow:hidden;background:transparent;border-top:1px solid #ffffff16}.handHead{height:17px;display:flex;gap:6px;padding:0 9px;font-size:8px;text-shadow:0 1px 3px #000}.handHead span:first-child{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hand{height:151px;position:relative;overflow-x:auto;overflow-y:hidden;touch-action:none;overscroll-behavior-x:none;scrollbar-width:none}.hand::-webkit-scrollbar{display:none}.rail{height:150px;position:relative;min-width:100%;pointer-events:none}.card{position:absolute;top:9px;left:0;width:108px;height:128px;border:1px solid #c99a3f66;border-radius:12px;background:linear-gradient(180deg,#1a2231,#10151f);color:#fff;padding:8px 7px;text-align:left;touch-action:none;user-select:none;-webkit-user-select:none;pointer-events:auto;transform-origin:50% 95%;transform:translateY(var(--y,0px)) rotate(var(--angle,0deg));box-shadow:0 6px 16px #0006}.card.defense{border-color:#55bde066}.card.selected{border-color:#fff;box-shadow:0 0 0 2px #ffffff66}.card.source{opacity:.32}.card.overflow{border-color:#f0bb5e;background:#302713}.card strong{font-size:11px}.card .cost{position:absolute;top:5px;right:5px;border-radius:50%;background:#fff;color:#111;width:18px;height:18px;font-size:10px;text-align:center;line-height:18px}.card p{font-size:8px;line-height:1.5;margin-top:13px}.card small{position:absolute;bottom:7px;font-size:6px;color:#b9c3d6}.ghost{position:fixed!important;margin:0;pointer-events:none!important;z-index:12000;transform-origin:center!important;transform:translate(var(--dx,0px),var(--dy,0px)) scale(1.07)!important;box-shadow:0 13px 32px #000d,0 0 0 2px #ffe9a38a!important}.guide{height:17px;font-size:7px;color:#c4e4f4;text-align:center;text-shadow:0 1px 3px #000;touch-action:none;user-select:none}.bottom{flex:none;display:grid;grid-template-columns:1.10fr .88fr .88fr 1.33fr;gap:5px;padding:5px 8px max(7px,env(safe-area-inset-bottom));border-top:1px solid #ffffff24;z-index:25;min-height:49px}.bottom button,.bottom div{min-width:0;min-height:36px;padding:5px 2px;display:flex;align-items:center;justify-content:center;gap:4px;border:1px solid #ffffff2a;border-radius:8px;background:#192334;color:#f0f3fb;font-size:9px;font-weight:900;white-space:nowrap}.bottom button:disabled{opacity:.53}.bottom #end{background:#2b3040;border-color:#69768d;font-size:10px}.sheet{position:absolute;inset:0;z-index:210;display:flex;align-items:center;justify-content:center;padding:14px;background:#05070ef0;overflow:auto}.panel{width:100%;max-height:95%;overflow:auto;padding:18px 12px;border:1px solid #dfcb8e73;border-radius:14px;background:#111827}.panel h2{font-size:20px;color:#f4d28c}.panel p{font-size:12px;line-height:1.6}.panel button{display:block;width:100%;margin-top:9px}.panel ol{font-size:11px;padding-left:20px;line-height:1.6}.statusLine{font-size:8px;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#d1e1ee}.phase{color:#b8e6ff}.verification{font-size:9px;color:#d4bc91}
+@media(max-width:360px){.card{width:99px;height:123px}.handWrap{flex-basis:185px}.hand{height:147px}.unitName{font-size:7.3px}.hpText{font-size:7px}.army{column-gap:2px}.hud{font-size:8px}}
+/* Stable board-level reticle: the enemy-grid HTML can redraw without restarting the ring animations. */
+#lockReticle{position:absolute;left:0;top:0;width:96px;aspect-ratio:1/1;
+ transform:translate(-50%,-53%);z-index:8;pointer-events:none!important;
+ color:#ffdc56;filter:drop-shadow(0 0 2px rgba(255,218,82,.88)) drop-shadow(0 0 6px rgba(236,170,38,.42))}
+#lockReticle[hidden]{display:none!important}
+#lockReticle svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none!important}
+#lockReticle .reticleOuterRing,
+#lockReticle .reticleInnerRing,
+#lockReticle .reticleMarker,
+#lockReticle .reticleCross{fill:none;stroke:currentColor;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+#lockReticle .reticleOuterRing{stroke-width:1.45;stroke-dasharray:12 5 7 5;opacity:.96;transform-origin:50% 50%;animation:phase1ReticleRotate 9s linear infinite}
+#lockReticle .reticleInnerRing{stroke-width:.8;stroke-dasharray:2.5 5;opacity:.52;transform-origin:50% 50%;animation:phase1ReticleRotateReverse 7s linear infinite}
+#lockReticle .reticleMarker{stroke-width:1.7;opacity:.94}
+#lockReticle .reticleCross{stroke-width:1.1;opacity:.86}
+#lockReticle .reticleCenter{fill:rgba(255,224,104,.92);stroke:rgba(79,50,5,.78);stroke-width:.5;vector-effect:non-scaling-stroke}
+@media(prefers-reduced-motion:reduce){#lockReticle .reticleOuterRing,#lockReticle .reticleInnerRing{animation:none!important}}
+
+/* This UI is only the red forecaster: do not affect #ctLockReticle or #battleScreen. */
+#intentTargets .ctIntentTarget{width:var(--ct-red-size,72px);height:var(--ct-red-size,72px);
+  border:0!important;box-shadow:none!important;background:transparent!important;border-radius:0!important;
+  color:#ff6267;pointer-events:none!important;isolation:isolate}
+#intentTargets .ctIntentTarget::before,
+#intentTargets .ctIntentTarget::after{display:none!important;content:none!important}
+#intentTargets .ctIntentTarget svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none!important;
+  filter:drop-shadow(0 0 2px rgba(255,66,77,.70)) drop-shadow(0 0 4px rgba(153,11,28,.38))}
+#intentTargets .ctIntentTarget .ctRedOuter,
+#intentTargets .ctIntentTarget .ctRedInner,
+#intentTargets .ctIntentTarget .ctRedMarker{fill:none;stroke:currentColor;
+  vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+#intentTargets .ctIntentTarget .ctRedOuter{stroke-width:1.45;stroke-dasharray:12 5 7 5;opacity:.94;
+  transform-origin:50% 50%;animation:phase1ReticleRotate 9s linear infinite}
+#intentTargets .ctIntentTarget .ctRedInner{stroke-width:.8;stroke-dasharray:2.5 5;opacity:.69;
+  transform-origin:50% 50%;animation:phase1ReticleRotateReverse 7s linear infinite}
+#intentTargets .ctIntentTarget .ctRedMarker{stroke-width:1.6;opacity:.86}
+#intentTargets .ctIntentTarget .ctIntentTotal{position:absolute;inset:0!important;
+  display:flex;align-items:center;justify-content:center;transform:none!important;
+  border:0!important;border-radius:0!important;padding:0!important;background:transparent!important;
+  font-size:clamp(13px,3.7vw,17px);line-height:1;font-weight:1000;color:#fff7f4;
+  text-shadow:0 1px 2px #150003,0 0 3px #90091e;pointer-events:none!important;
+  font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.04em}
+@media(max-width:360px){#intentTargets .ctIntentTarget .ctIntentTotal{font-size:13px}}
+@media(prefers-reduced-motion:reduce){
+ #unusedIntentLines .ctIntentPulse{animation:none!important;stroke-opacity:.32;filter:none}
+ #intentTargets .ctRedOuter,
+ #intentTargets .ctRedInner{animation:none!important}
+}
+
+/* VER.569: presentation only. The moving backdrop belongs strictly to ctBoard. */
+#board .ct567SpeedBackdrop{
+ position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none!important;touch-action:none;
+ background:linear-gradient(180deg,rgba(0,10,35,.84),rgba(1,27,68,.81) 30%,rgba(2,13,47,.85) 72%,rgba(1,7,29,.85));
+}
+#board .ct567SpeedBackdrop::before,
+#board .ct567SpeedBackdrop::after{
+ content:"";position:absolute;inset:-5% -70%;pointer-events:none;
+ background-image:
+  repeating-linear-gradient(0deg,transparent 0 7px,rgba(15,83,168,.45) 8px 11px,rgba(118,224,255,.55) 12px,transparent 14px 24px,rgba(22,123,209,.40) 25px 27px,transparent 30px 51px),
+  repeating-linear-gradient(100deg,transparent 0 34px,rgba(129,229,255,.44) 36px 38px,transparent 42px 85px);
+ background-size:420px 100%,320px 100%;
+ animation:ct567SpeedRush .45s linear infinite;
+}
+#board .ct567SpeedBackdrop::after{
+ opacity:.57;filter:blur(3px);background-size:290px 100%,230px 100%;
+ animation-duration:.24s;animation-direction:normal;
+}
+@keyframes ct567SpeedRush{from{background-position:0 0,0 0}to{background-position:420px 0,320px 0}}
+/* Army and enemies remain above the background; existing hit/HP layers keep priority. */
+#board>#allies,
+#board>#enemies{z-index:2}
+#board .ct567CutinPortrait{
+ position:absolute;z-index:10;pointer-events:none!important;touch-action:none;
+ object-fit:contain;object-position:center center;user-select:none;-webkit-user-select:none;
+ -webkit-user-drag:none;filter:drop-shadow(0 5px 12px rgba(1,11,34,.9)) drop-shadow(0 0 8px rgba(73,178,255,.5));
+ will-change:transform;
+}
+/* VER.569: one short, non-interactive slash gleam per Mikoto cut-in. */
+#board .ct569SlashGleam{
+ position:absolute;z-index:11;pointer-events:none!important;touch-action:none;
+ width:30%;height:22%;left:11%;top:32%;border-radius:50%;
+ background:linear-gradient(166deg,transparent 41%,rgba(222,250,255,.96) 48%,rgba(82,200,255,.82) 50%,transparent 57%);
+ filter:drop-shadow(0 0 9px rgba(116,212,255,.95));
+ transform:rotate(-17deg) scale(.55);opacity:0;
+ animation:ct569SlashGleam .145s ease-out both;
+}
+@keyframes ct569SlashGleam{
+ 0%{opacity:0;transform:rotate(-17deg) scale(.55)}
+ 30%{opacity:.9;transform:rotate(-17deg) scale(1)}
+ 100%{opacity:0;transform:rotate(-17deg) scale(1.22)}
+}
+
+@keyframes phase1ReticleRotate{to{transform:rotate(360deg)}}
+@keyframes phase1ReticleRotateReverse{to{transform:rotate(-360deg)}}
+#intentTargets{position:absolute;inset:0;z-index:8;pointer-events:none}
+.ctIntentTarget{position:absolute;transform:translate(-50%,-50%);pointer-events:none}
+#allies .attackSourceHidden>.art{visibility:hidden!important}
+
+.settingRow{display:grid;gap:7px;margin:12px 0;padding:10px;border:1px solid #ffffff25;border-radius:9px;background:#182131;font-size:12px}
+.settingRow>span{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+.settingRow output{color:#f4d28c}
+.settingRow input{width:100%;accent-color:#d7bc79}
+.relayToggleRow{grid-template-columns:1fr auto;align-items:center}.relayToggleRow input{width:20px;justify-self:end}
+.debugReadout{padding:9px;border-radius:8px;background:#090e18;color:#cde4f2;overflow-wrap:anywhere}
+.debugSection{margin-top:14px;padding-top:10px;border-top:1px solid #ffffff24}
+.debugSection h3{margin:4px 0;color:#f4d28c;font-size:14px}
+.debugSection button{font-size:12px}
+.settingNote{color:#d4bc91;font-size:10px!important}
+/* Reference adaptation only: old VER.575 visual rules scoped to VER.609 #battle. */
+#battle #ct574BossWarning{position:absolute;inset:0;z-index:300;display:none;align-items:center;justify-content:center;overflow:hidden;pointer-events:auto;touch-action:none;background:repeating-linear-gradient(0deg,rgba(255,36,36,.055) 0 2px,transparent 2px 7px),radial-gradient(circle at 50% 50%,rgba(125,0,0,.32),rgba(2,3,7,.96) 68%);opacity:0}
+#battle #ct574BossWarning.show{display:flex;animation:bossWarningScreen 1.45s ease both}
+#battle #ct574BossWarning::before,#battle #ct574BossWarning::after{content:"";position:absolute;left:-10%;width:120%;height:4px;background:#ff3131;box-shadow:0 0 14px #ff2d2d,0 0 34px rgba(255,0,0,.75)}
+#battle #ct574BossWarning::before{top:31%;animation:bossWarnBarTop 1.45s ease both}
+#battle #ct574BossWarning::after{bottom:31%;animation:bossWarnBarBottom 1.45s ease both}
+#battle #ct574BossWarning .bossWarningInner{position:relative;width:100%;text-align:center;transform:skewX(-5deg);text-shadow:0 0 8px rgba(255,0,0,.9),0 0 22px rgba(255,0,0,.65)}
+#battle #ct574BossWarning .bossWarningMain{display:block;font-size:clamp(48px,14vw,82px);line-height:.9;font-weight:1000;letter-spacing:.08em;color:#ff3030;animation:bossWarnText .72s steps(2,end) infinite}
+#battle #ct574BossWarning .bossWarningSub{display:block;margin-top:14px;font-size:clamp(13px,4.3vw,20px);font-weight:1000;letter-spacing:.32em;color:#fff}
+#battle #ct574BossWarning .bossWarningFloor{display:block;margin-top:8px;font-size:12px;font-weight:900;letter-spacing:.18em;color:#ff9c9c}
+@keyframes bossWarningScreen{
+  0%{opacity:0}
+  9%{opacity:1}
+  80%{opacity:1}
+  100%{opacity:0}
+}
+@keyframes bossWarnBarTop{
+  0%{transform:translateY(-22vh);opacity:0}
+  18%{transform:translateY(0);opacity:1}
+  78%{transform:translateY(0);opacity:1}
+  100%{transform:translateY(-10vh);opacity:0}
+}
+@keyframes bossWarnBarBottom{
+  0%{transform:translateY(22vh);opacity:0}
+  18%{transform:translateY(0);opacity:1}
+  78%{transform:translateY(0);opacity:1}
+  100%{transform:translateY(10vh);opacity:0}
+}
+@keyframes bossWarnText{
+  0%,45%{opacity:1;transform:translateX(0)}
+  46%,52%{opacity:.45;transform:translateX(-3px)}
+  53%,100%{opacity:1;transform:translateX(0)}
+}
+
+#battle #ct575PhaseCutin{position:absolute;inset:0;z-index:320;display:none;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;overflow:hidden;isolation:isolate}
+#battle #ct575PhaseCutin.show{display:flex;animation:ct575PhaseVeil .5s ease both}
+#battle #ct575PhaseCutin::before{content:"";position:absolute;left:-10%;right:-10%;top:40%;height:20%;background:linear-gradient(90deg,transparent,rgba(25,100,170,.65) 20%,rgba(12,34,60,.9) 50%,rgba(25,100,170,.65) 80%,transparent);border-top:1px solid rgba(137,219,255,.8);border-bottom:1px solid rgba(137,219,255,.8);box-shadow:0 0 22px rgba(75,184,255,.45);transform:skewY(-3deg);animation:ct575PhaseBand .5s ease both}
+#battle #ct575PhaseCutin.enemy::before{background:linear-gradient(90deg,transparent,rgba(168,35,45,.65) 20%,rgba(61,12,20,.92) 50%,rgba(168,35,45,.65) 80%,transparent);border-color:rgba(255,138,138,.85);box-shadow:0 0 22px rgba(255,64,76,.45)}
+#battle #ct575PhaseCutin .ct575PhaseText{position:relative;z-index:1;display:block;max-width:96%;font-size:clamp(25px,8.4vw,44px);font-weight:1000;letter-spacing:.075em;white-space:nowrap;text-align:center;color:#e4f8ff;text-shadow:0 0 8px #58baff,0 0 24px rgba(63,160,255,.85),0 2px 3px #000;animation:ct575PhaseText .5s ease both}
+#battle #ct575PhaseCutin.enemy .ct575PhaseText{color:#fff0ef;text-shadow:0 0 8px #ff5b62,0 0 24px rgba(255,58,71,.85),0 2px 3px #000}
+@keyframes ct575PhaseVeil{0%{opacity:0}14%{opacity:1}74%{opacity:1}100%{opacity:0}}
+@keyframes ct575PhaseBand{0%{opacity:0;transform:translateX(-22%) skewY(-3deg)}24%{opacity:1;transform:translateX(0) skewY(-3deg)}75%{opacity:1}100%{opacity:0;transform:translateX(12%) skewY(-3deg)}}
+@keyframes ct575PhaseText{0%{opacity:0;transform:translateX(-20px) scale(.96)}25%{opacity:1;transform:translateX(0) scale(1)}75%{opacity:1}100%{opacity:0;transform:translateX(14px) scale(1.025)}}
+
+.expeditionResult{width:min(86vw,360px);margin:0 auto;padding:14px;border:1px solid #ffffff26;border-radius:16px;background:#10131dcc;text-align:left;box-shadow:0 18px 50px #0007}
+.expeditionResult .resultLead{text-align:center;font-size:12px;color:#aab1c2;margin-bottom:4px}
+.expeditionResult .resultWD{text-align:center;font-size:28px;font-weight:1000;letter-spacing:.02em;margin:2px 0 12px;color:#f3f5ff;text-shadow:0 0 16px #8aa6ff55}
+.expeditionResult .resultRow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:7px 2px;border-top:1px solid #ffffff12;font-size:12px;color:#aeb5c5}
+.expeditionResult .resultRow b{color:#f1f3fa;font-size:13px;text-align:right}
+.expeditionResult .bonusRow b{color:#ffe08a}
+.expeditionResult .specialBonus{color:#ffbf79}
+.expeditionResult .specialBonus b{color:#ffd6a5}
+.expeditionResult .resultTotal{margin-top:9px;padding:11px 10px;border:1px solid #ffffff20;border-radius:11px;background:#ffffff0b;display:flex;justify-content:space-between;align-items:center;font-weight:900}
+.expeditionResult .resultTotal b{font-size:18px;color:#fff}
+#ctRunResult[hidden]{display:none!important}
+#ctRunResult{position:absolute;inset:0;z-index:210;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(5,7,14,.94);overflow:auto}
+#ctRunResult .ctRunResultPanel{width:100%;max-width:450px;max-height:95%;overflow:auto;padding:18px 12px;border:1px solid rgba(223,203,142,.45);border-radius:14px;background:#111827;box-shadow:0 10px 40px #0009}
+#ctRunResultTitle{text-align:center;color:#f4d28c;font-weight:800;font-size:20px;margin:0 0 12px}
+#ctRunResultNext{display:block;width:100%;min-height:46px;margin-top:16px;border:1px solid #d7af62;border-radius:10px;background:#705729;color:white;font-weight:800}
+#ctRunResultNext[hidden]{display:none}
+
+
+/* VER.519 UI-only: duplicate VER.304/326 adopted afterimage filters inside the new card trial.
+   Same exact character PNG and same common height as ally; no new rank stats or enemy AI. */
+#battle .enemy .art{align-items:flex-end;justify-content:center;filter:none!important}
+#battle .enemy .art img{image-rendering:auto!important}
+#battle .enemy[data-afterimage-rank="1"] .art img{
+  filter:grayscale(1) brightness(.27) contrast(1.08) drop-shadow(0 7px 6px rgba(0,0,0,.72))!important;
+}
+/* ★2: same dark body + white aura. */
+#battle .enemy[data-afterimage-rank="2"] .art img{
+  filter:grayscale(1) brightness(.27) contrast(1.08)
+         drop-shadow(0 0 1px rgba(255,255,255,.98))
+         drop-shadow(0 0 5px rgba(245,248,255,.92))
+         drop-shadow(0 0 11px rgba(225,232,245,.62))!important;
+}
+/* ★3〜★5: body stays dark like lower ranks; danger is communicated by aura only. */
+#battle .enemy[data-afterimage-rank="3"] .art img{
+  filter:grayscale(.92) brightness(.24) contrast(1.10)
+         drop-shadow(0 0 1px rgba(96,132,255,1))
+         drop-shadow(0 0 5px rgba(72,110,255,.94))
+         drop-shadow(0 0 12px rgba(55,86,235,.68))!important;
+}
+#battle .enemy[data-afterimage-rank="4"] .art img{
+  filter:grayscale(.92) brightness(.24) contrast(1.10)
+         drop-shadow(0 0 1px rgba(255,220,92,1))
+         drop-shadow(0 0 5px rgba(255,200,60,.95))
+         drop-shadow(0 0 12px rgba(236,175,42,.68))!important;
+}
+#battle .enemy[data-afterimage-rank="5"] .art img{
+  filter:grayscale(.92) brightness(.24) contrast(1.10)
+         drop-shadow(0 0 1px rgba(255,72,72,1))
+         drop-shadow(0 0 5px rgba(255,45,45,.96))
+         drop-shadow(0 0 13px rgba(220,22,30,.72))!important;
+}
+
+/* iPhone/Safari: do not brightness-filter the composite parent (rank aura already filters img). */
+#battle .enemy.flash,
+#battle .enemy.pendingDeath,
+#battle .enemy.locked{filter:none!important}
+
+#battle.cueActive>.top{position:relative;z-index:340}
+@media(max-width:340px){#hud{flex-wrap:wrap;row-gap:0;line-height:1.2}}
+#ctRunResultHome{display:block;width:100%;min-height:46px;margin-top:16px;border:1px solid #d7af62;border-radius:10px;background:#705729;color:#fff;font:inherit;font-weight:800}
+.expeditionResult{max-width:100%}
+/* VER.609: adopted intent, BREAK row and enemy victim feedback, within the existing board. */
+#battle .intent{max-width:calc(100% - 6px);box-sizing:border-box;white-space:nowrap;font-size:clamp(6px,1.85vw,9px);padding:1px 2px;letter-spacing:-.03em}
+#battle .intent[data-kind="defend"]{color:#bdeaff;border-color:#72c8ef80;background:#103a55dc}
+#battle .intent[data-kind="special"]{color:#f0c5ff;border-color:#c98aff80;background:#42205bdc}
+#battle .intent[data-kind="wait"]{color:#c6c6ce;border-color:#aaa8;background:#252732dc}
+#battle .break{height:8px;display:flex;gap:3px;align-items:center;white-space:nowrap;line-height:8px}
+#battle .ctBreakTrack{height:3px;flex:1 1 auto;min-width:0;border:1px solid #8b81925e;border-radius:3px;background:repeating-linear-gradient(100deg,#6f657456 0 3px,rgba(8,9,13,.75) 3px 6px);position:relative;overflow:hidden}
+#battle .ct533BreakFill{display:block;height:100%;background:#edaa58;transition:width .12s linear}
+#battle .ctBreakLabel{font-size:6px;line-height:8px;color:#b8aabc;letter-spacing:0}
+#battle .ctBroken .ct533BreakFill{background:#ff5353}
+#battle .ctBroken .ctBreakLabel{color:#ff9999;font-weight:900}
+#battle .unit.ct608HitFlash{animation:ctGuardFlash .38s ease}
+@keyframes ctGuardFlash{0%,100%{filter:none}45%{filter:brightness(1.8);transform:scale(1.035)}}
+#battle .ct608EnemyFx{position:absolute;inset:0;pointer-events:none;z-index:12}
+#battle .ctDamagePop{position:absolute;font-size:22px;font-weight:1000;color:#fff;text-shadow:0 2px 2px #000,0 0 8px #fff8;animation:ctFloat .62s ease-out forwards;pointer-events:none}
+@keyframes ctFloat{0%{opacity:0;transform:translateY(8px) scale(.75)}18%{opacity:1}100%{opacity:0;transform:translateY(-42px) scale(1.15)}}
+/* VER.609: target impact shape from VER.553; no new image or audio asset. */
+#battle .ct553HitFx{position:absolute;z-index:98;pointer-events:none!important;touch-action:none;width:72px;height:78px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 10px #c9f8ff)}
+#battle .ct553HitFx::before,#battle .ct553HitFx::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:75px;border-radius:90% 12% 90% 12%;background:linear-gradient(90deg,#fff,#8ce7ff 65%,transparent);box-shadow:0 0 14px #a6ecff;transform:translate(-50%,-50%) rotate(45deg)}
+#battle .ct553HitFx::after{height:58px;width:5px;opacity:.8;transform:translate(-50%,-50%) rotate(-45deg)}
+/* Effective VER.540/560/562 readout cascade, scoped to the current board. */
+#battle .ctDamagePop.ct539Hit{position:absolute;right:auto;z-index:72;display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:calc(100% - 12px);width:max-content;min-width:0;pointer-events:none;white-space:nowrap;line-height:1.02;text-align:center;filter:none!important;transform:translateX(-50%);animation:ct540FixedHit .62s ease-out forwards;text-shadow:none!important;gap:2px}
+#battle .ct539Chain{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#f3e3be}
+#battle .ct539Number{display:block;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#fff4db;font-variant-numeric:tabular-nums}
+#battle .ct539Hit.overkill .ct539Number{color:#ffe0a2}
+#battle .ct539Hit .ct539Detail{display:block;color:#ffdfb9}
+#battle .ct539Hit.blockHit .ct539Number{color:#b7e9ff}
+#battle .ctDamagePop.ct539Hit .ct539Chain,#battle .ctDamagePop.ct539Hit .ct539Number,#battle .ctDamagePop.ct539Hit .ct539Detail,#battle .ctDamagePop.ct539Hit.longNumber .ct539Number,#battle .ctDamagePop.ct539Hit.veryLongNumber .ct539Number,#battle .ctDamagePop.ct539Hit.blockHit .ct539Number{font-size:clamp(10px,3.2vw,14px);line-height:1.2;letter-spacing:-.02em;max-width:100%;font-weight:800;-webkit-text-stroke:0;text-shadow:0 1px 3px #000}
+#battle .ctDamagePop.ct539Hit.veryLongNumber .ct539Number{font-size:clamp(9px,2.8vw,12px)}
+@keyframes ct540FixedHit{0%{opacity:0}13%{opacity:1}77%{opacity:1}100%{opacity:0}}
+/* Old pending-death frame: opaque unit, no extra parent brightness filter. */
+#battle .ct609EnemySnapshot{position:absolute!important;margin:0;z-index:64;pointer-events:none!important;touch-action:none;opacity:1!important;filter:none!important}
+</style></head><body><main class="app">
+<section id="home"><h1>セカソコ <small>VER.609 作業版</small></h1><div class="sub">お気に入りの彼女と、世界の底へ。<br>第二世代・新カード戦闘基盤</div><h2 style="font-size:15px">部隊編成 <span id="partyCount"></span></h2><div class="sub">配置先を選び、キャラクターを選択。後衛は同じ段の前衛が必要です。</div><div id="formation" class="formationGrid"></div><button id="remove" class="minor">選択マスから外す</button><p id="homeStatus" role="status"></p><div id="roster" class="roster"></div><button id="start" class="primary">1Fへ出撃</button><p class="sub">VER.609の動作範囲：1F〜100F。編成・遠征は今回限りの一時状態です。ページ再読込後の途中再開はできません。</p><p class="verification">DEBUG連携は動作試験用です。発動率・上限・強制発動は正式バランスではありません。</p><p class="verification">敵AIは復旧試験中です。通常攻撃20／15・防御BLOCK＋15は暫定値です。</p></section>
+<section id="battle" hidden><div id="ct574BossWarning" aria-hidden="true"><div class="bossWarningInner"><b class="bossWarningMain">WARNING!!</b><span class="bossWarningSub">BOSS ENCOUNTER</span><span class="bossWarningFloor" id="ct574BossWarningFloor"></span></div></div><div id="ctRunResult" hidden role="dialog" aria-modal="true" aria-labelledby="ctRunResultTitle"><div class="ctRunResultPanel"><h2 id="ctRunResultTitle"></h2><div id="ctRunResultDetail"></div><button id="ctRunResultNext" type="button">次の階層へ</button><button id="ctRunResultHome" type="button" hidden>編成へ戻る</button></div></div><header class="top"><div class="hud"><div class="hudStats" id="hud"></div><button id="settingsOpen">設定</button><button id="retreat">撤退</button></div><div class="statusLine"><span class="phase" id="phase"></span> <span id="message" role="status"></span></div></header><div class="board" id="board"><div id="ct575PhaseCutin" aria-hidden="true"><b class="ct575PhaseText" id="ct575PhaseText"></b></div><div class="army" id="allies"></div><div class="army" id="enemies"></div><div id="lockReticle" class="targetReticle" hidden aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><circle class="reticleOuterRing" cx="50" cy="50" r="42" pathLength="100"/><g class="reticleCardinals"><path class="reticleMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="reticleMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="reticleInnerRing" cx="50" cy="50" r="29"/><path class="reticleCross" d="M50 39v7 M50 54v7 M39 50h7 M54 50h7"/><circle class="reticleCenter" cx="50" cy="50" r="2.2"/></svg></div><div id="intentTargets" aria-hidden="true"></div></div><div class="handWrap"><div class="handHead"><span id="selection"></span><span id="counts"></span></div><div id="hand" class="hand"><div id="rail" class="rail"></div></div><div class="guide" id="guide">上へドラッグして使用 ／ 敵・味方へ直接指定 ／ 横へスクロール</div></div><div class="bottom"><div id="cost"></div><button disabled title="後続実装">アイテム</button><button disabled title="後続実装">交代</button><button id="end">フェーズ終了</button></div><div id="result" class="sheet" hidden><div class="panel" id="resultPanel"></div></div><div id="logSheet" class="sheet" hidden><div class="panel" role="dialog" aria-modal="true" aria-labelledby="logTitle"><h2 id="logTitle">戦闘履歴</h2><button id="logClose">閉じる</button><ol id="logs"></ol></div></div><div id="settingsSheet" class="sheet" hidden><div class="panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><h2 id="settingsTitle">設定</h2><p>音量は端末に保存する設定値です。BGMは出撃時に再生し、効果音は有効なドロー・カード操作・攻撃Hitで鳴ります。</p><label class="settingRow"><span>BGM音量 <output id="bgmValue" for="bgmVolume">40%</output></span><input id="bgmVolume" type="range" min="0" max="100" step="1" value="40" aria-label="BGM音量"></label><label class="settingRow"><span>効果音音量 <output id="seValue" for="seVolume">70%</output></span><input id="seVolume" type="range" min="0" max="100" step="1" value="70" aria-label="効果音音量"></label><p id="volumeStatus" class="settingNote" aria-live="polite">BGM 40%・効果音 70%（初期値）</p><button id="debugOpen">開発者用DEBUG</button><button id="historyFromSettings">戦闘履歴</button><button id="settingsClose">閉じる</button></div></div><div id="debugSheet" class="sheet" hidden><div class="panel" role="dialog" aria-modal="true" aria-labelledby="debugTitle"><h2 id="debugTitle">開発者用DEBUG</h2><p>DEBUGを開閉するだけでは、戦闘状態を変更しません。下の試験操作は一時的な検証値です。</p><div id="debugState" class="debugReadout" aria-live="polite">戦闘状態を読み込み中</div><div class="debugSection"><h3>カード試験補助</h3><p>プレイヤーフェーズ中に手札へ加えます。COST・CHAIN・フェーズは変更しません。</p><button id="debugAddAttack">攻撃カードを手札へ追加</button><button id="debugAddDefense">防御カードを手札へ追加</button></div><div class="debugSection"><h3>被弾・BLOCK試験</h3><p>選択中の味方または敵だけに反映。20は旧DEBUG／現行検証エンジンの試験値で、正式バランス値ではありません。</p><button id="debugDamageSelected">選択味方へ演習被弾 20</button><button id="debugBlockTarget">選択敵のBLOCK +20</button></div><div class="debugSection"><h3>連携・CHAIN試験（DEBUG）</h3><p>通常攻撃後に動く試験用連携です。ここでの発動率・上限・強制設定は正式な連携スキル性能ではありません。設定変更は次の連携判定から反映します。</p><label class="settingRow"><span>発動率 <output id="relayRateValue" for="relayRate">100%</output></span><input id="relayRate" type="range" min="0" max="100" step="1" value="100" aria-label="連携発動率"></label><label class="settingRow"><span>連携回数上限 <output id="relayCapValue" for="relayCap">3回</output></span><input id="relayCap" type="range" min="1" max="5" step="1" value="3" aria-label="連携回数上限"></label><label class="settingRow relayToggleRow"><span>強制発動</span><input id="relayForce" type="checkbox" checked aria-label="強制発動"></label><p id="debugRelayStatus" class="debugReadout" aria-live="polite"></p><p id="debugRelayReport" class="debugReadout" aria-live="polite">未判定</p><button id="debugRefresh">連携・CHAIN状態を確認</button><p>試験初期値：発動率100%・上限3回・強制発動ON。連携基礎威力は参加者ATK15%。同じ味方の再参加はDEBUG試験挙動です。</p></div><div class="debugSection"><h3>直近の戦闘ログ</h3><p id="debugLogs" class="debugReadout">履歴なし</p><button id="debugHistory">戦闘履歴を開く</button></div><p id="debugActionStatus" role="status" aria-live="polite">開閉だけでは戦闘状態を変更しません。</p><button id="debugClose">設定へ戻る</button></div></div></section>
+</main><script>
+/* VER.609: independent in-memory engine. Pure rules and one phase owner. */
+'use strict';
+const VERSION='VER.609';
+const ROSTER=[
+ {
+  "rosterId": "mizuki",
+  "cid": 101,
+  "name": "名切 命",
+  "attr": "透波",
+  "maxHp": 110,
+  "atk": 100,
+  "def": 100,
+  "sprite": "assets/characters/mikoto_standing_ver509.png",
+  "faceIcon": "assets/icons/mikoto.png",
+  "defaultRow": "front"
+ },
+ {
+  "rosterId": "nagi",
+  "cid": 102,
+  "name": "月城 凪",
+  "attr": "透波・天",
+  "maxHp": 104,
+  "atk": 100,
+  "def": 100,
+  "sprite": "assets/characters/nagi.PNG",
+  "faceIcon": "assets/icons/nagi.png",
+  "defaultRow": "back"
+ },
+ {
+  "rosterId": "yuzu",
+  "cid": 103,
+  "name": "緋村 柚",
+  "attr": "透波・地",
+  "maxHp": 92,
+  "atk": 100,
+  "def": 100,
+  "sprite": "assets/characters/yuzu.PNG",
+  "faceIcon": "assets/icons/yuzu.png",
+  "defaultRow": "front"
+ },
+ {
+  "rosterId": "hathor",
+  "cid": 201,
+  "name": "聖なる乳牛ハトホル",
+  "attr": "乳牛・天",
+  "maxHp": 145,
+  "atk": 100,
+  "def": 100,
+  "sprite": "assets/characters/hathor.PNG",
+  "faceIcon": "assets/icons/hathor.png",
+  "defaultRow": "front"
+ },
+ {
+  "rosterId": "baal",
+  "cid": 202,
+  "name": "豊穣の乳牛バアル",
+  "attr": "乳牛・地",
+  "maxHp": 145,
+  "atk": 100,
+  "def": 100,
+  "sprite": "assets/characters/baal.PNG",
+  "faceIcon": "assets/icons/baal.png",
+  "defaultRow": "front"
+ },
+ {
+  "rosterId": "nandi",
+  "cid": 203,
+  "name": "恵みの乳牛ナンディ",
+  "attr": "乳牛・人",
+  "maxHp": 145,
+  "atk": 100,
+  "def": 100,
+  "sprite": "assets/characters/nandi.PNG",
+  "faceIcon": "assets/icons/nandi.png",
+  "defaultRow": "front"
+ },
+ {
+  "rosterId": "hamuraruna",
+  "cid": 401,
+  "name": "七瀬 月",
+  "reading": "ななせ るな",
+  "attr": "偶像族",
+  "maxHp": 180,
+  "atk": 180,
+  "def": 120,
+  "sprite": "assets/characters/nanase_runa_standing_v1.png",
+  "defaultRow": "back"
+ }
+];
+const RULES=Object.freeze({attack:.15,defense:.15,draw:5,hand:20,enemyDelay:280,verificationLastFloor:100});
+const relaySettings={rate:100,cap:3,force:true};let relayRunSerial=0,activeRelayRun=null;
+// VER.575's adopted enemy data and reward formulae only; no legacy combat loop.
+const EXPEDITION_RANK_STATS=Object.freeze({1:{hp:100,atk:100},2:{hp:150,atk:105},3:{hp:200,atk:110},4:{hp:250,atk:115},5:{hp:300,atk:120}});
+const EXPEDITION_RANK_REWARD=Object.freeze({1:1.5,2:2,3:2.5,4:3.5,5:4});
+function expeditionNormalRank(floor){return floor>=60?3:floor>=30?2:1}
+function expeditionEnemyReward(enemy){const base=enemy.finalBoss?100:enemy.boss?40:enemy.midboss?20:2;return Math.max(0,Math.round(base*(EXPEDITION_RANK_REWARD[enemy.afterimageRank]||1)))}
+function expeditionDamageTotals(allies){return {max:allies.reduce((n,a)=>n+Math.max(0,Number(a.maxHp)||0),0),hp:allies.reduce((n,a)=>n+Math.max(0,Math.min(Number(a.hp)||0,Number(a.maxHp)||0)),0)}}
+function expeditionDamageMultiplier(allies){const {max,hp}=expeditionDamageTotals(allies),lost=Math.max(0,Math.min(max,max-hp));if(max<=0)return 1.5;const thresholds=[[5,1.5],[10,1.4],[20,1.3],[30,1.2],[40,1.1],[50,1],[60,.9],[70,.8],[80,.7],[90,.6],[100,.5]];return thresholds.find(([boundary])=>lost*100<=max*boundary)?.[1]??.5}
+function expeditionBossBonus(clearedFloor){let pct=0;for(let f=5;f<=Math.min(95,Math.max(0,Math.floor(clearedFloor)));f+=5)pct+=f%10===0?5:3;if(clearedFloor>=100)pct+=25;return pct}
+function expeditionOverkillReward(enemy,excess){const rawPct=Math.max(0,excess)/Math.max(1,Number(enemy.maxHp)||1)*100;if(rawPct<100)return null;const rewardPct=Math.min(500,Math.floor(rawPct));return {rawPct,displayPct:Math.min(2000,Math.floor(rawPct)),rewardPct,bonusWD:Math.max(0,Math.floor(enemy.baseRewardWD*rewardPct/100))}}
+class Battle {
+ constructor({random=Math.random,notify=()=>{},schedule=(fn,ms)=>setTimeout(fn,ms),unschedule=id=>clearTimeout(id),presentPhase=null,enemyHitPresentation=null}={}){this.random=random;this.notify=notify;this.schedule=schedule;this.unschedule=unschedule;this.phasePresentation=presentPhase;this.enemyHitPresentation=enemyHitPresentation;this.presentationSerial=0;this.generation=0;this.timers=new Map();this.state={phase:'home'};}
+ cancel(){this.generation++;this.presentationSerial++;if(this.state){this.state.presentationBusy=false;for(const enemy of this.state.enemies||[]){enemy.plan=null;enemy.specialPending=false}}if(typeof cancelRelaySequence==='function')cancelRelaySequence('戦闘状態変更');for(const [id,resolve] of this.timers){this.unschedule(id);resolve(false)}this.timers.clear()}
+ wait(ms){const token=this.generation;return new Promise(resolve=>{const id=this.schedule(()=>{this.timers.delete(id);resolve(token===this.generation)},ms);this.timers.set(id,resolve)})}
+ emit(){this.assertLedger();this.notify(this.state)}
+ shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(this.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+ createCard(type){if(!['attack','defense'].includes(type))throw Error('Unknown card');const s=this.state,c={instanceId:`r${this.generation}-c${++s.serial}`,type};s.ledger.add(c.instanceId);return c}
+ start(party){if(!Array.isArray(party)||party.length!==6||!party.some(Boolean))return false;
+ const ids=party.filter(Boolean);if(new Set(ids).size!==ids.length||ids.some(id=>!ROSTER.some(r=>r.rosterId===id))||party.some((id,i)=>i>=3&&id&&!party[i-3]))return false;
+ this.cancel();this.state={phase:'starting',expeditionId:this.generation,floor:1,floorSerial:1,clearedFloor:0,advancedFloor:0,turn:0,enemyPhaseSerial:0,planSerial:0,chain:0,relayHits:0,relayBusy:false,relayReport:'未判定',presentationBusy:false,warningShownFloor:0,victorySettled:false,rewardClaimed:false,runBaseWD:0,runOverkillWD:0,checkpointBaseWD:0,checkpointOverkillWD:0,overkillRewarded:new Set(),lastOverkill:null,cost:0,serial:0,ledger:new Set(),draw:[],hand:[],discard:[],pendingDraw:0,allies:party.flatMap((id,slot)=>id?[{...ROSTER.find(r=>r.rosterId===id),slot,hp:ROSTER.find(r=>r.rosterId===id).maxHp,block:0}]:[]),enemies:[],selected:ids[0],target:null,message:'出撃',log:[],fault:''};
+ for(const ally of this.state.allies)this.ensureBreak(ally);
+ for(let i=0;i<5;i++)for(const type of ['attack','defense'])this.state.draw.push(this.createCard(type));this.shuffle(this.state.draw);this.spawn();this.beginPlayer();return true;
+ }
+ alive(side){return this.state[side].filter(u=>u.hp>0)}
+ front(side){return this.alive(side).filter(u=>u.slot<3).sort((a,b)=>a.slot-b.slot)}
+ promote(side){const all=this.state[side];for(const u of all)if(u.hp<=0)u.slot=-1;for(let c=0;c<3;c++){if(!all.some(u=>u.hp>0&&u.slot===c)){const rear=all.find(u=>u.hp>0&&u.slot===c+3);if(rear)rear.slot=c}}if(side==='allies')this.repairEnemyPlans()}
+ spawn(){const s=this.state;if(!Number.isInteger(s.floor)||s.floor<1||s.floor>RULES.verificationLastFloor)throw Error('階層範囲外');s.enemies=[];
+ const add=(rank,slot,role='normal',characterIndex=null)=>{const template=ROSTER[characterIndex===null?Math.floor(this.random()*2):characterIndex],stats=EXPEDITION_RANK_STATS[rank],boss=role==='boss',midboss=role==='midboss',maxHp=Math.round(stats.hp*(1+(s.floor-1)*.1)*(boss?3:1)),enemy={rosterId:template.rosterId,afterimageCharacterId:template.rosterId,afterimageRank:rank,instanceId:`r${this.generation}-f${s.floor}-e${s.enemies.length}`,name:`${boss?'BOSS｜':midboss?'MID BOSS｜':''}★${rank} ${template.name}の残像`,sprite:template.sprite,slot,homeSlot:slot,maxHp,hp:maxHp,atk:Math.round(stats.atk*(1+(s.floor-1)*.005)),def:100,block:0,boss,midboss,finalBoss:boss&&s.floor===100,specialPending:false,breakSkipPending:false,plan:null,lastActedEnemyPhase:0};this.ensureBreak(enemy);enemy.baseRewardWD=expeditionEnemyReward(enemy);s.enemies.push(enemy)};
+ if(s.floor%10===0){for(const slot of [0,1,2])add(2,slot);add(3,3);add(5,4,'boss');add(3,5)}
+ else if(s.floor%5===0){for(const slot of [0,1,2])add(1,slot);add(4,4,'midboss')}
+ else{const count=2+Math.floor(this.random()*3),used=new Set(),rank=expeditionNormalRank(s.floor);
+  for(let i=0;i<count;i++){
+   // Match the old per-character row preference while preserving independent slot draws.
+   const characterIndex=Math.floor(this.random()*2),front=[0,1,2].filter(x=>!used.has(x)),back=[3,4,5].filter(x=>!used.has(x)&&used.has(x-3)),preferred=characterIndex===1?back:front,available=preferred.length?preferred:[...front,...back];
+   if(!available.length)break;const slot=available[Math.floor(this.random()*available.length)];used.add(slot);
+   add(rank,slot,'normal',characterIndex);
+  }
+ }
+ s.target=this.front('enemies')[0]?.instanceId||null;
+ this.planEnemyActions();
+ }
+ log(message){const s=this.state;s.message=message;s.log.push(message);if(s.log.length>150)s.log.shift()}
+ async showPhase(side,boss=false){const s=this.state,token=this.generation,serial=++this.presentationSerial;if(!this.phasePresentation){s.presentationBusy=false;this.emit();return true}s.presentationBusy=true;this.emit();
+ try{const done=await this.phasePresentation(side,{floor:s.floor,boss,generation:token,state:s,game:this});if(token!==this.generation||s!==this.state||serial!==this.presentationSerial||s.phase!==side)return false;s.presentationBusy=false;this.emit();return done!==false}
+ catch(e){if(token===this.generation&&s===this.state&&serial===this.presentationSerial)this.fail(e);return false}
+ }
+ beginPlayer(){const s=this.state;if(s.phase==='player')return false;if(!this.alive('allies').length)return this.finish('gameover','GAME OVER');s.phase='player';s.turn++;this.recoverBreak('allies',`${this.generation}:${s.floorSerial}:player:${s.turn}`);s.cost=Battle.cost(this.alive('allies').length);s.pendingDraw=5;this.drawPending();this.log(`${s.floor}F｜PLAYER PHASE ${s.turn}`);const boss=s.floor%10===0&&s.warningShownFloor!==s.floor;if(boss)s.warningShownFloor=s.floor;void this.showPhase('player',boss);return true}
+ static cost(n){return n<=0?0:n<=2?3:n<=4?4:5}
+ drawPending(){const s=this.state;while(s.pendingDraw>0&&s.hand.length<=20){if(!s.draw.length){s.draw=this.shuffle(s.discard.splice(0));if(!s.draw.length){s.pendingDraw=0;break}}s.hand.push(s.draw.pop());s.pendingDraw--;if(s.hand.length>20)break}}
+ discardOverflow(id){const s=this.state;if(s.phase!=='player'||s.presentationBusy||s.relayBusy||s.hand.length<=20)return false;const i=s.hand.findIndex(c=>c.instanceId===id);if(i<0)return false;s.discard.push(s.hand.splice(i,1)[0]);this.drawPending();this.emit();return true}
+ canInput(){const s=this.state;return s.phase==='player'&&!s.presentationBusy&&!s.relayBusy&&s.hand.length<=20&&s.pendingDraw===0}
+ selectAlly(id){if(!this.canInput()||!this.alive('allies').some(a=>a.rosterId===id))return false;this.state.selected=id;this.emit();return true}
+ selectEnemy(id){if(!this.canInput()||!this.front('enemies').some(e=>e.instanceId===id))return false;this.state.target=id;this.emit();return true}
+ // BREAK is independent per unit. Only the central BLOCK -> HP result feeds it.
+ ensureBreak(unit){unit.breakMax=Math.max(1,Math.floor(unit.maxHp*.70));unit.breakValue=Math.max(0,Math.min(unit.breakMax,Number(unit.breakValue)||0));if(typeof unit.broken!=='boolean')unit.broken=false;if(!Number.isInteger(unit.breakPlayerTurn))unit.breakPlayerTurn=0;if(typeof unit.breakSkipPending!=='boolean')unit.breakSkipPending=false;return unit}
+ clearBreak(unit){this.ensureBreak(unit);unit.breakValue=0;unit.broken=false;unit.breakPlayerTurn=0;unit.breakSkipPending=false}
+ addBreak(unit,loss,ally){this.ensureBreak(unit);if(unit.broken||loss<=0)return false;unit.breakValue=Math.min(unit.breakMax,unit.breakValue+loss);if(unit.breakValue<unit.breakMax)return false;unit.broken=true;
+  if(ally)unit.breakPlayerTurn=this.state.turn+1;
+  else{unit.breakSkipPending=true;unit.specialPending=false;unit.plan=unit.hp>0?this.makeEnemyPlan(unit,'breakSkip'):null}
+  this.log(`${unit.name}｜BREAK ${unit.breakValue}/${unit.breakMax}`);return true;
+ }
+ recoverBreak(side,stamp=`${this.generation}:${this.state.floorSerial}:${side==='allies'?'player':'enemy'}:${side==='allies'?this.state.turn:this.state.enemyPhaseSerial}`){for(const unit of this.alive(side)){this.ensureBreak(unit);if(unit.breakRecoveryStamp===stamp)continue;unit.breakRecoveryStamp=stamp;if(!unit.broken)unit.breakValue=Math.max(0,unit.breakValue-Math.max(1,Math.floor(unit.breakMax*.10)))}}
+ endPlayerBreak(){const s=this.state;for(const ally of s.allies||[])if(ally.broken&&ally.breakPlayerTurn===s.turn)this.clearBreak(ally)}
+ attackBlocked(actor){return !!(actor?.broken&&actor.breakPlayerTurn===this.state.turn)}
+ damage(unit,raw,ally){const absorbed=Math.min(unit.block,raw);unit.block-=absorbed;const loss=Math.min(unit.hp,raw-absorbed);unit.hp-=loss;if(ally&&loss>0){this.state.chain=0;this.state.relayHits=0}
+ this.addBreak(unit,loss,ally);
+ if(!ally&&unit.hp<=0){unit.plan=null;unit.specialPending=false;unit.breakSkipPending=false}
+ // Reward accounting observes the existing result; it never changes HP/BLOCK/CHAIN.
+ if(!ally&&loss>0&&unit.hp<=0&&unit.instanceId&&this.state.overkillRewarded&&!this.state.overkillRewarded.has(unit.instanceId)){
+  this.state.overkillRewarded.add(unit.instanceId);const reward=expeditionOverkillReward(unit,Math.max(0,raw-absorbed-loss));if(reward&&reward.bonusWD>0){this.state.runOverkillWD+=reward.bonusWD;this.state.lastOverkill={...reward,enemyId:unit.instanceId,floor:this.state.floor}}
+ }
+ return {loss,absorbed}}
+ use(id,direct=null){const s=this.state;if(!this.canInput()||s.cost<1)return false;const i=s.hand.findIndex(c=>c.instanceId===id);if(i<0)return false;const card=s.hand[i];let actor=this.alive('allies').find(a=>a.rosterId===s.selected),target;
+ if(card.type==='defense'&&direct){if(direct.side!=='ally')return false;actor=this.alive('allies').find(a=>a.rosterId===direct.id)}
+ if(!actor)return false;
+ if(card.type==='attack'){if(this.attackBlocked(actor))return false;if(direct&&direct.side!=='enemy')return false;target=this.front('enemies').find(e=>e.instanceId===(direct?.id||s.target));if(!target)return false}
+ // All guards precede mutation; synchronous commit prevents duplicate use.
+ s.cost--;s.discard.push(s.hand.splice(i,1)[0]);
+ if(card.type==='defense'){s.selected=actor.rosterId;const n=Math.floor(actor.def*RULES.defense);actor.block+=n;this.log(`${actor.name}｜BLOCK +${n}`)}else{s.target=target.instanceId;const multiplier=1+.05*s.chain,raw=Math.floor(actor.atk*RULES.attack*multiplier);this.damage(target,raw,false);s.chain++;this.log(`${actor.name} → ${target.name}｜${raw} ×${multiplier.toFixed(2)}`);this.promote('enemies');s.target=this.front('enemies').find(e=>e.instanceId===s.target)?.instanceId||this.front('enemies')[0]?.instanceId||null;if(!this.alive('enemies').length){this.endPlayerBreak();s.phase='reward'}}
+ this.emit();return true;
+ }
+ normalEnemyTarget(enemy){const pool=this.front('allies'),col=((Number(enemy.homeSlot)||0)%3+3)%3;return pool[col%pool.length]||null}
+ randomFrontAlly(){const front=this.front('allies'),pool=front.length?front:this.alive('allies').sort((a,b)=>a.slot-b.slot);return pool.length?pool[Math.floor(this.random()*pool.length)]:null}
+ validEnemyPlan(enemy,plan=enemy?.plan){const s=this.state;return !!(enemy&&s.enemies?.includes(enemy)&&enemy.hp>0&&plan&&plan.enemyId===enemy.instanceId&&plan.generation===this.generation&&plan.expeditionId===s.expeditionId&&plan.floorSerial===s.floorSerial&&plan.floor===s.floor&&plan.enemyPhase===(s.phase==='enemy'?s.enemyPhaseSerial:s.enemyPhaseSerial+1))}
+ makeEnemyPlan(enemy,kind=null){const s=this.state,type=kind||['attack','defend','charge','wait'][Math.floor(this.random()*4)],plan={kind:type,type,enemyId:enemy.instanceId,generation:this.generation,expeditionId:s.expeditionId,floor:s.floor,floorSerial:s.floorSerial,enemyPhase:s.phase==='enemy'?s.enemyPhaseSerial:s.enemyPhaseSerial+1,actionId:`${this.generation}:f${s.floorSerial}:a${++s.planSerial}`,targetIds:[],hitCount:0,raw:0,blockGain:0,executed:false,nextHitIndex:0};
+  if(type==='attack'){const target=this.normalEnemyTarget(enemy);plan.raw=enemy.homeSlot<3?20:15;plan.hitCount=1;if(target)plan.targetIds=[target.rosterId]}
+  else if(type==='defend')plan.blockGain=15;
+  else if(type==='special'){const rank=Math.max(1,Math.min(5,Math.floor(enemy.afterimageRank))),id=enemy.afterimageCharacterId||enemy.rosterId;
+   if(id==='mizuki'){plan.specialType='mikotoAfterimageMulti';plan.hitCount=rank*2;plan.raw=Math.floor(enemy.atk*.08);for(let i=0;i<plan.hitCount;i++)plan.targetIds.push(this.randomFrontAlly()?.rosterId||null)}
+   else if(id==='nagi'){plan.specialType='nagiAfterimageCommand';plan.hitCount=rank;plan.raw=Math.floor(enemy.atk*.05);plan.targetIds=this.alive('allies').sort((a,b)=>a.slot-b.slot).map(a=>a.rosterId)}
+   else throw Error('正式未定義の残像特殊攻撃');
+  }
+  return plan;
+ }
+ planEnemyActions(){const s=this.state;for(const enemy of s.enemies){if(enemy.hp<=0){enemy.plan=null;enemy.specialPending=false;continue}this.ensureBreak(enemy);const kind=enemy.broken&&enemy.breakSkipPending?'breakSkip':enemy.specialPending?'special':null;enemy.plan=this.makeEnemyPlan(enemy,kind)}}
+ // Explicit state-transition boundary only: render/forecast never repairs or rolls targets.
+ repairEnemyPlans(){for(const enemy of this.state.enemies||[]){if(enemy.hp<=0){enemy.plan=null;enemy.specialPending=false;continue}const plan=enemy.plan;if(!this.validEnemyPlan(enemy,plan))continue;const valid=id=>this.alive('allies').some(a=>a.rosterId===id);
+   if(plan.kind==='attack'&&!plan.executed&&!valid(plan.targetIds[0])){const target=this.normalEnemyTarget(enemy);plan.targetIds=target?[target.rosterId]:[]}
+   else if(plan.kind==='special'&&plan.specialType==='mikotoAfterimageMulti'){for(let i=plan.executed?plan.nextHitIndex:0;i<plan.targetIds.length;i++)if(!valid(plan.targetIds[i]))plan.targetIds[i]=this.randomFrontAlly()?.rosterId||null}
+   else if(plan.kind==='special'&&plan.specialType==='nagiAfterimageCommand')plan.targetIds=plan.targetIds.filter(valid);
+  }}
+ enemyPlan(enemy){const plan=enemy?.plan;if(!this.validEnemyPlan(enemy,plan)||plan.executed)return null;const s=this.state,hits=[],living=new Map(this.alive('allies').map(a=>[a.rosterId,a]));
+  if(plan.kind==='attack'&&living.has(plan.targetIds[0]))hits.push({targetId:plan.targetIds[0],raw:plan.raw,hitIndex:1});
+  else if(plan.kind==='special'&&plan.specialType==='mikotoAfterimageMulti')plan.targetIds.forEach((id,i)=>{if(living.has(id))hits.push({targetId:id,raw:plan.raw,hitIndex:i+1})});
+  else if(plan.kind==='special'&&plan.specialType==='nagiAfterimageCommand')for(let i=0;i<plan.hitCount;i++)for(const id of plan.targetIds)if(living.has(id))hits.push({targetId:id,raw:plan.raw,hitIndex:i+1});
+  const labels={attack:`⚔️${plan.raw}`,defend:'🛡️防御＋15',charge:'⚠️必殺迄1ターン',special:plan.specialType==='mikotoAfterimageMulti'?`✨残像連撃 ${plan.hitCount}Hit`:`✨指揮掃射 ${plan.hitCount}Hit/全体`,wait:'💤待機',breakSkip:'💥BREAK 行動不能'};
+  return {...plan,targetIds:[...plan.targetIds],hits,label:labels[plan.kind]||'',target:living.get(plan.targetIds[0])||null,damage:plan.raw};
+ }
+ enemyActionCurrent(enemy,plan,state,token){return token===this.generation&&state===this.state&&state.phase==='enemy'&&enemy.plan===plan&&this.validEnemyPlan(enemy,plan)}
+ applyEnemyHit(enemy,plan,target,hitIndex,state,token){if(!this.enemyActionCurrent(enemy,plan,state,token)||!target||target.hp<=0)return false;const result=this.damage(target,plan.raw,true);
+  // Presentation observes a committed hit synchronously, before promotion hides a dead cell.
+  if(this.enemyHitPresentation)try{this.enemyHitPresentation({enemy,target,raw:plan.raw,hitIndex,hitCount:plan.hitCount,action:plan.kind,plan,result,game:this,generation:token,floorSerial:state.floorSerial})}catch(e){this.log(`敵被弾表示を省略｜${String(e?.message||e)}`)}
+  if(!this.enemyActionCurrent(enemy,plan,state,token))return false;
+  this.log(`${enemy.name}${plan.kind==='special'?`「${plan.specialType==='mikotoAfterimageMulti'?'残像連撃':'指揮掃射'}」 [${hitIndex}]`:''} → ${target.name}｜HP -${result.loss} / BLOCK -${result.absorbed}`);this.promote('allies');
+  if(!this.alive('allies').length){this.finish('gameover','GAME OVER');return false}if(!this.alive('allies').some(a=>a.rosterId===state.selected))state.selected=this.front('allies')[0]?.rosterId||this.alive('allies')[0].rosterId;this.emit();return true;
+ }
+ executeEnemyAction(enemy,plan,state=this.state,token=this.generation){if(!this.enemyActionCurrent(enemy,plan,state,token)||plan.executed||enemy.lastActedEnemyPhase===state.enemyPhaseSerial)return false;plan.executed=true;enemy.lastActedEnemyPhase=state.enemyPhaseSerial;
+  if(plan.kind==='breakSkip'){enemy.specialPending=false;this.clearBreak(enemy);this.log(`${enemy.name}｜BREAK 行動スキップ`)}
+  else if(plan.kind==='charge'){enemy.specialPending=true;this.log(`${enemy.name}｜⚠️必殺迄1ターン｜溜め行動`)}
+  else if(plan.kind==='defend'){enemy.block+=plan.blockGain;this.log(`${enemy.name}｜防御 BLOCK +${plan.blockGain}`)}
+  else if(plan.kind==='wait')this.log(`${enemy.name}｜💤待機`);
+  else if(plan.kind==='attack'){plan.nextHitIndex=1;const target=this.alive('allies').find(a=>a.rosterId===plan.targetIds[0]);if(target)this.applyEnemyHit(enemy,plan,target,1,state,token);else this.log(`${enemy.name}｜攻撃対象なし`)}
+  else if(plan.kind==='special'){
+   // VER.575 resolves all special Hits synchronously; retain that timing, with no new SE use.
+   for(let h=0;h<plan.hitCount;h++){if(!this.enemyActionCurrent(enemy,plan,state,token))return false;plan.nextHitIndex=h+1;
+    if(plan.specialType==='nagiAfterimageCommand'){for(const id of [...plan.targetIds]){if(!this.enemyActionCurrent(enemy,plan,state,token))return false;const target=this.alive('allies').find(a=>a.rosterId===id);if(target&&!this.applyEnemyHit(enemy,plan,target,h+1,state,token))return false}}
+    else{const target=this.alive('allies').find(a=>a.rosterId===plan.targetIds[h]);if(target&&!this.applyEnemyHit(enemy,plan,target,h+1,state,token))return false}
+   }
+   if(!this.enemyActionCurrent(enemy,plan,state,token))return false;enemy.specialPending=false;
+  }
+  if(this.enemyActionCurrent(enemy,plan,state,token))this.emit();return true;
+ }
+ async endPhase(){if(!this.canInput())return false;const s=this.state,token=this.generation;this.endPlayerBreak();s.phase='enemy';s.enemyPhaseSerial++;this.recoverBreak('enemies',`${this.generation}:${s.floorSerial}:enemy:${s.enemyPhaseSerial}`);s.discard.push(...s.hand.splice(0));this.log('ENEMY PHASE');
+  try{if(!await this.showPhase('enemy')||token!==this.generation||s!==this.state||s.phase!=='enemy')return false;for(const enemy of this.alive('enemies')){if(!await this.wait(RULES.enemyDelay)||token!==this.generation||s!==this.state||s.phase!=='enemy')return false;this.repairEnemyPlans();this.executeEnemyAction(enemy,enemy.plan,s,token);if(token!==this.generation||s!==this.state||s.phase!=='enemy')return s.phase==='gameover'}
+   if(token===this.generation&&s===this.state&&s.phase==='enemy'){s.phase='planning';this.planEnemyActions();this.beginPlayer()}return true;
+  }catch(e){if(token===this.generation)this.fail(e);return false}
+ }
+ settleVictory(){const s=this.state;if(s.phase!=='reward'||s.presentationBusy||s.relayBusy||s.victorySettled||s.clearedFloor>=s.floor||!s.enemies?.length||this.alive('enemies').length)return false;
+ this.endPlayerBreak();
+ s.victorySettled=true;s.clearedFloor=s.floor;s.runBaseWD+=s.enemies.reduce((n,e)=>n+e.baseRewardWD,0);this.log(`${s.floor}F CLEAR｜敵全滅・全Hit演出完了`);
+ if(s.floor===RULES.verificationLastFloor){s.rewardClaimed=true;this.finish('complete','100F 踏破！');return true}
+ s.phase=s.floor%5===0?'checkpoint':'reward';this.emit();return true;
+ }
+ reward(type,expectedFloor=this.state.floor){const s=this.state;if(s.floor!==expectedFloor||s.presentationBusy||s.relayBusy||s.phase!=='reward'||!s.victorySettled||s.clearedFloor!==s.floor||s.rewardClaimed||s.floor%5===0||(type!==null&&!['attack','defense'].includes(type)))return false;
+ s.rewardClaimed=true;s.phase='transition';if(type){s.draw.push(this.createCard(type));this.shuffle(s.draw)}return this.advanceFloor();
+ }
+ continueFloor(expectedFloor=this.state.floor){const s=this.state;if(s.floor!==expectedFloor||s.phase!=='checkpoint'||s.presentationBusy||s.relayBusy||!s.victorySettled||s.clearedFloor!==s.floor||s.rewardClaimed||s.floor>=RULES.verificationLastFloor)return false;
+ s.rewardClaimed=true;s.phase='transition';s.checkpointBaseWD=s.runBaseWD;s.checkpointOverkillWD=s.runOverkillWD;return this.advanceFloor();
+ }
+ advanceFloor(){const s=this.state;if(s.phase!=='transition'||!s.victorySettled||!s.rewardClaimed||s.clearedFloor!==s.floor||s.advancedFloor>=s.floor||s.floor>=RULES.verificationLastFloor||this.alive('enemies').length)return false;
+ // Enter transition before cancel(), so a canceled visual cannot settle the old floor again.
+ s.advancedFloor=s.floor;this.endPlayerBreak();this.cancel();s.discard.push(...s.hand.splice(0));s.pendingDraw=0;s.floor++;s.floorSerial++;s.victorySettled=false;s.rewardClaimed=false;for(const a of s.allies)a.block=0;this.spawn();this.beginPlayer();return true;
+ }
+ resultSummary(){const s=this.state,{max,hp}=expeditionDamageTotals(s.allies||[]),floorBase=Math.max(0,Math.floor(s.runBaseWD||0)),overkill=Math.max(0,Math.floor(s.runOverkillWD||0)),base=floorBase+overkill,damagePct=max?Math.max(0,Math.min(100,(max-hp)*100/max)):0,damageMult=expeditionDamageMultiplier(s.allies||[]),bossPct=expeditionBossBonus(s.clearedFloor||0),bossMult=1+bossPct/100,sectionBase=Math.max(0,floorBase-(s.checkpointBaseWD||0)),sectionOverkill=Math.max(0,overkill-(s.checkpointOverkillWD||0));return {sectionBase,sectionOverkill,sectionGain:sectionBase+sectionOverkill,floorBase,overkill,base,damagePct,damageMult,bossPct,bossMult,strongRoute:0,total:Math.max(0,Math.round(base*damageMult*bossMult)),clearedFloor:s.clearedFloor||0,floor:s.floor||0,type:s.phase}}
+ finish(phase,message){this.cancel();this.state.phase=phase;this.state.pendingDraw=0;this.log(message);this.emit()}
+ retreat(){if(this.state.phase==='home'||this.state.phase==='checkpoint'||this.state.phase==='complete')return false;this.finish('retreated','撤退｜今回の一時状態は終了');return true}
+ home(){this.cancel();this.state={phase:'home'};this.emit()}
+ fail(e){this.cancel();this.state.phase='error';this.state.fault=String(e?.message||e);this.emit()}
+ assertLedger(){const s=this.state;if(!s.ledger)return;const ids=[...s.draw,...s.hand,...s.discard].map(c=>c.instanceId);if(ids.length!==s.ledger.size||new Set(ids).size!==ids.length||ids.some(id=>!s.ledger.has(id)))throw Error('カード台帳の不整合')}
+}
+const $=id=>document.getElementById(id),escapeHtml=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let party=['mizuki','yuzu','hathor','nagi','baal','hamuraruna'],slotSelected=0,gesture=null,pan=null,selectedCard=null,raf=0,lastClick=0;
+const game=new Battle({notify:render,presentPhase:showExpeditionPhase,enemyHitPresentation:presentEnemyHit});
+// VER.609: old victim flash/pop only. No enemy cut-in, SE assignment or extra hit delay.
+const enemyHitEffects=new Set(),enemyHitFlashes=new Map();
+function clearEnemyHitEffects(){for(const fx of enemyHitEffects){fx.timers.forEach(clearTimeout);fx.node.remove()}enemyHitEffects.clear();enemyHitFlashes.clear();document.querySelectorAll('.ct608HitFlash').forEach(n=>n.classList.remove('ct608HitFlash'))}
+function presentEnemyHit(meta){
+ const {target,result,generation,floorSerial}=meta;
+ if(meta.game!==game||generation!==game.generation||floorSerial!==game.state.floorSerial||game.state.phase!=='enemy')return;
+ const cell=[...$('allies').children].find(n=>n.dataset.unit===target.rosterId);if(!cell)return;
+ const board=$('board').getBoundingClientRect(),rect=cell.getBoundingClientRect(),node=document.createElement('div'),pop=document.createElement('span');
+ node.className='ct608EnemyFx';node.setAttribute('aria-hidden','true');pop.className='ctDamagePop';pop.textContent=result.loss>0?'-'+result.loss.toLocaleString('ja-JP'):'BLOCK '+result.absorbed.toLocaleString('ja-JP');pop.dataset.hitIndex=String(meta.hitIndex);pop.dataset.targetId=target.rosterId;
+ Object.assign(pop.style,{left:rect.left-board.left+rect.width*.50+'px',top:rect.top-board.top+rect.height*.40+'px'});node.append(pop);$('board').append(node);
+ const stamp={generation,floorSerial,until:performance.now()+380},fx={node,timers:[]};enemyHitEffects.add(fx);enemyHitFlashes.set(target.rosterId,stamp);cell.classList.add('ct608HitFlash');
+ const valid=()=>game.generation===generation&&game.state.floorSerial===floorSerial;
+ fx.timers.push(setTimeout(()=>{if(enemyHitFlashes.get(target.rosterId)!==stamp)return;enemyHitFlashes.delete(target.rosterId);if(valid())for(const n of $('allies').children)if(n.dataset.unit===target.rosterId)n.classList.remove('ct608HitFlash')},380));
+ fx.timers.push(setTimeout(()=>{node.remove();enemyHitEffects.delete(fx)},660));
+}
+function hasEnemyHitFlash(id){const stamp=enemyHitFlashes.get(id);return !!stamp&&stamp.generation===game.generation&&stamp.floorSerial===game.state.floorSerial&&stamp.until>performance.now()}
+
+// VER.609: display-only records. Never writes enemy/CHAIN/BLOCK/reward state.
+const allyHitPresentations=new Set();let allyHitPresentationSerial=0;
+function allyHitPresentationValid(hit){return hit&&hit.state===game.state&&hit.generation===game.generation&&hit.floorSerial===game.state.floorSerial&&['player','reward'].includes(game.state.phase)}
+function allyHitGeometry(cell){const board=$('board').getBoundingClientRect(),frame=cell.getBoundingClientRect(),art=cell.querySelector('.art')?.getBoundingClientRect();if(!board.width||!frame.width||!frame.height)return null;const r=art?.width&&art?.height?art:frame;return {frame:{left:frame.left-board.left,top:frame.top-board.top,width:frame.width,height:frame.height},art:{left:r.left-board.left,top:r.top-board.top,width:r.width,height:r.height}}}
+function captureAllyHitPresentation(enemy,raw,chainBefore){const cell=[...$('enemies').children].find(n=>n.dataset.unit===enemy.instanceId);if(!cell)return null;const geometry=allyHitGeometry(cell);if(!geometry)return null;return {id:++allyHitPresentationSerial,state:game.state,generation:game.generation,floorSerial:game.state.floorSerial,enemyId:enemy.instanceId,enemy,raw,chain:Math.max(0,Math.floor(Number(chainBefore)||0)),geometry,snapshot:cell.cloneNode(true),timers:[],nodes:[],animations:[],shown:false}}
+function removeAllyHitPresentation(hit){if(!hit)return;hit.timers.forEach(clearTimeout);hit.animations.forEach(a=>{try{a.cancel()}catch(_){}});hit.nodes.forEach(n=>n.remove());hit.snapshot?.remove();allyHitPresentations.delete(hit)}
+function clearAllyHitPresentations(){for(const hit of [...allyHitPresentations])removeAllyHitPresentation(hit)}
+function completeAllyHitPresentation(hit,result){if(!hit)return null;hit.result={loss:result.loss,absorbed:result.absorbed};hit.excess=Math.max(0,hit.raw-result.absorbed-result.loss);hit.effectiveDamage=Math.max(0,hit.raw-result.absorbed);hit.overkillRatio=hit.excess/Math.max(1,hit.enemy.maxHp);allyHitPresentations.add(hit);
+ if(hit.enemy.hp<=0){const clone=hit.snapshot,r=hit.geometry.frame;clone.classList.add('ct609EnemySnapshot','pendingDeath');clone.classList.remove('dropReady','selected');clone.removeAttribute('data-unit');clone.removeAttribute('data-side');clone.setAttribute('aria-hidden','true');clone.disabled=true;clone.tabIndex=-1;clone.querySelector('.intent')?.remove();const hp=clone.querySelector('.hpText'),fill=clone.querySelector('.hpFill'),block=clone.querySelector('.shield b');if(hp)hp.textContent='0/'+hit.enemy.maxHp;if(fill)fill.style.width='0%';if(block)block.textContent=hit.enemy.block;Object.assign(clone.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});$('board').append(clone)}else hit.snapshot=null;
+ return hit;
+}
+function positionAllyHitPresentation(hit){const cell=[...$('enemies').children].find(n=>n.dataset.unit===hit.enemyId);if(cell&&!hit.snapshot){const geometry=allyHitGeometry(cell);if(geometry)hit.geometry=geometry}const {frame,art}=hit.geometry;if(hit.slash)Object.assign(hit.slash.style,{left:frame.left+frame.width*.3+'px',top:frame.top+frame.height*.45+'px'});if(hit.popup){const board=$('board').getBoundingClientRect(),pop=hit.popup;pop.style.left=art.left+art.width*.50+'px';pop.style.top=art.top+art.height*.48+'px';const half=Math.min(board.width/2,Math.ceil(pop.getBoundingClientRect().width/2)),x=Math.max(half+4,Math.min(board.width-half-4,art.left+art.width*.50));pop.style.left=x+'px'}}
+function showAllyHitPresentation(hit){if(!hit||hit.shown)return false;if(!allyHitPresentationValid(hit)||document.hidden){removeAllyHitPresentation(hit);return false}hit.shown=true;
+ // Old readout shows only the most recent confirmed Hit; its N is captured before damage.
+ for(const other of [...allyHitPresentations])if(other!==hit&&other.shown)removeAllyHitPresentation(other);
+ const slash=document.createElement('div'),pop=document.createElement('div');slash.className='ct553HitFx';slash.setAttribute('aria-hidden','true');slash.dataset.enemyId=hit.enemyId;pop.className='ctDamagePop ct539Hit';pop.setAttribute('aria-hidden','true');pop.dataset.enemyId=hit.enemyId;pop.dataset.chain=String(hit.chain);hit.slash=slash;hit.popup=pop;hit.nodes.push(slash,pop);
+ if(hit.chain>0){const chain=document.createElement('span');chain.className='ct539Chain';chain.textContent=hit.chain+' CHAIN';pop.append(chain)}
+ const number=document.createElement('span');number.className='ct539Number';number.textContent=(hit.effectiveDamage>0?'-'+hit.effectiveDamage.toLocaleString('ja-JP'):'BLOCK')+(hit.chain>0?'（+'+(hit.chain*5)+'%）':'');pop.append(number);if(number.textContent.length>17)pop.classList.add('veryLongNumber');else if(number.textContent.length>12)pop.classList.add('longNumber');if(hit.effectiveDamage<=0)pop.classList.add('blockHit');if(hit.overkillRatio>=1){const detail=document.createElement('span');detail.className='ct539Detail';detail.textContent='OVERKILL '+hit.overkillRatio.toFixed(1)+' 🔥';pop.append(detail);pop.classList.add('overkill')}
+ $('board').append(slash,pop);positionAllyHitPresentation(hit);
+ if(slash.animate){try{const a=slash.animate([{opacity:0,transform:'translate(-50%,-50%) scale(.55)'},{opacity:1,transform:'translate(-50%,-50%) scale(1.15)',offset:.35},{opacity:0,transform:'translate(-50%,-50%) scale(1.4)'}],{duration:235,easing:'ease-out'});hit.animations.push(a);a.finished.then(()=>slash.remove(),()=>slash.remove())}catch(_){}}
+ hit.timers.push(setTimeout(()=>{slash.remove();hit.slash=null;hit.snapshot?.remove();hit.snapshot=null},235));hit.timers.push(setTimeout(()=>removeAllyHitPresentation(hit),700));return true;
+}
+function scheduleAllyHitPresentation(hit,visual){if(!hit)return;if(!visual){showAllyHitPresentation(hit);return}visual.hitPresentation=hit;const delay=Math.max(0,(visual.visualStart??performance.now())+ATTACK_HIT_MS-performance.now()),id=setTimeout(()=>{if(attackVisual===visual)showAllyHitPresentation(hit);else removeAllyHitPresentation(hit)},delay);visual.timers.push(id);hit.timers.push(id)}
+function syncAllyHitPresentations(){for(const hit of [...allyHitPresentations]){if(!allyHitPresentationValid(hit))removeAllyHitPresentation(hit);else if(hit.shown)positionAllyHitPresentation(hit)}}
+
+// VER.609: selected expedition presentation; attack/audio timing remains VER.606.
+let expeditionCue=null,expeditionCueSerial=0;
+function floorBackgroundPath(floor){
+ if(!Number.isInteger(floor)||floor<1||floor>100)return null;
+ const base='assets/backgrounds/';
+ return base+(floor%100===0?'100階毎.png':floor%10===0?'10階毎.png':floor%5===0?'五階毎.png':floor%2===0?'偶数階.png':'奇数階.png');
+}
+function clearExpeditionCue(){
+ expeditionCue=null;expeditionCueSerial++;
+ for(const id of ['ct574BossWarning','ct575PhaseCutin']){
+  const node=$(id);if(node){node.classList.remove('show','enemy');node.setAttribute('aria-hidden','true')}
+ }
+ $('battle')?.classList.remove('cueActive');
+}
+async function showExpeditionPhase(side,detail){
+ clearExpeditionCue();
+ const cue={serial:expeditionCueSerial,state:detail.state,generation:detail.generation,floor:detail.floor,side};
+ expeditionCue=cue;
+ const valid=()=>expeditionCue===cue&&game.state===cue.state&&game.generation===cue.generation&&game.state.floor===cue.floor&&game.state.phase===side;
+ try{
+  if(!valid())return false;
+  $('battle').classList.add('cueActive');
+  if(detail.boss){
+   $('ct574BossWarningFloor').textContent=cue.floor+'F';
+   const warning=$('ct574BossWarning');warning.setAttribute('aria-hidden','false');warning.classList.add('show');
+   if(!await game.wait(1450)||!valid())return false;
+   warning.classList.remove('show');warning.setAttribute('aria-hidden','true');
+  }
+  if(!valid())return false;
+  const phase=$('ct575PhaseCutin');phase.classList.toggle('enemy',side==='enemy');
+  $('ct575PhaseText').textContent=side==='enemy'?'ENEMY PHASE':'PLAYER PHASE';
+  phase.setAttribute('aria-hidden','false');phase.classList.add('show');
+  return !!await game.wait(500)&&valid();
+ }finally{if(expeditionCue===cue)clearExpeditionCue()}
+}
+function queueVictorySettlement(){
+ const state=game.state;
+ queueMicrotask(()=>{
+  if(game.state===state&&state.phase==='reward'&&!state.relayBusy&&!activeRelayRun&&!attackVisual)
+   try{game.settleVictory()}catch(e){game.fail(e)}
+ });
+}
+function expeditionResultHtml(){
+ const r=game.resultSummary(),amount=n=>Math.max(0,Math.floor(n)).toLocaleString('ja-JP'),mult=n=>Number(n.toFixed(2)).toString();
+ const overkill=r.sectionOverkill>0?'<div class="resultRow specialBonus"><span>🔥 OVERKILL報酬</span><b>+💎'+amount(r.sectionOverkill)+' WD</b></div>':'';
+ return '<div class="expeditionResult"><div class="resultLead">今回の区間獲得</div><div class="resultWD">💎'+amount(r.sectionGain)+' WD</div><div class="resultRow"><span>遠征累計</span><b>💎'+amount(r.base)+' WD</b></div><div class="resultRow"><span>現在の損壊率</span><b>'+Math.round(r.damagePct)+'%</b></div><div class="resultRow"><span>損壊率倍率</span><b>×'+mult(r.damageMult)+'</b></div><div class="resultRow bonusRow"><span>踏破ボーナス</span><b>+'+r.bossPct+'%（×'+mult(r.bossMult)+'）</b></div>'+overkill+'<div class="resultTotal"><span>持ち帰り見込</span><b>💎'+amount(r.total)+' WD</b></div></div><p class="sub">表示は今回の遠征の算定値です。所持WDへの入金・保存は行われません。</p>';
+}
+function renderExpeditionResults(){
+ const s=game.state,runResult=s.phase==='checkpoint'||s.phase==='complete';
+ $('ctRunResult').hidden=!runResult;
+ if(runResult){
+  $('ctRunResultTitle').textContent=s.phase==='complete'?'100F 踏破！':s.floor+'F RESULT';
+  $('ctRunResultDetail').innerHTML=expeditionResultHtml();
+  $('ctRunResultNext').hidden=s.phase!=='checkpoint';
+  $('ctRunResultNext').dataset.floor=String(s.floor);
+  $('ctRunResultHome').hidden=s.phase!=='complete';
+ }
+ const terminal=['gameover','retreated','error'].includes(s.phase),cardReward=s.phase==='reward'&&s.victorySettled&&!s.relayBusy;
+ $('result').hidden=!(terminal||cardReward);
+ if(cardReward)$('resultPanel').innerHTML='<h2>'+s.floor+'F CLEAR</h2><p>1枚獲得、またはスキップで次の階層へ進みます。</p><button data-reward="attack" data-floor="'+s.floor+'">攻撃カードを獲得</button><button data-reward="defense" data-floor="'+s.floor+'">防御カードを獲得</button><button data-reward="skip" data-floor="'+s.floor+'">スキップ</button><p>強撃は次段階の実装対象です。</p><button data-exit>撤退して終了</button>';
+ else if(terminal)$('resultPanel').innerHTML='<h2>'+escapeHtml(s.phase==='error'?'処理を停止しました':s.message)+'</h2>'+(s.phase==='error'?'<p>編成へ戻って再出撃できます。</p>':expeditionResultHtml())+'<button data-home>編成へ戻る</button>';
+}
+const cancelWithoutExpeditionCue=game.cancel.bind(game);
+game.cancel=()=>{clearExpeditionCue();clearEnemyHitEffects();clearAllyHitPresentations();return cancelWithoutExpeditionCue()};
+$('ctRunResultNext').onclick=safe(e=>game.continueFloor(Number(e.currentTarget.dataset.floor)));
+$('ctRunResultHome').onclick=safe(()=>game.home());
+
+function resetGesture(){const g=gesture,oldPan=pan;gesture=null;pan=null;cancelAnimationFrame(raf);raf=0;document.querySelectorAll('.ghost').forEach(e=>e.remove());document.querySelectorAll('.source,.dropReady').forEach(e=>e.classList.remove('source','dropReady'));for(const item of [g,oldPan])if(item)for(const el of [$('hand'),$('guide')])try{if(el.hasPointerCapture(item.pointer))el.releasePointerCapture(item.pointer)}catch{} flushDeferredHandRender()}
+function combatPanelsClosed(){return $("logSheet").hidden&&$("settingsSheet").hidden&&$("debugSheet").hidden}
+function closeToolSheets(){$("logSheet").hidden=true;$("settingsSheet").hidden=true;$("debugSheet").hidden=true}
+function safe(fn){return (...args)=>{try{const result=fn(...args);if(result?.catch)result.catch(fail);return result}catch(e){fail(e)}}}
+function fail(e){stopCombatBgm();resetGesture();console.error(e);game.cancel();game.state.phase='error';game.state.fault=String(e.message||e);render()}
+function formation(){ $('partyCount').textContent=`${party.filter(Boolean).length} / 6`;$('formation').innerHTML=[3,0,4,1,5,2].map(i=>`<button class="formationSlot ${i===slotSelected?'selected':''}" data-slot="${i}">${i<3?'前衛':'後衛'} ${i%3+1}｜${escapeHtml(ROSTER.find(r=>r.rosterId===party[i])?.name||'空き')}</button>`).join('');$('roster').innerHTML=ROSTER.map(r=>`<button class="rosterCard ${party.includes(r.rosterId)?'used':''}" data-roster="${r.rosterId}"><img src="${r.sprite}" alt=""><span>${r.name}<br><small>CID ${r.cid}｜HP ${r.maxHp}<br>ATK ${r.atk} / DEF ${r.def}</small></span></button>`).join('');$('start').disabled=!party.some(Boolean)}
+$('formation').onclick=e=>{const b=e.target.closest('[data-slot]');if(b){slotSelected=+b.dataset.slot;formation()}};
+$('roster').onclick=e=>{const b=e.target.closest('[data-roster]');if(!b)return;const id=b.dataset.roster,i=party.indexOf(id);if(slotSelected>=3&&!party[slotSelected-3]){$('homeStatus').textContent='同じ段の前衛を先に配置してください。';return}if(i>=0&&i!==slotSelected){$('homeStatus').textContent='配置済みです。外してから別のマスへ配置してください。';return}party[slotSelected]=id;$('homeStatus').textContent='';formation()};
+$('remove').onclick=()=>{if(slotSelected<3&&party[slotSelected+3]){$('homeStatus').textContent='同じ段の後衛を先に外してください。';return}party[slotSelected]=null;formation()};
+$('start').onclick=safe(()=>{resetGesture();closeToolSheets();if(game.start(party))startCombatBgm()});
+$('retreat').onclick=safe(()=>{resetGesture();closeToolSheets();game.retreat()});
+$('end').onclick=safe(()=>{if(!gesture&&!pan&&combatPanelsClosed())return game.endPhase()});
+function openBattleHistory(){resetGesture();$("settingsSheet").hidden=true;$("debugSheet").hidden=true;$("logs").innerHTML=game.state.log.map(x=>"<li>"+escapeHtml(x)+"</li>").join("");$("logSheet").hidden=false};
+function renderDebugState(){const s=game.state;if(!s||!s.allies){$("debugState").textContent="戦闘状態なし";$("debugRelayStatus").textContent="連携攻撃：DEBUG試験接続済み｜CHAIN：戦闘外";$("debugRelayReport").textContent="出撃後に判定結果が表示されます。";$("debugLogs").textContent="履歴なし";return}const ally=s.allies.find(a=>a.hp>0&&a.rosterId===s.selected),enemy=s.enemies?.find(e=>e.hp>0&&e.instanceId===s.target),chain=Number(s.chain)||0,relayHits=Number(s.relayHits)||0;$("debugState").textContent="phase="+s.phase+" / "+s.floor+"F turn="+s.turn+" / COST="+s.cost+" / CHAIN="+chain+" ×"+(1+chain*0.05).toFixed(2)+" / 手札="+(s.hand?.length||0)+" 山札="+(s.draw?.length||0)+" 捨札="+(s.discard?.length||0)+" / 選択味方="+(ally?ally.name+" HP "+ally.hp+" BLOCK "+ally.block:"—")+" / 選択敵="+(enemy?enemy.name+" HP "+enemy.hp+" BLOCK "+enemy.block:"—");$("debugRelayStatus").textContent="DEBUG連携：接続済み"+(s.relayBusy?"・演出／判定中":"・待機中")+"｜CHAIN "+chain+" ×"+(1+chain*0.05).toFixed(2)+"｜連携累計Hit "+relayHits+"｜発動率 "+relaySettings.rate+"%｜上限 "+relaySettings.cap+"回｜強制発動 "+(relaySettings.force?"ON":"OFF");$("debugRelayReport").textContent=s.relayReport||"未判定";$("debugLogs").textContent=(s.log||[]).slice(-5).join(" ／ ")||"履歴なし";const ready=game.canInput(),aliveAlly=!!ally,aliveEnemy=!!enemy;$("debugAddAttack").disabled=!ready||s.hand.length>=20;$("debugAddDefense").disabled=!ready||s.hand.length>=20;$("debugDamageSelected").disabled=!ready||!aliveAlly;$("debugBlockTarget").disabled=!ready||!aliveEnemy;$("relayRateValue").textContent=relaySettings.rate+"%";$("relayCapValue").textContent=relaySettings.cap+"回"}
+function debugAddCard(type){const s=game.state;if(!game.canInput()||s.hand.length>=20){$("debugActionStatus").textContent="プレイヤーフェーズかつ手札20枚未満で使用できます。";return}const c=game.createCard(type);s.hand.push(c);game.log("DEBUG｜"+(type==="attack"?"攻撃":"防御")+"カードを手札へ追加（試験）");game.emit();$("debugActionStatus").textContent="手札へ追加しました。COST・CHAIN・フェーズは変更していません。"};
+function debugDamageSelected(){const s=game.state,target=s.allies?.find(a=>a.hp>0&&a.rosterId===s.selected);if(!game.canInput()||!target){$("debugActionStatus").textContent="プレイヤーフェーズ中に生存中の選択味方へ実行できます。";return}const hit=game.damage(target,20,true);game.promote("allies");game.log("DEBUG｜"+target.name+"へ演習被弾20（試験値）｜HP -"+hit.loss+" / BLOCK -"+hit.absorbed);if(!game.alive("allies").length){game.finish("gameover","GAME OVER｜DEBUG演習被弾");$("debugActionStatus").textContent="被弾試験を反映しました。味方全滅のため戦闘終了。";return}if(target.hp<=0||!game.alive("allies").some(a=>a.rosterId===s.selected))s.selected=game.front("allies")[0].rosterId;game.emit();$("debugActionStatus").textContent=target.name+"だけに試験被弾を反映しました。HP -"+hit.loss+" / BLOCK -"+hit.absorbed+"。CHAINは現行ルールに従います。"};
+function debugBlockTarget(){const s=game.state,target=s.enemies?.find(e=>e.hp>0&&e.instanceId===s.target);if(!game.canInput()||!target){$("debugActionStatus").textContent="プレイヤーフェーズ中に生存中の選択敵へ実行できます。";return}target.block=(Number(target.block)||0)+20;game.log("DEBUG｜"+target.name+"のBLOCK +20（試験値）");game.emit();$("debugActionStatus").textContent=target.name+"だけにBLOCK +20を反映しました。HP・COST・CHAIN・フェーズは変更していません。"};
+$("settingsOpen").onclick=()=>{resetGesture();$("logSheet").hidden=true;$("debugSheet").hidden=true;$("settingsSheet").hidden=false};
+$("settingsClose").onclick=()=>{$("settingsSheet").hidden=true};
+$("debugOpen").onclick=()=>{resetGesture();$("settingsSheet").hidden=true;$("debugSheet").hidden=false;renderDebugState()};
+$("debugClose").onclick=()=>{$("debugSheet").hidden=true;$("settingsSheet").hidden=false};
+$("historyFromSettings").onclick=openBattleHistory;
+$("debugHistory").onclick=openBattleHistory;
+$("logClose").onclick=()=>{$("logSheet").hidden=true};
+$("debugRefresh").onclick=()=>{renderDebugState();$("debugActionStatus").textContent="診断表示を更新しました。戦闘状態は変更していません。"};
+$("relayRate").addEventListener("input",e=>{relaySettings.rate=Math.max(0,Math.min(100,Math.round(Number(e.target.value)||0)));$("relayRateValue").textContent=relaySettings.rate+"%";renderDebugState()});
+$("relayCap").addEventListener("input",e=>{relaySettings.cap=Math.max(1,Math.min(5,Math.round(Number(e.target.value)||1)));$("relayCapValue").textContent=relaySettings.cap+"回";renderDebugState()});
+$("relayForce").addEventListener("input",e=>{relaySettings.force=!!e.target.checked;renderDebugState()});
+$("debugAddAttack").onclick=()=>debugAddCard("attack");
+$("debugAddDefense").onclick=()=>debugAddCard("defense");
+$("debugDamageSelected").onclick=debugDamageSelected;
+$("debugBlockTarget").onclick=debugBlockTarget;
+const volumeKeys={bgm:"sekasoko.ct560.bgm",se:"sekasoko.ct560.se"};
+
+const audioSources=Object.freeze({
+ bgm:"assets/audio/Heartbeat_of_the_Abyss_v26_B_160BPM_80BPM_HEART_36s.wav",
+ card:"assets/audio/SE_CardFlip_20261022_v04_B.wav",
+ attack:"assets/audio/SE_AttackA_20261022_v05_C.wav"
+});
+let audioStatusMessage="正式採用音源を接続済み。BGMは出撃時に開始します。";
+let volumeStorageMessage="端末保存を確認しています。";
+function updateAudioStatus(){const bgm=$("bgmVolume")?.value||40,se=$("seVolume")?.value||70;$("volumeStatus").textContent=audioStatusMessage+"｜BGM "+bgm+"%・効果音 "+se+"%｜"+volumeStorageMessage}
+function setAudioStatus(message){audioStatusMessage=message;updateAudioStatus()}
+function createAudioPlayer(src,loop=false,label="音源"){
+ try{if(typeof Audio!=="function")throw Error("Audio API非対応");const player=new Audio(src);player.preload="auto";player.loop=loop;player.addEventListener("error",()=>setAudioStatus(label+"の読み込みに失敗しました。戦闘は継続します。"));return player}
+ catch(e){setAudioStatus(label+"を初期化できません（"+(e?.message||"Audio API非対応")+"）。戦闘は継続します。");return null}
+}
+const combatBgm=createAudioPlayer(audioSources.bgm,true,"BGM");
+// Decode once, then give each Hit its own source; never queue a stale Hit after loading.
+const sePlayers={card:[],attack:[]},seAudio={context:null,gain:null,buffers:new Map(),voices:new Set(),mediaBusy:new Set(),fallbackPrimed:false};
+const ATTACK_HIT_MS=225; // Existing visual advance apex; animation and battle waits stay unchanged.
+for(const kind of Object.keys(sePlayers))for(let i=0;i<4;i++){
+ const player=createAudioPlayer(audioSources[kind],false,kind==="card"?"カードめくりSE":"攻撃SE");
+ if(player){sePlayers[kind].push(player);try{player.load()}catch{}}
+}
+function prepareBattleAudio(){
+ try{
+  const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;
+  const context=new Context({latencyHint:"interactive"});seAudio.context=context;
+  context.addEventListener("statechange",()=>{if(context.state!=="running")stopBattleSounds()});
+  seAudio.gain=context.createGain();seAudio.gain.gain.value=readVolume(volumeKeys.se,70)/100;seAudio.gain.connect(context.destination);
+  for(const kind of Object.keys(sePlayers))fetch(audioSources[kind]).then(response=>{
+   if(!response.ok)throw Error("HTTP "+response.status);return response.arrayBuffer()
+  }).then(bytes=>new Promise((resolve,reject)=>context.decodeAudioData(bytes,resolve,reject))).then(buffer=>seAudio.buffers.set(kind,buffer)).catch(()=>setAudioStatus("一部の効果音を通常再生で準備しています。"));
+ }catch{setAudioStatus("効果音を通常再生で準備しています。")}
+}
+function unlockBattleAudio(){
+ const context=seAudio.context;
+ if(context&&context.state!=="running"&&context.state!=="closed")try{
+  const resumed=context.resume();if(resumed?.catch)resumed.catch(()=>setAudioStatus("音声の再開には画面をタップしてください。"));
+  // A silent one-frame source also unlocks older iOS Web Audio implementations.
+  const source=context.createBufferSource();source.buffer=context.createBuffer(1,1,context.sampleRate);source.connect(context.destination);source.onended=()=>source.disconnect();source.start();
+ }catch{setAudioStatus("音声の再開には画面をタップしてください。")}
+ if(!seAudio.fallbackPrimed){
+  seAudio.fallbackPrimed=true;
+  // Keep one card player free for the first draw in this same trusted click.
+  for(const [kind,pool] of Object.entries(sePlayers))for(const player of (kind==="card"?pool.slice(1):pool))try{
+   seAudio.mediaBusy.add(player);player.volume=0;
+   const reset=()=>{player.pause();try{player.currentTime=0}catch{};seAudio.mediaBusy.delete(player)},pending=player.play();
+   if(pending?.then)pending.then(reset).catch(reset);else reset();
+  }catch{seAudio.mediaBusy.delete(player)}
+ }
+}
+prepareBattleAudio();
+for(const type of ["pointerdown","touchend","keydown","click"])document.addEventListener(type,event=>{if(event.isTrusted)unlockBattleAudio()},{capture:true,passive:true});
+function soundContextTime(performanceTime){
+ const context=seAudio.context,now=performance.now();
+ try{
+  const stamp=context.getOutputTimestamp?.();
+  if(stamp?.contextTime>0&&stamp.performanceTime>0&&Math.abs(now-stamp.performanceTime)<1000)
+   return Math.max(context.currentTime,stamp.contextTime+(performanceTime-stamp.performanceTime)/1000);
+ }catch{}
+ const latency=(Number(context.baseLatency)||0)+(Number(context.outputLatency)||0);
+ return Math.max(context.currentTime,context.currentTime+(performanceTime-now)/1000-latency);
+}
+function stopBattleSounds(){
+ for(const voice of [...seAudio.voices])voice.cancel();
+ for(const pool of Object.values(sePlayers))for(const player of pool)try{player.pause();player.currentTime=0}catch{}
+}
+// VER.609: adopted VER.550/575 BGM pause/resume lifecycle, with stale-play guards.
+let bgmRunId=0;
+const bgmTransport={wanted:false,suspended:false,pageHidden:false,resumeWanted:false,pending:0};
+function combatBgmVolume(){const n=Number($("bgmVolume")?.value);return Number.isFinite(n)?Math.max(0,Math.min(100,n))/100:readVolume(volumeKeys.bgm,40)/100}
+function combatBgmActive(){return bgmTransport.wanted&&['starting','player','enemy','planning','reward','checkpoint','transition'].includes(game.state.phase)}
+function combatBgmBackground(){return document.hidden||bgmTransport.pageHidden}
+function combatBgmEnabled(){return !!combatBgm&&!combatBgm.muted&&combatBgmVolume()>0}
+function combatBgmCanPlay(){return combatBgmActive()&&!combatBgmBackground()&&!bgmTransport.suspended&&combatBgmEnabled()}
+function requestCombatBgmPlay(message="BGM再生を再開しました。"){
+ if(!combatBgmCanPlay()||!bgmTransport.resumeWanted)return false;
+ if(!combatBgm.paused||bgmTransport.pending)return true;
+ const run=++bgmRunId;bgmTransport.pending=run;
+ try{
+  combatBgm.loop=true;combatBgm.volume=combatBgmVolume();
+  const pending=combatBgm.play();
+  const complete=()=>{if(run===bgmRunId)bgmTransport.pending=0;if(!combatBgmCanPlay()){try{combatBgm.pause()}catch{};return}if(run===bgmRunId)setAudioStatus(message)};
+  const refused=e=>{if(run!==bgmRunId)return;bgmTransport.pending=0;try{combatBgm.pause()}catch{};setAudioStatus("BGMを再開できませんでした（"+(e?.name||"ブラウザ制限")+"）。停止状態を維持し、次の画面操作で再試行します。")};
+  if(pending&&typeof pending.then==="function")pending.then(complete).catch(refused);else complete();
+  return true;
+ }catch(e){if(run===bgmRunId){bgmTransport.pending=0;try{combatBgm.pause()}catch{};setAudioStatus("BGMの再生に失敗しました（"+(e?.message||"再生エラー")+"）。戦闘は継続します。")}return false}
+}
+function startCombatBgm(){
+ if(!combatBgm){setAudioStatus("BGMを利用できません。戦闘は継続します。");return false}
+ bgmRunId++;bgmTransport.pending=0;bgmTransport.wanted=true;bgmTransport.suspended=combatBgmBackground();bgmTransport.resumeWanted=!bgmTransport.suspended&&combatBgmEnabled();
+ try{combatBgm.loop=true;combatBgm.volume=combatBgmVolume();combatBgm.pause();try{combatBgm.currentTime=0}catch{};return requestCombatBgmPlay("BGM再生を開始しました（ループ）。")}
+ catch(e){setAudioStatus("BGMの再生に失敗しました（"+(e?.message||"再生エラー")+"）。戦闘は継続します。");return false}
+}
+function stopCombatBgm(){
+ bgmRunId++;bgmTransport.pending=0;bgmTransport.wanted=false;bgmTransport.suspended=false;bgmTransport.resumeWanted=false;stopBattleSounds();
+ if(!combatBgm){setAudioStatus("BGM停止中。");return}
+ try{combatBgm.pause();try{combatBgm.currentTime=0}catch{};setAudioStatus("BGMを停止しました。次回出撃時は曲頭から再生します。")}
+ catch(e){setAudioStatus("BGM停止処理に失敗しました。戦闘は継続します。")}
+}
+function suspendCombatBgm(){
+ if(!combatBgm)return;
+ if(!bgmTransport.suspended)bgmTransport.resumeWanted=combatBgmActive()&&combatBgmEnabled()&&(!combatBgm.paused||!!bgmTransport.pending);
+ bgmTransport.suspended=true;bgmRunId++;bgmTransport.pending=0;
+ try{combatBgm.pause()}catch{};
+ if(bgmTransport.wanted)setAudioStatus("バックグラウンド移行でBGMを一時停止しました。");
+}
+function resumeCombatBgm(){
+ if(combatBgmBackground())return false;
+ bgmTransport.suspended=false;
+ if(!combatBgmActive()||!bgmTransport.resumeWanted||!combatBgmEnabled())return false;
+ return requestCombatBgmPlay();
+}
+function syncCombatBgmVolume(){
+ if(!combatBgm)return;
+ if(!combatBgmEnabled()){bgmTransport.resumeWanted=false;bgmRunId++;bgmTransport.pending=0;try{combatBgm.pause()}catch{};return}
+ // A positive slider change is an explicit foreground unmute, never a background restart.
+ if(combatBgmActive()&&!combatBgmBackground()){bgmTransport.suspended=false;bgmTransport.resumeWanted=true;requestCombatBgmPlay()}
+}
+if(combatBgm)combatBgm.addEventListener('play',()=>{if(!combatBgmCanPlay()||!bgmTransport.resumeWanted)try{combatBgm.pause()}catch{}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendCombatBgm();else resumeCombatBgm()});
+window.addEventListener('pagehide',()=>{bgmTransport.pageHidden=true;suspendCombatBgm()});
+window.addEventListener('pageshow',()=>{bgmTransport.pageHidden=false;resumeCombatBgm()});
+document.addEventListener('pointerdown',e=>{if(e.isTrusted&&!bgmTransport.suspended&&bgmTransport.resumeWanted)requestCombatBgmPlay()},{passive:true});
+
+function playBattleSound(kind,performanceTime=performance.now()){
+ const pool=sePlayers[kind];if(!pool||document.hidden)return false;
+ const label=kind==="card"?"カードめくりSE":"攻撃SE",context=seAudio.context,buffer=seAudio.buffers.get(kind);
+ const voice={source:null,player:null,cleanup:null,timer:0,cancelled:false,cancel(){this.cancelled=true;clearTimeout(this.timer);try{this.source?.stop();this.source?.disconnect()}catch{};if(this.player)try{this.player.pause();this.player.currentTime=0}catch{};this.cleanup?.();seAudio.voices.delete(this)}};
+ if(context?.state==="running"&&buffer)try{
+  const source=context.createBufferSource();voice.source=source;source.buffer=buffer;source.connect(seAudio.gain);
+  source.onended=()=>{source.disconnect();seAudio.voices.delete(voice)};
+  seAudio.voices.add(voice);source.start(soundContextTime(performanceTime));return voice;
+ }catch{voice.cancel()}
+ // Already-preloaded media fallback. Do not await decode/resume and replay old Hits later.
+ voice.cancelled=false;seAudio.voices.add(voice);
+ const play=()=>{
+  if(voice.cancelled||document.hidden){voice.cancel();return}
+  const volume=readVolume(volumeKeys.se,70);if(volume<=0){voice.cancel();return}
+  const player=pool.find(p=>!seAudio.mediaBusy.has(p)&&(p.paused||p.ended)&&p.readyState>=2);
+  if(!player){setAudioStatus(label+"は準備中です。次の操作で再試行します。");voice.cancel();return}
+  voice.player=player;seAudio.mediaBusy.add(player);
+  const ended=()=>{voice.cleanup();seAudio.voices.delete(voice)};
+  voice.cleanup=()=>{player.removeEventListener("ended",ended);player.removeEventListener("error",ended);seAudio.mediaBusy.delete(player)};
+  try{
+   player.loop=false;player.volume=volume/100;player.currentTime=0;
+   player.addEventListener("ended",ended,{once:true});
+   player.addEventListener("error",ended,{once:true});
+   const pending=player.play();if(pending?.catch)pending.catch(()=>{player.removeEventListener("ended",ended);voice.cancel();setAudioStatus(label+"を再生できませんでした。画面をタップして再試行してください。")});
+  }catch{voice.cancel();setAudioStatus(label+"を再生できませんでした。戦闘は継続します。")}
+ };
+ const delay=performanceTime-performance.now();if(delay>0)voice.timer=setTimeout(play,delay);else play();return voice;
+}
+
+function readVolume(key,fallback){try{const v=localStorage.getItem(key);if(v===null)return fallback;const n=Number(v);return Number.isFinite(n)?Math.max(0,Math.min(100,Math.round(n))):fallback}catch{return fallback}};
+function saveVolume(kind,value){const n=Math.max(0,Math.min(100,Math.round(Number(value)||0))),input=$(kind+"Volume"),output=$(kind+"Value");input.value=String(n);output.value=n+"%";output.textContent=n+"%";if(kind==="bgm"&&combatBgm){combatBgm.volume=n/100;syncCombatBgmVolume()}if(kind==="se"&&seAudio.gain)seAudio.gain.gain.value=n/100;if(kind==="se")for(const pool of Object.values(sePlayers))for(const player of pool)if(!player.paused&&!player.ended)player.volume=n/100;try{localStorage.setItem(volumeKeys[kind],String(n));volumeStorageMessage="音量設定を端末に保存しました。"}catch{volumeStorageMessage="この環境では端末に保存できません。"}updateAudioStatus()};
+function initVolumes(){saveVolume("bgm",readVolume(volumeKeys.bgm,40));saveVolume("se",readVolume(volumeKeys.se,70))};
+$("bgmVolume").addEventListener("input",e=>saveVolume("bgm",e.target.value));
+$("seVolume").addEventListener("input",e=>saveVolume("se",e.target.value));
+initVolumes()
+const drawPendingWithoutSound=game.drawPending.bind(game);
+game.drawPending=function(){const before=this.state.hand.length,result=drawPendingWithoutSound();if(this.state.hand.length>before)playBattleSound("card");return result};
+const finishWithoutAudio=game.finish.bind(game);
+game.finish=(phase,message)=>{const result=finishWithoutAudio(phase,message);if(["gameover","retreated","complete","error"].includes(phase))stopCombatBgm();return result};
+const homeWithoutAudio=game.home.bind(game);
+game.home=()=>{stopCombatBgm();return homeWithoutAudio()};
+const failWithoutAudio=game.fail.bind(game);
+game.fail=e=>{const result=failWithoutAudio(e);stopCombatBgm();return result};
+function unit(u,side){if(!u)return '<div class="empty" aria-label="空き"></div>';const s=game.state,enemy=side==='enemy',plan=enemy?game.enemyPlan(u):null,breakMax=u.breakMax||Math.max(1,Math.floor(u.maxHp*.70)),breakValue=u.breakValue||0;return `<button class="unit ${enemy?'enemy':''} ${!enemy&&u.rosterId===s.selected?'selected':''} ${u.broken?'ctBroken':''} ${!enemy&&hasEnemyHitFlash(u.rosterId)?'ct608HitFlash':''}" data-side="${side}" data-afterimage-rank="${enemy?u.afterimageRank:1}" data-unit="${enemy?u.instanceId:u.rosterId}" aria-label="${escapeHtml(u.name)} ${u.slot<3?'前衛':'後衛'} HP ${u.hp} BLOCK ${u.block} BREAK ${breakValue}/${breakMax}${u.broken?' 成立':''}"><span class="art"><img draggable="false" src="${u.sprite}" alt="${escapeHtml(u.name)}"></span>${plan?`<span class="intent" data-kind="${escapeHtml(plan.kind)}">${escapeHtml(plan.label)}</span>`:''}<span class="overlay"><span class="shieldRow"><span class="shield"><svg viewBox="0 0 24 28"><path d="M2 2L12 0L22 2V14Q22 22 12 27Q2 22 2 14Z" fill="#174b68" stroke="#b6eaff"/></svg><b>${u.block}</b></span></span><span class="unitName">${escapeHtml(u.name)}</span><span class="hpTrack"><span class="hpFill" style="width:${100*u.hp/u.maxHp}%"></span><span class="hpText">${u.hp}/${u.maxHp}</span></span><span class="break" title="BREAK ${breakValue}/${breakMax}${u.broken?' 成立':''}"><span class="ctBreakTrack"><span class="ct533BreakFill" style="width:${Math.min(100,100*breakValue/breakMax)}%"></span></span><span class="ctBreakLabel">${u.broken?'BREAK':'BR'} ${breakValue}/${breakMax}</span></span></span></button>`}
+function cardHtml(c){return `<strong>${c.type==='attack'?'攻撃':'防御'}</strong><span class="cost">1</span><p>${c.type==='attack'?'選択味方 ATK15%<br>黄色TARGETへ1Hit':'選択味方 DEF15%<br>本人のBLOCKに加算'}</p><small>共有・通常カード ／ 合成不可</small>`}
+// VER.609: VER.536 display order; keep the actual hand/deck/discard order untouched.
+let handSortState=null,handSortSignature=null,handRenderDeferred=false,orderedHand=[];
+function handSortRank(card){return card?.type==='attack'?0:card?.type==='defense'?1:3}
+function sortHandIfChanged(){
+ const s=game.state,hand=s.hand;if(!Array.isArray(hand))return false;
+ const key=hand.map(c=>String(c?.instanceId)).join('\u001f');
+ if(handSortState===s&&handSortSignature===key)return false;
+ if(gesture||pan)return false;
+ const before=orderedHand.map(c=>String(c?.instanceId)).join('\u001f'),ordered=hand.map((card,index)=>({card,index,rank:handSortRank(card)}));
+ ordered.sort((a,b)=>a.rank-b.rank||a.index-b.index);
+ orderedHand=ordered.map(x=>x.card);
+ handSortState=s;handSortSignature=key;
+ return before!==orderedHand.map(c=>String(c?.instanceId)).join('\u001f');
+}
+function flushDeferredHandRender(){if(!gesture&&!pan&&Array.isArray(game.state.hand)&&(handRenderDeferred||sortHandIfChanged()))renderHand()}
+function renderHand(){const s=game.state;if(gesture||pan){handRenderDeferred=true;return}sortHandIfChanged();handRenderDeferred=false;const hand=orderedHand;const lane=$('hand'),rail=$('rail'),ids=new Set(hand.map(c=>c.instanceId));for(const node of [...rail.children])if(!ids.has(node.dataset.card))node.remove();for(const [i,c] of hand.entries()){let node=[...rail.children].find(n=>n.dataset.card===c.instanceId);if(!node){node=document.createElement('button');node.dataset.card=c.instanceId;node.innerHTML=cardHtml(c);rail.append(node)}if(rail.children[i]!==node)rail.insertBefore(node,rail.children[i]||null);node.className=`card ${c.type} ${selectedCard===c.instanceId?'selected':''} ${s.hand.length>20?'overflow':''}`;node.setAttribute('aria-label',`${c.type==='attack'?'攻撃':'防御'} COST1 ${c.instanceId}`)}
+ const n=hand.length,w=innerWidth<=360?99:108,a=Math.max(220,lane.clientWidth),step=n<=5?Math.min(56,Math.max(36,(a-w-20)/Math.max(1,n-1))):n<=10?46:45,extent=w+step*Math.max(0,n-1),offset=n>10?25:Math.max(15,(a-extent)/2);rail.style.width=`${Math.max(a,offset+extent+(n>10?56:15))}px`;hand.forEach((c,i)=>{const node=[...rail.children].find(n=>n.dataset.card===c.instanceId),t=n===1?0:(i/(n-1)-.5)*2;node.style.left=`${offset+step*i}px`;node.style.setProperty('--angle',`${t*10}deg`);node.style.setProperty('--y',`${Math.abs(t)*8}px`);node.style.zIndex=i+1})}
+function render(){const s=game.state;if(expeditionCue&&(expeditionCue.state!==s||expeditionCue.generation!==game.generation||expeditionCue.floor!==s.floor))clearExpeditionCue();if(attackVisual&&(attackVisual.generation!==game.generation||attackVisual.floor!==s.floor||!['player','reward'].includes(s.phase)))clearAttackVisual();if(s.phase!=='player')resetGesture();$('home').hidden=s.phase!=='home';$('battle').hidden=s.phase==='home';if(s.phase==='home'){$('result').hidden=true;$('ctRunResult').hidden=true;formation();return}if(!s.allies){$('result').hidden=false;$('resultPanel').innerHTML='<h2>停止しました</h2><button data-home>編成へ戻る</button>';return}
+ $('battle').style.backgroundImage='url("'+floorBackgroundPath(s.floor)+'")';
+ const hp=s.allies.reduce((v,u)=>v+u.hp,0),max=s.allies.reduce((v,u)=>v+u.maxHp,0);const run=game.resultSummary();$('hud').innerHTML=`<span>世界深度 1 / ${s.floor}F/100F</span><span>残存 ${(hp/max*100).toFixed(1)}%</span><span>OVERKILL ${s.lastOverkill?s.lastOverkill.displayPct+'%':'—'}</span><span>💎 ${run.total.toLocaleString('ja-JP')} WD</span>`;$('phase').textContent=s.phase==='player'?`PLAYER ${s.turn}`:s.phase==='enemy'?'ENEMY':'';$('message').textContent=s.message;$('cost').textContent=`COST ${s.cost} / ${Battle.cost(game.alive('allies').length)}`;$('end').disabled=!game.canInput();$('settingsOpen').disabled=!!s.presentationBusy;$('retreat').disabled=s.phase==='checkpoint'||s.phase==='complete';$('selection').textContent=s.hand.length>20?'21枚目：捨てるカードを選択':`${s.allies.find(a=>a.rosterId===s.selected)?.name||'—'}｜CHAIN ${s.chain} ×${(1+s.chain*.05).toFixed(2)}`;$('counts').textContent=`山${s.draw.length} 手${s.hand.length} 捨${s.discard.length}`;
+ $('allies').innerHTML=[3,0,4,1,5,2].map(slot=>unit(s.allies.find(a=>a.hp>0&&a.slot===slot),'ally')).join('');$('enemies').innerHTML=[0,3,1,4,2,5].map(slot=>unit(s.enemies.find(a=>a.hp>0&&a.slot===slot),'enemy')).join('');syncVisuals();syncAllyHitPresentations();renderHand();renderDebugState();
+ renderExpeditionResults();
+}
+$('board').onclick=safe(e=>{if(performance.now()-lastClick<125||gesture||!combatPanelsClosed())return;const b=e.target.closest('[data-unit]');if(b){if(b.dataset.side==='ally')game.selectAlly(b.dataset.unit);else game.selectEnemy(b.dataset.unit)}});
+$('resultPanel').onclick=safe(e=>{if(game.state.relayBusy)return;const b=e.target.closest('button');if(!b)return;resetGesture();if(b.hasAttribute('data-home'))game.home();else if(b.hasAttribute('data-exit'))game.retreat();else if(b.dataset.reward)game.reward(b.dataset.reward==='skip'?null:b.dataset.reward,Number(b.dataset.floor))});
+function dropAt(g,x,y){const b=document.elementFromPoint(x,y)?.closest('[data-unit]');if(b){if(g.type==='defense'&&b.dataset.side==='ally')return {side:'ally',id:b.dataset.unit};if(g.type==='attack'&&b.dataset.side==='enemy'){const u=game.state.enemies.find(e=>e.instanceId===b.dataset.unit);if(u?.slot<3)return u.hp>0?{side:'enemy',id:b.dataset.unit}:false}}
+ const area=$('battle').getBoundingClientRect(),hand=$('hand').getBoundingClientRect();if(x<area.left||x>area.right||y<area.top||y>area.bottom)return false;return g.rect.bottom+(y-g.y)+.07*g.rect.height/2<=hand.top+hand.height/2?null:false}
+
+function move(e){if(pan&&e.pointerId===pan.pointer){if(Math.abs(e.clientX-pan.x)>4){$('hand').scrollLeft=pan.scroll-(e.clientX-pan.x);pan.moved=true}e.preventDefault();return}const g=gesture;if(!g||e.pointerId!==g.pointer)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;g.lastX=e.clientX;g.lastY=e.clientY;if(!g.moved&&Math.hypot(dx,dy)<7)return;g.moved=true;e.preventDefault();if(!g.ghost){g.ghost=g.node.cloneNode(true);g.ghost.removeAttribute('data-card');g.ghost.className='card ghost '+g.type;Object.assign(g.ghost.style,{left:g.rect.left+'px',top:g.rect.top+'px',width:g.rect.width+'px',height:g.rect.height+'px'});document.body.append(g.ghost);g.node.classList.add('source');edgeScroll()}g.ghost.style.setProperty('--dx',dx+'px');g.ghost.style.setProperty('--dy',dy+'px');document.querySelectorAll('.dropReady').forEach(n=>n.classList.remove('dropReady'));const drop=dropAt(g,e.clientX,e.clientY);if(drop)document.querySelector(`[data-unit="${drop.id}"]`)?.classList.add('dropReady')}
+function edgeScroll(){const g=gesture;if(!g?.moved)return;const r=$('hand').getBoundingClientRect();if(g.lastY>=r.top-40&&g.lastY<=r.bottom+20){const d=g.lastX-r.left<48?-1:r.right-g.lastX<48?1:0;if(d){const dist=d<0?g.lastX-r.left:r.right-g.lastX;$('hand').scrollLeft+=d*Math.min(9,Math.max(2,(48-dist)/5))}}raf=requestAnimationFrame(edgeScroll)}
+function endGesture(e,cancel=false){const g=gesture;if(pan&&e.pointerId===pan.pointer){pan=null;flushDeferredHandRender();return}if(!g||e.pointerId!==g.pointer)return;let drop=false;try{if(!cancel&&g.moved)drop=dropAt(g,e.clientX,e.clientY)}finally{resetGesture();lastClick=performance.now()}if(!cancel&&g.moved&&drop!==false)game.use(g.id,drop);else if(!cancel&&!g.moved)selectedCard=g.id;renderHand()}
+$('hand').addEventListener('pointerdown',safe(e=>{if(!e.isPrimary||e.button!==0||gesture||pan||!combatPanelsClosed())return;const node=e.target.closest('[data-card]');if(game.state.hand.length>20&&node){game.discardOverflow(node.dataset.card);return}if(!game.canInput())return;if(!node){pan={pointer:e.pointerId,x:e.clientX,scroll:$('hand').scrollLeft};$('hand').setPointerCapture(e.pointerId);return}const c=game.state.hand.find(c=>c.instanceId===node.dataset.card);gesture={pointer:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,node,rect:node.getBoundingClientRect(),id:c.instanceId,type:c.type,moved:false};playBattleSound('card');$('hand').setPointerCapture(e.pointerId)}));
+window.addEventListener('pointermove',safe(move),{passive:false});window.addEventListener('pointerup',safe(e=>endGesture(e)));window.addEventListener('pointercancel',safe(e=>endGesture(e,true)));$('hand').addEventListener('lostpointercapture',safe(e=>endGesture(e,true)));
+$('guide').addEventListener('pointerdown',e=>{if(!game.canInput()||gesture||pan)return;pan={pointer:e.pointerId,x:e.clientX,scroll:$('hand').scrollLeft};$('guide').setPointerCapture(e.pointerId)});$('guide').addEventListener('lostpointercapture',()=>{pan=null;flushDeferredHandRender()});window.addEventListener('blur',resetGesture);window.addEventListener('pagehide',()=>{resetGesture();stopBattleSounds()});document.addEventListener('visibilitychange',()=>{if(document.hidden)resetGesture()});window.addEventListener('resize',()=>{resetGesture();if(game.state.hand)renderHand()});document.addEventListener('error',e=>{if(e.target instanceof HTMLImageElement){const p=e.target.closest('.unit');if(p&&!p.querySelector('.assetError')){const n=document.createElement('span');n.className='assetError';n.textContent='画像未読込';p.append(n)}}},true);
+// VER.609: presentation adapter. No combat timers, input locks or extra hits.
+let attackVisual=null;
+const attackPoses=Object.freeze({101:'assets/characters/mikoto_attack_pose_v1.png',102:'assets/characters/nagi_attack_pose_v1.png',103:'assets/characters/yuzu_attack_pose_v1.png',201:'assets/characters/hathor_attack_pose_v1.png',202:'assets/characters/baal_attack_pose_v1.png',203:'assets/characters/nandi_attack_pose_v1.png',401:'assets/characters/nanase_runa_attack_pose_v1.png'});
+const poseCache=new Map();
+function preloadPose(src){if(!poseCache.has(src)){const img=new Image();img.src=src;poseCache.set(src,img)}return poseCache.get(src)}
+Object.values(attackPoses).forEach(preloadPose);
+function clearAttackVisual(){const v=attackVisual;attackVisual=null;if(v){if(v.hitPresentation&&!v.hitPresentation.shown)removeAllyHitPresentation(v.hitPresentation);v.timers.forEach(clearTimeout);v.sound?.cancel();v.animation?.cancel();v.ghost.remove();v.bg.remove();v.gleam?.remove()}document.querySelectorAll('.attackSourceHidden').forEach(n=>n.classList.remove('attackSourceHidden'));queueVictorySettlement()}
+function syncVisuals(){const s=game.state,b=$('board').getBoundingClientRect();
+ const cell=[...$('enemies').children].find(n=>n.dataset.unit===s.target),marker=$('lockReticle');marker.hidden=!cell;if(cell){const r=cell.getBoundingClientRect();Object.assign(marker.style,{left:r.left-b.left+r.width/2+'px',top:r.top-b.top+r.height*.43+'px',width:Math.min(r.width*.88,96)+'px'})}
+ const totals=new Map();for(const e of game.alive('enemies')){const plan=game.enemyPlan(e);if(plan)for(const hit of plan.hits)if(game.alive('allies').some(a=>a.rosterId===hit.targetId))totals.set(hit.targetId,(totals.get(hit.targetId)||0)+hit.raw)}
+ const host=$('intentTargets');for(const n of [...host.children])if(!totals.has(n.dataset.allyId))n.remove();
+ for(const [id,damage] of totals){const ally=[...$('allies').children].find(n=>n.dataset.unit===id);if(!ally)continue;let n=[...host.children].find(n=>n.dataset.allyId===id);if(!n){n=document.createElement('div');n.className='ctIntentTarget';n.dataset.allyId=id;n.innerHTML='<svg viewBox="0 0 100 100" focusable="false" aria-hidden="true"><circle class="ctRedOuter" cx="50" cy="50" r="42"/><g class="ctRedCardinals"><path class="ctRedMarker" d="M50 2v11 M50 87v11 M2 50h11 M87 50h11"/><path class="ctRedMarker" d="M47 9h6 M47 91h6 M9 47v6 M91 47v6"/></g><circle class="ctRedInner" cx="50" cy="50" r="29"/></svg><span class="ctIntentTotal"></span>';host.append(n)}const r=ally.getBoundingClientRect();n.style.left=r.left-b.left+r.width*.59+'px';n.style.top=r.top-b.top+r.height*.42+'px';n.style.setProperty('--ct-red-size',Math.min(r.width*.75,72)+'px');n.querySelector('.ctIntentTotal').textContent=damage;}
+ if(attackVisual)for(const n of $('allies').children)n.classList.toggle('attackSourceHidden',n.dataset.unit===attackVisual.actorId);
+}
+function startAttackVisual(actor){clearAttackVisual();const b=$('board').getBoundingClientRect();if(!actor?.sprite||!b.width||!b.height){playBattleSound("attack");return}
+ const bg=document.createElement('div'),ghost=document.createElement('img');bg.className='ct567SpeedBackdrop';ghost.className='ct567CutinPortrait';bg.setAttribute('aria-hidden','true');ghost.setAttribute('aria-hidden','true');ghost.alt='';ghost.draggable=false;ghost.src=actor.sprite;
+ Object.assign(ghost.style,{left:Math.max(1,b.width*.008)+'px',top:Math.max(2,b.height*.035)+'px',width:b.width*.48+'px',height:b.height*.90+'px'});
+ const v=attackVisual={ghost,bg,actorId:actor.rosterId,generation:game.generation,floor:game.state.floor,timers:[],animation:null,sound:null};
+ const visualStart=performance.now();v.visualStart=visualStart;
+ const valid=()=>attackVisual===v&&game.generation===v.generation&&game.state.floor===v.floor;
+ const later=(fn,ms)=>v.timers.push(setTimeout(()=>{if(valid())fn()},ms));
+ ghost.onerror=()=>{if(!valid())return;if(ghost.getAttribute('src')!==actor.sprite)ghost.src=actor.sprite;else clearAttackVisual()};
+ $('board').prepend(bg);$('board').append(ghost);syncVisuals();
+ const dx=Math.min(20,b.width*.035);
+ if(ghost.animate){v.animation=ghost.animate([{transform:'translate(0,0)',offset:0,easing:'ease-in-out'},{transform:`translate(${dx}px,0)`,offset:225/555},{transform:`translate(${dx}px,0)`,offset:290/555,easing:'ease-in-out'},{transform:'translate(0,0)',offset:1}],{duration:555,fill:'forwards'});v.animation.finished.catch(()=>{})}
+ later(()=>{const src=attackPoses[actor.cid],image=src&&preloadPose(src);if(!image?.complete||!image.naturalWidth)return;ghost.src=src;later(()=>{const gleam=document.createElement('div');gleam.className='ct569SlashGleam';gleam.setAttribute('aria-hidden','true');v.gleam=gleam;$('board').append(gleam);later(()=>gleam.remove(),170)},40)},105);
+ v.sound=playBattleSound("attack",visualStart+ATTACK_HIT_MS);
+ later(clearAttackVisual,555);
+}
+function relayTarget(s){const selected=s.enemies?.find(e=>e.hp>0&&e.instanceId===s.target&&e.slot<3);return selected||game.front('enemies')[0]||null}
+function relayReportText(run,outcome,reason){const s=run.state,chain=Number(s.chain)||0;return "起点："+run.starterName+" → "+run.openingTarget+"｜結果："+outcome+"｜参加者："+(run.participants.join(" → ")||"なし")+"｜対象："+(run.lastTarget||"—")+"｜成立連携Hit "+run.hits+"｜CHAIN "+chain+" ×"+(1+chain*0.05).toFixed(2)+"｜連携累計Hit "+(Number(s.relayHits)||0)+"｜理由："+reason}
+function relayRunCurrent(run){return activeRelayRun===run&&relayRunSerial===run.id&&game.state===run.state&&game.generation===run.generation}
+function cancelRelaySequence(reason){const run=activeRelayRun;if(!run)return;relayRunSerial++;activeRelayRun=null;if(game.state===run.state){game.state.relayBusy=false;game.state.relayReport=relayReportText(run,"中断",reason||"戦闘状態変更")}clearAttackVisual()}
+async function startRelaySequence(starter,openingTarget){const s=game.state;if(!s?.allies||!starter||activeRelayRun)return;const run={id:++relayRunSerial,generation:game.generation,state:s,starterName:starter.name,starterId:starter.rosterId,openingTarget:openingTarget||"—",lastTarget:openingTarget||null,participants:[],pickCursor:0,hits:0};activeRelayRun=run;s.relayBusy=true;s.relayReport="連携判定待ち｜起点："+run.starterName+" → "+run.openingTarget;game.emit();let outcome="不成立",reason="判定なし";try{if(!await game.wait(555)||!relayRunCurrent(run))return;while(relayRunCurrent(run)){const cap=Math.max(1,Math.min(5,Math.round(Number(relaySettings.cap)||1)));if(run.hits>=cap){outcome=run.hits?"成立":"不成立";reason="DEBUG回数上限 "+cap+"回";break}const target=relayTarget(s);if(!target){outcome=run.hits?"成立":"不成立";reason="対象敵なし";break}const candidates=s.allies.filter(a=>a.hp>0&&a.rosterId!==run.starterId).sort((a,b)=>a.slot-b.slot);if(!candidates.length){outcome=run.hits?"成立":"不成立";reason="参加可能な味方なし";break}const rate=Math.max(0,Math.min(100,Number(relaySettings.rate)||0)),force=!!relaySettings.force;if(!force&&game.random()*100>=rate){outcome=run.hits?"一部成立":"不成立";reason="発動率抽選不成立（"+rate+"%・強制OFF）";break}const participant=candidates[run.pickCursor%candidates.length];run.pickCursor++;run.lastTarget=target.name;s.relayReport="連携進行中｜判定："+(force?"強制発動ON":"抽選成立 "+rate+"%")+"｜参加者："+participant.name+"｜対象："+target.name+"｜成立Hit "+run.hits;try{startAttackVisual(participant)}catch(e){clearAttackVisual();console.warn("連携表示を省略",e);playBattleSound("attack")}game.emit();if(!await game.wait(225)||!relayRunCurrent(run))return;const hitTarget=relayTarget(s);if(!hitTarget){outcome=run.hits?"成立":"不成立";reason="命中前に対象敵がいなくなった";break}run.lastTarget=hitTarget.name;const before=Number(s.chain)||0,multiplier=1+0.05*before,raw=Math.floor(participant.atk*RULES.attack*multiplier),hit=game.damage(hitTarget,raw,false);s.chain=before+1;s.relayHits=(Number(s.relayHits)||0)+1;run.hits++;run.participants.push(participant.name);game.promote("enemies");s.target=game.front("enemies").find(e=>e.instanceId===hitTarget.instanceId)?.instanceId||game.front("enemies")[0]?.instanceId||null;if(!game.alive("enemies").length){s.phase="reward";s.message="敵撃破｜連携処理完了待ち"}game.log("DEBUG連携｜"+participant.name+" → "+hitTarget.name+"｜ATK15% "+raw+" ×"+multiplier.toFixed(2)+"｜HP -"+hit.loss+" / BLOCK -"+hit.absorbed);outcome="成立";reason=force?"強制発動ON（試験）":"発動率抽選成立（"+rate+"%）";s.relayReport=relayReportText(run,"進行中",reason);game.emit();if(!await game.wait(330)||!relayRunCurrent(run))return} }catch(e){if(relayRunCurrent(run))game.fail(e);return}finally{if(relayRunCurrent(run)){activeRelayRun=null;s.relayBusy=false;s.relayReport=relayReportText(run,outcome,reason);clearAttackVisual();game.emit()}}}
+const commitCard=game.use.bind(game);
+game.use=(id,direct=null)=>{const s=game.state,card=s.hand?.find(c=>c.instanceId===id),actor=s.allies?.find(a=>a.rosterId===s.selected),opening=s.enemies?.find(e=>e.instanceId===(direct?.id||s.target))?.name||"—",ok=commitCard(id,direct);if(ok&&card?.type==="attack"){try{startAttackVisual(actor)}catch(e){clearAttackVisual();console.warn("攻撃表示を省略",e);playBattleSound("attack")}startRelaySequence(actor,opening)}return ok};
+let allyHitCardCapture=null;
+const damageWithoutAllyHitPresentation=game.damage.bind(game);
+game.damage=(unit,raw,ally)=>{
+ let record=null;
+ if(!ally&&(allyHitCardCapture||activeRelayRun))try{record=captureAllyHitPresentation(unit,raw,game.state.chain)}catch(e){console.warn('命中表示の位置取得を省略',e)}
+ const result=damageWithoutAllyHitPresentation(unit,raw,ally);
+ try{
+  if(ally){if(result.loss>0)clearAllyHitPresentations()}
+  else if(record){completeAllyHitPresentation(record,result);if(allyHitCardCapture)allyHitCardCapture.push(record);else showAllyHitPresentation(record)}
+ }catch(e){if(record)removeAllyHitPresentation(record);console.warn('命中表示を省略',e)}
+ return result;
+};
+
+// Insert AFTER the existing final game.use wrapper starts startAttackVisual/relay.
+const useWithoutAllyHitPresentation=game.use.bind(game);
+game.use=(id,direct=null)=>{
+ const hits=[],previous=allyHitCardCapture;let ok;
+ allyHitCardCapture=hits;
+ try{ok=useWithoutAllyHitPresentation(id,direct)}catch(e){hits.forEach(removeAllyHitPresentation);throw e}finally{allyHitCardCapture=previous}
+ for(const record of hits)try{if(ok)scheduleAllyHitPresentation(record,attackVisual);else removeAllyHitPresentation(record)}catch(e){removeAllyHitPresentation(record);console.warn('命中表示予約を省略',e)}
+ return ok;
+};
+
+for(const event of ['blur','pagehide','resize'])window.addEventListener(event,clearAllyHitPresentations);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)clearAllyHitPresentations()});
+
+window.addEventListener('blur',clearAttackVisual);window.addEventListener('pagehide',clearAttackVisual);document.addEventListener('visibilitychange',()=>{if(document.hidden){clearAttackVisual();stopBattleSounds()}});window.addEventListener('resize',()=>{clearAttackVisual();if(game.state.allies)syncVisuals()});
+
+formation();
+
+</script></body></html>
