@@ -766,7 +766,7 @@ async function showExpeditionPhase(side,detail){
 function queueVictorySettlement(){
  const state=game.state,generation=game.generation,floorSerial=state.floorSerial;
  queueMicrotask(()=>{
-  if(game.state===state&&game.generation===generation&&state.floorSerial===floorSerial&&state.phase==='reward'&&!state.relayBusy&&!activeRelayRun&&!attackVisual&&!overkillPresentationPending())
+  if(game.state===state&&game.generation===generation&&state.floorSerial===floorSerial&&state.phase==='reward'&&!state.relayBusy&&!state.specialBusy&&!activeRelayRun&&!attackVisual&&!overkillPresentationPending())
    try{game.settleVictory()}catch(e){game.fail(e)}
  });
 }
