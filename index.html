@@ -532,7 +532,7 @@ class Battle {
    s.chain=chainBefore+1;this.maybeEarnSpecialI(raw,result,'通常攻撃');s.lastAttackHit={kind:'normal',attackerId:actor.rosterId,targetId:target.instanceId,raw,result:{loss:result.loss,absorbed:result.absorbed}};
    this.log(actor.name+' → '+target.name+'｜ATK15% '+raw+'｜CHAIN '+s.chain);this.promote('enemies');s.target=this.front('enemies').find(e=>e.instanceId===s.target)?.instanceId||this.front('enemies')[0]?.instanceId||null;if(!this.alive('enemies').length){this.endPlayerBreak();s.phase='reward'}
   }
-  else {const chainBefore=s.chain,multiplier=1+.05*chainBefore;s.chain=0;s.selected=actor.rosterId;s.specialBusy=true;s.presentationBusy=true;const run={serial:++this.specialSerial,generation:this.generation,state:s,actor,stage,chainBefore,multiplier,targetId:target?.instanceId||null};this.log('必殺'+SPECIAL_ROMAN[stage]+'発動｜COST'+cost+'｜CHAIN '+chainBefore+' ×'+multiplier.toFixed(2)+' → 0');this.emit();void this.resolveSpecialSequence(run);return true}
+  else {const chainBefore=s.chain,multiplier=1+.05*chainBefore;s.chain=0;s.selected=actor.rosterId;s.specialBusy=true;s.presentationBusy=true;const run={serial:++this.specialSerial,generation:this.generation,state:s,actor,stage,chainBefore,multiplier,targetId:target?.instanceId||null,comboState:{relayHitCount:0}};this.log('必殺'+SPECIAL_ROMAN[stage]+'発動｜COST'+cost+'｜CHAIN '+chainBefore+' ×'+multiplier.toFixed(2)+' → 0');this.emit();void this.resolveSpecialSequence(run);return true}
   this.emit();return true;
   }
   rollSpecialI(source){if(this.random()>=.1)return false;const card=this.createCard('special',1);this.state.hand.push(card);this.log(`${source}｜必殺Ⅰ獲得（10%抽選成功）`);return true}
@@ -557,11 +557,11 @@ class Battle {
      this.maybeEarnSpecialI(raw,result,'必殺攻撃');this.promote('enemies');s.target=this.front('enemies').find(e=>e.instanceId===target.instanceId)?.instanceId||this.front('enemies')[0]?.instanceId||null;this.log(`必殺${SPECIAL_ROMAN[run.stage]}｜Hit ${index+1}/${total}｜${target.name} ATK${Math.round(SPECIAL_DAMAGE[run.stage]*100)}% ×${run.multiplier.toFixed(2)}｜HP -${result.loss} / BLOCK -${result.absorbed}`);
      if(!this.alive('enemies').length){s.phase='reward';s.message='敵撃破｜必殺処理完了待ち'}this.emit();
      if(!await this.wait(330)||!this.specialRunCurrent(run))return;
-     if(!await resolveApHitEvents([{kind:'special',attackerId:run.actor.rosterId,targetId:target.instanceId,raw,result}],()=>this.specialRunCurrent(run),true))return;
+     if(!await resolveApHitEvents([{kind:'special',attackerId:run.actor.rosterId,targetId:target.instanceId,raw,result}],()=>this.specialRunCurrent(run),true,0,run.comboState))return;
     }
     if(stageV&&stageVPresentations.length){showAllyHitPresentationBatch(stageVPresentations);stageVBatchShown=true}
    }catch(e){if(this.specialRunCurrent(run)){this.fail(e);return}}
-   finally{if(this.specialRunCurrent(run)){if(run.stage===5&&!stageVBatchShown&&stageVPresentations.length)showAllyHitPresentationBatch(stageVPresentations);s.specialBusy=false;s.presentationBusy=false;clearAttackVisual();if(s.phase==='reward'&&!this.alive('enemies').length)this.settleVictory();this.emit()}}
+   finally{run.comboState.relayHitCount=0;if(this.specialRunCurrent(run)){if(run.stage===5&&!stageVBatchShown&&stageVPresentations.length)showAllyHitPresentationBatch(stageVPresentations);s.specialBusy=false;s.presentationBusy=false;clearAttackVisual();if(s.phase==='reward'&&!this.alive('enemies').length)this.settleVictory();this.emit()}}
   }
  normalEnemyTarget(enemy){const pool=this.front('allies'),col=((Number(enemy.homeSlot)||0)%3+3)%3;return pool[col%pool.length]||null}
  randomFrontAlly(){const front=this.front('allies'),pool=front.length?front:this.alive('allies').sort((a,b)=>a.slot-b.slot);return pool.length?pool[Math.floor(this.random()*pool.length)]:null}
@@ -1101,9 +1101,10 @@ function startAttackVisual(actor,options={}){clearAttackVisual();const b=$('boar
 let apRelaySerial=0,activeApRelayRun=null;
 function apRelayCurrent(run){return !!(run&&activeApRelayRun===run&&apRelaySerial===run.serial&&game.state===run.state&&game.generation===run.generation&&run.parentValid())}
 function cancelApRelaySequence(reason){const run=activeApRelayRun;if(!run)return;apRelaySerial++;activeApRelayRun=null;if(game.state===run.state){game.state.apRelayBusy=false;game.state.relayBusy=!!activeRelayRun;game.state.apRelayReport='中断｜'+(reason||'戦闘状態変更')}clearAttackVisual()}
-async function resolveApHitEvents(initialEvents,parentValid=()=>true,isSpecialSequence=false,initialWait=0){
+async function resolveApHitEvents(initialEvents,parentValid=()=>true,isSpecialSequence=false,initialWait=0,comboState=null){
  const s=game.state;if(!s?.allies||activeApRelayRun)return false;
- const run={serial:++apRelaySerial,state:s,generation:game.generation,parentValid,relayHitCount:0};activeApRelayRun=run;s.relayBusy=true;s.apRelayBusy=true;s.apRelayReport='AP連携判定中';game.emit();
+ const ownsComboState=!comboState,sharedComboState=comboState||{relayHitCount:0};
+ const run={serial:++apRelaySerial,state:s,generation:game.generation,parentValid,comboState:sharedComboState};activeApRelayRun=run;s.relayBusy=true;s.apRelayBusy=true;s.apRelayReport='AP連携判定中';game.emit();
  try{
   if(initialWait&&(!await game.wait(initialWait)||!apRelayCurrent(run)))return false;
   const queue=initialEvents.slice();
@@ -1143,9 +1144,9 @@ async function resolveApHitEvents(initialEvents,parentValid=()=>true,isSpecialSe
     try{startAttackVisual(owner,{mode:'relay'})}catch(e){clearAttackVisual();console.warn('AP連携演出を省略',e)}
     if(!await game.wait(225)||!apRelayCurrent(run))return false;
     if(victim.hp<=0){game.gainAp(owner,job.apCost,'追撃命中前に対象消失・AP返還');continue}
-    const relayIndex=job.abilityId==='relay_follow'?run.relayHitCount+1:0,relayMultiplier=relayIndex?1+0.1*relayIndex:1,raw=Math.floor(owner.atk*job.power*relayMultiplier),before=Number(s.chain)||0,previous=allyHitPresentationContext;let result;
+    const isComboHit=job.abilityId==='relay_follow'||job.abilityId==='poison_follow',relayIndex=isComboHit?run.comboState.relayHitCount+1:0,relayMultiplier=relayIndex?1+0.1*relayIndex:1,raw=Math.floor(owner.atk*job.power*relayMultiplier),before=Number(s.chain)||0,previous=allyHitPresentationContext;let result;
     try{allyHitPresentationContext={kind:'relay',chainBefore:before,chainAfter:before+1,relayIndex,relayMultiplier};result=game.damage(victim,raw,false)}finally{allyHitPresentationContext=previous}
-    if(relayIndex)run.relayHitCount=relayIndex;
+    if(relayIndex)run.comboState.relayHitCount=relayIndex;
     game.maybeEarnSpecialI(raw,result,'AP連携');
     s.chain=before+1;s.relayHits=(Number(s.relayHits)||0)+1;
     game.promote('enemies');s.target=game.front('enemies').find(e=>e.instanceId===victim.instanceId)?.instanceId||game.front('enemies')[0]?.instanceId||null;
@@ -1160,14 +1161,14 @@ async function resolveApHitEvents(initialEvents,parentValid=()=>true,isSpecialSe
   if(apRelayCurrent(run)){s.apRelayReport='AP連携判定終了｜CHAIN '+s.chain+'｜AP追撃処理完了';return true}
   return false;
  }catch(e){if(apRelayCurrent(run))game.fail(e);else console.warn('AP連携処理を中断',e);return false}
- finally{if(activeApRelayRun===run){activeApRelayRun=null;s.apRelayBusy=false;s.relayBusy=!!activeRelayRun;if(isSpecialSequence&&s.specialBusy)s.relayBusy=false;clearAttackVisual();game.emit()}}
+ finally{if(ownsComboState)sharedComboState.relayHitCount=0;if(activeApRelayRun===run){activeApRelayRun=null;s.apRelayBusy=false;s.relayBusy=!!activeRelayRun;if(isSpecialSequence&&s.specialBusy)s.relayBusy=false;clearAttackVisual();game.emit()}}
 }
 async function startApRelaySequence(event){
  if(!event)return false;
  const state=game.state,actor=state.allies.find(a=>a.rosterId===event.attackerId),opening=state.enemies.find(e=>e.instanceId===event.targetId)?.name||'—';
  const valid=()=>game.state===state&&game.state.phase!=='home'&&game.generation===activeApRelayRun?.generation;
- const runEvents=[event];
- const done=await resolveApHitEvents(runEvents,valid,false,555);
+ const runEvents=[event],comboState={relayHitCount:0};
+ const done=await resolveApHitEvents(runEvents,valid,false,555,comboState);
  if(relaySettings.legacyEnabled&&game.state===state&&game.alive('enemies').length&&actor?.hp>0)await startRelaySequence(actor,opening);
  return done;
 }
